@@ -1,0 +1,19 @@
+#toolbar-account > #toolbar-apply {
+    display: none;
+}
+
+#toolbar-account > #toolbar-save {
+    display: none;
+}
+
+#toolbar-account > #toolbar-back {
+    display: none;
+}
+
+#toolbar-account > #toolbar-edit {
+    display: none;
+}
+
+#toolbar-account > #toolbar-close {
+    display: none;
+}

@@ -19,7 +19,7 @@ defined('KOOWA') or die; ?>
 <ktml:style src="media://com_nucleonplus/css/admin-edit.css" />
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="<?= $account->id ?>" icon="task-add icon-pencil-2">
+    <ktml:toolbar type="actionbar" title="<?= ($account->id) ? object('user.provider')->load($account->user_id)->getName() : 'New Account'; ?>" icon="task-add icon-pencil-2">
 </ktml:module>
 
 <div class="deskman_form_layout">
@@ -29,12 +29,19 @@ defined('KOOWA') or die; ?>
             <div class="span9">
                 <legend><?= translate('Details') ?></legend>
                 <fieldset class="form-vertical">
+                    <label>Sponsor</label>
+                    <div>
+                        <input type="text" name="parent_id" value="<?= $account->parent_id ?>" />
+                    </div>
+                </fieldset>
+                <fieldset class="form-vertical">
                     <div>
                         <label for="note"><?= translate('Note'); ?></label>
                         <div>
                             <?= helper('editor.display', array(
                                 'name'    => 'note',
-                                'text'    => $account->note,
+                                'value'    => $account->note,
+                                'height' => 100,
                                 'options' => array(
                                     'language'         => 'en',
                                     'contentsLanguage' => 'en'
@@ -49,13 +56,22 @@ defined('KOOWA') or die; ?>
                 <legend><?= translate('Settings') ?></legend>
                 <fieldset class="form-vertical">
 
-                    <? if (object('user')->authorise('core.admin')): ?>
+                    <? if (is_null($account->id) && object('user')->authorise('core.admin')): ?>
                         <div class="control-group">
                             <div class="control-label">
-                                <label><?= translate('Assign To'); ?></label>
+                                <label><?= translate('Account Owner'); ?></label>
                             </div>
                             <div class="controls">
-                                <?= helper('listbox.users', array('name' => 'assigned_to')) ?>
+                                <?= helper('listbox.users', array('name' => 'user_id')) ?>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="control-group">
+                            <div class="control-label">
+                                <label><?= translate('Account No.'); ?></label>
+                            </div>
+                            <div class="controls">
+                                <?= $account->id ?>
                             </div>
                         </div>
                     <?php endif ?>
@@ -65,7 +81,7 @@ defined('KOOWA') or die; ?>
                             <label><?= translate('Status'); ?></label>
                         </div>
                         <div class="controls">
-                            <?= helper('statuslist.optionList', array('name' => 'status', 'selected' => $account->status)) ?>
+                            <?= helper('listbox.optionList', array('name' => 'status', 'selected' => $account->status)) ?>
                         </div>
                     </div>
                 </fieldset>

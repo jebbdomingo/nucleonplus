@@ -18,6 +18,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
 {
     protected function _initialize(KObjectConfig $config)
     {
+        // Status
         $config
         ->append(array(
             'status' => array(
@@ -39,11 +40,23 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
             )
         ));
 
+        // Product packages
+        $packages = [];
+        foreach ($this->getObject('com:nucleonplus.model.packages')->fetch() as $package) {
+            $packages[] = [
+                'label' => "{$package->name} (slots: {$package->slots})",
+                'value' => $package->id
+            ];
+        }
+        $config->append(['packages' => $packages]);
+
         parent::_initialize($config);
     }
 
     /**
      * Generates status list box
+     *
+     * @todo rename to status list
      * 
      * @param array $config [optional]
      * 
@@ -64,6 +77,8 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
 
     /**
      * Generates status filter buttons
+     *
+     * @todo rename to status filter list
      *
      * @param array $config [optional]
      *
@@ -90,5 +105,25 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         }
 
         return $result;
+    }
+
+    /**
+     * Generates product list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function productList($config = array())
+    {
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'status',
+            'selected' => null,
+            'options'  => $this->getConfig()->packages,
+            'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
     }
 }

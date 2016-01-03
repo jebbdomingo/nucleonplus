@@ -10,76 +10,127 @@
 
 defined('KOOWA') or die; ?>
 
-<?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.koowa'); ?>
-<?= helper('behavior.keepalive'); ?>
-<?= helper('behavior.validator'); ?>
 
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
-<ktml:style src="media://com_deskman/css/admin-edit.css" />
+<ktml:style src="media://com_nucleonplus/css/admin-read.css" />
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="<?= $ticket->title ?>" icon="task-add icon-pencil-2">
+    <ktml:toolbar type="actionbar" title="<?= object('user.provider')->load($account->user_id)->getName(); ?>" icon="task-add icon-book">
 </ktml:module>
 
-<div class="deskman_form_layout">
-    <form action="<?= route('id='.$ticket->id) ?>" method="post" class="-koowa-form">
-
-        <div class="row-fluid">
-            <div class="span9">
-                <legend><?= translate('Details') ?></legend>
-                <fieldset class="form-vertical">
-                    <div class="control-group">
-                        <div class="control-label">
-                            <label for="deskman_form_title"><?= translate('Title') ?></label>
-                        </div>
-                        <div class="controls">
-                            <input required id="deskman_form_title" type="text" name="title" maxlength="255" class="input-xxlarge input-large-text required" value="<?= escape($ticket->title); ?>" />
-                        </div>
+<div class="row-fluid">
+    <div class="span9">
+        <fieldset class="form-vertical">
+            <form method="post" class="-koowa-grid">
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="label label-<?= ($account->status == 'closed') ? 'default' : 'info' ?>"><?= ucwords(escape($account->status)) ?></span>
+                            <?= object('user.provider')->load($account->user_id)->getName(); ?>
+                        </h3>
                     </div>
-
-                    <div>
-                        <label for="description"><?= translate('Description'); ?></label>
-                        <div>
-                            <?= helper('editor.display', array(
-                                'name'    => 'description',
-                                'text'    => $ticket->description,
-                                'options' => array(
-                                    'language'         => 'en',
-                                    'contentsLanguage' => 'en'
-                                )
-                            )) ?>
-                        </div>
+                    <div class="panel-body">
+                        <?= $account->note ?>
                     </div>
-                </fieldset>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            Purchases
+                            <a class="btn btn-default" href="<?= route('layout=purchase-form&id='.$account->id) ?>" role="button">New Purchase</a>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <th>Name</th>
+                                <th>Slots</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                            </thead>
+                            <tbody>
+                                <? if (count($account->getPurchases()) > 0): ?>
+                                    <? foreach ($account->getPurchases() as $purchase): ?>
+                                        <tr>
+                                            <td>
+                                            <?= object('com:nucleonplus.model.packages')->id($purchase->package_id)->fetch()->name ?></td>
+                                            <td><?= object('com:nucleonplus.model.packages')->id($purchase->package_id)->fetch()->slots ?></td>
+                                            <td><?= object('com:nucleonplus.model.packages')->id($purchase->package_id)->fetch()->price ?></td>
+                                            <td><?= ucwords($purchase->status) ?></td>
+                                        </tr>
+                                    <? endforeach ?>
+                                <? else: ?>
+                                    <tr>
+                                        <td colspan="3">
+                                            <p class="text-center">No Purchase(s) Yet</p>
+                                        </td>
+                                    </tr>
+                                <? endif ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Direct Referrals</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <th>Name</th>
+                                <th>Account No.</th>
+                            </thead>
+                            <tbody>
+                                <? if (count($account->getDirectReferrals()) > 0): ?>
+                                    <? foreach ($account->getDirectReferrals() as $referral): ?>
+                                        <tr>
+                                            <td><?= object('user.provider')->load($referral->user_id)->getName() ?></td>
+                                            <td><?= $referral->id ?></td>
+                                        </tr>
+                                    <? endforeach ?>
+                                <? else: ?>
+                                    <tr>
+                                        <td colspan="2">
+                                            <p class="text-center">No Direct Referrals</p>
+                                        </td>
+                                    </tr>
+                                <? endif ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </form>
+        </fieldset>
+    </div>
+
+    <div class="span3">
+        <fieldset class="form-vertical">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><?= translate('Details'); ?></h3>
+                </div>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td><label><strong><?= translate('Account No.') ?></strong></label></td>
+                            <td><?= $account->id ?></td>
+                        </tr>
+                        <tr>
+                            <td><label><strong><?= translate('Status'); ?></strong></label></td>
+                            <td><span class="label label-<?= ($account->status == 'closed') ? 'default' : 'info' ?>"><?= ucwords(escape($account->status)) ?></span></td>
+                        </tr>
+                        <tr>
+                            <td><label><strong><?= translate('Created By') ?></strong></label></td>
+                            <td><?= $account->getAuthor()->getName() ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
-            <div class="span3">
-                <legend><?= translate('Settings') ?></legend>
-                <fieldset class="form-vertical">
-
-                    <? if (object('user')->authorise('core.admin')): ?>
-                        <div class="control-group">
-                            <div class="control-label">
-                                <label><?= translate('Assign To'); ?></label>
-                            </div>
-                            <div class="controls">
-                                <?= helper('listbox.users', array('name' => 'assigned_to')) ?>
-                            </div>
-                        </div>
-                    <?php endif ?>
-
-                    <div class="control-group">
-                        <div class="control-label">
-                            <label><?= translate('Status'); ?></label>
-                        </div>
-                        <div class="controls">
-                            <?= helper('statuslist.optionList', array('name' => 'status', 'selected' => $ticket->status)) ?>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
-        </div>
-
-    </form>
+        </fieldset>
+    </div>
 </div>

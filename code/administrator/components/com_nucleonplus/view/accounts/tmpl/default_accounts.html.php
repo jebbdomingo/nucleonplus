@@ -16,7 +16,8 @@
         </td>
         <td class="deskman_table__title_field">
             <a href="<?= route('view=account&id='.$account->id); ?>">
-                <?= escape($account->title); ?></a>
+                <?= object('user.provider')->load($account->user_id)->getName() ?>
+            </a>
         </td>
         <td><?= $account->getAuthor()->getName() ?></td>
         <td>

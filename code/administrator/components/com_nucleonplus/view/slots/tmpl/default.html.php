@@ -21,7 +21,7 @@ defined('KOOWA') or die; ?>
 </ktml:module>
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="COM_NUCLEONPLUS_SUBMENU_ACCOUNTS" icon="task icon-stack">
+    <ktml:toolbar type="actionbar" title="COM_NUCLEONPLUS_SUBMENU_SLOTS" icon="task icon-stack">
 </ktml:module>
 
 <div class="nucleonplus-container">
