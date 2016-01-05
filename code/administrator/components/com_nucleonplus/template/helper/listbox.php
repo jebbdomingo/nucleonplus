@@ -126,4 +126,25 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
 
         return parent::optionlist($config);
     }
+
+    /**
+     * Provides a users select box.
+     *
+     * @param  array|KObjectConfig $config An optional configuration array.
+     * @return string The autocomplete users select box.
+     */
+    public function accounts($config = array())
+    {
+        $config = new KObjectConfigJson($config);
+        $config->append(array(
+            'model'        => 'accounts',
+            'name'         => 'account',
+            'value'        => 'id',
+            'label'        => 'account_name',
+            'sort'         => 'account_name',
+            'validate'     => false
+        ));
+
+        return $this->_autocomplete($config);
+    }
 }

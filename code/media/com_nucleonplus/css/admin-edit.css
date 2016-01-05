@@ -9,3 +9,7 @@
 #toolbar-account > #toolbar-close {
     display: none;
 }
+
+#toolbar-account > #toolbar-placeorder {
+    display: none;
+}

@@ -46,7 +46,7 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'id', 'title' => 'Account Owner')); ?>
                             </th>
                             <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'created_by', 'title' => 'Created By')); ?>
+                                <?= helper('grid.sort', array('column' => 'created_by_name', 'title' => 'Created By')); ?>
                             </th>
                             <th data-hide="phone,phablet">
                                 <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>
@@ -59,7 +59,7 @@ defined('KOOWA') or die; ?>
                         <?php else: ?>
                             <tr>
                                 <td colspan="4" align="center" style="text-align: center;">
-                                    <?= translate('No accounts found.') ?>
+                                    <?= translate('No account(s) found.') ?>
                                 </td>
                             </tr>
                         <? endif; ?>

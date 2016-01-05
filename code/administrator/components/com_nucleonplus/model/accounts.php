@@ -16,7 +16,8 @@ class ComNucleonplusModelAccounts extends KModelDatabase
 
         $this->getState()
             ->insert('status', 'string')
-            ->insert('parent_id', 'int')
+            ->insert('account_number', 'string')
+            ->insert('sponsor_id', 'string')
             ->insert('user_id', 'int');
     }
 
@@ -24,7 +25,7 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('status', 'nucleonplus_account_id'))
+                'searchable' => array('columns' => array('status', 'account_number'))
             )
         ));
 
@@ -41,8 +42,12 @@ class ComNucleonplusModelAccounts extends KModelDatabase
             $query->where('(tbl.status IN :status)')->bind(array('status' => (array) $state->status));
         }
 
-        if ($state->parent_id) {
-            $query->where('tbl.parent_id = :parent_id')->bind(['parent_id' => $state->parent_id]);
+        if ($state->account_number) {
+            $query->where('tbl.account_number = :account_number')->bind(['account_number' => $state->account_number]);
+        }
+
+        if ($state->sponsor_id) {
+            $query->where('tbl.sponsor_id = :sponsor_id')->bind(['sponsor_id' => $state->sponsor_id]);
         }
 
         if ($state->user_id) {

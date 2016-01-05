@@ -14,7 +14,7 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
     protected function _commandNew(KControllerToolbarCommand $command)
     {
         $command->href  = 'view=account&layout=form';
-        $command->label = 'Create new Account';
+        $command->label = 'Create New Account';
     }
 
     /**

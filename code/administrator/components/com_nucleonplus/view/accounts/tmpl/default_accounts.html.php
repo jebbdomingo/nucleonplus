@@ -19,7 +19,7 @@
                 <?= object('user.provider')->load($account->user_id)->getName() ?>
             </a>
         </td>
-        <td><?= $account->getAuthor()->getName() ?></td>
+        <td><?= $account->created_by_name ?></td>
         <td>
             <span class="label <?= ($account->status == 'closed') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($account->status)) ?></span>
         </td>

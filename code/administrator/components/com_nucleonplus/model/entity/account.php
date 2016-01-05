@@ -24,7 +24,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getDirectReferrals()
     {
-        return $this->getObject('com:nucleonplus.model.accounts')->parent_id($this->id)->fetch();
+        return $this->getObject('com:nucleonplus.model.accounts')->sponsor_id($this->account_number)->fetch();
     }
 
     /**
@@ -34,7 +34,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getPurchases()
     {
-        return $this->getObject('com:nucleonplus.model.purchases')->account_id($this->id)->fetch();
+        return $this->getObject('com:nucleonplus.model.orders')->account_number($this->account_number)->fetch();
     }
 
     public function save()
@@ -49,6 +49,8 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
 
                 return;
             }
+
+            $this->account_number = date('ymd') . $this->user_id;
         }
 
         parent::save();

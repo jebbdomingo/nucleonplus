@@ -40,7 +40,7 @@ defined('KOOWA') or die; ?>
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             Purchases
-                            <a class="btn btn-default" href="<?= route('layout=purchase-form&id='.$account->id) ?>" role="button">New Purchase</a>
+                            <a class="btn btn-default" href="<?= route('layout=order-form&id='.$account->id) ?>" role="button">New Purchase</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -52,19 +52,18 @@ defined('KOOWA') or die; ?>
                                 <th>Status</th>
                             </thead>
                             <tbody>
-                                <? if (count($account->getPurchases()) > 0): ?>
-                                    <? foreach ($account->getPurchases() as $purchase): ?>
+                                <? if (count($purchases = $account->getPurchases()) > 0): ?>
+                                    <? foreach ($purchases as $order): ?>
                                         <tr>
-                                            <td>
-                                            <?= object('com:nucleonplus.model.packages')->id($purchase->package_id)->fetch()->name ?></td>
-                                            <td><?= object('com:nucleonplus.model.packages')->id($purchase->package_id)->fetch()->slots ?></td>
-                                            <td><?= object('com:nucleonplus.model.packages')->id($purchase->package_id)->fetch()->price ?></td>
-                                            <td><?= ucwords($purchase->status) ?></td>
+                                            <td><?= $order->package_name ?></td>
+                                            <td><?= $order->package_slots ?></td>
+                                            <td><?= $order->package_price ?></td>
+                                            <td><?= ucwords($order->status) ?></td>
                                         </tr>
                                     <? endforeach ?>
                                 <? else: ?>
                                     <tr>
-                                        <td colspan="3">
+                                        <td colspan="4">
                                             <p class="text-center">No Purchase(s) Yet</p>
                                         </td>
                                     </tr>
@@ -89,7 +88,7 @@ defined('KOOWA') or die; ?>
                                     <? foreach ($account->getDirectReferrals() as $referral): ?>
                                         <tr>
                                             <td><?= object('user.provider')->load($referral->user_id)->getName() ?></td>
-                                            <td><?= $referral->id ?></td>
+                                            <td><?= $referral->account_number ?></td>
                                         </tr>
                                     <? endforeach ?>
                                 <? else: ?>
@@ -118,15 +117,18 @@ defined('KOOWA') or die; ?>
                     <tbody>
                         <tr>
                             <td><label><strong><?= translate('Account No.') ?></strong></label></td>
-                            <td><?= $account->id ?></td>
+                            <td><?= $account->account_number ?></td>
                         </tr>
                         <tr>
                             <td><label><strong><?= translate('Status'); ?></strong></label></td>
                             <td><span class="label label-<?= ($account->status == 'closed') ? 'default' : 'info' ?>"><?= ucwords(escape($account->status)) ?></span></td>
                         </tr>
                         <tr>
-                            <td><label><strong><?= translate('Created By') ?></strong></label></td>
-                            <td><?= $account->getAuthor()->getName() ?></td>
+                            <td><label><strong><?= translate('Created On') ?></strong></label></td>
+                            <td>
+                                <div><?= helper('date.humanize', array('date' => $account->created_on)) ?></div>
+                                <div><?= $account->created_on ?></div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

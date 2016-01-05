@@ -15,7 +15,12 @@ return array(
             'behaviors' => array(
                 'com:activities.controller.behavior.loggable'
             )
-        )
+        ),
+        'com://admin/nucleonplus.controller.order' => array(
+            'behaviors' => array(
+                'com:nucleonaccounting.controller.behavior.invoicable'
+            )
+        ),
     ),
 
     'aliases' => array()

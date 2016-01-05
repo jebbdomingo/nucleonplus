@@ -29,9 +29,9 @@ defined('KOOWA') or die; ?>
             <div class="span9">
                 <legend><?= translate('Details') ?></legend>
                 <fieldset class="form-vertical">
-                    <label>Sponsor</label>
+                    <label>Sponsor Account ID</label>
                     <div>
-                        <input type="text" name="parent_id" value="<?= $account->parent_id ?>" />
+                        <?= helper('listbox.accounts', array('name' => 'parent_id')) ?>
                     </div>
                 </fieldset>
                 <fieldset class="form-vertical">
