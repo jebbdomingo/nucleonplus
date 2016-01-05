@@ -66,26 +66,68 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
 
         for ($i=0; $i < $order->package_slots; $i++)
         {
-            $slot = $this->createSlot($context);
+            $slot            = $this->createSlot($context);
+            $this->slots[$i] = $slot;
 
-            $this->allocateSlot($slot);
+            // Match succeeding slots to earlier (unpaid) slots
+            $unpaidSlot = $this->getUnpaidSlot();
 
-            /*var_dump($slot->id);
-            echo '<br />';*/
+            // Make sure it's not matching to itself
+            if ($unpaidSlot->id == $slot->id) {
+                continue;
+            }
+
+            $this->allocateSlots($unpaidSlot, $slot);
         }
-
-        die('debug');
     }
 
-    private function allocateSlot(KControllerModellable $slot)
+    /**
+     * Allocate slots
+     *
+     * @param KModelEntityRow $unpaidSlot
+     * @param KModelEntityRow $slot
+     *
+     * @return void
+     */
+    private function allocateSlots(KModelEntityRow $unpaidSlot, KModelEntityRow $slot)
     {
-        $this->slots[$i] = $slot;
+        // Match the current slot to either left or right leg of the previous (unpaid) slot
+        if ($unpaidSlot && is_null($unpaidSlot->lf_slot_id)) {
+            $unpaidSlot->lf_slot_id = $slot->id;
+            $unpaidSlot->save();
 
-        foreach ($this->slots as $key => $slot) {
-            
+            $slot->consumed = 1;
+            $slot->save();
+        } elseif ($unpaidSlot && is_null($unpaidSlot->rt_slot_id)) {
+            $unpaidSlot->rt_slot_id = $slot->id;
+            $unpaidSlot->save();
+
+            $slot->consumed = 1;
+            $slot->save();
         }
     }
 
+    /**
+     * Get unpaid slot from set of slots
+     *
+     * @return KModelEntityRow
+     */
+    private function getUnpaidSlot()
+    {
+        foreach ($this->slots as $key => $slot) {
+            if (is_null($slot->lf_slot_id) || is_null($slot->rt_slot_id)) {
+                return $slot;
+            }
+        }
+    }
+
+    /**
+     * Slot factory
+     *
+     * @param KControllerContextInterface $context
+     *
+     * @return KModelEntityRow
+     */
     private function createSlot(KControllerContextInterface $context)
     {
         $controller = $this->getObject($this->_controller);
