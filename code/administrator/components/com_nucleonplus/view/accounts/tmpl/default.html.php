@@ -43,10 +43,13 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.checkall')?>
                             </th>
                             <th class="nucleonplus_table__title_field">
-                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'Account Owner')); ?>
+                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'Member Name')); ?>
                             </th>
                             <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'created_by_name', 'title' => 'Created By')); ?>
+                                <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
+                            </th>
+                            <th data-hide="phone,phablet">
+                                Sponsor
                             </th>
                             <th data-hide="phone,phablet">
                                 <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>

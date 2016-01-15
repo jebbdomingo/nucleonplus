@@ -47,4 +47,19 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         return $entity;
     }
+
+    /**
+     * Specialized save action, changing state by marking as paid
+     *
+     * @param   KControllerContextInterface $context A command context object
+     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
+     * 
+     * @return  KModelEntityInterface
+     */
+    protected function _actionMarkpaid(KControllerContextInterface $context)
+    {
+        $context->getRequest()->setData(['invoice_status' => 'paid']);
+
+        return parent::_actionEdit($context);
+    }
 }

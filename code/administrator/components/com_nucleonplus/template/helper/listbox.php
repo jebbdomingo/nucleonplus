@@ -23,20 +23,18 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ->append(array(
             'status' => array(
                 array('label' => 'New', 'value' => 'new'),
-                array('label' => 'Open', 'value' => 'open'),
-                array('label' => 'Pending', 'value' => 'pending'),
-                array('label' => 'Solved', 'value' => 'solved'),
+                array('label' => 'Active', 'value' => 'active'),
+                array('label' => 'Terminated', 'value' => 'terminated'),
                 array('label' => 'Closed', 'value' => 'closed')
             )
         ))
         ->append(array(
             'statusFilters' => array(
-                'all'     => 'All',
-                'new'     => 'New',
-                'open'    => 'Open',
-                'pending' => 'Pending',
-                'solved'  => 'Solved',
-                'closed'  => 'Closed'
+                'all'        => 'All',
+                'new'        => 'New',
+                'active'     => 'Active',
+                'terminated' => 'Terminated',
+                'closed'     => 'Closed'
             )
         ));
 

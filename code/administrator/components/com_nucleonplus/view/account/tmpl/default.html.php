@@ -27,43 +27,42 @@ defined('KOOWA') or die; ?>
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">
-                            <span class="label label-<?= ($account->status == 'closed') ? 'default' : 'info' ?>"><?= ucwords(escape($account->status)) ?></span>
-                            <?= object('user.provider')->load($account->user_id)->getName(); ?>
-                        </h3>
-                    </div>
-                    <div class="panel-body">
-                        <?= $account->note ?>
-                    </div>
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            Purchases
-                            <a class="btn btn-default" href="<?= route('layout=order-form&id='.$account->id) ?>" role="button">New Purchase</a>
+                            Orders
+                            <a class="btn btn-default" href="<?= route('layout=order-form&id='.$account->id) ?>" role="button">Buy Product Package</a>
                         </h3>
                     </div>
                     <div class="panel-body">
                         <table class="table table-striped">
                             <thead>
-                                <th>Name</th>
+                                <th>Order No.</th>
+                                <th>Product Package</th>
                                 <th>Slots</th>
                                 <th>Price</th>
-                                <th>Status</th>
+                                <th>Order Status</th>
+                                <th>Invoice Status</th>
+                                <th>Ordered On</th>
                             </thead>
                             <tbody>
                                 <? if (count($purchases = $account->getPurchases()) > 0): ?>
                                     <? foreach ($purchases as $order): ?>
                                         <tr>
+                                            <td>
+                                                <a href="<?= route('view=order&id='.$order->id) ?>"><?= $order->id ?></a>
+                                            </td>
                                             <td><?= $order->package_name ?></td>
                                             <td><?= $order->package_slots ?></td>
                                             <td><?= $order->package_price ?></td>
-                                            <td><?= ucwords($order->status) ?></td>
+                                            <td><span class="label label-<?= ($order->order_status == 'cancelled') ? 'default' : 'info' ?>"><?= ucwords(escape($order->order_status)) ?></span></td>
+                                            <td><span class="label label-<?= ($order->invoice_status == 'sent') ? 'default' : 'info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span></td>
+                                            <td>
+                                                <div><?= helper('date.humanize', array('date' => $order->created_on)) ?></div>
+                                                <div><?= $order->created_on ?></div> 
+                                            </td>
                                         </tr>
                                     <? endforeach ?>
                                 <? else: ?>
                                     <tr>
-                                        <td colspan="4">
+                                        <td colspan="7">
                                             <p class="text-center">No Purchase(s) Yet</p>
                                         </td>
                                     </tr>
@@ -103,6 +102,17 @@ defined('KOOWA') or die; ?>
                     </div>
                 </div>
 
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            Other Info.
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <?= $account->note ?>
+                    </div>
+                </div>
+
             </form>
         </fieldset>
     </div>
@@ -111,7 +121,7 @@ defined('KOOWA') or die; ?>
         <fieldset class="form-vertical">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><?= translate('Details'); ?></h3>
+                    <h3 class="panel-title"><?= translate('Account Summary'); ?></h3>
                 </div>
                 <table class="table">
                     <tbody>
@@ -120,11 +130,11 @@ defined('KOOWA') or die; ?>
                             <td><?= $account->account_number ?></td>
                         </tr>
                         <tr>
-                            <td><label><strong><?= translate('Status'); ?></strong></label></td>
+                            <td><label><strong><?= translate('Account Status'); ?></strong></label></td>
                             <td><span class="label label-<?= ($account->status == 'closed') ? 'default' : 'info' ?>"><?= ucwords(escape($account->status)) ?></span></td>
                         </tr>
                         <tr>
-                            <td><label><strong><?= translate('Created On') ?></strong></label></td>
+                            <td><label><strong><?= translate('Account Created On') ?></strong></label></td>
                             <td>
                                 <div><?= helper('date.humanize', array('date' => $account->created_on)) ?></div>
                                 <div><?= $account->created_on ?></div>

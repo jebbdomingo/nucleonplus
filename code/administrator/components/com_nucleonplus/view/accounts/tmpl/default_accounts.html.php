@@ -19,7 +19,12 @@
                 <?= object('user.provider')->load($account->user_id)->getName() ?>
             </a>
         </td>
-        <td><?= $account->created_by_name ?></td>
+        <td >
+            <a href="<?= route('view=account&id='.$account->id); ?>">
+                <?= $account->account_number ?>
+            </a>
+        </td>
+        <td><?= ($account->sponsor_id) ? $account->sponsor_id : '-' ?></td>
         <td>
             <span class="label <?= ($account->status == 'closed') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($account->status)) ?></span>
         </td>

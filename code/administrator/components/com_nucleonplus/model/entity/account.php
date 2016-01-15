@@ -43,16 +43,25 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
         if ($this->user_id && $this->isNew()) {
             $account = $this->getObject('com:nucleonplus.model.accounts')->user_id($this->user_id)->fetch();
 
+            // Check if an account if the same user id exists
             if ($account->id) {
                 $this->setStatusMessage($this->getObject('translator')->translate('An account already exist for this member'));
                 $this->setStatus(KDatabase::STATUS_FAILED);
 
                 return;
             }
-
-            $this->account_number = date('ymd') . $this->user_id;
         }
 
         parent::save();
+
+        // Generate and set account number
+        return $this->generateAccountNumber();
+    }
+
+    private function generateAccountNumber()
+    {
+        $this->account_number = date('ymd') . "-{$this->user_id}-{$this->getProperty('id')}";
+
+        return parent::save();
     }
 }

@@ -29,12 +29,6 @@ defined('KOOWA') or die; ?>
             <div class="span9">
                 <legend><?= translate('Details') ?></legend>
                 <fieldset class="form-vertical">
-                    <label>Sponsor Account ID</label>
-                    <div>
-                        <?= helper('listbox.accounts', array('name' => 'parent_id')) ?>
-                    </div>
-                </fieldset>
-                <fieldset class="form-vertical">
                     <div>
                         <label for="note"><?= translate('Note'); ?></label>
                         <div>
@@ -56,25 +50,14 @@ defined('KOOWA') or die; ?>
                 <legend><?= translate('Settings') ?></legend>
                 <fieldset class="form-vertical">
 
-                    <? if (is_null($account->id) && object('user')->authorise('core.admin')): ?>
-                        <div class="control-group">
-                            <div class="control-label">
-                                <label><?= translate('Account Owner'); ?></label>
-                            </div>
-                            <div class="controls">
-                                <?= helper('listbox.users', array('name' => 'user_id')) ?>
-                            </div>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <label><?= translate('Account No.'); ?></label>
                         </div>
-                    <?php else: ?>
-                        <div class="control-group">
-                            <div class="control-label">
-                                <label><?= translate('Account No.'); ?></label>
-                            </div>
-                            <div class="controls">
-                                <?= $account->id ?>
-                            </div>
+                        <div class="controls">
+                            <?= $account->account_number ?>
                         </div>
-                    <?php endif ?>
+                    </div>
 
                     <div class="control-group">
                         <div class="control-label">
