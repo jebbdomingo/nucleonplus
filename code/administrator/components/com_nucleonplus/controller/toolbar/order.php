@@ -26,8 +26,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
 
         $command->append(array(
             'attribs' => array(
-                'data-action'     => 'markpaid',
-                'data-novalidate' => 'novalidate' // This is needed for koowa-grid
+                'data-action' => 'markpaid'
             )
         ));
 
@@ -50,10 +49,53 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         parent::_commandCancel($command);
     }
 
+    protected function _commandProcessreward(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action'     => 'processreward'
+                //'data-novalidate' => 'novalidate' // This is needed for koowa-grid
+            )
+        ));
+
+        $command->label = 'Process Rewards';
+    }
+
+    protected function _afterBrowse(KControllerContextInterface $context)
+    {
+        parent::_afterBrowse($context);
+
+        $this->_addBrowseCommands($context);
+    }
+
     protected function _afterRead(KControllerContextInterface $context)
     {
         $this->_addInvoiceCommands($context);
         $this->_addReadCommands($context);
+    }
+
+    protected function _addBrowseCommands(KControllerContextInterface $context)
+    {
+        $controller = $this->getController();
+        $allowed    = true;
+
+        if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
+            $allowed = false;
+        }
+
+        if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('processreward', ['allowed' => $allowed]);
+        }
+
+        if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('markpaid', [
+                'allowed' => $allowed
+            ]);
+        }
     }
 
     /**
@@ -72,7 +114,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
             $allowed = false;
         }
 
-        $this->addCommand('cancel'  );
+        $this->addCommand('cancel');
     }
 
     /**
@@ -93,7 +135,10 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
 
         if ($controller->isEditable() && $controller->canSave() && $context->result->invoice_status <> 'paid')
         {
-            $this->addCommand('markpaid', ['allowed' => $allowed]);
+            $this->addCommand('markpaid', [
+                'allowed' => $allowed,
+                'attribs' => ['data-novalidate' => 'novalidate']
+            ]);
         }
     }
 }

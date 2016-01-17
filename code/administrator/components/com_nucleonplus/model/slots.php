@@ -8,24 +8,24 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusModelOrders extends KModelDatabase
+class ComNucleonplusModelSlots extends KModelDatabase
 {
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
 
         $this->getState()
-            ->insert('account_number', 'string')
+            ->insert('product_id', 'int')
             ;
     }
 
     protected function _initialize(KObjectConfig $config)
     {
-        $config->append(array(
+        /*$config->append(array(
             'behaviors' => array(
                 'searchable' => array('columns' => array('package_name', 'account_number'))
             )
-        ));
+        ));*/
 
         parent::_initialize($config);
     }
@@ -36,8 +36,8 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->account_number) {
-            $query->where('tbl.account_number = :account_number')->bind(['account_number' => $state->account_number]);
+        if ($state->product_id) {
+            $query->where('tbl.product_id = :product_id')->bind(['product_id' => $state->product_id]);
         }
     }
 }

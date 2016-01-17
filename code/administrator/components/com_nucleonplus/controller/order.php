@@ -62,4 +62,20 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         return parent::_actionEdit($context);
     }
+
+    /**
+     * Process Pay-outs
+     *
+     * @param KControllerContextInterface $context
+     *
+     * @return void
+     */
+    protected function _actionProcessreward(KControllerContextInterface $context)
+    {
+        $orders = $this->getObject('com:nucleonplus.model.orders')->fetch();
+
+        foreach ($orders as $order) {
+            $order->processReward();
+        }
+    }
 }

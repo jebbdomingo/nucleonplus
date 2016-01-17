@@ -24,6 +24,10 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
      */
     public function processReward()
     {
+        if ($this->payout) {
+            return false;
+        }
+
         $slots  = $this->getObject('com:nucleonplus.model.slots')->product_id($this->id)->fetch();
         $payout = 0;
         
@@ -38,7 +42,22 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
             }
         }
 
+        // var_dump($this->id);
+        // var_dump($payout);
+
         $this->payout = $payout;
-        //$this->save();
+        $this->save();
+    }
+
+    /**
+     * Get Account ID from the Account Number
+     *
+     * @return string
+     */
+    public function getAccountId()
+    {
+        $accountNumber = explode('-', $this->account_number);
+
+        return (int) array_pop($accountNumber);
     }
 }
