@@ -68,7 +68,7 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'product_column' => array('product_id', 'package_id'),
+            'product_column' => array('product_id', 'id'),
             'account_column' => array('account_id', 'account_number'),
             'controller'     => 'com:nucleonplus.controller.slot',
         ));
@@ -86,18 +86,18 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     protected function _afterMarkpaid(KControllerContextInterface $context)
     {
         $entity = $context->result; // Order entity
+        //var_dump($entity->id);die('debug');
         $order  = $this->getObject('com:nucleonplus.model.orders')->id($entity->id)->fetch();
 
         for ($i=0; $i < $order->package_slots; $i++)
         {
             $slot            = $this->createSlot($context);
             $this->slots[$i] = $slot;
+            $unpaidSlot      = $this->getOwnUnpaidSlot($this->slots);
 
             // Match succeeding slots to earlier (unpaid) slots
-            $unpaidSlot = $this->getOwnUnpaidSlot();
-
-            // Make sure it's not matching to itself
             if ($unpaidSlot->id == $slot->id) {
+                // Make sure it's not matching to itself
                 continue;
             }
 
@@ -136,11 +136,13 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     /**
      * Get member's own unpaid slot from set of slots
      *
+     * @param array $slots
+     * 
      * @return KModelEntityRow
      */
-    private function getOwnUnpaidSlot()
+    private function getOwnUnpaidSlot($slots)
     {
-        foreach ($this->slots as $key => $slot) {
+        foreach ($slots as $key => $slot) {
             if (is_null($slot->lf_slot_id) || is_null($slot->rt_slot_id)) {
                 return $slot;
             }
@@ -160,20 +162,31 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
         $slots = $this->getObject('com:nucleonplus.model.slots')->fetch();
 
         // Place the first slot from the set of slots of the member in the available left or right leg of the oldest slot in the rewards sytem using FIFO (First In First Out) rule
-        foreach ($slots as $slot) {
-            if (is_null($slot->lf_slot_id)) {
+        foreach ($slots as $slot)
+        {
+            if (is_null($slot->lf_slot_id))
+            {
                 $slot->lf_slot_id = $firstSlot->id;
                 $slot->save();
                 $firstSlot->consumed = 1;
                 $firstSlot->save();
                 break;
-            } elseif (is_null($slot->rt_slot_id)) {
+            }
+            elseif (is_null($slot->rt_slot_id))
+            {
                 $slot->rt_slot_id = $firstSlot->id;
                 $slot->save();
                 $firstSlot->consumed = 1;
                 $firstSlot->save();
                 break;
             }
+
+            // @todo check if slot is already qualified for payout
+            $order = $this->getObject('com:nucleonplus.model.order')->id($slot->product_id);
+            //var_dump($order->id);
+            //var_dump($order->package_name);
+            //die('debug');
+            //$order->processReward();
         }
     }
 
@@ -188,6 +201,9 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     {
         $controller = $this->getObject($this->_controller);
         $entity     = $context->result; // Order entity
+
+        //var_dump($entity->id);
+        //echo '<br />';
 
         $data['product_id'] = $this->getProductData($entity);
         $data['account_id'] = $this->getAccountData($entity);
