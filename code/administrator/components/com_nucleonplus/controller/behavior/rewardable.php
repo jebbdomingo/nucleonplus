@@ -157,41 +157,22 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
      *
      * @param KModelEntityRow $firstSlot The member's first slot in his set of slots based on his product package purchase
      *
-     * @return [type]          [description]
+     * @return void
      */
     private function placeSlot(KModelEntityRow $firstSlot)
     {
         // All the slots from the rewards system
-        $slots = $this->getObject('com:nucleonplus.model.slots')->fetch();
-
-        // Place the first slot from the set of slots of the member in the available left or right leg of the oldest slot in the rewards sytem using FIFO (First In First Out) rule
-        foreach ($slots as $slot)
+        if ($slots = $this->getObject('com:nucleonplus.model.slots')->account_id($firstSlot->account_id)->getUnpaidSlots())
         {
-            if ($slot->account_id == $firstSlot->account_id) {
-                continue;
-            }
-
-            if (is_null($slot->lf_slot_id))
-            {
-                $slot->lf_slot_id = $firstSlot->id;
-                $slot->save();
-                $firstSlot->consumed = 1;
-                $firstSlot->save();
-                break;
-            }
-            elseif (is_null($slot->rt_slot_id))
-            {
-                $slot->rt_slot_id = $firstSlot->id;
-                $slot->save();
-                $firstSlot->consumed = 1;
-                $firstSlot->save();
-                
-                // Process rewards of an order
-                $order = $this->getObject('com:nucleonplus.model.orders')->id($slot->product_id)->fetch();
-                $order->processReward();
-
-                break;
-            }
+            $slots->{$slots->available_leg} = $firstSlot->id;
+            $slots->save();
+            $firstSlot->consumed = 1;
+            $firstSlot->save();
+            
+            // Process rewards of an order
+            // @todo move to dedicated rewards processing method
+            $order = $this->getObject('com:nucleonplus.model.orders')->id($slots->product_id)->fetch();
+            $order->processReward();
         }
     }
 

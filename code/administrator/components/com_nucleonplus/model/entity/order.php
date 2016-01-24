@@ -20,7 +20,7 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     /**
      * Process reward, check if this order is ready for payout
      *
-     * @return array
+     * @return boolean|void
      */
     public function processReward()
     {
@@ -41,9 +41,6 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
                 $payout += 1100;
             }
         }
-
-        // var_dump($this->id);
-        // var_dump($payout);
 
         $this->payout = $payout;
         $this->save();
