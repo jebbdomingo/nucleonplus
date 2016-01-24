@@ -89,6 +89,7 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
 
         foreach ($entities as $entity)
         {
+            // @todo this is no longer needed as the $context->result is the Order entity itself
             $order  = $this->getObject('com:nucleonplus.model.orders')->id($entity->id)->fetch();
 
             for ($i=0; $i < $order->package_slots; $i++)
