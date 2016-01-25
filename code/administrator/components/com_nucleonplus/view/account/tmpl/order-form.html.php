@@ -33,7 +33,7 @@ defined('KOOWA') or die; ?>
                 <fieldset class="form-vertical">
                     <label>Choose a Package</label>
                     <div>
-                        <input type="hidden" name="account_number" value="<?= parameters()->account_number ?>" />
+                        <input type="hidden" name="account_id" value="<?= parameters()->id ?>" />
                         <?= helper('listbox.productList', array('name' => 'package_id')) ?>
                     </div>
                 </fieldset>

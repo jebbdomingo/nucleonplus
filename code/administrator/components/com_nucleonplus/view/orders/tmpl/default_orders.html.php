@@ -20,7 +20,7 @@
             </a>
         </td>
         <td>
-            <a href="<?= route('view=account&id='.$order->getAccountId()); ?>">
+            <a href="<?= route('view=account&id='.$order->account_id); ?>">
                 <?= $order->account_number ?>
             </a>
         </td>
@@ -29,7 +29,6 @@
                 <?= $order->package_name ?>
             </a>
         </td>
-        <td><?= $order->package_slots ?></td>
         <td>
             <?= helper('date.humanize', array('date' => $order->created_on)) ?>
             <br />
@@ -41,6 +40,8 @@
         <td>
             <span class="label <?= ($order->invoice_status == 'sent') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span>
         </td>
-        <td><?= ($order->payout) ? $order->payout : '-' ?></td>
+        <td>
+            <?= escape($order->payment_reference) ?>
+        </td>
     </tr>
 <? endforeach; ?>

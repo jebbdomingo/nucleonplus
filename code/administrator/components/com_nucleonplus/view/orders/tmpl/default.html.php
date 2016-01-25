@@ -52,10 +52,7 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'package_name', 'title' => 'Product Package')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'package_slots', 'title' => 'Slots')); ?>
-                            </th>
-                            <th>
-                                <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
+                                <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date Ordered')); ?>
                             </th>
                             <th data-hide="phone,phablet">
                                 <?= helper('grid.sort', array('column' => 'order_status', 'title' => 'Order Status')); ?>
@@ -63,8 +60,8 @@ defined('KOOWA') or die; ?>
                             <th data-hide="phone,phablet">
                                 <?= helper('grid.sort', array('column' => 'invoice_status', 'title' => 'Invoice Status')); ?>
                             </th>
-                            <th>
-                                <?= helper('grid.sort', array('column' => 'payout', 'title' => 'Pay-out')); ?>
+                            <th data-hide="phone,phablet">
+                                Payment Reference
                             </th>
                         </tr>
                     </thead>
@@ -73,7 +70,7 @@ defined('KOOWA') or die; ?>
                             <?= import('default_orders.html', ['orders' => $orders]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="9" align="center" style="text-align: center;">
+                                <td colspan="8" align="center" style="text-align: center;">
                                     <?= translate('No order(s) found.') ?>
                                 </td>
                             </tr>
@@ -81,7 +78,7 @@ defined('KOOWA') or die; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="9">
+                            <td colspan="8">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>

@@ -36,7 +36,6 @@ defined('KOOWA') or die; ?>
                             <thead>
                                 <th>Order No.</th>
                                 <th>Product Package</th>
-                                <th>Slots</th>
                                 <th>Price</th>
                                 <th>Order Status</th>
                                 <th>Invoice Status</th>
@@ -50,7 +49,6 @@ defined('KOOWA') or die; ?>
                                                 <a href="<?= route('view=order&id='.$order->id) ?>"><?= $order->id ?></a>
                                             </td>
                                             <td><?= $order->package_name ?></td>
-                                            <td><?= $order->package_slots ?></td>
                                             <td><?= $order->package_price ?></td>
                                             <td><span class="label label-<?= ($order->order_status == 'cancelled') ? 'default' : 'info' ?>"><?= ucwords(escape($order->order_status)) ?></span></td>
                                             <td><span class="label label-<?= ($order->invoice_status == 'sent') ? 'default' : 'info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span></td>
@@ -62,7 +60,7 @@ defined('KOOWA') or die; ?>
                                     <? endforeach ?>
                                 <? else: ?>
                                     <tr>
-                                        <td colspan="7">
+                                        <td colspan="6">
                                             <p class="text-center">No Purchase(s) Yet</p>
                                         </td>
                                     </tr>

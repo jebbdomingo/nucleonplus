@@ -30,7 +30,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
             )
         ));
 
-        $command->label = 'Confirm Payment & Allocate Slot(s)';
+        $command->label = 'Confirm Payment';
     }
 
     /**
@@ -49,18 +49,18 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         parent::_commandCancel($command);
     }
 
-    protected function _commandProcessreward(KControllerToolbarCommand $command)
+    protected function _commandProcessrebates(KControllerToolbarCommand $command)
     {
         $command->icon = 'icon-32-save';
 
         $command->append(array(
             'attribs' => array(
-                'data-action'     => 'processreward'
+                'data-action'     => 'processrebates'
                 //'data-novalidate' => 'novalidate' // This is needed for koowa-grid
             )
         ));
 
-        $command->label = 'Process Rewards';
+        $command->label = 'Process Rebates';
     }
 
     protected function _afterBrowse(KControllerContextInterface $context)
@@ -87,7 +87,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
 
         if ($controller->isEditable() && $controller->canSave())
         {
-            $this->addCommand('processreward', ['allowed' => $allowed]);
+            $this->addCommand('processrebates', ['allowed' => $allowed]);
         }
 
         if ($controller->isEditable() && $controller->canSave())

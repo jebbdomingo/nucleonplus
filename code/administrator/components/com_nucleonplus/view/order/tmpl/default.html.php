@@ -25,7 +25,7 @@ defined('KOOWA') or die; ?>
 
         <fieldset class="form-vertical">
 
-            <form method="post" class="-koowa-grid">
+            <form method="post" class="-koowa-form">
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -44,6 +44,16 @@ defined('KOOWA') or die; ?>
                             <tr>
                                 <td><label><strong><?= translate('Invoice Status'); ?></strong></label></td>
                                 <td><span class="label label-<?= ($order->invoice_status == 'sent') ? 'default' : 'info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><label><strong><?= translate('Payment Reference'); ?></strong></label></td>
+                                <td>
+                                    <? if ($order->invoice_status <> 'paid'): ?>
+                                        <textarea name="payment_reference" id="payment_reference"></textarea>
+                                    <? else: ?>
+                                        <?= $order->payment_reference ?>
+                                    <? endif ?>
+                                </td>
                             </tr>
                             <tr>
                                 <td><label><strong><?= translate('Created On') ?></strong></label></td>

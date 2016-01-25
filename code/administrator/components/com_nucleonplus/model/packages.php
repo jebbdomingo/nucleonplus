@@ -8,14 +8,14 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusModelOrders extends KModelDatabase
+class ComNucleonplusModelPackages extends KModelDatabase
 {
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
 
         $this->getState()
-            ->insert('account_id', 'int')
+            ->insert('reward_id', 'int')
             ;
     }
 
@@ -23,7 +23,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('package_name', 'account_id'))
+                'searchable' => array('columns' => array('name', 'reward_id'))
             )
         ));
 
@@ -35,14 +35,20 @@ class ComNucleonplusModelOrders extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('a.account_number')
+            ->columns('r.nucleonplus_reward_id AS reward_id')
+            ->columns('r.name AS reward_name')
+            ->columns('r.description AS reward_description')
+            ->columns('r.slots')
+            ->columns('r.prpv')
+            ->columns('r.drpv')
+            ->columns('r.irpv')
             ;
     }
 
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('a' => 'nucleonplus_accounts'), 'tbl.account_id = a.nucleonplus_account_id')
+            ->join(array('r' => 'nucleonplus_rewards'), 'tbl.reward_id = r.nucleonplus_reward_id')
         ;
 
         parent::_buildQueryJoins($query);
@@ -54,8 +60,8 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->account_id) {
-            $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
+        if ($state->reward_id) {
+            $query->where('tbl.reward_id = :reward_id')->bind(['reward_id' => $state->reward_id]);
         }
     }
 }

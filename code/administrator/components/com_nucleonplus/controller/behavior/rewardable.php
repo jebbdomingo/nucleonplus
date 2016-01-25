@@ -68,7 +68,7 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'product_column' => array('product_id', 'id'),
+            'product_column' => array('id', 'product_id'),
             'account_column' => array('account_id', 'account_number'),
             'controller'     => 'com:nucleonplus.controller.slot',
         ));
@@ -77,7 +77,7 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     }
 
     /**
-     * Create an entry to rewards system upon payment of invoice
+     * Create an entry to the Rewards system upon payment of the Order
      *
      * @param KControllerContextInterface $context
      *
@@ -85,113 +85,100 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
      */
     protected function _afterMarkpaid(KControllerContextInterface $context)
     {
-        $entities = $context->result; // Order entity
+        $orders = $context->result; // Order entity
 
-        foreach ($entities as $entity)
+        foreach ($orders as $order)
         {
-            // @todo this is no longer needed as the $context->result is the Order entity itself
-            $order  = $this->getObject('com:nucleonplus.model.orders')->id($entity->id)->fetch();
+            $package = $this->getObject('com:nucleonplus.model.packages')->id($order->package_id)->fetch();
+            $reward  = $this->createRebate($order, $package);
 
-            for ($i=0; $i < $order->package_slots; $i++)
-            {
-                $slot            = $this->createSlot($entity);
-                $this->slots[$i] = $slot;
-                $unpaidSlot      = $this->getOwnUnpaidSlot($this->slots);
+            // Create and organize member's own set of slots
+            $slot = $this->createOwnSlots($reward, $package->slots);
 
-                // Match succeeding slots to earlier (unpaid) slots
-                if ($unpaidSlot->id == $slot->id) {
-                    // Make sure it's not matching to itself
-                    continue;
-                }
-
-                $this->placeOwnSlots($unpaidSlot, $slot);
-            }
-
-            $this->placeSlot($this->slots[0]);
+            // Connect the member's primary slot to an available slot of other members in the rewards sytem
+            $this->connectToOtherSlot($slot);
         }
     }
 
     /**
-     * Allocate member's own slots
+     * Create a Member' Rebate entity
      *
-     * @param KModelEntityRow $unpaidSlot
+     * @param KModelEntityRow    $order
+     * @param KModelEntityRowset $package
+     *
+     * @return com:nucleonplus.model.rebates
+     */
+    private function createRebate(KModelEntityRow $order, KModelEntityRowset $package)
+    {
+        $controller = $this->getObject('com:nucleonplus.controller.rebate');
+
+        $data = array(
+            'product_id'  => $this->getProductData($order), // Order ID
+            'customer_id' => $this->getAccountData($order), // Member's Account ID
+            'reward_id'   => $package->reward_id,
+            'slots'       => $package->slots,
+            'prpv'        => $package->prpv,
+            'drpv'        => $package->drpv,
+            'irpv'        => $package->irpv
+        );
+
+        return $controller->add($data);
+    }
+
+    /**
+     * Create and organize own slots
+     *
+     * @param KModelEntityRow $reward
+     * @param integer         $num_slots
+     *
+     * @return KModelEntityRow Primary Slot
+     */
+    private function createOwnSlots($reward, $num_slots)
+    {
+        $slots = array();
+
+        for ($i=0; $i < $num_slots; $i++)
+        {
+            $slot             = $this->createSlot($reward);
+            $slots[$i]        = $slot;
+            $unpaidParentSlot = $this->getOwnUnpaidSlot($slots);
+
+            if ($unpaidParentSlot->id == $slot->id) {
+                // Make sure it's not matching to itself
+                continue;
+            }
+
+            // Match succeeding slots to earlier (unpaid) slots
+            $this->allocateOwnSlot($unpaidParentSlot, $slot);
+        }
+
+        return $slots[0];
+    }
+
+    /**
+     * Place member's own slots
+     *
+     * @param KModelEntityRow $unpaidParentSlot
      * @param KModelEntityRow $slot
      *
      * @return void
      */
-    private function placeOwnSlots(KModelEntityRow $unpaidSlot, KModelEntityRow $slot)
+    private function allocateOwnSlot(KModelEntityRow $unpaidParentSlot, KModelEntityRow $slot)
     {
         // Match the current slot to either left or right leg of the previous (unpaid) slot
-        if ($unpaidSlot && is_null($unpaidSlot->lf_slot_id)) {
-            // Place to left leg of parent slot
-            $unpaidSlot->lf_slot_id = $slot->id;
-            $unpaidSlot->save();
+        if ($unpaidParentSlot && is_null($unpaidParentSlot->lf_slot_id)) {
+            // Place to the left leg of the parent slot
+            $unpaidParentSlot->lf_slot_id = $slot->id;
+            $unpaidParentSlot->save();
             $slot->consumed = 1;
             $slot->save();
-        } elseif ($unpaidSlot && is_null($unpaidSlot->rt_slot_id)) {
-            // Place to right leg of parent slot
-            $unpaidSlot->rt_slot_id = $slot->id;
-            $unpaidSlot->save();
+        } elseif ($unpaidParentSlot && is_null($unpaidParentSlot->rt_slot_id)) {
+            // Place to the right leg of the parent slot
+            $unpaidParentSlot->rt_slot_id = $slot->id;
+            $unpaidParentSlot->save();
             $slot->consumed = 1;
             $slot->save();
         }
-    }
-
-    /**
-     * Get member's own unpaid slot from set of slots
-     *
-     * @param array $slots
-     * 
-     * @return KModelEntityRow
-     */
-    private function getOwnUnpaidSlot($slots)
-    {
-        foreach ($slots as $key => $slot) {
-            if (is_null($slot->lf_slot_id) || is_null($slot->rt_slot_id)) {
-                return $slot;
-            }
-        }
-    }
-
-    /**
-     * Place the member's first slot in the rewards system
-     *
-     * @param KModelEntityRow $firstSlot The member's first slot in his set of slots based on his product package purchase
-     *
-     * @return void
-     */
-    private function placeSlot(KModelEntityRow $firstSlot)
-    {
-        // All the slots from the rewards system
-        if ($slots = $this->getObject('com:nucleonplus.model.slots')->account_id($firstSlot->account_id)->getUnpaidSlots())
-        {
-            $slots->{$slots->available_leg} = $firstSlot->id;
-            $slots->save();
-            $firstSlot->consumed = 1;
-            $firstSlot->save();
-            
-            // Process rewards of an order
-            // @todo move to dedicated rewards processing method
-            $order = $this->getObject('com:nucleonplus.model.orders')->id($slots->product_id)->fetch();
-            $order->processReward();
-        }
-    }
-
-    /**
-     * Slot factory
-     *
-     * @param KModelEntityRow $entity
-     *
-     * @return KModelEntityRow
-     */
-    private function createSlot(KModelEntityRow $entity)
-    {
-        $controller = $this->getObject($this->_controller);
-
-        $data['product_id'] = $this->getProductData($entity);
-        $data['account_id'] = $this->getAccountData($entity);
-
-        return $controller->add($data);
     }
 
     /**
@@ -205,11 +192,11 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     {
         if (is_array($this->_product_column))
         {
-            foreach ($this->_product_column as $product)
+            foreach ($this->_product_column as $product_column)
             {
-                if ($object->{$product})
+                if ($object->{$product_column})
                 {
-                    return $object->{$product};
+                    return $object->{$product_column};
                     break;
                 }
             }
@@ -240,5 +227,61 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
         }
         elseif ($object->{$this->_account_column}) return $object->{$this->_account_column};
         else return '#' . $object->id;
+    }
+
+    /**
+     * Get member's own unpaid slot from set of slots
+     *
+     * @param array $slots
+     * 
+     * @return KModelEntityRow
+     */
+    private function getOwnUnpaidSlot($slots)
+    {
+        foreach ($slots as $key => $slot) {
+            if (is_null($slot->lf_slot_id) || is_null($slot->rt_slot_id)) {
+                return $slot;
+            }
+        }
+    }
+
+    /**
+     * Connect the member's primary slot to an available slot of other members in the rewards sytem
+     *
+     * @param KModelEntityRow $slot The member's first slot in his set of slots based on his product package purchase
+     *
+     * @return void
+     */
+    private function connectToOtherSlot(KModelEntityRow $slot)
+    {
+        // All the slots from the rewards system
+        if ($slots = $this->getObject('com:nucleonplus.model.slots')->rebate_id($slot->rebate_id)->getUnpaidSlots())
+        {
+            $slots->{$slots->available_leg} = $slot->id;
+            $slots->save();
+            $slot->consumed = 1;
+            $slot->save();
+            
+            // Process member rebates
+            // @todo move to dedicated rewards processing method
+            $rebate = $this->getObject('com:nucleonplus.model.rebates')->id($slots->rebate_id)->fetch();
+            $rebate->processRebate();
+        }
+    }
+
+    /**
+     * Slot factory
+     *
+     * @param KModelEntityRow $reward
+     *
+     * @return KModelEntityRow
+     */
+    private function createSlot(KModelEntityRow $reward)
+    {
+        $controller = $this->getObject($this->_controller);
+
+        $data['rebate_id'] = $reward->id;
+
+        return $controller->add($data);
     }
 }

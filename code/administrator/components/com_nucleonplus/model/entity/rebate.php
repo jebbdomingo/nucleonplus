@@ -10,51 +10,42 @@
  */
 
 /**
- * Order Entity.
+ * Member's Rebate Entity.
  *
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
  * @package Component\Nucelonplus
  */
-class ComNucleonplusModelEntityOrder extends KModelEntityRow
+class ComNucleonplusModelEntityRebate extends KModelEntityRow
 {
     /**
      * Process reward, check if this order is ready for payout
      *
      * @return boolean|void
      */
-    public function processReward()
+    public function processRebate()
     {
-        if ($this->payout) {
-            return false;
+        if ($this->payout > 0) {
+            return;
         }
 
-        $slots  = $this->getObject('com:nucleonplus.model.slots')->product_id($this->id)->fetch();
+        $slots  = $this->getObject('com:nucleonplus.model.slots')->rebate_id($this->id)->fetch();
         $payout = 0;
         
         foreach ($slots as $slot)
         {
-            if (is_null($slot->lf_slot_id) || is_null($slot->rt_slot_id)) {
-                $payout = null;
-
+            if ($slot->lf_slot_id == 0 || $slot->rt_slot_id == 0) {
+                $payout = 0;
                 break;
             } else {
-                $payout += 1100;
+                $leftSlot = $this->getObject('com:nucleonplus.model.slots')->id($slot->lf_slot_id)->fetch();
+                $payout += $leftSlot->prpv;
+
+                $rightSlot = $this->getObject('com:nucleonplus.model.slots')->id($slot->rt_slot_id)->fetch();
+                $payout += $rightSlot->prpv;
             }
         }
 
         $this->payout = $payout;
         $this->save();
-    }
-
-    /**
-     * Get Account ID from the Account Number
-     *
-     * @return string
-     */
-    public function getAccountId()
-    {
-        $accountNumber = explode('-', $this->account_number);
-
-        return (int) array_pop($accountNumber);
     }
 }

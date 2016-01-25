@@ -34,7 +34,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getPurchases()
     {
-        return $this->getObject('com:nucleonplus.model.orders')->account_number($this->account_number)->fetch();
+        return $this->getObject('com:nucleonplus.model.orders')->account_id($this->id)->fetch();
     }
 
     public function save()

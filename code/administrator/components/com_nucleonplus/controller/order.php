@@ -34,7 +34,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         // Copy the package data in the order table
         $context->request->data->package_name  = $package->name;
         $context->request->data->package_price = $package->price;
-        $context->request->data->package_slots = $package->slots;
 
         $entity = parent::_actionAdd($context);
 
@@ -58,24 +57,25 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     protected function _actionMarkpaid(KControllerContextInterface $context)
     {
-        $context->getRequest()->setData(['invoice_status' => 'paid']);
+        // Mark as Paid
+        $context->request->data->add(['invoice_status' => 'paid']);
 
         return parent::_actionEdit($context);
     }
 
     /**
-     * Process Pay-outs
+     * Process Members Rebates
      *
      * @param KControllerContextInterface $context
      *
      * @return void
      */
-    protected function _actionProcessreward(KControllerContextInterface $context)
+    protected function _actionProcessrebates(KControllerContextInterface $context)
     {
-        $orders = $this->getObject('com:nucleonplus.model.orders')->fetch();
+        $rebates = $this->getObject('com:nucleonplus.model.rebates')->fetch();
 
-        foreach ($orders as $order) {
-            $order->processReward();
+        foreach ($rebates as $rebate) {
+            $rebate->processRebate();
         }
     }
 }
