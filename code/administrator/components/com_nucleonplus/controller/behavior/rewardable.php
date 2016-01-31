@@ -9,28 +9,14 @@
  */
 
 /**
- * Used by the invoice controller to create entries in the marketing system upon payment of invoice
+ * Used by the order controller to create entries in the rewards system upon payment of order
  *
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
  */
 class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEditable
 {
     /**
-     * The name of the column to use as the product column in the slot entry.
-     *
-     * @var string
-     */
-    protected $_product_column;
-
-    /**
-     * The name of the column to use as the account column in the slot entry.
-     *
-     * @var string
-     */
-    protected $_account_column;
-
-    /**
-     * Invoice controller identifier.
+     * Slot controller identifier.
      *
      * @param string|KObjectIdentifierInterface
      */
@@ -68,9 +54,7 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'product_column' => array('id', 'product_id'),
-            'account_column' => array('account_id', 'account_number'),
-            'controller'     => 'com:nucleonplus.controller.slot',
+            'controller' => 'com:nucleonplus.controller.slot',
         ));
 
         parent::_initialize($config);
@@ -90,10 +74,9 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
         foreach ($orders as $order)
         {
             $package = $this->getObject('com:nucleonplus.model.packages')->id($order->package_id)->fetch();
-            $reward  = $this->createRebate($order, $package);
 
             // Create and organize member's own set of slots
-            $slot = $this->createOwnSlots($reward, $package->slots);
+            $slot = $this->createOwnSlots($order, $package->slots);
 
             // Connect the member's primary slot to an available slot of other members in the rewards sytem
             $this->connectToOtherSlot($slot);
@@ -101,45 +84,20 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     }
 
     /**
-     * Create a Member' Rebate entity
-     *
-     * @param KModelEntityRow    $order
-     * @param KModelEntityRowset $package
-     *
-     * @return com:nucleonplus.model.rebates
-     */
-    private function createRebate(KModelEntityRow $order, KModelEntityRowset $package)
-    {
-        $controller = $this->getObject('com:nucleonplus.controller.rebate');
-
-        $data = array(
-            'product_id'  => $this->getProductData($order), // Order ID
-            'customer_id' => $this->getAccountData($order), // Member's Account ID
-            'reward_id'   => $package->reward_id,
-            'slots'       => $package->slots,
-            'prpv'        => $package->prpv,
-            'drpv'        => $package->drpv,
-            'irpv'        => $package->irpv
-        );
-
-        return $controller->add($data);
-    }
-
-    /**
      * Create and organize own slots
      *
-     * @param KModelEntityRow $reward
+     * @param KModelEntityRow $order
      * @param integer         $num_slots
      *
      * @return KModelEntityRow Primary Slot
      */
-    private function createOwnSlots($reward, $num_slots)
+    private function createOwnSlots($order, $num_slots)
     {
         $slots = array();
 
         for ($i=0; $i < $num_slots; $i++)
         {
-            $slot             = $this->createSlot($reward);
+            $slot             = $this->createSlot($order);
             $slots[$i]        = $slot;
             $unpaidParentSlot = $this->getOwnUnpaidSlot($slots);
 
@@ -153,6 +111,22 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
         }
 
         return $slots[0];
+    }
+
+    /**
+     * Slot factory
+     *
+     * @param KModelEntityRow $order
+     *
+     * @return KModelEntityRow
+     */
+    private function createSlot(KModelEntityRow $order)
+    {
+        $controller = $this->getObject($this->_controller);
+
+        $data['rebate_id'] = $order->_rebate_id;
+
+        return $controller->add($data);
     }
 
     /**
@@ -179,54 +153,6 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
             $slot->consumed = 1;
             $slot->save();
         }
-    }
-
-    /**
-     * Get the product data based from the predefined set of columns
-     *
-     * @param KModelEntityInterface $object
-     *
-     * @return integer|string
-     */
-    private function getProductData(KModelEntityInterface $object)
-    {
-        if (is_array($this->_product_column))
-        {
-            foreach ($this->_product_column as $product_column)
-            {
-                if ($object->{$product_column})
-                {
-                    return $object->{$product_column};
-                    break;
-                }
-            }
-        }
-        elseif ($object->{$this->_product_column}) return $object->{$this->_product_column};
-        else return '#' . $object->id;
-    }
-
-    /**
-     * Get the account data based from the predefined set of columns
-     *
-     * @param KModelEntityInterface $object
-     *
-     * @return integer|string
-     */
-    private function getAccountData(KModelEntityInterface $object)
-    {
-        if (is_array($this->_account_column))
-        {
-            foreach ($this->_account_column as $account)
-            {
-                if ($object->{$account})
-                {
-                    return $object->{$account};
-                    break;
-                }
-            }
-        }
-        elseif ($object->{$this->_account_column}) return $object->{$this->_account_column};
-        else return '#' . $object->id;
     }
 
     /**
@@ -267,21 +193,5 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
             $rebate = $this->getObject('com:nucleonplus.model.rebates')->id($slots->rebate_id)->fetch();
             $rebate->processRebate();
         }
-    }
-
-    /**
-     * Slot factory
-     *
-     * @param KModelEntityRow $reward
-     *
-     * @return KModelEntityRow
-     */
-    private function createSlot(KModelEntityRow $reward)
-    {
-        $controller = $this->getObject($this->_controller);
-
-        $data['rebate_id'] = $reward->id;
-
-        return $controller->add($data);
     }
 }

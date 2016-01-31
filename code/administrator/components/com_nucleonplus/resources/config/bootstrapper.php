@@ -18,7 +18,8 @@ return array(
         ),
         'com://admin/nucleonplus.controller.order' => array(
             'behaviors' => array(
-                'com:nucleonplus.controller.behavior.rewardable'
+                'com:nucleonplus.controller.behavior.rewardable',
+                'com:nucleonplus.controller.behavior.rebatable'
             ),
         ),
     ),

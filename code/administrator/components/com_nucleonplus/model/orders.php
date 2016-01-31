@@ -23,7 +23,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('package_name', 'account_id'))
+                'searchable' => array('columns' => array('nucleonplus_order_id', 'package_name', 'account_number'))
             )
         ));
 
