@@ -79,6 +79,20 @@ class ComNucleonplusControllerBehaviorRebatable extends KControllerBehaviorEdita
     }
 
     /**
+     * Update the corresponding Rebate entity for the Order
+     *
+     * @param KControllerContextInterface $context
+     *
+     * @return mixed If a handler breaks, returns the break condition. Returns the result of the handler otherwise.
+     */
+    protected function _afterMarkpaid(KControllerContextInterface $context)
+    {
+        foreach($this->__queue as $rebate) {
+            $rebate->updateStatus($context->result);
+        }
+    }
+
+    /**
      * Attach a type of Rebate system.
      *
      * @param mixed $rebateType An object that implements ObjectInterface, ObjectIdentifier object or valid identifier

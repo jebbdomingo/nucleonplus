@@ -23,6 +23,27 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     protected $_controller;
 
     /**
+     * Slot model identifier.
+     *
+     * @param string|KObjectIdentifierInterface
+     */
+    protected $_model;
+
+    /**
+     * Identifier of the Rebate model
+     *
+     * @var string
+     */
+    protected $_rebate_model;
+
+    /**
+     * The status of the item 
+     *
+     * @var string
+     */
+    protected $_rebate_active_status;
+
+    /**
      * Slots
      *
      * @var array
@@ -38,10 +59,10 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     {
         parent::__construct($config);
 
-        $this->_product_column = KObjectConfig::unbox($config->product_column);
-        $this->_account_column = KObjectConfig::unbox($config->account_column);
-
-        $this->_controller = $config->controller;
+        $this->_controller           = $config->controller;
+        $this->_model                = $config->model;
+        $this->_rebate_model         = $config->rebate_model;
+        $this->_rebate_active_status = $config->rebate_active_status;
     }
 
     /**
@@ -54,7 +75,12 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'controller' => 'com:nucleonplus.controller.slot',
+            'controller'           => 'com:nucleonplus.controller.slot',
+            'model'                => 'com:nucleonplus.model.slots',
+            'rebate_model'         => 'com:nucleonplus.model.rebates',
+            'rebate_active_status' => 'active', // Rebate's active status
+            'item_model'           => 'com:nucleonplus.model.packages', // Product or Item object's identifier
+            'item_status_column'   => 'invoice_status', // Order or Item's payment status column
         ));
 
         parent::_initialize($config);
@@ -73,10 +99,14 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
 
         foreach ($orders as $order)
         {
-            $package = $this->getObject('com:nucleonplus.model.packages')->id($order->package_id)->fetch();
+            $rebate = $this->getObject($this->_rebate_model)->product_id($order->id)->fetch();
+
+            if ($rebate->status == $this->_rebate_active_status) {
+                continue;
+            }
 
             // Create and organize member's own set of slots
-            $slot = $this->createOwnSlots($order, $package->slots);
+            $slot = $this->createOwnSlots($order, $rebate->slots);
 
             // Connect the member's primary slot to an available slot of other members in the rewards sytem
             $this->connectToOtherSlot($slot);
@@ -144,14 +174,12 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
             // Place to the left leg of the parent slot
             $unpaidParentSlot->lf_slot_id = $slot->id;
             $unpaidParentSlot->save();
-            $slot->consumed = 1;
-            $slot->save();
+            $slot->consume();
         } elseif ($unpaidParentSlot && is_null($unpaidParentSlot->rt_slot_id)) {
             // Place to the right leg of the parent slot
             $unpaidParentSlot->rt_slot_id = $slot->id;
             $unpaidParentSlot->save();
-            $slot->consumed = 1;
-            $slot->save();
+            $slot->consume();
         }
     }
 
@@ -181,16 +209,15 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEdit
     private function connectToOtherSlot(KModelEntityRow $slot)
     {
         // All the slots from the rewards system
-        if ($slots = $this->getObject('com:nucleonplus.model.slots')->rebate_id($slot->rebate_id)->getUnpaidSlots())
+        if ($unpaidSlot = $this->getObject($this->_model)->rebate_id($slot->rebate_id)->getUnpaidSlots())
         {
-            $slots->{$slots->available_leg} = $slot->id;
-            $slots->save();
-            $slot->consumed = 1;
-            $slot->save();
+            $unpaidSlot->{$unpaidSlot->available_leg} = $slot->id;
+            $unpaidSlot->save();
+            $slot->consume();
             
             // Process member rebates
             // @todo move to dedicated rewards processing method
-            $rebate = $this->getObject('com:nucleonplus.model.rebates')->id($slots->rebate_id)->fetch();
+            $rebate = $this->getObject($this->_rebate_model)->id($unpaidSlot->rebate_id)->fetch();
             $rebate->processRebate();
         }
     }

@@ -8,14 +8,15 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusModelPackages extends KModelDatabase
+class ComNucleonplusModelRebates extends KModelDatabase
 {
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
 
         $this->getState()
-            ->insert('reward_id', 'int')
+            ->insert('status', 'string')
+            ->insert('product_id', 'int')
             ;
     }
 
@@ -23,7 +24,7 @@ class ComNucleonplusModelPackages extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('name', 'reward_id'))
+                'searchable' => array('columns' => array('status', 'product_id'))
             )
         ));
 
@@ -36,8 +37,8 @@ class ComNucleonplusModelPackages extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->reward_id) {
-            $query->where('tbl._reward_id = :reward_id')->bind(['reward_id' => $state->reward_id]);
+        if ($state->product_id) {
+            $query->where('tbl.product_id = :product_id')->bind(['product_id' => $state->product_id]);
         }
     }
 }
