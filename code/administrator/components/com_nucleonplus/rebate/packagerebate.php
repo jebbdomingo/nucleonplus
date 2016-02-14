@@ -11,6 +11,16 @@
 
 /**
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
+ *
+ * The Package Rebate package requires the following data structure/model
+ *
+ * The Product or Item Entity should be Rewardable
+ * should have a reference to an existing Reward
+ * requires: reward_id fk column
+ *
+ * The Order Entity should be Rebatable
+ * contains a reference to a Rewardable Product or Item
+ * contains a reference to a Customer
  */
 class ComNucleonplusRebatePackagerebate extends KObject
 {
@@ -110,12 +120,12 @@ class ComNucleonplusRebatePackagerebate extends KObject
             'controller'         => 'com:nucleonplus.controller.rebate',
             'default_status'     => 'pending', // Default rebate status
             'active_status'      => 'active', // Active rebate status
-            'product_column'     => ['id', 'product_id'],
-            'account_column'     => ['account_id', 'account_number'],
-            'item_model'         => 'com:nucleonplus.model.packages', // Order or Item object's identifier
-            'item_fk_column'     => 'package_id', // Order or Item's foreign key in Order table
-            'item_status_column' => 'invoice_status', // Order or Item's payment status column
-            'item_status'        => 'paid', // The payment status of the Order or Item to activate this rebate
+            'product_column'     => ['id', 'product_id'], // ID of the Product or Item that is rewardable
+            'account_column'     => ['account_id', 'account_number'], // ID of the customer in the order
+            'item_model'         => 'com:nucleonplus.model.packages', // Rewardable Product or Item object's identifier
+            'item_fk_column'     => 'package_id', // Product or Item's foreign key in the Order table
+            'item_status_column' => 'invoice_status', // Order payment status column
+            'item_status'        => 'paid', // The payment status of the Order to activate this rebate with
         ]);
 
         parent::_initialize($config);
@@ -124,7 +134,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
     /**
      * Create a Rebate.
      *
-     * @param KModelEntityInterface $object  The activity object on which the action is performed.
+     * @param KModelEntityInterface $object  The Order object
      */
     public function create(KModelEntityInterface $object)
     {
@@ -132,7 +142,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
         $item       = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
      
         $data = array(
-            'product_id'  => $this->_getProductData($object), // Order ID
+            'product_id'  => $this->_getProductData($object), // Item or Product ID
             'customer_id' => $this->_getAccountData($object), // Member's Account ID
             'status'      => $this->_default_status,
             'reward_id'   => $item->_reward_id,
@@ -148,7 +158,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
     /**
      * Update a Rebate.
      *
-     * @param KModelEntityInterface $object  The activity object on which the action is performed.
+     * @param KModelEntityInterface $object The order object.
      *
      * @return void
      */
@@ -162,7 +172,6 @@ class ComNucleonplusRebatePackagerebate extends KObject
             $rebate->status = $this->_active_status;
             $rebate->save();
         }
-
     }
 
     /**

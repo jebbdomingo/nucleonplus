@@ -97,7 +97,7 @@ class ComNucleonplusControllerBehaviorRebatable extends KControllerBehaviorEdita
      *
      * @param mixed $rebateType An object that implements ObjectInterface, ObjectIdentifier object or valid identifier
      *                      string.
-     * @return ComNucleonplusControllerBehaviorRebatable
+     * @return this
      */
     public function attachRebateType($rebateType, $config = array())
     {
