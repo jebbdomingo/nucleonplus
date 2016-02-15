@@ -13,7 +13,7 @@
  *
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
  */
-class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorEditable
+class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorAbstract
 {
     /**
      * Rebate types queue.
