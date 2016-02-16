@@ -35,6 +35,9 @@ class ComNucleonplusModelSlots extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
+            ->columns('rb.product_id')
+            ->columns('rb.customer_id')
+            ->columns('rb.slots')
             ->columns('rb.prpv')
             ->columns('rb.drpv')
             ->columns('rb.irpv')

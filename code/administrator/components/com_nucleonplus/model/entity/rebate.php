@@ -18,7 +18,7 @@
 class ComNucleonplusModelEntityRebate extends KModelEntityRow
 {
     /**
-     * Process reward, check if this order is ready for payout
+     * Process member's rebates
      *
      * @return boolean|void
      */
@@ -33,10 +33,13 @@ class ComNucleonplusModelEntityRebate extends KModelEntityRow
         
         foreach ($slots as $slot)
         {
-            if ($slot->lf_slot_id == 0 || $slot->rt_slot_id == 0) {
+            if ($slot->lf_slot_id == 0 || $slot->rt_slot_id == 0)
+            {
                 $payout = 0;
                 break;
-            } else {
+            }
+            else
+            {
                 $leftSlot = $this->getObject('com:nucleonplus.model.slots')->id($slot->lf_slot_id)->fetch();
                 $payout += $leftSlot->prpv;
 
@@ -45,7 +48,16 @@ class ComNucleonplusModelEntityRebate extends KModelEntityRow
             }
         }
 
-        $this->payout = $payout;
+        $data = [
+            'order_id'       => $slots->product_id,
+            'account_number' => $slots->customer_id,
+            'reward_type'    => 'pr', // Product Rebates
+            'credit'         => $payout
+        ];
+        
+        $this->getObject('com:nucleonplus.controller.transaction')->add($data);
+
+        $this->status = 'ready';
         $this->save();
     }
 }

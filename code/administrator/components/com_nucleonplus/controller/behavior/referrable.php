@@ -52,7 +52,7 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'controller'     => 'com:nucleonplus.controller.referral',
+            'controller'     => 'com:nucleonplus.controller.transaction',
             'unilevel_count' => 10
         ));
 
@@ -94,10 +94,10 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
         }
 
         $data = [
-            'order_id'      => $order->id,
-            'sponsor_id'    => $account->sponsor_id,
-            'referral_type' => 'dr', // Direct Referral
-            'points'        => ($order->_rebate_drpv * $order->_rebate_slots)
+            'order_id'       => $order->id,
+            'account_number' => $account->sponsor_id,
+            'reward_type'    => 'dr', // Direct Referral
+            'credit'         => ($order->_rebate_drpv * $order->_rebate_slots)
         ];
 
         $controller->add($data);
@@ -128,10 +128,10 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
         $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->account_number($directReferrer->sponsor_id)->fetch();
 
         $data = [
-            'order_id'      => $order->id,
-            'sponsor_id'    => $indirectReferrer->sponsor_id,
-            'referral_type' => 'ir', // Indirect Referral
-            'points'        => ($order->_rebate_irpv * $order->_rebate_slots)
+            'order_id'       => $order->id,
+            'account_number' => $indirectReferrer->account_number,
+            'reward_type'    => 'ir', // Indirect Referral
+            'credit'         => ($order->_rebate_irpv * $order->_rebate_slots)
         ];
 
         $controller->add($data);
@@ -142,10 +142,10 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
             $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->account_number($indirectReferrer->sponsor_id)->fetch();
 
             $data = [
-                'order_id'      => $order->id,
-                'sponsor_id'    => $indirectReferrer->sponsor_id,
-                'referral_type' => 'ir', // Indirect Referral
-                'points'        => ($order->_rebate_irpv * $order->_rebate_slots)
+                'order_id'       => $order->id,
+                'account_number' => $indirectReferrer->account_number,
+                'reward_type'    => 'ir', // Indirect Referral
+                'credit'         => ($order->_rebate_irpv * $order->_rebate_slots)
             ];
             
             $controller->add($data);
