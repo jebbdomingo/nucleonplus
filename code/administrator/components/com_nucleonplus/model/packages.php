@@ -15,7 +15,7 @@ class ComNucleonplusModelPackages extends KModelDatabase
         parent::__construct($config);
 
         $this->getState()
-            ->insert('reward_id', 'int')
+            ->insert('rewardpackage_id', 'int')
             ;
     }
 
@@ -23,7 +23,7 @@ class ComNucleonplusModelPackages extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('name', 'reward_id'))
+                'searchable' => array('columns' => array('name', 'rewardpackage_id'))
             )
         ));
 
@@ -36,8 +36,8 @@ class ComNucleonplusModelPackages extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->reward_id) {
-            $query->where('tbl._reward_id = :reward_id')->bind(['reward_id' => $state->reward_id]);
+        if ($state->rewardpackage_id) {
+            $query->where('tbl._rewardpackage_id = :rewardpackage_id')->bind(['rewardpackage_id' => $state->rewardpackage_id]);
         }
     }
 }

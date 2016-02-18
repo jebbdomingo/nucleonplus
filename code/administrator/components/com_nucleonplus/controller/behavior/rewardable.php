@@ -9,7 +9,7 @@
  */
 
 /**
- * Used by the order controller to create entries in the rewards system upon payment of order
+ * Used by the Order controller to create pending Rebate in the rewards system upon placing of the order
  *
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
  */
@@ -65,26 +65,35 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorAbst
     }
 
     /**
-     * Create an entry to the Rewards system upon payment of the Order
+     * Create a corresponding Rebate entity for the Order
      *
      * @param KControllerContextInterface $context
      *
-     * @return void
+     * @return mixed If a handler breaks, returns the break condition. Returns the result of the handler otherwise.
      */
-    protected function _afterMarkpaid(KControllerContextInterface $context)
+    protected function _afterAdd(KControllerContextInterface $context)
     {
-        $orders = $context->result; // Order entity
-
-        foreach ($orders as $order)
-        {
-            foreach($this->__queue as $reward) {
-                $reward->create($order);
-            }
+        foreach($this->__queue as $rebate) {
+            $rebate->create($context->result);
         }
     }
 
     /**
-     * Attach a type of Reward system.
+     * Update the corresponding Reward entity for the Order
+     *
+     * @param KControllerContextInterface $context
+     *
+     * @return mixed If a handler breaks, returns the break condition. Returns the result of the handler otherwise.
+     */
+    protected function _afterMarkpaid(KControllerContextInterface $context)
+    {
+        foreach($this->__queue as $rebate) {
+            $rebate->updateStatus($context->result);
+        }
+    }
+
+    /**
+     * Attach a type of Rebate system.
      *
      * @param mixed $rewardType An object that implements ObjectInterface, ObjectIdentifier object or valid identifier
      *                      string.
@@ -93,7 +102,7 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorAbst
     public function attachRewardType($rewardType, $config = array())
     {
         $identifier = $this->getIdentifier($rewardType);
-        
+
         if (!$this->__queue->hasIdentifier($identifier))
         {
             $rewardType = $this->getObject($identifier);

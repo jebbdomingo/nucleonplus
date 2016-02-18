@@ -16,7 +16,7 @@ class ComNucleonplusDatabaseTablePackages extends KDatabaseTableAbstract
             'behaviors' => array(
                 'modifiable',
                 'creatable',
-                'rewardable'
+                'rewardpackagable'
             ),
             'filters' => array(
             )

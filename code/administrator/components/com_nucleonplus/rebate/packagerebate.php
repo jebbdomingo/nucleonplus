@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Nucleon Plus
  *
@@ -10,82 +9,46 @@
  */
 
 /**
+ * Used by the order controller to create entries in the rewards system upon payment of order
+ *
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
- *
- * The Package Rebate package requires the following data structure/model
- *
- * The Product or Item Entity should be Rewardable
- * should have a reference to an existing Reward
- * requires: reward_id fk column
- *
- * The Order Entity should be Rebatable
- * contains a reference to a Rewardable Product or Item
- * contains a reference to a Customer
  */
 class ComNucleonplusRebatePackagerebate extends KObject
 {
     /**
-     * The name of the column to use as the product column in the Rebate entity.
-     *
-     * @var string
-     */
-    protected $_product_column;
-
-    /**
-     * The name of the column to use as the account column in the Rebate entity.
-     *
-     * @var string
-     */
-    protected $_account_column;
-
-    /**
-     * Rebate controller identifier.
+     * Slot controller identifier.
      *
      * @param string|KObjectIdentifierInterface
      */
     protected $_controller;
 
     /**
-     * Rebate default status.
+     * Slot model identifier.
      *
-     * @param string
+     * @param string|KObjectIdentifierInterface
      */
-    protected $_default_status;
+    protected $_model;
 
     /**
-     * Rebate active status.
-     *
-     * @param string
-     */
-    protected $_active_status;
-
-    /**
-     * Identifier of the Item model
+     * Identifier of the Reward model
      *
      * @var string
      */
-    protected $_item_model;
+    protected $_reward_model;
 
     /**
-     * The name of the Item's foreign key in the order's table
+     * The status of the reward 
      *
      * @var string
      */
-    protected $_item_fk_column;
+    protected $_reward_active_status;
 
     /**
-     * The payment status column of the Item or Order
+     * Slots
      *
-     * @var string
+     * @var array
      */
-    protected $_item_status_column;
-
-    /**
-     * The payment status of the Item or Order
-     *
-     * @var string
-     */
-    protected $_item_status;
+    private $slots = array();
 
     /**
      * Constructor.
@@ -96,15 +59,10 @@ class ComNucleonplusRebatePackagerebate extends KObject
     {
         parent::__construct($config);
 
-        $this->_controller         = $config->controller;
-        $this->_default_status     = $config->default_status;
-        $this->_active_status      = $config->active_status;
-        $this->_product_column     = KObjectConfig::unbox($config->product_column);
-        $this->_account_column     = KObjectConfig::unbox($config->account_column);
-        $this->_item_model         = $config->item_model;
-        $this->_item_fk_column     = $config->item_fk_column;
-        $this->_item_status_column = $config->item_status_column;
-        $this->_item_status        = $config->item_status;
+        $this->_controller           = $config->controller;
+        $this->_model                = $config->model;
+        $this->_reward_model         = $config->reward_model;
+        $this->_reward_active_status = $config->reward_active_status;
     }
 
     /**
@@ -116,109 +74,147 @@ class ComNucleonplusRebatePackagerebate extends KObject
      */
     protected function _initialize(KObjectConfig $config)
     {
-        $config->append([
-            'controller'         => 'com:nucleonplus.controller.rebate',
-            'default_status'     => 'pending', // Default rebate status
-            'active_status'      => 'active', // Active rebate status
-            'product_column'     => ['id', 'product_id'], // ID of the Product or Item that is rewardable
-            'account_column'     => ['account_id', 'account_number'], // ID of the customer in the order
-            'item_model'         => 'com:nucleonplus.model.packages', // Rewardable Product or Item object's identifier
-            'item_fk_column'     => 'package_id', // Product or Item's foreign key in the Order table
-            'item_status_column' => 'invoice_status', // Order payment status column
-            'item_status'        => 'paid', // The payment status of the Order to activate this rebate with
-        ]);
+        $config->append(array(
+            'controller'           => 'com:nucleonplus.controller.slot',
+            'model'                => 'com:nucleonplus.model.slots',
+            'reward_model'         => 'com:nucleonplus.model.rewards',
+            'reward_active_status' => 'active', // Reward's active status
+            'item_model'           => 'com:nucleonplus.model.packages', // Product or Item object's identifier
+            'item_status_column'   => 'invoice_status', // Order or Item's payment status column
+        ));
 
         parent::_initialize($config);
     }
 
     /**
-     * Create a Rebate.
+     * Create corresponding slots in the Rewards system
      *
-     * @param KModelEntityInterface $object  The Order object
+     * @param KModelEntityInterface $object
+     *
+     * @return void
      */
     public function create(KModelEntityInterface $object)
     {
+        $reward = $this->getObject($this->_reward_model)->product_id($object->id)->fetch();
+
+        if ($reward->status == $this->_reward_active_status) {
+            return false;
+        }
+
+
+        // Create and organize member's own set of slots
+        $slot = $this->createOwnSlots($object, $reward->slots);
+
+        // Connect the member's primary slot to an available slot of other members in the rewards sytem
+        $this->connectToOtherSlot($slot);
+    }
+
+    /**
+     * Create and organize own slots
+     *
+     * @param KModelEntityRow $order
+     * @param integer         $num_slots
+     *
+     * @return KModelEntityRow Primary Slot
+     */
+    private function createOwnSlots($order, $num_slots)
+    {
+        $slots = array();
+
+        for ($i=0; $i < $num_slots; $i++)
+        {
+            $slot             = $this->createSlot($order);
+            $slots[$i]        = $slot;
+            $unpaidParentSlot = $this->getOwnUnpaidSlot($slots);
+
+            if ($unpaidParentSlot->id == $slot->id) {
+                // Make sure it's not matching to itself
+                continue;
+            }
+
+            // Match succeeding slots to earlier (unpaid) slots
+            $this->allocateOwnSlot($unpaidParentSlot, $slot);
+        }
+
+        return $slots[0];
+    }
+
+    /**
+     * Slot factory
+     *
+     * @param KModelEntityRow $order
+     *
+     * @return KModelEntityRow
+     */
+    private function createSlot(KModelEntityRow $order)
+    {
         $controller = $this->getObject($this->_controller);
-        $item       = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
-     
-        $data = array(
-            'product_id'  => $this->_getProductData($object), // Item or Product ID
-            'customer_id' => $this->_getAccountData($object), // Member's Account ID
-            'status'      => $this->_default_status,
-            'reward_id'   => $item->_reward_id,
-            'slots'       => $item->_reward_slots,
-            'prpv'        => $item->_reward_prpv,
-            'drpv'        => $item->_reward_drpv,
-            'irpv'        => $item->_reward_irpv
-        );
+
+        $data['reward_id'] = $order->_reward_id;
 
         return $controller->add($data);
     }
 
     /**
-     * Update a Rebate.
+     * Place member's own slots
      *
-     * @param KModelEntityInterface $object The order object.
+     * @param KModelEntityRow $unpaidParentSlot
+     * @param KModelEntityRow $slot
      *
      * @return void
      */
-    public function updateStatus(KModelEntityInterface $object)
+    private function allocateOwnSlot(KModelEntityRow $unpaidParentSlot, KModelEntityRow $slot)
     {
-        $controller = $this->getObject($this->_controller);
-
-        if ($object->{$this->_item_status_column} == $this->_item_status)
-        {
-            $rebate = $this->getObject('com:nucleonplus.model.rebates')->product_id($object->id)->fetch();
-            $rebate->status = $this->_active_status;
-            $rebate->save();
+        // Match the current slot to either left or right leg of the previous (unpaid) slot
+        if ($unpaidParentSlot && is_null($unpaidParentSlot->lf_slot_id)) {
+            // Place to the left leg of the parent slot
+            $unpaidParentSlot->lf_slot_id = $slot->id;
+            $unpaidParentSlot->save();
+            $slot->consume();
+        } elseif ($unpaidParentSlot && is_null($unpaidParentSlot->rt_slot_id)) {
+            // Place to the right leg of the parent slot
+            $unpaidParentSlot->rt_slot_id = $slot->id;
+            $unpaidParentSlot->save();
+            $slot->consume();
         }
     }
 
     /**
-     * Get the product data based from the predefined set of columns
+     * Get member's own unpaid slot from set of slots
      *
-     * @param KModelEntityInterface $object
-     *
-     * @return integer|string
+     * @param array $slots
+     * 
+     * @return KModelEntityRow
      */
-    private function _getProductData(KModelEntityInterface $object)
+    private function getOwnUnpaidSlot($slots)
     {
-        if (is_array($this->_product_column))
-        {
-            foreach ($this->_product_column as $product_column)
-            {
-                if ($object->{$product_column})
-                {
-                    return $object->{$product_column};
-                    break;
-                }
+        foreach ($slots as $key => $slot) {
+            if (is_null($slot->lf_slot_id) || is_null($slot->rt_slot_id)) {
+                return $slot;
             }
         }
-        elseif ($object->{$this->_product_column}) return $object->{$this->_product_column};
-        else return '#' . $object->id;
     }
 
     /**
-     * Get the account data based from the predefined set of columns
+     * Connect the member's primary slot to an available slot of other members in the rewards sytem
      *
-     * @param KModelEntityInterface $object
+     * @param KModelEntityRow $slot The member's first slot in his set of slots based on his product package purchase
      *
-     * @return integer|string
+     * @return void
      */
-    private function _getAccountData(KModelEntityInterface $object)
+    private function connectToOtherSlot(KModelEntityRow $slot)
     {
-        if (is_array($this->_account_column))
+        // All the slots from the rewards system
+        if ($unpaidSlot = $this->getObject($this->_model)->reward_id($slot->reward_id)->getUnpaidSlots())
         {
-            foreach ($this->_account_column as $account)
-            {
-                if ($object->{$account})
-                {
-                    return $object->{$account};
-                    break;
-                }
-            }
+            $unpaidSlot->{$unpaidSlot->available_leg} = $slot->id;
+            $unpaidSlot->save();
+            $slot->consume();
+            
+            // Process member rebates
+            // @todo move to dedicated rewards processing method
+            $reward = $this->getObject($this->_reward_model)->id($unpaidSlot->reward_id)->fetch();
+            $reward->processRebate();
         }
-        elseif ($object->{$this->_account_column}) return $object->{$this->_account_column};
-        else return '#' . $object->id;
     }
 }

@@ -15,7 +15,7 @@ class ComNucleonplusModelSlots extends KModelDatabase
         parent::__construct($config);
 
         $this->getState()
-            ->insert('rebate_id', 'int')
+            ->insert('reward_id', 'int')
             ;
     }
 
@@ -47,7 +47,7 @@ class ComNucleonplusModelSlots extends KModelDatabase
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('rb' => 'nucleonplus_rebates'), 'tbl.rebate_id = rb.nucleonplus_rebate_id')
+            ->join(array('rb' => 'nucleonplus_rewards'), 'tbl.reward_id = rb.nucleonplus_reward_id')
         ;
 
         parent::_buildQueryJoins($query);
@@ -59,8 +59,8 @@ class ComNucleonplusModelSlots extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->rebate_id) {
-            $query->where('tbl.rebate_id = :rebate_id')->bind(['rebate_id' => $state->rebate_id]);
+        if ($state->reward_id) {
+            $query->where('tbl.reward_id = :reward_id')->bind(['reward_id' => $state->reward_id]);
         }
     }
 
@@ -76,14 +76,14 @@ class ComNucleonplusModelSlots extends KModelDatabase
         $table = $this->getObject('com://admin/nucleonplus.database.table.slots');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_slots AS tbl')
-            ->where('tbl.rebate_id != :rebate_id')->bind(['rebate_id' => $state->rebate_id])
+            ->where('tbl.reward_id != :reward_id')->bind(['reward_id' => $state->reward_id])
             ->where('tbl.lf_slot_id = 0 OR tbl.rt_slot_id = 0')
         ;
 
         $slots = $table->select($query);
 
         // Double check that the member's slot will not be placed in his own slot since it is done in Rewardable::placeOwnSlots()
-        if ($slots->rebate_id == $state->rebate_id) {
+        if ($slots->reward_id == $state->reward_id) {
             return null;
         }
 

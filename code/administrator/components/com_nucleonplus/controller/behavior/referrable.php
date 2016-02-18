@@ -94,10 +94,10 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
         }
 
         $data = [
-            'order_id'       => $order->id,
-            'account_number' => $account->sponsor_id,
-            'reward_type'    => 'dr', // Direct Referral
-            'credit'         => ($order->_rebate_drpv * $order->_rebate_slots)
+            'reward_id'   => $order->_reward_id,
+            'account_id'  => $account->getIdFromSponsor(),
+            'reward_type' => 'dr', // Direct Referral
+            'credit'      => ($order->_reward_drpv * $order->_reward_slots)
         ];
 
         $controller->add($data);
@@ -119,19 +119,19 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
             return null;
         }
 
-        $directReferrer = $this->getObject('com:nucleonplus.model.accounts')->account_number($account->sponsor_id)->fetch();
+        $directReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($account->getIdFromSponsor())->fetch();
 
         if (is_null($directReferrer->sponsor_id)) {
             return null;
         }
 
-        $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->account_number($directReferrer->sponsor_id)->fetch();
+        $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($directReferrer->getIdFromSponsor())->fetch();
 
         $data = [
-            'order_id'       => $order->id,
-            'account_number' => $indirectReferrer->account_number,
-            'reward_type'    => 'ir', // Indirect Referral
-            'credit'         => ($order->_rebate_irpv * $order->_rebate_slots)
+            'reward_id'   => $order->_reward_id,
+            'account_id'  => $indirectReferrer->id,
+            'reward_type' => 'ir', // Indirect Referral
+            'credit'      => ($order->_reward_irpv * $order->_reward_slots)
         ];
 
         $controller->add($data);
@@ -139,13 +139,13 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
         // Try to get referrers up to 10th level
         for ($x = 0; $x < ($this->_unilevel_count - 1); $x++)
         {
-            $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->account_number($indirectReferrer->sponsor_id)->fetch();
+            $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($indirectReferrer->getIdFromSponsor())->fetch();
 
             $data = [
-                'order_id'       => $order->id,
-                'account_number' => $indirectReferrer->account_number,
-                'reward_type'    => 'ir', // Indirect Referral
-                'credit'         => ($order->_rebate_irpv * $order->_rebate_slots)
+                'reward_id'   => $order->_reward_id,
+                'account_id'  => $indirectReferrer->id,
+                'reward_type' => 'ir', // Indirect Referral
+                'credit'      => ($order->_reward_irpv * $order->_reward_slots)
             ];
             
             $controller->add($data);

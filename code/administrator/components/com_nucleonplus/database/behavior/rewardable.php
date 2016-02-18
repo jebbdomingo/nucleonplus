@@ -26,13 +26,14 @@ class ComNucleonplusDatabaseBehaviorRewardable extends KDatabaseBehaviorAbstract
     {
         $context->query
             ->columns(array('_reward_id'          => '_reward.nucleonplus_reward_id'))
-            ->columns(array('_reward_name'        => '_reward.name'))
-            ->columns(array('_reward_description' => '_reward.description'))
+            ->columns(array('_reward_customer_id' => '_reward.customer_id'))
+            ->columns(array('_reward_reward_id'   => '_reward.reward_id'))
+            ->columns(array('_reward_status'      => '_reward.status'))
             ->columns(array('_reward_slots'       => '_reward.slots'))
             ->columns(array('_reward_prpv'        => '_reward.prpv'))
             ->columns(array('_reward_drpv'        => '_reward.drpv'))
             ->columns(array('_reward_irpv'        => '_reward.irpv'))
-            ->join(array('_reward' => 'nucleonplus_rewards'), 'tbl.reward_id = _reward.nucleonplus_reward_id')
+            ->join(array('_reward' => 'nucleonplus_rewards'), 'tbl.nucleonplus_order_id = _reward.product_id')
         ;
     }
 }

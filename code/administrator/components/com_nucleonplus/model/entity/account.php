@@ -37,6 +37,11 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
         return $this->getObject('com:nucleonplus.model.orders')->account_id($this->id)->fetch();
     }
 
+    /**
+     * Save
+     *
+     * @return KModelEntityRow
+     */
     public function save()
     {
         // Only one account is allowed for each user
@@ -55,13 +60,52 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
         parent::save();
 
         // Generate and set account number
-        return $this->generateAccountNumber();
+        return $this->_generateAccountNumber();
     }
 
-    private function generateAccountNumber()
+    /**
+     * Generate account number
+     *
+     * @return KModelEntityRow
+     */
+    private function _generateAccountNumber()
     {
         $this->account_number = date('ymd') . "-{$this->user_id}-{$this->getProperty('id')}";
 
         return parent::save();
+    }
+
+    /**
+     * Get the Account ID from the Account Number
+     *
+     * @return integer
+     */
+    public function getIdFromAccountNumber()
+    {
+        return $this->_extractIdFromNumber($this->account_number);
+    }
+
+    /**
+     * Get the Account ID from the Sponsor Account Number
+     *
+     * @return integer
+     */
+    public function getIdFromSponsor()
+    {
+        return $this->_extractIdFromNumber($this->sponsor_id);
+    }
+
+    /**
+     * Extract the Account ID from the Account Number
+     *
+     * @param string $accountNumber
+     *
+     * @return integer
+     */
+    private function _extractIdFromNumber($accountNumber)
+    {
+        $accountNumber = explode('-', $accountNumber);
+        
+        return (int) array_pop($accountNumber);
     }
 }

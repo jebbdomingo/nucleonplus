@@ -9,7 +9,7 @@
  */
 
 /**
- * Used by the Order controller to create pending Rebate in the rewards system upon placing of the order
+ * Used by the order controller to create entries in the rewards system upon payment of order
  *
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
  */
@@ -65,30 +65,24 @@ class ComNucleonplusControllerBehaviorRebatable extends KControllerBehaviorAbstr
     }
 
     /**
-     * Create a corresponding Rebate entity for the Order
+     * Create an entry to the Rewards system upon payment of the Order
      *
      * @param KControllerContextInterface $context
      *
-     * @return mixed If a handler breaks, returns the break condition. Returns the result of the handler otherwise.
-     */
-    protected function _afterAdd(KControllerContextInterface $context)
-    {
-        foreach($this->__queue as $rebate) {
-            $rebate->create($context->result);
-        }
-    }
-
-    /**
-     * Update the corresponding Rebate entity for the Order
-     *
-     * @param KControllerContextInterface $context
-     *
-     * @return mixed If a handler breaks, returns the break condition. Returns the result of the handler otherwise.
+     * @return void
      */
     protected function _afterMarkpaid(KControllerContextInterface $context)
     {
-        foreach($this->__queue as $rebate) {
-            $rebate->updateStatus($context->result);
+        $orders = $context->result; // Order entity
+
+        foreach ($orders as $order)
+        {
+            foreach($this->__queue as $rebate)
+            {
+                if (!$rebate->create($order)) {
+                    continue;
+                }
+            }
         }
     }
 
@@ -102,7 +96,7 @@ class ComNucleonplusControllerBehaviorRebatable extends KControllerBehaviorAbstr
     public function attachRebateType($rebateType, $config = array())
     {
         $identifier = $this->getIdentifier($rebateType);
-
+        
         if (!$this->__queue->hasIdentifier($identifier))
         {
             $rebateType = $this->getObject($identifier);

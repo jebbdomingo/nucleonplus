@@ -70,12 +70,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      *
      * @return void
      */
-    protected function _actionProcessrebates(KControllerContextInterface $context)
+    protected function _actionProcessrewards(KControllerContextInterface $context)
     {
-        $rebates = $this->getObject('com:nucleonplus.model.rebates')->fetch();
+        $rewards = $this->getObject('com:nucleonplus.model.rewards')->fetch();
 
-        foreach ($rebates as $rebate) {
-            $rebate->processRebate();
+        foreach ($rewards as $reward) {
+            $reward->processRebate();
         }
     }
 }
