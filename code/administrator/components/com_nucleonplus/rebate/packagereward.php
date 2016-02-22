@@ -25,39 +25,39 @@
 class ComNucleonplusRebatePackagereward extends KObject
 {
     /**
-     * The name of the column to use as the product column in the Rebate entity.
+     * The name of the column to use as the product column in the Reward entity.
      *
      * @var string
      */
-    protected $_product_column;
+    protected $_product_id_column;
 
     /**
-     * The name of the column to use as the account column in the Rebate entity.
+     * The name of the column to use as the product name column in the Reward entity.
      *
      * @var string
      */
-    protected $_account_column;
+    protected $_product_name_column;
 
     /**
-     * Rebate controller identifier.
+     * The name of the column to use as the account column in the Reward entity.
+     *
+     * @var string
+     */
+    protected $_account_id_column;
+
+    /**
+     * Reward controller identifier.
      *
      * @param string|KObjectIdentifierInterface
      */
     protected $_controller;
 
     /**
-     * Rebate default status.
+     * Reward default status.
      *
      * @param string
      */
     protected $_default_status;
-
-    /**
-     * Rebate active status.
-     *
-     * @param string
-     */
-    protected $_active_status;
 
     /**
      * Identifier of the Item model
@@ -74,20 +74,6 @@ class ComNucleonplusRebatePackagereward extends KObject
     protected $_item_fk_column;
 
     /**
-     * The payment status column of the Item or Order
-     *
-     * @var string
-     */
-    protected $_item_status_column;
-
-    /**
-     * The payment status of the Item or Order
-     *
-     * @var string
-     */
-    protected $_item_status;
-
-    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -96,15 +82,13 @@ class ComNucleonplusRebatePackagereward extends KObject
     {
         parent::__construct($config);
 
-        $this->_controller         = $config->controller;
-        $this->_default_status     = $config->default_status;
-        $this->_active_status      = $config->active_status;
-        $this->_product_column     = KObjectConfig::unbox($config->product_column);
-        $this->_account_column     = KObjectConfig::unbox($config->account_column);
-        $this->_item_model         = $config->item_model;
-        $this->_item_fk_column     = $config->item_fk_column;
-        $this->_item_status_column = $config->item_status_column;
-        $this->_item_status        = $config->item_status;
+        $this->_controller          = $config->controller;
+        $this->_default_status      = $config->default_status;
+        $this->_product_id_column   = KObjectConfig::unbox($config->product_id_column);
+        $this->_product_name_column = KObjectConfig::unbox($config->product_name_column);
+        $this->_account_id_column   = KObjectConfig::unbox($config->account_id_column);
+        $this->_item_model          = $config->item_model;
+        $this->_item_fk_column      = $config->item_fk_column;
     }
 
     /**
@@ -117,15 +101,14 @@ class ComNucleonplusRebatePackagereward extends KObject
     protected function _initialize(KObjectConfig $config)
     {
         $config->append([
-            'controller'         => 'com:nucleonplus.controller.reward',
-            'default_status'     => 'pending', // Default rebate status
-            'active_status'      => 'active', // Active rebate status
-            'product_column'     => ['id', 'product_id'], // ID of the Product or Item that is rewardable
-            'account_column'     => ['account_id', 'account_number'], // ID of the customer in the order
-            'item_model'         => 'com:nucleonplus.model.packages', // Rewardable Product or Item object's identifier
-            'item_fk_column'     => 'package_id', // Product or Item's foreign key in the Order table
-            'item_status_column' => 'invoice_status', // Order payment status column
-            'item_status'        => 'paid', // The payment status of the Order to activate this rebate with
+            'controller'          => 'com:nucleonplus.controller.reward',
+            'default_status'      => 'pending', // Default rebate status
+            'product_id_column'   => ['id', 'product_id'], // ID of the Product or Item that is rewardable
+            'product_name_column' => ['package_name', 'name'], // Name of the Product or Item that is rewardable
+            'account_id_column'   => ['account_id', 'account_number'], // ID of the customer in the order
+            'item_model'          => 'com:nucleonplus.model.packages', // Rewardable Product or Item object's identifier
+            'item_fk_column'      => 'package_id', // Product or Item's foreign key in the Order table
+            'item_status'         => 'paid', // The payment status of the Order to activate this rebate with
         ]);
 
         parent::_initialize($config);
@@ -140,38 +123,20 @@ class ComNucleonplusRebatePackagereward extends KObject
     {
         $controller = $this->getObject($this->_controller);
         $item       = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
-     
+
         $data = array(
-            'product_id'  => $this->_getProductData($object), // Item or Product ID
-            'customer_id' => $this->_getAccountData($object), // Member's Account ID
-            'status'      => $this->_default_status,
-            'reward_id'   => $item->_rewardpackage_id,
-            'slots'       => $item->_rewardpackage_slots,
-            'prpv'        => $item->_rewardpackage_prpv,
-            'drpv'        => $item->_rewardpackage_drpv,
-            'irpv'        => $item->_rewardpackage_irpv
+            'customer_id'      => $this->_getAccountData($object), // Member's Account ID
+            'product_id'       => $this->_getProductId($object), // Item or Product ID
+            'product_name'     => $this->_getProductName($object), // Item or Product Name
+            'status'           => $this->_default_status,
+            'rewardpackage_id' => $item->_rewardpackage_id,
+            'slots'            => $item->_rewardpackage_slots,
+            'prpv'             => $item->_rewardpackage_prpv,
+            'drpv'             => $item->_rewardpackage_drpv,
+            'irpv'             => $item->_rewardpackage_irpv
         );
 
         return $controller->add($data);
-    }
-
-    /**
-     * Update a Reward.
-     *
-     * @param KModelEntityInterface $object The order object.
-     *
-     * @return void
-     */
-    public function updateStatus(KModelEntityInterface $object)
-    {
-        $controller = $this->getObject($this->_controller);
-
-        if ($object->{$this->_item_status_column} == $this->_item_status)
-        {
-            $rebate = $this->getObject('com:nucleonplus.model.rewards')->product_id($object->id)->fetch();
-            $rebate->status = $this->_active_status;
-            $rebate->save();
-        }
     }
 
     /**
@@ -181,11 +146,11 @@ class ComNucleonplusRebatePackagereward extends KObject
      *
      * @return integer|string
      */
-    private function _getProductData(KModelEntityInterface $object)
+    private function _getProductId(KModelEntityInterface $object)
     {
-        if (is_array($this->_product_column))
+        if (is_array($this->_product_id_column))
         {
-            foreach ($this->_product_column as $product_column)
+            foreach ($this->_product_id_column as $product_column)
             {
                 if ($object->{$product_column})
                 {
@@ -194,7 +159,31 @@ class ComNucleonplusRebatePackagereward extends KObject
                 }
             }
         }
-        elseif ($object->{$this->_product_column}) return $object->{$this->_product_column};
+        elseif ($object->{$this->_product_id_column}) return $object->{$this->_product_id_column};
+        else return '#' . $object->id;
+    }
+
+    /**
+     * Get the product's name based from the predefined set of columns
+     *
+     * @param KModelEntityInterface $object
+     *
+     * @return integer|string
+     */
+    private function _getProductName(KModelEntityInterface $object)
+    {
+        if (is_array($this->_product_name_column))
+        {
+            foreach ($this->_product_name_column as $product_column)
+            {
+                if ($object->{$product_column})
+                {
+                    return $object->{$product_column};
+                    break;
+                }
+            }
+        }
+        elseif ($object->{$this->_product_name_column}) return $object->{$this->_product_name_column};
         else return '#' . $object->id;
     }
 
@@ -207,9 +196,9 @@ class ComNucleonplusRebatePackagereward extends KObject
      */
     private function _getAccountData(KModelEntityInterface $object)
     {
-        if (is_array($this->_account_column))
+        if (is_array($this->_account_id_column))
         {
-            foreach ($this->_account_column as $account)
+            foreach ($this->_account_id_column as $account)
             {
                 if ($object->{$account})
                 {
@@ -218,7 +207,7 @@ class ComNucleonplusRebatePackagereward extends KObject
                 }
             }
         }
-        elseif ($object->{$this->_account_column}) return $object->{$this->_account_column};
+        elseif ($object->{$this->_account_id_column}) return $object->{$this->_account_id_column};
         else return '#' . $object->id;
     }
 }

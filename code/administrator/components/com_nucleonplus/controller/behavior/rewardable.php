@@ -73,22 +73,8 @@ class ComNucleonplusControllerBehaviorRewardable extends KControllerBehaviorAbst
      */
     protected function _afterAdd(KControllerContextInterface $context)
     {
-        foreach($this->__queue as $rebate) {
-            $rebate->create($context->result);
-        }
-    }
-
-    /**
-     * Update the corresponding Reward entity for the Order
-     *
-     * @param KControllerContextInterface $context
-     *
-     * @return mixed If a handler breaks, returns the break condition. Returns the result of the handler otherwise.
-     */
-    protected function _afterMarkpaid(KControllerContextInterface $context)
-    {
-        foreach($this->__queue as $rebate) {
-            $rebate->updateStatus($context->result);
+        foreach($this->__queue as $reward) {
+            $reward->create($context->result);
         }
     }
 

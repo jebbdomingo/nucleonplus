@@ -60,7 +60,7 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
     }
 
     /**
-     * Create an entry to the Rewards system upon payment of the Order
+     * Create referral bonus transactions upon payment of the Order
      *
      * @param KControllerContextInterface $context
      *

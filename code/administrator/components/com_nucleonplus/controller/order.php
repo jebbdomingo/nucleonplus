@@ -21,8 +21,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     /**
      * Create Order
      *
-     * @todo This can be turned into a controller behavior if deemed necessary
-     *
      * @param KControllerContextInterface $context
      *
      * @return entity

@@ -44,6 +44,20 @@ class ComNucleonplusRebatePackagerebate extends KObject
     protected $_reward_active_status;
 
     /**
+     * The payment status column of the Item or Order
+     *
+     * @var string
+     */
+    protected $_item_status_column;
+
+    /**
+     * The payment status of the Item or Order
+     *
+     * @var string
+     */
+    protected $_item_paid_status;
+
+    /**
      * Slots
      *
      * @var array
@@ -63,6 +77,8 @@ class ComNucleonplusRebatePackagerebate extends KObject
         $this->_model                = $config->model;
         $this->_reward_model         = $config->reward_model;
         $this->_reward_active_status = $config->reward_active_status;
+        $this->_item_status_column   = $config->item_status_column;
+        $this->_item_paid_status     = $config->item_paid_status;
     }
 
     /**
@@ -81,6 +97,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
             'reward_active_status' => 'active', // Reward's active status
             'item_model'           => 'com:nucleonplus.model.packages', // Product or Item object's identifier
             'item_status_column'   => 'invoice_status', // Order or Item's payment status column
+            'item_paid_status'     => 'paid', // The payment status of the Order to activate this rebate with
         ));
 
         parent::_initialize($config);
@@ -97,16 +114,20 @@ class ComNucleonplusRebatePackagerebate extends KObject
     {
         $reward = $this->getObject($this->_reward_model)->product_id($object->id)->fetch();
 
-        if ($reward->status == $this->_reward_active_status) {
-            return false;
+        if (($object->{$this->_item_status_column} == $this->_item_paid_status)
+            && ($reward->status <> $this->_reward_active_status))
+        {
+            $reward->status = $this->_reward_active_status;
+            $reward->save();
+
+            // Create and organize member's own set of slots
+            $slot = $this->createOwnSlots($object, $reward->slots);
+
+            // Connect the member's primary slot to an available slot of other members in the rewards sytem
+            $this->connectToOtherSlot($slot);
+        } else {
+            throw new KControllerExceptionRequestInvalid('Invalid Request');
         }
-
-
-        // Create and organize member's own set of slots
-        $slot = $this->createOwnSlots($object, $reward->slots);
-
-        // Connect the member's primary slot to an available slot of other members in the rewards sytem
-        $this->connectToOtherSlot($slot);
     }
 
     /**

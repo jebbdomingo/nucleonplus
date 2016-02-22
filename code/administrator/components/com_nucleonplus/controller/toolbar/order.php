@@ -12,7 +12,7 @@
 class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActionbar
 {
     /**
-     * Paid Command
+     * Confirm payment Command
      *
      * @param KControllerToolbarCommand $command
      *
