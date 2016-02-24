@@ -3,8 +3,8 @@
     <input type='hidden' name="_action" value="activate" />
 
     <div class="well">
-        <h3><?= translate('Reward Details'); ?></h3>
-        <table class="table">
+        <h3 class="page-header"><?= translate('Reward Details'); ?></h3>
+        <table class="table table-condensed">
             <tbody>
                 <tr>
                     <td><label><strong><?= translate('Product Package') ?></strong></label></td>

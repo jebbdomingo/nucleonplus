@@ -36,13 +36,25 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
                 'terminated' => 'Terminated',
                 'closed'     => 'Closed'
             )
+        ))
+        ->append(array(
+            'paymentMethods' => array(
+                array('label' => 'Bank Deposit', 'value' => 'deposit'),
+                array('label' => 'Cash', 'value' => 'cash')
+            )
+        ))
+        ->append(array(
+            'shippingMethods' => array(
+                array('label' => 'XEND', 'value' => 'xend'),
+                array('label' => 'Pick-up', 'value' => 'pickup')
+            )
         ));
 
         // Product packages
         $packages = [];
         foreach ($this->getObject('com:nucleonplus.model.packages')->fetch() as $package) {
             $packages[] = [
-                'label' => "{$package->name} (slots: {$package->slots})",
+                'label' => "{$package->name} (slots: {$package->_rewardpackage_slots}) Php {$package->price}",
                 'value' => $package->id
             ];
         }
@@ -144,5 +156,45 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ));
 
         return $this->_autocomplete($config);
+    }
+
+    /**
+     * Generates payment method list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function paymentMethods(array $config = array())
+    {
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'payment_method',
+            'selected' => null,
+            'options'  => $this->getConfig()->paymentMethods,
+            'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
+    }
+
+    /**
+     * Generates shipping method list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function shippingMethods(array $config = array())
+    {
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'shipping_method',
+            'selected' => null,
+            'options'  => $this->getConfig()->shippingMethods,
+            'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
     }
 }

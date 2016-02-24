@@ -54,4 +54,26 @@ class ComNucleonplusModelAccounts extends KModelDatabase
             $query->where('tbl.user_id = :user_id')->bind(['user_id' => $state->user_id]);
         }
     }
+
+    /**
+     * Get total referral bonus per account
+     * i.e. dr and ir bonuses
+     *
+     * @return KDatabaseRowsetDefault
+     */
+    public function getTotalReferralBonus()
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.transactions');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_transactions AS tbl')
+            ->columns('SUM(tbl.credit) AS total')
+            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
+            ->where('tbl.reward_type IN :reward_type')->bind(['reward_type' => ['dr','ir']])
+            ->group('tbl.account_id')
+        ;
+
+        return $table->select($query);
+    }
 }
