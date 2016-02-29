@@ -15,18 +15,6 @@
                     <td><?= $order->_reward_slots ?></td>
                 </tr>
                 <tr>
-                    <td><label><strong><?= translate('Product Rebate PV'); ?></strong></label></td>
-                    <td><?= $order->_reward_prpv ?></td>
-                </tr>
-                <tr>
-                    <td><label><strong><?= translate('Direct Referrral PV'); ?></strong></label></td>
-                    <td><?= $order->_reward_drpv ?></td>
-                </tr>
-                <tr>
-                    <td><label><strong><?= translate('Indirect Referrral PV'); ?></strong></label></td>
-                    <td><?= $order->_reward_irpv ?></td>
-                </tr>
-                <tr>
                     <td><label><strong><?= translate('Reward Status'); ?></strong></label></td>
                     <td>
                         <? if ($order->invoice_status == 'paid' && $order->_reward_status <> 'active'): ?>

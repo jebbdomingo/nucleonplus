@@ -21,6 +21,16 @@ defined('KOOWA') or die; ?>
 
 <div class="row-fluid">
 
+    <div class="span3">
+
+        <fieldset class="form-vertical">
+
+            <?= import('com://admin/nucleonplus.account.default_account_summary.html', ['account' => $account]) ?>
+
+        </fieldset>
+
+    </div>
+
     <div class="span9">
 
         <fieldset class="form-vertical">
@@ -34,16 +44,6 @@ defined('KOOWA') or die; ?>
                 <?= import('com://admin/nucleonplus.account.default_other_info.html', ['account' => $account]) ?>
 
             </form>
-
-        </fieldset>
-
-    </div>
-
-    <div class="span3">
-
-        <fieldset class="form-vertical">
-
-            <?= import('com://admin/nucleonplus.account.default_account_summary.html', ['account' => $account]) ?>
 
         </fieldset>
 

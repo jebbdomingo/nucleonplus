@@ -28,7 +28,7 @@ defined('KOOWA') or die; ?>
                     <? foreach ($purchases as $order): ?>
                         <tr>
                             <td>
-                                <a href="<?= route('view=order&layout=form&tmpl=koowa&id='.$order->id) ?>"><?= $order->id ?></a>
+                                <a href="<?= route('view=order&id='.$order->id.'&layout=form&tmpl=koowa') ?>"><?= $order->id ?></a>
                             </td>
                             <td><?= $order->package_name ?></td>
                             <td><?= $order->package_price ?></td>

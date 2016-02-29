@@ -29,7 +29,7 @@ defined('KOOWA') or die; ?>
         <form action="" method="get" class="-koowa-grid">
             <div class="scopebar">
                 <div class="scopebar-group last hidden-tablet hidden-phone">
-                    <?php echo helper('listbox.filterList', array('active_status' => parameters()->status)); ?>
+                    <?php echo helper('listbox.orderStatusFilter', array('active_status' => parameters()->order_status)); ?>
                 </div>
                 <div class="scopebar-search">
                     <?= helper('grid.search', array('submit_on_clear' => true)) ?>
@@ -66,8 +66,8 @@ defined('KOOWA') or die; ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <? if (count($orders)): ?>
-                            <?= import('com://admin/nucleonplus.orders.default_orders.html', ['orders' => $orders]) ?>
+                        <? if (count($memberOrders)): ?>
+                            <?= import('com://admin/nucleonplus.orders.default_orders.html', ['orders' => $memberOrders]) ?>
                         <?php else: ?>
                             <tr>
                                 <td colspan="8" align="center" style="text-align: center;">

@@ -16,6 +16,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         $this->getState()
             ->insert('account_id', 'int')
+            ->insert('order_status', 'string')
             ;
     }
 
@@ -23,7 +24,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('nucleonplus_order_id', 'package_name', 'account_number'))
+                'searchable' => array('columns' => array('nucleonplus_order_id', 'package_name', 'account_number', 'invoice_status'))
             )
         ));
 
@@ -56,6 +57,10 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         if ($state->account_id) {
             $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
+        }
+
+        if ($state->order_status && $state->order_status <> 'all') {
+            $query->where('tbl.order_status = :order_status')->bind(['order_status' => $state->order_status]);
         }
     }
 }

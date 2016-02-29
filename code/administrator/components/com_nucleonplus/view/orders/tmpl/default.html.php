@@ -29,7 +29,7 @@ defined('KOOWA') or die; ?>
         <form action="" method="get" class="-koowa-grid">
             <div class="scopebar">
                 <div class="scopebar-group last hidden-tablet hidden-phone">
-                    <?php echo helper('listbox.filterList', array('active_status' => parameters()->status)); ?>
+                    <?php echo helper('listbox.orderStatusFilter', array('active_status' => parameters()->order_status)); ?>
                 </div>
                 <div class="scopebar-search">
                     <?= helper('grid.search', array('submit_on_clear' => true)) ?>

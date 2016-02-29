@@ -23,7 +23,7 @@ defined('KOOWA') or die; ?>
             <tbody>
                 <tr>
                     <td>Available Product Rebates</td>
-                    <td class="text-right"><?= number_format(1000, 2) ?></td>
+                    <td class="text-right"><?= number_format($rebates, 2) ?></td>
                 </tr>
                 <tr>
                     <td>Available Referral Bonuses</td>
@@ -31,7 +31,7 @@ defined('KOOWA') or die; ?>
                 </tr>
                 <tr class="info">
                     <td>Total Available Rewards</td>
-                    <th class="text-right"><?= number_format(1210, 2) ?></th>
+                    <th class="text-right"><?= number_format($total, 2) ?></th>
                 </tr>
             </tbody>
         </table>

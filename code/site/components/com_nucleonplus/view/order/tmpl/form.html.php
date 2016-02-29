@@ -33,41 +33,13 @@ defined('KOOWA') or die; ?>
 
             <div class="span8">
 
-                <fieldset>
-                    <legend><?= translate('Nucleon+ Product Package') ?></legend>
+                <? // Order form ?>
+                <?= import('com://site/nucleonplus.order.form_order.html', ['order' => $order]) ?>
 
-                    <? // Product Package ?>
-                    <div class="control-group">
-                        <label class="control-label" for="package_id"><?= translate('Choose a Package') ?></label>
-                        <div class="controls">
-                            <?= helper('listbox.productList', array(
-                                'name'     => 'package_id',
-                                'selected' => $order->package_id)) ?>
-                        </div>
-                    </div>
-
-                    <? // Payment Method ?>
-                    <div class="control-group">
-                        <label class="control-label" for="title"><?= translate('Payment Method') ?></label>
-                        <div class="controls">
-                            <?= helper('listbox.paymentMethods', array(
-                                'name'     => 'payment_method',
-                                'selected' => $order->payment_method
-                            )) ?>
-                        </div>
-                    </div>
-
-                    <? // Shipping Method ?>
-                    <div class="control-group">
-                        <label class="control-label" for="title"><?= translate('Shipping Method') ?></label>
-                        <div class="controls">
-                            <?= helper('listbox.shippingMethods', array(
-                                'name'     => 'shipping_method',
-                                'selected' => $order->shipping_method
-                            )) ?>
-                        </div>
-                    </div>
-                </fieldset>
+                <? // Payment reference form ?>
+                <? if ($order->id): ?>
+                    <?= import('com://site/nucleonplus.order.form_payment_reference.html', ['order' => $order]) ?>
+                <? endif ?>
 
             </div>
 

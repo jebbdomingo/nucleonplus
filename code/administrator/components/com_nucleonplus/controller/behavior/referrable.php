@@ -66,7 +66,7 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
      *
      * @return void
      */
-    protected function _afterMarkpaid(KControllerContextInterface $context)
+    protected function _afterVerifypayment(KControllerContextInterface $context)
     {
         $orders = $context->result; // Order entity
 

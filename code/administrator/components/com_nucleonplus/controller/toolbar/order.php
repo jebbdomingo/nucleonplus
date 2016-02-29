@@ -26,11 +26,59 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
 
         $command->append(array(
             'attribs' => array(
-                'data-action' => 'markpaid'
+                'data-action' => 'verifypayment'
             )
         ));
 
-        $command->label = 'Confirm Payment';
+        $command->label = 'Verify Payment';
+    }
+
+    protected function _afterBrowse(KControllerContextInterface $context)
+    {
+        parent::_afterBrowse($context);
+
+        $controller = $this->getController();
+        $allowed    = true;
+
+        if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
+            $allowed = false;
+        }
+
+        $this->removeCommand('delete');
+
+        /*if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('processrebates', ['allowed' => $allowed]);
+        }
+
+        if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('markpaid', [
+                'allowed' => $allowed
+            ]);
+        }*/
+    }
+
+    protected function _afterRead(KControllerContextInterface $context)
+    {
+        parent::_afterRead($context);
+        
+        $controller = $this->getController();
+        $canSave    = ($controller->isEditable() && $controller->canSave());
+        $allowed    = true;
+
+        if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
+            $allowed = false;
+        }
+
+        // Verify payment command
+        if ($canSave && ($context->result->order_status == 'verifying'))
+        {
+            $this->addCommand('markpaid', [
+                'allowed' => $allowed,
+                'attribs' => ['data-novalidate' => 'novalidate']
+            ]);
+        }
     }
 
     /**
@@ -42,61 +90,26 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
      *
      * @return
      */
-    protected function _commandCancel(KControllerToolbarCommand $command)
+    /*protected function _commandCancel(KControllerToolbarCommand $command)
     {
-        $command->label = 'Back';
+        $command->label = 'Back To List';
 
         parent::_commandCancel($command);
-    }
+    }*/
 
-    protected function _commandProcessrebates(KControllerToolbarCommand $command)
+    /*protected function _commandProcessrebates(KControllerToolbarCommand $command)
     {
         $command->icon = 'icon-32-save';
 
         $command->append(array(
             'attribs' => array(
-                'data-action'     => 'processrebates'
+                'data-action' => 'processrebates'
                 //'data-novalidate' => 'novalidate' // This is needed for koowa-grid
             )
         ));
 
         $command->label = 'Process Rebates';
-    }
-
-    protected function _afterBrowse(KControllerContextInterface $context)
-    {
-        parent::_afterBrowse($context);
-
-        $this->_addBrowseCommands($context);
-    }
-
-    protected function _afterRead(KControllerContextInterface $context)
-    {
-        $this->_addInvoiceCommands($context);
-        $this->_addReadCommands($context);
-    }
-
-    protected function _addBrowseCommands(KControllerContextInterface $context)
-    {
-        $controller = $this->getController();
-        $allowed    = true;
-
-        if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
-            $allowed = false;
-        }
-
-        if ($controller->isEditable() && $controller->canSave())
-        {
-            $this->addCommand('processrebates', ['allowed' => $allowed]);
-        }
-
-        if ($controller->isEditable() && $controller->canSave())
-        {
-            $this->addCommand('markpaid', [
-                'allowed' => $allowed
-            ]);
-        }
-    }
+    }*/
 
     /**
      * Add read view toolbar buttons
@@ -105,7 +118,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
      *
      * @return void
      */
-    protected function _addReadCommands(KControllerContextInterface $context)
+    /*protected function _addReadCommands(KControllerContextInterface $context)
     {
         $controller = $this->getController();
         $allowed    = true;
@@ -115,30 +128,5 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         }
 
         $this->addCommand('cancel');
-    }
-
-    /**
-     * Add purchase view toolbar buttons
-     *
-     * @param KControllerContextInterface $context
-     *
-     * @return void
-     */
-    protected function _addInvoiceCommands(KControllerContextInterface $context)
-    {
-        $controller = $this->getController();
-        $allowed    = true;
-
-        if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
-            $allowed = false;
-        }
-
-        if ($controller->isEditable() && $controller->canSave() && $context->result->invoice_status <> 'paid')
-        {
-            $this->addCommand('markpaid', [
-                'allowed' => $allowed,
-                'attribs' => ['data-novalidate' => 'novalidate']
-            ]);
-        }
-    }
+    }*/
 }

@@ -30,19 +30,22 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $package = $this->getObject('com:nucleonplus.model.packages')->id($context->request->data->package_id)->fetch();
 
         // Copy the package data in the order table
-        $context->request->data->package_name  = $package->name;
-        $context->request->data->package_price = $package->price;
+        $context->request->data->package_name   = $package->name;
+        $context->request->data->package_price  = $package->price;
 
-        $entity = parent::_actionAdd($context);
+        // $context->request->data->order_status   = 'awaiting_payment';
+        // $context->request->data->invoice_status = 'sent';
+
+        return parent::_actionAdd($context);
 
         // Redirect
-        $identifier = $context->getSubject()->getIdentifier();
+        /*$identifier = $context->getSubject()->getIdentifier();
         $view       = KStringInflector::singularize($identifier->name);
         $url        = sprintf('index.php?option=com_%s&view=%s', $identifier->package, $view);
 
         $context->response->setRedirect($this->getObject('lib:http.url',array('url' => $url)));
 
-        return $entity;
+        return $entity;*/
     }
 
     /**
@@ -53,10 +56,13 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      * 
      * @return  KModelEntityInterface
      */
-    protected function _actionMarkpaid(KControllerContextInterface $context)
+    protected function _actionVerifypayment(KControllerContextInterface $context)
     {
         // Mark as Paid
-        $context->request->data->add(['invoice_status' => 'paid']);
+        $context->getRequest()->setData([
+            'invoice_status' => 'paid',
+            'order_status'   => 'processing'
+        ]);
 
         return parent::_actionEdit($context);
     }

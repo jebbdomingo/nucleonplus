@@ -7,7 +7,7 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusViewAccountHtml extends KViewHtml
+class ComNucleonplusViewOrdersHtml extends KViewHtml
 {
     /**
      * Initializes the config for the object
@@ -23,12 +23,13 @@ class ComNucleonplusViewAccountHtml extends KViewHtml
 
         $user    = $this->getObject('user');
         $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
-        $bonus   = $this->getObject('com://admin/nucleonplus.model.accounts')->id($account->id)->getTotalReferralBonus();
-        $rebates = $this->getObject('com://admin/nucleonplus.model.accounts')->id($account->id)->getTotalRebates();
 
-        $this->_data['memberAccount'] = $account;
-        $this->_data['bonus']         = $bonus->total;
-        $this->_data['rebates']       = $rebates->total;
-        $this->_data['total']         = ($rebates->total + $bonus->total);
+        $input = JFactory::getApplication()->input;
+
+        $status = $this->getUrl()->getQuery(true)['order_status'];
+
+        $orders  = $this->getObject('com://admin/nucleonplus.model.orders')->account_id($account->id)->order_status($status)->fetch();
+
+        $this->_data['memberOrders'] = $orders;
     }
 }

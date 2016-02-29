@@ -9,23 +9,45 @@
 
 defined('KOOWA') or die('Nooku Framework Not Found');
 
-$show_add    = $order->canPerform('edit');
+$show_save   = $order->canPerform('edit');
 $button_size = 'btn-small';
+
+if (is_null($order->id))
+{
+    $save_action         = 'save';
+    $save_button_caption = 'Place Order';
+}
+elseif ($order->order_status == 'awaiting_payment')
+{
+    $save_action           = 'confirm';
+    $save_button_caption   = 'Confirm Payment';
+    $show_cancel           = true;
+    $cancel_action         = 'cancelorder';
+    $cancel_button_caption = 'Cancel Order';
+}
+else $show_save = false;
 ?>
 
 <? // Edit and delete buttons ?>
 <div class="koowa_toolbar">
     <div class="btn-toolbar koowa-toolbar" id="toolbar-order">
-        <? if ($show_add): ?>
-            <div class="btn-group" id="toolbar-save">
-                <a class="toolbar btn <?= $button_size ?> btn-success" data-action="save" href="#">
-                    <?= translate('Place Order'); ?>
+        <? if ($show_save): ?>
+            <div class="btn-group" id="toolbar-<?= $save_action ?>">
+                <a class="toolbar btn <?= $button_size ?> btn-success" data-action="<?= $save_action ?>" href="#">
+                    <?= translate($save_button_caption); ?>
                 </a>
             </div>
+            <? if ($show_cancel): ?>
+                <div class="btn-group" id="toolbar-<?= $cancel_action ?>">
+                    <a class="toolbar btn <?= $button_size ?>" data-action="<?= $cancel_action ?>" href="#">
+                        <?= translate($cancel_button_caption) ?>
+                    </a>
+                </div>
+            <? endif; ?>
         <? endif; ?>
         <div class="btn-group" id="toolbar-cancel">
             <a data-novalidate="novalidate" class="toolbar btn <?= $button_size ?>" data-action="cancel" href="#">
-                <?= translate('Cancel') ?>
+                <?= translate('Back') ?>
             </a>
         </div>
     </div>

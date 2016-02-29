@@ -18,7 +18,8 @@ class ComNucleonplusModelAccounts extends KModelDatabase
             ->insert('status', 'string')
             ->insert('account_number', 'string')
             ->insert('sponsor_id', 'string')
-            ->insert('user_id', 'int');
+            ->insert('user_id', 'int')
+        ;
     }
 
     protected function _initialize(KObjectConfig $config)
@@ -30,6 +31,24 @@ class ComNucleonplusModelAccounts extends KModelDatabase
         ));
 
         parent::_initialize($config);
+    }
+
+    protected function _buildQueryColumns(KDatabaseQueryInterface $query)
+    {
+        parent::_buildQueryColumns($query);
+
+        $query
+            ->columns('u.name')
+            ;
+    }
+
+    protected function _buildQueryJoins(KDatabaseQueryInterface $query)
+    {
+        $query
+            ->join(array('u' => 'users'), 'tbl.user_id = u.id')
+        ;
+
+        parent::_buildQueryJoins($query);
     }
 
     protected function _buildQueryWhere(KDatabaseQueryInterface $query)
@@ -68,9 +87,31 @@ class ComNucleonplusModelAccounts extends KModelDatabase
         $table = $this->getObject('com://admin/nucleonplus.database.table.transactions');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_transactions AS tbl')
-            ->columns('SUM(tbl.credit) AS total')
+            ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
             ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
             ->where('tbl.reward_type IN :reward_type')->bind(['reward_type' => ['dr','ir']])
+            ->group('tbl.account_id')
+        ;
+
+        return $table->select($query);
+    }
+
+    /**
+     * Get total product rebates per account
+     * i.e. pr
+     *
+     * @return KDatabaseRowsetDefault
+     */
+    public function getTotalRebates()
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.transactions');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_transactions AS tbl')
+            ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
+            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
+            ->where('tbl.reward_type = :reward_type')->bind(['reward_type' => 'pr'])
             ->group('tbl.account_id')
         ;
 

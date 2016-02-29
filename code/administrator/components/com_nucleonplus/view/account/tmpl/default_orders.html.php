@@ -2,7 +2,6 @@
     <div class="panel-heading">
         <h3 class="panel-title">
             Orders
-            <a class="btn btn-default" href="<?= route('layout=order-form&id='.$account->id) ?>" role="button">Buy Product Package</a>
         </h3>
     </div>
     <div class="panel-body">
