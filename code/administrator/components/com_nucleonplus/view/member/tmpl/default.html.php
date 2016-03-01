@@ -24,7 +24,7 @@ defined('KOOWA') or die; ?>
 
         <fieldset class="form-vertical">
 
-            <?= import('com://admin/nucleonplus.member.form_member.html', ['member' => $member]) ?>
+            <?= import('com://admin/nucleonplus.member.member.html', ['member' => $member]) ?>
 
         </fieldset>
         

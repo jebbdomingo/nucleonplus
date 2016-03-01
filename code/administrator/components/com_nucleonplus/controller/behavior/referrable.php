@@ -134,11 +134,18 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
             'credit'      => ($order->_reward_irpv * $order->_reward_slots)
         ];
 
+        // Record pay for the first immediate referrer
         $controller->add($data);
 
-        // Try to get referrers up to 10th level
+        // Try to get referrers up to the 10th level
         for ($x = 0; $x < ($this->_unilevel_count - 1); $x++)
         {
+            // Terminate execution if the immediate indirect referrer has no sponsor
+            // i.e. there are no other indirect referrers to pay
+            if (is_null($indirectReferrer->sponsor_id)) {
+                return null;
+            }
+
             $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($indirectReferrer->getIdFromSponsor())->fetch();
 
             $data = [

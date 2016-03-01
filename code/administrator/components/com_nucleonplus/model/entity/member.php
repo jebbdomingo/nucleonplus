@@ -10,6 +10,8 @@
 
 class ComNucleonplusModelEntityMember extends KModelEntityRow
 {
+    const _USER_GROUP_REGISTERED_ = 2;
+
     /**
      * Saves the entity to the data store
      *
@@ -17,9 +19,13 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
      */
     public function save()
     {
-        $member = $this->_constructMember();
+        $member = $this->_storeMember($this->_constructMember());
 
-        return ($this->_storeMember($member)) ? true : false;
+        if ($member->id) {
+            return $this->_createAccount($member);
+        }
+
+        return false;
     }
 
     /**
@@ -29,11 +35,17 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
      */
     protected function _constructMember()
     {
-        $jUser           = new stdClass();
-        $jUser->id       = $this->id;
-        $jUser->name     = $this->name;
-        $jUser->username = $this->username;
-        $jUser->email    = $this->email;
+        $jUser               = new stdClass();
+        $jUser->id           = $this->id;
+        $jUser->name         = $this->name;
+        $jUser->username     = $this->username;
+        $jUser->password     = JUserHelper::genRandomPassword();
+        $jUser->requireReset = 1;
+        $jUser->email        = $this->email;
+        $jUser->sendEmail    = 1;
+        $jUser->sponsor_id   = $this->sponsor_id;
+        //$jUser->activation   = JApplicationHelper::getHash($jUser->password);
+        //$jUser->block        = 1;
 
         return $jUser;
     }
@@ -60,6 +72,36 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             throw new Exception("Could not save user. Error: " . $user->getError());
         }
 
-        return $user->id ;
+        JUserHelper::addUserToGroup($user->id, self::_USER_GROUP_REGISTERED_);
+
+        $this->id = $user->id;
+
+        return $user;
+    }
+
+    /**
+     * Create corresponding account for each member/user
+     *
+     * @param JUser $user
+     *
+     * @return boolean
+     */
+    protected function _createAccount(JUser $user)
+    {
+        $account = $this->getObject('com://admin/nucleonplus.model.accounts');
+
+        $entity = $account->create(array(
+            'user_id'    => $user->id,
+            'sponsor_id' => $user->sponsor_id,
+            'status'     => 'active',
+        ));
+        
+        if ($entity->save())
+        {
+            $this->account_id = $entity->id;
+            return true;
+        }
+
+        return false;
     }
 }

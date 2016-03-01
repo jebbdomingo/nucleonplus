@@ -21,6 +21,18 @@
                         <input name="username" id="username" value="<?= $member->username ?>" />
                     </td>
                 </tr>
+                <tr>
+                    <td><label><strong><?= translate('Email Address') ?></strong></label></td>
+                    <td>
+                        <input name="email" id="email" value="<?= $member->email ?>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label><strong><?= translate('Sponsor ID') ?></strong></label></td>
+                    <td>
+                        <input name="sponsor_id" id="sponsor_id" value="<?= $member->sponsor_id ?>" />
+                    </td>
+                </tr>
             </tbody>
 
         </table>

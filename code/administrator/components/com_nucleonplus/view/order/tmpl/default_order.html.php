@@ -1,5 +1,6 @@
 <?
-$disabled = (is_null($order->id) || in_array($order->order_status, ['awaiting_payment', 'verifying'])) ? false : true;
+$disabled             = (is_null($order->id) || in_array($order->order_status, ['awaiting_payment', 'verifying'])) ? false : true;
+$disableInvoiceStatus = true;
 ?>
 
 <form method="post" class="-koowa-form">
@@ -45,7 +46,7 @@ $disabled = (is_null($order->id) || in_array($order->order_status, ['awaiting_pa
                         <?= helper('listbox.invoiceStatus', array(
                             'name'     => 'invoice_status',
                             'selected' => $order->invoice_status,
-                            'attribs'  => ['disabled' => $disabled],
+                            'attribs'  => ['disabled' => $disableInvoiceStatus],
                         )) ?>
                     </td>
                 </tr>
