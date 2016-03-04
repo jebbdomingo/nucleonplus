@@ -15,7 +15,8 @@ class ComNucleonplusModelOrders extends KModelDatabase
         parent::__construct($config);
 
         $this->getState()
-            ->insert('account_number', 'string')
+            ->insert('account_id', 'int')
+            ->insert('order_status', 'string')
             ;
     }
 
@@ -23,11 +24,29 @@ class ComNucleonplusModelOrders extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('package_name', 'account_number'))
+                'searchable' => array('columns' => array('nucleonplus_order_id', 'package_name', 'account_number', 'invoice_status'))
             )
         ));
 
         parent::_initialize($config);
+    }
+
+    protected function _buildQueryColumns(KDatabaseQueryInterface $query)
+    {
+        parent::_buildQueryColumns($query);
+
+        $query
+            ->columns('a.account_number')
+            ;
+    }
+
+    protected function _buildQueryJoins(KDatabaseQueryInterface $query)
+    {
+        $query
+            ->join(array('a' => 'nucleonplus_accounts'), 'tbl.account_id = a.nucleonplus_account_id')
+        ;
+
+        parent::_buildQueryJoins($query);
     }
 
     protected function _buildQueryWhere(KDatabaseQueryInterface $query)
@@ -36,8 +55,12 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->account_number) {
-            $query->where('tbl.account_number = :account_number')->bind(['account_number' => $state->account_number]);
+        if ($state->account_id) {
+            $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
+        }
+
+        if ($state->order_status && $state->order_status <> 'all') {
+            $query->where('tbl.order_status = :order_status')->bind(['order_status' => $state->order_status]);
         }
     }
 }

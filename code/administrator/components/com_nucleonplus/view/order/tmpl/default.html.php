@@ -16,47 +16,26 @@ defined('KOOWA') or die; ?>
 <ktml:style src="media://com_nucleonplus/css/admin-read.css" />
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="Order No. <?= $order->id; ?>" icon="task-add icon-book">
+    <ktml:toolbar type="actionbar" title="<?= ($order->id) ? 'Order #' . $order->id : 'New Order'; ?>" icon="task-add icon-book">
 </ktml:module>
 
 <div class="row-fluid">
 
-    <div class="span6">
+    <div class="span8">
 
         <fieldset class="form-vertical">
 
-            <form method="post" class="-koowa-grid">
+            <?= import('com://admin/nucleonplus.order.default_order.html', ['order' => $order]) ?>
 
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><?= translate('Details'); ?></h3>
-                    </div>
-                    <table class="table">
-                        <tbody>
-                            <tr>
-                                <td><label><strong><?= translate('Account No.') ?></strong></label></td>
-                                <td><?= $order->account_number ?></td>
-                            </tr>
-                            <tr>
-                                <td><label><strong><?= translate('Order Status'); ?></strong></label></td>
-                                <td><span class="label label-<?= ($order->order_status == 'cancelled') ? 'default' : 'info' ?>"><?= ucwords(escape($order->order_status)) ?></span></td>
-                            </tr>
-                            <tr>
-                                <td><label><strong><?= translate('Invoice Status'); ?></strong></label></td>
-                                <td><span class="label label-<?= ($order->invoice_status == 'sent') ? 'default' : 'info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span></td>
-                            </tr>
-                            <tr>
-                                <td><label><strong><?= translate('Created On') ?></strong></label></td>
-                                <td>
-                                    <div><?= helper('date.humanize', array('date' => $order->created_on)) ?></div>
-                                    <div><?= $order->created_on ?></div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        </fieldset>
+        
+    </div>
 
-            </form>
+    <div class="span4">
+
+        <fieldset class="form-vertical">
+
+            <?= import('com://admin/nucleonplus.order.default_reward.html', ['order' => $order]) ?>
 
         </fieldset>
         

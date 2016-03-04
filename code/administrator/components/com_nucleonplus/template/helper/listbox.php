@@ -16,6 +16,48 @@
  */
 class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
 {
+    /**
+     * Order State Filters
+     *
+     * @var array
+     */
+    protected $_orderStatusFilters = [];
+
+    /**
+     * Payment methods
+     *
+     * @var array
+     */
+    protected $_paymentMethods = [];
+
+    /**
+     * Shipping methods
+     *
+     * @var array
+     */
+    protected $_shippingMethods = [];
+
+    /**
+     * Constructor
+     *
+     * @param KObjectConfig $config [description]
+     */
+    public function __construct(KObjectConfig $config)
+    {
+        parent::__construct($config);
+
+        $this->_orderStatusFilters = $config->orderStatusFilters;
+        $this->_paymentMethods     = $config->paymentMethods;
+        $this->_shippingMethods    = $config->shippingMethods;
+    }
+
+    /**
+     * Initialization
+     *
+     * @param KObjectConfig $config
+     *
+     * @return void
+     */
     protected function _initialize(KObjectConfig $config)
     {
         // Status
@@ -34,7 +76,50 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
                 'new'        => 'New',
                 'active'     => 'Active',
                 'terminated' => 'Terminated',
-                'closed'     => 'Closed'
+                'closed'     => 'Closed',
+            )
+        ))
+        ->append(array(
+            'invoiceStatus' => array(
+                array('label' => 'New', 'value' => 'new'),
+                array('label' => 'Sent', 'value' => 'sent'),
+                array('label' => 'Paid', 'value' => 'paid'),
+            )
+        ))
+        ->append(array(
+            'orderStatus' => array(
+                array('label' => 'Awaiting Payment', 'value' => 'awaiting_payment'),
+                array('label' => 'Verifying', 'value' => 'verifying'),
+                array('label' => 'Processing', 'value' => 'processing'),
+                array('label' => 'Shipped', 'value' => 'shipped'),
+                array('label' => 'Delivered', 'value' => 'delivered'),
+                array('label' => 'Cancelled', 'value' => 'cancelled'),
+                array('label' => 'Completed', 'value' => 'completed'),
+            )
+        ))
+        ->append(array(
+            'orderStatusFilters' => array(
+                'all'              => 'All',
+                'awaiting_payment' => 'Awaiting Payment',
+                'verifying'        => 'Verifying',
+                'processing'       => 'Processing',
+                'shipped'          => 'Shipped',
+                'delivered'        => 'Delivered',
+                'cancelled'        => 'Cancelled',
+                'completed'        => 'Completed',
+            )
+        ))
+        ->append(array(
+            'paymentMethods' => array(
+                array('label' => 'Cash', 'value' => 'cash'),
+                array('label' => 'Bank Deposit', 'value' => 'deposit')
+            )
+        ))
+        ->append(array(
+            'shippingMethods' => array(
+                array('label' => 'N/A', 'value' => 'na'),
+                array('label' => 'XEND', 'value' => 'xend'),
+                array('label' => 'Pick-up', 'value' => 'pickup')
             )
         ));
 
@@ -42,13 +127,53 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $packages = [];
         foreach ($this->getObject('com:nucleonplus.model.packages')->fetch() as $package) {
             $packages[] = [
-                'label' => "{$package->name} (slots: {$package->slots})",
+                'label' => "{$package->name} (slots: {$package->_rewardpackage_slots}) Php {$package->price}",
                 'value' => $package->id
             ];
         }
         $config->append(['packages' => $packages]);
 
         parent::_initialize($config);
+    }
+
+    /**
+     * Generates invoice status list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function invoiceStatus(array $config = array())
+    {
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'invoice_status',
+            'selected' => null,
+            'options'  => $this->getConfig()->invoiceStatus,
+            'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
+    }
+
+    /**
+     * Generates order status list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function orderStatus(array $config = array())
+    {
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'order_status',
+            'selected' => null,
+            'options'  => $this->getConfig()->orderStatus,
+            'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
     }
 
     /**
@@ -106,6 +231,38 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     }
 
     /**
+     * Generates order status filter buttons
+     *
+     * @todo rename to status filter list
+     *
+     * @param array $config [optional]
+     *
+     * @return  string  html
+     */
+    public function orderStatusFilter(array $config = array())
+    {
+        $status = $this->_orderStatusFilters;
+
+        // Merge with user-defined status
+        if ($config['status']) {
+            $status = $status->merge($config['status']);
+        }
+
+        $result = '';
+
+        foreach ($status as $value => $label)
+        {
+            $class = ($config['active_status'] == $value) ? 'class="active"' : null;
+            $href  = ($config['active_status'] <> $value) ? 'href="' . $this->getTemplate()->route("order_status={$value}") . '"' : null;
+            $label = $this->getObject('translator')->translate($label);
+
+            $result .= "<a {$class} {$href}>{$label}</a>";
+        }
+
+        return $result;
+    }
+
+    /**
      * Generates product list box
      * 
      * @param array $config [optional]
@@ -126,7 +283,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     }
 
     /**
-     * Provides a users select box.
+     * Provides an accounts autocomplete select box.
      *
      * @param  array|KObjectConfig $config An optional configuration array.
      * @return string The autocomplete users select box.
@@ -135,14 +292,83 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     {
         $config = new KObjectConfigJson($config);
         $config->append(array(
-            'model'        => 'accounts',
-            'name'         => 'account',
-            'value'        => 'id',
-            'label'        => 'account_name',
-            'sort'         => 'account_name',
-            'validate'     => false
+            'model'    => 'accounts',
+            'value'    => 'id',
+            'label'    => 'account_number',
+            'sort'     => 'id',
+            'validate' => false
         ));
 
         return $this->_autocomplete($config);
+    }
+
+    /**
+     * Provides a product packages autocomplete select box.
+     *
+     * @param  array|KObjectConfig $config An optional configuration array.
+     * @return string The autocomplete users select box.
+     */
+    public function packages($config = array())
+    {
+        $config = new KObjectConfigJson($config);
+        $config->append(array(
+            'model'    => 'packages',
+            'value'    => 'id',
+            'label'    => 'name',
+            'sort'     => 'name',
+            'validate' => false
+        ));
+
+        return $this->_autocomplete($config);
+    }
+
+    /**
+     * Generates payment method list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function paymentMethods(array $config = array())
+    {
+        // Override options
+        if ($config['paymentMethods']) {
+            $this->_paymentMethods = $config['paymentMethods'];
+        }
+
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'payment_method',
+            'selected' => null,
+            'options'  => $this->_paymentMethods,
+            'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
+    }
+
+    /**
+     * Generates shipping method list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function shippingMethods(array $config = array())
+    {
+        // Override options
+        if ($config['shippingMethods']) {
+            $this->_shippingMethods = $config['shippingMethods'];
+        }
+
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'shipping_method',
+            'selected' => null,
+            'options'  => $this->_shippingMethods,
+            'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
     }
 }

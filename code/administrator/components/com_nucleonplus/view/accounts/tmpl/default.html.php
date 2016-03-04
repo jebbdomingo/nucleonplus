@@ -32,7 +32,7 @@ defined('KOOWA') or die; ?>
                     <?php echo helper('listbox.filterList', array('active_status' => parameters()->status)); ?>
                 </div>
                 <div class="scopebar-search">
-                    <?= helper('grid.search', array('submit_on_clear' => true)) ?>
+                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Find by Account Number or Status')) ?>
                 </div>
             </div>
             <div class="nucleonplus_table_container">
@@ -61,7 +61,7 @@ defined('KOOWA') or die; ?>
                             <?= import('default_accounts.html') ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="4" align="center" style="text-align: center;">
+                                <td colspan="5" align="center" style="text-align: center;">
                                     <?= translate('No account(s) found.') ?>
                                 </td>
                             </tr>

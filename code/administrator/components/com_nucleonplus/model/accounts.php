@@ -18,7 +18,8 @@ class ComNucleonplusModelAccounts extends KModelDatabase
             ->insert('status', 'string')
             ->insert('account_number', 'string')
             ->insert('sponsor_id', 'string')
-            ->insert('user_id', 'int');
+            ->insert('user_id', 'int')
+        ;
     }
 
     protected function _initialize(KObjectConfig $config)
@@ -30,6 +31,24 @@ class ComNucleonplusModelAccounts extends KModelDatabase
         ));
 
         parent::_initialize($config);
+    }
+
+    protected function _buildQueryColumns(KDatabaseQueryInterface $query)
+    {
+        parent::_buildQueryColumns($query);
+
+        $query
+            ->columns('u.name')
+            ;
+    }
+
+    protected function _buildQueryJoins(KDatabaseQueryInterface $query)
+    {
+        $query
+            ->join(array('u' => 'users'), 'tbl.user_id = u.id')
+        ;
+
+        parent::_buildQueryJoins($query);
     }
 
     protected function _buildQueryWhere(KDatabaseQueryInterface $query)
@@ -53,5 +72,91 @@ class ComNucleonplusModelAccounts extends KModelDatabase
         if ($state->user_id) {
             $query->where('tbl.user_id = :user_id')->bind(['user_id' => $state->user_id]);
         }
+    }
+
+    /**
+     * Get total direct referrals
+     *
+     * @return KDatabaseRowsetDefault
+     */
+    public function getTotalDirectReferrals()
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.referralbonuses');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_referralbonuses AS tbl')
+            ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
+            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
+            ->where('tbl.referral_type = :referral_type')->bind(['referral_type' => 'dr'])
+            ->group('tbl.account_id')
+        ;
+
+        return $table->select($query);
+    }
+
+    /**
+     * Get total indirect referrals
+     *
+     * @return KDatabaseRowsetDefault
+     */
+    public function getTotalIndirectReferrals()
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.referralbonuses');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_referralbonuses AS tbl')
+            ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
+            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
+            ->where('tbl.referral_type = :referral_type')->bind(['referral_type' => 'ir'])
+            ->group('tbl.account_id')
+        ;
+
+        return $table->select($query);
+    }
+
+    /**
+     * Get total referral bonus per account
+     * i.e. dr and ir bonuses
+     *
+     * @return KDatabaseRowsetDefault
+     */
+    public function getTotalReferralBonus()
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.referralbonuses');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_referralbonuses AS tbl')
+            ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
+            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
+            ->where('tbl.referral_type IN :referral_type')->bind(['referral_type' => ['dr','ir']])
+            ->group('tbl.account_id')
+        ;
+
+        return $table->select($query);
+    }
+
+    /**
+     * Get total product rebates per account
+     * i.e. pr
+     *
+     * @return KDatabaseRowsetDefault
+     */
+    public function getTotalRebates()
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.rebates');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_rebates AS tbl')
+            ->columns('SUM(tbl.points) AS total')
+            ->join(array('r' => 'nucleonplus_rewards'), 'tbl.reward_id_to = r.nucleonplus_reward_id')
+            ->where('r.customer_id = :account_id')->bind(['account_id' => $state->id])
+            ->group('r.customer_id')
+        ;
+
+        return $table->select($query);
     }
 }
