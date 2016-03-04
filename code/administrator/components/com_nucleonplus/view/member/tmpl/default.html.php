@@ -15,7 +15,7 @@ defined('KOOWA') or die; ?>
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="Member">
+    <ktml:toolbar type="actionbar" title="Member" icon="task-add icon-pencil-2">
 </ktml:module>
 
 <div class="row-fluid">

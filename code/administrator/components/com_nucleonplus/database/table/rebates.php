@@ -8,7 +8,7 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusDatabaseTableTransactions extends KDatabaseTableAbstract
+class ComNucleonplusDatabaseTableRebates extends KDatabaseTableAbstract
 {
     protected function _initialize(KObjectConfig $config)
     {

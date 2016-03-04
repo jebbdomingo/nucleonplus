@@ -29,13 +29,28 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     {
         $package = $this->getObject('com:nucleonplus.model.packages')->id($context->request->data->package_id)->fetch();
 
-        // Copy the package data in the order table
-        $context->request->data->package_name  = $package->name;
-        $context->request->data->package_price = $package->price;
-        $context->request->data->order_status   = 'awaiting_payment';
-        $context->request->data->invoice_status = 'sent';
+        $context->getRequest()->setData([
+            // Copy the package data in the order table
+            'package_name'       => $package->name,
+            'package_price'      => $package->price,
 
-        return parent::_actionAdd($context);
+            'account_id'         => $context->request->data->account_id,
+            'package_id'         => $context->request->data->package_id,
+            'order_status'       => 'awaiting_payment',
+            'invoice_status'     => 'sent',
+            'payment_method'     => 'deposit',
+            'shipping_method'    => 'xend',
+            'tracking_reference' => $context->request->data->tracking_reference,
+            'payment_reference'  => $context->request->data->payment_reference,
+            'note'               => $context->request->data->note,
+        ]);
+
+        $order = parent::_actionAdd($context);
+
+        $response = $context->getResponse();
+        $response->addMessage("Please deposit your payment to BDO account # 0123456789 and enter the reference number found in your deposit slip to \"Deposit slip reference #\" field in your <a href=\"component/nucleonplus/?view=order&id={$order->id}&layout=form&tmpl=koowa\">Order #{$order->id}</a>.");
+
+        return $order;
     }
 
     /**
@@ -63,6 +78,23 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $url        = sprintf('index.php?option=com_%s&view=%s&layout=form&tmpl=koowa&id=%d', $identifier->package, $view, $order->id);
 
         $response->setRedirect(JRoute::_($url, false));
+    }
+
+    /**
+     * Specialized save action, changing state by updating the order status
+     *
+     * @param   KControllerContextInterface $context A command context object
+     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
+     * 
+     * @return  KModelEntityInterface
+     */
+    protected function _actionMarkdelivered(KControllerContextInterface $context)
+    {
+        $context->getRequest()->setData([
+            'order_status' => 'delivered'
+        ]);
+
+        return parent::_actionEdit($context);
     }
 
     /**

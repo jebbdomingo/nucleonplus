@@ -19,52 +19,22 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
      */
     public function save()
     {
-        $member = $this->_storeMember($this->_constructMember());
-
-        if ($member->id) {
-            return $this->_createAccount($member);
-        }
-
-        return false;
-    }
-
-    /**
-     * Construct Joomla user
-     *
-     * @return object
-     */
-    protected function _constructMember()
-    {
-        $jUser               = new stdClass();
-        $jUser->id           = $this->id;
-        $jUser->name         = $this->name;
-        $jUser->username     = $this->username;
-        $jUser->password     = JUserHelper::genRandomPassword();
-        $jUser->requireReset = 1;
-        $jUser->email        = $this->email;
-        $jUser->sendEmail    = 1;
-        $jUser->sponsor_id   = $this->sponsor_id;
-        //$jUser->activation   = JApplicationHelper::getHash($jUser->password);
-        //$jUser->block        = 1;
-
-        return $jUser;
-    }
-
-    /**
-     * Store the article thru Joomla API
-     *
-     * @param object $jUser
-     *
-     * @return boolean
-     */
-    protected function _storeMember($jUser)
-    {
         jimport( 'joomla.user.helper');
 
-        $data = (array)$jUser;
+        $member = new KObjectConfig($this->getProperties());
+
+        // Merge the following fields as these are not automatically updated by Nooku
+        $member->merge([
+            'password'     => JUserHelper::genRandomPassword(),
+            'requireReset' => 1,
+            'sendEmail'    => 1,
+            // 'activation' => JApplicationHelper::getHash($this->password);
+            // 'block'      => 1;
+        ]);
+
         $user = new JUser;
 
-        if(!$user->bind($data)) {
+        if(!$user->bind($member->toArray())) {
             throw new Exception("Could not bind data. Error: " . $user->getError());
         }
 
@@ -72,11 +42,15 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             throw new Exception("Could not save user. Error: " . $user->getError());
         }
 
-        JUserHelper::addUserToGroup($user->id, self::_USER_GROUP_REGISTERED_);
+        if ($this->isNew())
+        {
+            JUserHelper::addUserToGroup($user->id, self::_USER_GROUP_REGISTERED_);
+            $this->id         = $user->id;
+            $this->account_id = $this->_createAccount($user);
+        }
+        else $this->account_id = $this->_getAccount($user->id)->id;
 
-        $this->id = $user->id;
-
-        return $user;
+        return true;
     }
 
     /**
@@ -96,12 +70,25 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             'status'     => 'active',
         ));
         
+        // @todo delete the user if account creation failed
         if ($entity->save())
         {
-            $this->account_id = $entity->id;
-            return true;
+            return $entity->id;
         }
+        else throw new Exception("Could not account for user. Error: " . $user->getError());
 
         return false;
+    }
+
+    /**
+     * Get member account
+     *
+     * @param integer $user_id
+     *
+     * @return KModelEntityInterface
+     */
+    protected function _getAccount($user_id)
+    {
+        return $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user_id)->fetch();
     }
 }

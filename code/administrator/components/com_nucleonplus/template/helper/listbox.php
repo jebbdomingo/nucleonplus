@@ -81,6 +81,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ))
         ->append(array(
             'invoiceStatus' => array(
+                array('label' => 'New', 'value' => 'new'),
                 array('label' => 'Sent', 'value' => 'sent'),
                 array('label' => 'Paid', 'value' => 'paid'),
             )

@@ -14,6 +14,7 @@ defined('KOOWA') or die; ?>
 
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
 <ktml:style src="media://com_nucleonplus/css/admin-read.css" />
+<ktml:style src="media://com_nucleonplus/css/admin-account-read.css" />
 
 <ktml:module position="toolbar">
     <ktml:toolbar type="actionbar" title="<?= object('user.provider')->load($account->user_id)->getName(); ?>" icon="task-add icon-book">

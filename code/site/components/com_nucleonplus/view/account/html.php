@@ -7,28 +7,17 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusViewAccountHtml extends KViewHtml
+class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
 {
-    /**
-     * Initializes the config for the object
-     *
-     * Called from {@link __construct()} as a first step of object instantiation.
-     *
-     * @param   KObjectConfig $config Configuration options
-     * @return  void
-     */
-    public function __construct(KObjectConfig $config)
+    protected function _fetchData(KViewContext $context)
     {
-        parent::__construct($config);
+        $model  = $this->getModel();
+        $entity = $model->fetch();
 
-        $user    = $this->getObject('user');
-        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
-        $bonus   = $this->getObject('com://admin/nucleonplus.model.accounts')->id($account->id)->getTotalReferralBonus();
-        $rebates = $this->getObject('com://admin/nucleonplus.model.accounts')->id($account->id)->getTotalRebates();
+        $context->data->bonus   = $model->getTotalReferralBonus()->total;
+        $context->data->rebates = $model->getTotalRebates()->total;
+        $context->data->total   = ($context->data->bonus + $context->data->rebates);
 
-        $this->_data['memberAccount'] = $account;
-        $this->_data['bonus']         = $bonus->total;
-        $this->_data['rebates']       = $rebates->total;
-        $this->_data['total']         = ($rebates->total + $bonus->total);
+        parent::_fetchData($context);
     }
 }

@@ -20,10 +20,15 @@ if (is_null($order->id))
 elseif ($order->order_status == 'awaiting_payment')
 {
     $save_action           = 'confirm';
-    $save_button_caption   = 'Confirm Payment';
+    $save_button_caption   = translate('Confirm Payment');
     $show_cancel           = true;
     $cancel_action         = 'cancelorder';
-    $cancel_button_caption = 'Cancel Order';
+    $cancel_button_caption = translate('Cancel Order');
+}
+elseif ($order->order_status == 'shipped')
+{
+    $save_action         = 'markdelivered';
+    $save_button_caption = translate('Order Received');
 }
 else $show_save = false;
 ?>

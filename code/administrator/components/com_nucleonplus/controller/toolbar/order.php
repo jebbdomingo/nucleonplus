@@ -16,8 +16,6 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
      *
      * @param KControllerToolbarCommand $command
      *
-     * @todo Find appropriate close icon
-     *
      * @return void
      */
     protected function _commandMarkpaid(KControllerToolbarCommand $command)
@@ -31,6 +29,115 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         ));
 
         $command->label = 'Verify Payment';
+    }
+
+    /**
+     * Ship order Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandShip(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'ship'
+            )
+        ));
+
+        $command->label = 'Ship';
+    }
+
+    /**
+     * Mark order as delivered Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandMarkdelivered(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'markdelivered'
+            )
+        ));
+
+        $command->label = 'Mark as Delivered';
+    }
+
+    /**
+     * Mark order as completed Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandMarkcompleted(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'markcompleted'
+            )
+        ));
+
+        $command->label = 'Mark as Completed';
+    }
+
+    protected function _afterRead(KControllerContextInterface $context)
+    {
+        parent::_afterRead($context);
+        
+        $controller = $this->getController();
+        $canSave    = ($controller->isEditable() && $controller->canSave());
+        $allowed    = true;
+
+        if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
+            $allowed = false;
+        }
+
+        // Verify payment command
+        if ($canSave && ($context->result->order_status == 'verifying'))
+        {
+            $this->addCommand('markpaid', [
+                'allowed' => $allowed,
+                'attribs' => ['data-novalidate' => 'novalidate']
+            ]);
+        }
+
+        // Ship order command
+        if ($canSave && ($context->result->order_status == 'processing'))
+        {
+            $this->addCommand('ship', [
+                'allowed' => $allowed,
+                'attribs' => ['data-novalidate' => 'novalidate']
+            ]);
+        }
+
+        // Mark order as delivered command
+        if ($canSave && ($context->result->order_status == 'shipped'))
+        {
+            $this->addCommand('markdelivered', [
+                'allowed' => $allowed,
+                'attribs' => ['data-novalidate' => 'novalidate']
+            ]);
+        }
+
+        // Mark order as completed command
+        if ($canSave && ($context->result->order_status == 'delivered'))
+        {
+            $this->addCommand('markcompleted', [
+                'allowed' => $allowed,
+                'attribs' => ['data-novalidate' => 'novalidate']
+            ]);
+        }
     }
 
     protected function _afterBrowse(KControllerContextInterface $context)
@@ -57,28 +164,6 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
                 'allowed' => $allowed
             ]);
         }*/
-    }
-
-    protected function _afterRead(KControllerContextInterface $context)
-    {
-        parent::_afterRead($context);
-        
-        $controller = $this->getController();
-        $canSave    = ($controller->isEditable() && $controller->canSave());
-        $allowed    = true;
-
-        if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
-            $allowed = false;
-        }
-
-        // Verify payment command
-        if ($canSave && ($context->result->order_status == 'verifying'))
-        {
-            $this->addCommand('markpaid', [
-                'allowed' => $allowed,
-                'attribs' => ['data-novalidate' => 'novalidate']
-            ]);
-        }
     }
 
     /**

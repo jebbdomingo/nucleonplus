@@ -106,7 +106,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
     /**
      * Create corresponding slots in the Rewards system
      *
-     * @param KModelEntityInterface $object
+     * @param KModelEntityInterface $object Order entity
      *
      * @return void
      */
@@ -114,6 +114,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
     {
         $reward = $this->getObject($this->_reward_model)->product_id($object->id)->fetch();
 
+        // Create the slots only if the order/item is paid and the reward is not yet activated
         if (($object->{$this->_item_status_column} == $this->_item_paid_status)
             && ($reward->status <> $this->_reward_active_status))
         {
@@ -125,9 +126,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
 
             // Connect the member's primary slot to an available slot of other members in the rewards sytem
             $this->connectToOtherSlot($slot);
-        } else {
-            throw new KControllerExceptionRequestInvalid('Invalid Request');
-        }
+        } else throw new KControllerExceptionRequestInvalid('Invalid Request');
     }
 
     /**

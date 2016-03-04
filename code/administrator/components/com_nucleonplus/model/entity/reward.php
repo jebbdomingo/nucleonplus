@@ -48,23 +48,22 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
                 $payout += $rightSlot->prpv;
 
                 $data[] = array(
-                    'reward_id'   => $leftSlot->reward_id,
-                    'account_id'  => $slot->customer_id,
-                    'reward_type' => 'pr', // Product Rebates
-                    'credit'      => $leftSlot->prpv
+                    'reward_id_from' => $leftSlot->reward_id,
+                    'reward_id_to'   => $this->id,
+                    'points'         => $leftSlot->prpv
                 );
                 $data[] = array(
-                    'reward_id'   => $rightSlot->reward_id,
-                    'account_id'  => $slot->customer_id,
-                    'reward_type' => 'pr', // Product Rebates
-                    'credit'      => $rightSlot->prpv
+                    'reward_id_from' => $rightSlot->reward_id,
+                    'reward_id_to'   => $this->id,
+                    'points'         => $rightSlot->prpv
                 );
             }
         }
 
+        // Ensure payout matches the expected amount of reward's product rebate pv x the binary of number of slots
         if ($payout == (($this->prpv * $this->slots) * 2))
         {
-            $controller = $this->getObject('com:nucleonplus.controller.transaction');
+            $controller = $this->getObject('com:nucleonplus.controller.rebate');
 
             foreach ($data as $datum) {
                 $controller->add($datum);

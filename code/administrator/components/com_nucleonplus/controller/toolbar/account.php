@@ -13,8 +13,20 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
 {
     protected function _commandNew(KControllerToolbarCommand $command)
     {
-        $command->href  = 'view=account&layout=form';
-        $command->label = 'Create New Account';
+        $command->href  = 'view=member';
+        $command->label = 'New Member';
+    }
+
+    protected function _commandPlaceorder(KControllerToolbarCommand $command)
+    {
+        $command->icon  = 'icon-32-new';
+        $command->label = 'Place an Order';
+    }
+
+    protected function _commandPos(KControllerToolbarCommand $command)
+    {
+        $command->icon  = 'icon-32-new';
+        $command->label = 'POS';
     }
 
     protected function _afterRead(KControllerContextInterface $context)
@@ -41,7 +53,19 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
         }
 
         if ($controller->isEditable() && $controller->canSave()) {
-            $this->addCommand('edit', array('href' => 'layout=form'));
+            $this->addCommand('edit', ['href' => 'view=member&id=' . $context->result->user_id]);
+        }
+
+        if ($controller->isEditable() && $controller->canSave()) {
+            $this->addCommand('placeorder', [
+                'href' => 'view=order&account_id=' . $context->result->id
+            ]);
+        }
+
+        if ($controller->isEditable() && $controller->canSave()) {
+            $this->addCommand('pos', [
+                'href' => 'view=order&account_id=' . $context->result->id . '&layout=pos'
+            ]);
         }
 
         $this->addCommand('back', array(

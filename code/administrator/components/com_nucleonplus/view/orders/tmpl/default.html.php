@@ -45,6 +45,12 @@ defined('KOOWA') or die; ?>
                             <th class="nucleonplus_table__title_field">
                                 <?= helper('grid.sort', array('column' => 'id', 'title' => 'Order No.')); ?>
                             </th>
+                            <th data-hide="phone,phablet">
+                                <?= helper('grid.sort', array('column' => 'order_status', 'title' => 'Order Status')); ?>
+                            </th>
+                            <th data-hide="phone,phablet">
+                                <?= helper('grid.sort', array('column' => 'invoice_status', 'title' => 'Invoice Status')); ?>
+                            </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
                             </th>
@@ -53,12 +59,6 @@ defined('KOOWA') or die; ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date Ordered')); ?>
-                            </th>
-                            <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'order_status', 'title' => 'Order Status')); ?>
-                            </th>
-                            <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'invoice_status', 'title' => 'Invoice Status')); ?>
                             </th>
                             <th data-hide="phone,phablet">
                                 Payment Reference

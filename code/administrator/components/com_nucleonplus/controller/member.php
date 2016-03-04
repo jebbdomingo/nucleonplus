@@ -19,23 +19,31 @@
 class ComNucleonplusControllerMember extends ComKoowaControllerModel
 {
     /**
-     * Add Member
+     * Constructor
+     *
+     * @param KObjectConfig $config
+     */
+    public function __construct(KObjectConfig $config)
+    {
+        parent::__construct($config);
+
+        $this->addCommandCallback('after.save',   '_setRedirect');
+        $this->addCommandCallback('after.apply',  '_setRedirect');
+    }
+
+    /**
+     * Always redirect back to account view
      *
      * @param KControllerContextInterface $context
-     *
-     * @return entity
      */
-    protected function _actionAdd(KControllerContextInterface $context)
+    protected function _setRedirect(KControllerContextInterface $context)
     {
-        $entity = parent::_actionAdd($context);
+        $entity   = $context->result;
+        $response = $context->getResponse();
 
-        // Redirect to account view
         $identifier = $context->getSubject()->getIdentifier();
-        $view       = KStringInflector::singularize($identifier->name);
         $url        = sprintf('index.php?option=com_%s&view=account&id=%d', $identifier->package, $entity->account_id);
 
-        $context->response->setRedirect($this->getObject('lib:http.url',array('url' => $url)));
-
-        return $entity;
+        $response->setRedirect($url);
     }
 }

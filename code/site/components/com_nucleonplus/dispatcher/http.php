@@ -18,4 +18,36 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         
         parent::_initialize($config);
     }
+
+    protected function _actionDispatch(KDispatcherContextInterface $context)
+    {
+        if (!$this->getUser()->isAuthentic())
+        {
+            $response = $context->getResponse();
+            $response->addMessage('Please login to access your account');
+
+            $identifier = $context->getSubject()->getIdentifier();
+            $url        = sprintf('index.php?option=com_%s', $identifier->package);
+
+            $response->setRedirect(JRoute::_($url, false));
+        }
+        else return parent::_actionDispatch($context);
+    }
+
+    public function getRequest()
+    {
+        $request = parent::getRequest();
+        $query   = $request->query;
+        
+        $user    = $this->getObject('user');
+        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
+
+        if ($query->view == 'account') {
+            $query->id = $account->id;
+        }
+
+        $query->account_id = $account->id;
+
+        return $request;
+    }
 }

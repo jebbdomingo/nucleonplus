@@ -20,6 +20,12 @@
             </a>
         </td>
         <td>
+            <span class="label <?= ($order->order_status == 'cancelled') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->order_status)) ?></span>
+        </td>
+        <td>
+            <span class="label <?= ($order->invoice_status == 'sent') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span>
+        </td>
+        <td>
             <a href="<?= route('view=account&id='.$order->account_id); ?>">
                 <?= $order->account_number ?>
             </a>
@@ -33,12 +39,6 @@
             <?= helper('date.humanize', array('date' => $order->created_on)) ?>
             <br />
             <?= $order->created_on ?>
-        </td>
-        <td>
-            <span class="label <?= ($order->order_status == 'cancelled') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->order_status)) ?></span>
-        </td>
-        <td>
-            <span class="label <?= ($order->invoice_status == 'sent') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span>
         </td>
         <td>
             <?= escape($order->payment_reference) ?>

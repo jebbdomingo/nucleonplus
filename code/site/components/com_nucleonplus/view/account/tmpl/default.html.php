@@ -13,13 +13,12 @@ defined('KOOWA') or die; ?>
 <?= helper('behavior.koowa'); ?>
 
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
-<ktml:style src="media://com_nucleonplus/css/admin-read.css" />
 
 <div class="row">
 
     <div class="col-md-4">
-        
-        <?= import('com://admin/nucleonplus.account.default_account_summary.html', ['account' => $memberAccount]) ?>
+
+        <?= import('com://admin/nucleonplus.account.default_account_summary.html', ['account' => $account]) ?>
 
     </div>
 
@@ -30,11 +29,9 @@ defined('KOOWA') or die; ?>
             <form method="post" class="-koowa-grid">
 
 
-                <?= import('com://site/nucleonplus.account.default_rewards.html', ['account' => $memberAccount]) ?>
+                <?= import('com://site/nucleonplus.account.default_rewards.html', ['account' => $account]) ?>
 
-                <?= import('com://site/nucleonplus.account.default_orders.html', ['account' => $memberAccount]) ?>
-                
-                <?= import('com://admin/nucleonplus.account.default_direct_referrals.html', ['account' => $memberAccount]) ?>
+                <?= import('com://admin/nucleonplus.account.default_direct_referrals.html', ['account' => $account]) ?>
 
             </form>
 

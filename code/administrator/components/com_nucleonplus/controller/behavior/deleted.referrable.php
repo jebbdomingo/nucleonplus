@@ -16,7 +16,7 @@
 class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbstract
 {
     /**
-     * Rebate controller identifier.
+     * Transaction controller identifier.
      *
      * @param string|KObjectIdentifierInterface
      */
@@ -66,10 +66,32 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
      *
      * @return void
      */
-    protected function _afterVerifypayment(KControllerContextInterface $context)
+    protected function _afterAdd(KControllerContextInterface $context)
     {
-        $orders = $context->result; // Order entity
+        $this->_recordReferrals($context->result); // Orders
+    }
 
+    /**
+     * Create referral bonus transactions upon payment of the Order
+     *
+     * @param KControllerContextInterface $context
+     *
+     * @return void
+     */
+    protected function _afterEdit(KControllerContextInterface $context)
+    {
+        $this->_recordReferrals($context->result); // Orders
+    }
+
+    /**
+     * Record referral bonus payouts
+     *
+     * @param KModelEntityInterface $orders
+     *
+     * @return void
+     */
+    protected function _recordReferrals(KModelEntityInterface $orders)
+    {
         foreach ($orders as $order)
         {
             $this->_recordDirectReferrals($order);
@@ -78,13 +100,31 @@ class ComNucleonplusControllerBehaviorReferrable extends KControllerBehaviorAbst
     }
 
     /**
-     * Record direct referrals
+     * Create referral bonus transactions upon payment of the Order
      *
-     * @param KModelEntityRow $order
+     * @param KControllerContextInterface $context
      *
      * @return void
      */
-    private function _recordDirectReferrals(KModelEntityRow $order)
+    /*protected function _afterVerifypayment(KControllerContextInterface $context)
+    {
+        $orders = $context->result; // Order entity
+
+        foreach ($orders as $order)
+        {
+            $this->_recordDirectReferrals($order);
+            $this->_recordIndirectReferrals($order);
+        }
+    }*/
+
+    /**
+     * Record direct referrals
+     *
+     * @param KModelEntityInterface $order
+     *
+     * @return void
+     */
+    private function _recordDirectReferrals(KModelEntityInterface $order)
     {
         $controller = $this->getObject($this->_controller);
         $account    = $this->getObject('com:nucleonplus.model.accounts')->id($order->account_id)->fetch();

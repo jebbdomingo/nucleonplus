@@ -84,12 +84,12 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     {
         $state = $this->getState();
 
-        $table = $this->getObject('com://admin/nucleonplus.database.table.transactions');
+        $table = $this->getObject('com://admin/nucleonplus.database.table.referralbonuses');
         $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_transactions AS tbl')
+            ->table('nucleonplus_referralbonuses AS tbl')
             ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
             ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
-            ->where('tbl.reward_type IN :reward_type')->bind(['reward_type' => ['dr','ir']])
+            ->where('tbl.referral_type IN :referral_type')->bind(['referral_type' => ['dr','ir']])
             ->group('tbl.account_id')
         ;
 
@@ -106,13 +106,13 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     {
         $state = $this->getState();
 
-        $table = $this->getObject('com://admin/nucleonplus.database.table.transactions');
+        $table = $this->getObject('com://admin/nucleonplus.database.table.rebates');
         $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_transactions AS tbl')
-            ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
-            ->where('tbl.reward_type = :reward_type')->bind(['reward_type' => 'pr'])
-            ->group('tbl.account_id')
+            ->table('nucleonplus_rebates AS tbl')
+            ->columns('SUM(tbl.points) AS total')
+            ->join(array('r' => 'nucleonplus_rewards'), 'tbl.reward_id_to = r.nucleonplus_reward_id')
+            ->where('r.customer_id = :account_id')->bind(['account_id' => $state->id])
+            ->group('r.customer_id')
         ;
 
         return $table->select($query);
