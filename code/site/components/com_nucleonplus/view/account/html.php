@@ -14,9 +14,20 @@ class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
         $model  = $this->getModel();
         $entity = $model->fetch();
 
+        // Rewards summary
         $context->data->bonus   = $model->getTotalReferralBonus()->total;
         $context->data->rebates = $model->getTotalRebates()->total;
         $context->data->total   = ($context->data->bonus + $context->data->rebates);
+
+        // Rewards details
+        $context->data->directReferrals   = $model->getTotalDirectReferrals()->total;
+        $context->data->indirectReferrals = $model->getTotalIndirectReferrals()->total;
+        $context->data->totalRewards      = ($context->data->directReferrals + $context->data->indirectReferrals);
+
+        $context->data->rewards = $this->getObject('com://admin/nucleonplus.model.rewards')
+            ->customer_id($entity->id)
+            ->status('ready')
+            ->getRebates();
 
         parent::_fetchData($context);
     }

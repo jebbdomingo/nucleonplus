@@ -36,6 +36,6 @@ defined('KOOWA') or die; ?>
             </tbody>
         </table>
 
-        <p class="pull-right"><a class="btn btn-primary btn-md" href="#" role="button">Encash</a></p>
+        <p class="pull-right"><a class="btn btn-primary btn-md" href="#" role="button"><?= translate('Redeem') ?></a></p>
     </div>
 </div>
