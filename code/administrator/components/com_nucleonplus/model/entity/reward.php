@@ -28,9 +28,11 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
             return;
         }
 
-        $slots  = $this->getObject('com:nucleonplus.model.slots')->reward_id($this->id)->fetch();
-        $payout = 0;
-        $data   = array();
+        $slots         = $this->getObject('com:nucleonplus.model.slots')->reward_id($this->id)->fetch();
+        $requiredSlots = ($this->slots * 2);
+        $payoutSlots   = 0;
+        $payout        = 0;
+        $data          = array();
         
         foreach ($slots as $slot)
         {
@@ -41,6 +43,8 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
             }
             else
             {
+                $payoutSlots += 2;
+
                 $leftSlot  = $this->getObject('com:nucleonplus.model.slots')->id($slot->lf_slot_id)->fetch();
                 $rightSlot = $this->getObject('com:nucleonplus.model.slots')->id($slot->rt_slot_id)->fetch();
 
@@ -61,7 +65,7 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
         }
 
         // Ensure payout matches the expected amount of reward's product rebate pv x the binary of number of slots
-        if ($payout == (($this->prpv * $this->slots) * 2))
+        if ($requiredSlots == $payoutSlots)
         {
             $controller = $this->getObject('com:nucleonplus.controller.rebate');
 
@@ -72,5 +76,16 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
             $this->status = 'ready';
             $this->save();
         }
+    }
+
+    /**
+     * Prevent deletion of reward
+     * A reward can only be voided but not deleted
+     *
+     * @return boolean FALSE
+     */
+    public function delete()
+    {
+        return false;
     }
 }

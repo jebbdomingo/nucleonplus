@@ -10,33 +10,31 @@
 
 defined('KOOWA') or die; ?>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title"><?= translate('My Rebates') ?></h3>
-    </div>
-    <div class="panel-body">
-        <table class="table">
-            <thead>
-                <th>Order #</th>
-                <th>Product Package</th>
-                <th>Slots</th>
-                <th class="text-right">Points</th>
-            </thead>
-            <tbody>
-                <? foreach ($rewards as $reward): ?>
-                    <tr>
-                        <td>
-                            <input type="hidden" name="reward[]" value="<?= $reward->id ?>" />
-                            <?= $reward->product_id ?>
-                        </td>
-                        <td><?= $reward->product_name ?></td>
-                        <td><?= $reward->slots ?></td>
-                        <th class="text-right"><?= number_format($reward->total, 2) ?></th>
-                    </tr>
-                <? endforeach ?>
-            </tbody>
-        </table>
+<fieldset>
 
-        <p class="pull-right"><a class="btn btn-primary btn-md" href="#" role="button">Encash</a></p>
-    </div>
-</div>
+    <legend><?= translate('My Rebates') ?></legend>
+
+    <table class="table">
+        <thead>
+            <th>Order #</th>
+            <th>Product Package</th>
+            <th>Slots</th>
+            <th class="text-right">Points</th>
+        </thead>
+        <tbody>
+            <? foreach ($rewards as $reward): ?>
+                <tr>
+                    <td>
+                        <input type="hidden" name="rewards[]" value="<?= $reward->id ?>" />
+                        <input type="hidden" name="total_rebates[]" value="<?= $reward->total ?>" />
+                        <?= $reward->product_id ?>
+                    </td>
+                    <td><?= $reward->product_name ?></td>
+                    <td><?= $reward->slots ?></td>
+                    <td class="text-right"><strong><?= number_format($reward->total, 2) ?></strong></td>
+                </tr>
+            <? endforeach ?>
+        </tbody>
+    </table>
+
+</fieldset>

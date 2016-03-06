@@ -40,7 +40,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
     /**
      * Save
      *
-     * @return KModelEntityRow
+     * @return string
      */
     public function save()
     {

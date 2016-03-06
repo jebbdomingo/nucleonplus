@@ -16,9 +16,9 @@ class ComNucleonplusModelRewards extends KModelDatabase
 
         $this->getState()
             ->insert('status', 'string')
-            ->insert('product_id)', 'int')
+            ->insert('product_id', 'int')
             ->insert('customer_id', 'int')
-            ;
+        ;
     }
 
     protected function _initialize(KObjectConfig $config)
@@ -59,6 +59,30 @@ class ComNucleonplusModelRewards extends KModelDatabase
             ->where('tbl.customer_id = :customer_id')->bind(['customer_id' => $state->customer_id])
             ->where('tbl.status = :status')->bind(['status' => $state->status])
             ->group('r.reward_id_to')
+        ;
+
+        return $table->select($query);
+    }
+
+    /**
+     * Get rebates by rewards
+     *
+     * @param int $id
+     *
+     * @return KModelEntityInterface
+     */
+    public function getRebatesByReward($id)
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.rebates');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_rebates AS tbl')
+            ->columns('tbl.*')
+            ->join(array('r' => 'nucleonplus_rewards'), 'r.nucleonplus_reward_id = tbl.reward_id_to')
+            ->where('tbl.reward_id_to = :reward_id')->bind(['reward_id' => $id])
+            ->where('r.customer_id = :customer_id')->bind(['customer_id' => $state->customer_id])
+            ->where('r.status = :status')->bind(['status' => $state->status])
         ;
 
         return $table->select($query);

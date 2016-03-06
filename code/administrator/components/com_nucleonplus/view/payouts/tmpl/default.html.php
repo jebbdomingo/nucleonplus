@@ -21,7 +21,7 @@ defined('KOOWA') or die; ?>
 </ktml:module>
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="COM_NUCLEONPLUS_SUBMENU_ORDERS" icon="task icon-stack">
+    <ktml:toolbar type="actionbar" title="COM_NUCLEONPLUS_SUBMENU_PAYOUTS" icon="task icon-stack">
 </ktml:module>
 
 <div class="nucleonplus-container">
@@ -29,7 +29,7 @@ defined('KOOWA') or die; ?>
         <form action="" method="get" class="-koowa-grid">
             <div class="scopebar">
                 <div class="scopebar-group last hidden-tablet hidden-phone">
-                    <?php echo helper('listbox.orderStatusFilter', array('active_status' => parameters()->order_status)); ?>
+                    <?php echo helper('listbox.payoutStatusFilter', array('active_status' => parameters()->status)); ?>
                 </div>
                 <div class="scopebar-search">
                     <?= helper('grid.search', array('submit_on_clear' => true)) ?>
@@ -43,45 +43,36 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.checkall')?>
                             </th>
                             <th class="nucleonplus_table__title_field">
-                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'Order No.')); ?>
+                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'Payout Request ID')); ?>
                             </th>
                             <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'order_status', 'title' => 'Order Status')); ?>
-                            </th>
-                            <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'invoice_status', 'title' => 'Invoice Status')); ?>
-                            </th>
-                            <th>
-                                <?= helper('grid.sort', array('column' => 'name', 'title' => 'Member Name')); ?>
-                            </th>
-                            <th>
                                 <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'package_name', 'title' => 'Product Package')); ?>
+                                <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>
+                            </th>
+                            <th>
+                                <?= helper('grid.sort', array('column' => 'amount', 'title' => 'Amount')); ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
                             </th>
-                            <th data-hide="phone,phablet">
-                                Payment Reference
-                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <? if (count($orders)): ?>
-                            <?= import('default_orders.html', ['orders' => $orders]) ?>
+                        <? if (count($payouts)): ?>
+                            <?= import('default_payouts.html', ['payouts' => $payouts]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="9" align="center" style="text-align: center;">
-                                    <?= translate('No order(s) found.') ?>
+                                <td colspan="6" align="center" style="text-align: center;">
+                                    <?= translate('No payout requests.') ?>
                                 </td>
                             </tr>
                         <? endif; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="9">
+                            <td colspan="6">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>

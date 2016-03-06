@@ -19,7 +19,7 @@ class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
         $context->data->rebates = $model->getTotalRebates()->total;
         $context->data->total   = ($context->data->bonus + $context->data->rebates);
 
-        // Rewards details
+        // Rewards payout details
         $context->data->directReferrals   = $model->getTotalDirectReferrals()->total;
         $context->data->indirectReferrals = $model->getTotalIndirectReferrals()->total;
         $context->data->totalRewards      = ($context->data->directReferrals + $context->data->indirectReferrals);

@@ -27,4 +27,15 @@ class ComNucleonplusModelEntitySlot extends KModelEntityRow
         $this->consumed = 1;
         $this->save();
     }
+
+    /**
+     * Prevent deletion of slot
+     * A slot can only be voided but not deleted
+     *
+     * @return boolean FALSE
+     */
+    public function delete()
+    {
+        return false;
+    }
 }

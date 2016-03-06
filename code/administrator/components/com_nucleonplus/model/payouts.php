@@ -8,7 +8,7 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusModelOrders extends KModelDatabase
+class ComNucleonplusModelPayouts extends KModelDatabase
 {
     public function __construct(KObjectConfig $config)
     {
@@ -16,7 +16,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         $this->getState()
             ->insert('account_id', 'int')
-            ->insert('order_status', 'string')
+            ->insert('status', 'string')
             ;
     }
 
@@ -24,7 +24,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('nucleonplus_order_id', 'package_name', 'account_number', 'invoice_status'))
+                'searchable' => array('columns' => array('account_id', 'status'))
             )
         ));
 
@@ -37,7 +37,6 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         $query
             ->columns('a.account_number')
-            ->columns('u.name')
             ;
     }
 
@@ -45,7 +44,6 @@ class ComNucleonplusModelOrders extends KModelDatabase
     {
         $query
             ->join(array('a' => 'nucleonplus_accounts'), 'tbl.account_id = a.nucleonplus_account_id')
-            ->join(array('u' => 'users'), 'a.user_id = u.id')
         ;
 
         parent::_buildQueryJoins($query);
@@ -61,8 +59,8 @@ class ComNucleonplusModelOrders extends KModelDatabase
             $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
         }
 
-        if ($state->order_status && $state->order_status <> 'all') {
-            $query->where('tbl.order_status = :order_status')->bind(['order_status' => $state->order_status]);
+        if ($state->status && $state->status <> 'all') {
+            $query->where('tbl.status = :status')->bind(['status' => $state->status]);
         }
     }
 }

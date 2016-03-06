@@ -13,23 +13,31 @@ defined('KOOWA') or die; ?>
 
 <?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.koowa'); ?>
+<?= helper('behavior.modal'); ?>
+<?= helper('behavior.keepalive'); ?>
+<?= helper('behavior.validator'); ?>
 
-<div class="row">
+<ktml:style src="media://koowa/com_koowa/css/koowa.css" />
 
-    <div class="col-md-12">
+<? // Toolbar ?>
+<?= import('com://site/nucleonplus.account.rewards_manage.html', ['reward' => $reward]) ?>
 
-        <fieldset class="form-vertical">
+<div class="koowa_form">
 
-            <form method="post" class="-koowa-grid">
+    <form method="post" class="form-horizontal -koowa-form" action="<?= route('option=com_nucleonplus&view=payout'); ?>">
 
-                <?= import('com://site/nucleonplus.account.referral_bonuses.html') ?>
+        <div class="row-fluid">
+
+            <div class="span12">
 
                 <?= import('com://site/nucleonplus.account.rebates.html', ['reward' => $reward]) ?>
 
-            </form>
+                <?= import('com://site/nucleonplus.account.referral_bonuses.html') ?>
 
-        </fieldset>
+            </div>
 
-    </div>
+        </div>
+        
+    </form>
 
 </div>

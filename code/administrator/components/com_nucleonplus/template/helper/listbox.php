@@ -38,6 +38,20 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     protected $_shippingMethods = [];
 
     /**
+     * Payout status
+     *
+     * @var array
+     */
+    protected $_payoutStatus = [];
+
+    /**
+     * Payout status filters
+     *
+     * @var array
+     */
+    protected $_payoutStatusFilters = [];
+
+    /**
      * Constructor
      *
      * @param KObjectConfig $config [description]
@@ -46,9 +60,11 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     {
         parent::__construct($config);
 
-        $this->_orderStatusFilters = $config->orderStatusFilters;
-        $this->_paymentMethods     = $config->paymentMethods;
-        $this->_shippingMethods    = $config->shippingMethods;
+        $this->_orderStatusFilters  = $config->orderStatusFilters;
+        $this->_paymentMethods      = $config->paymentMethods;
+        $this->_shippingMethods     = $config->shippingMethods;
+        $this->_payoutStatus        = $config->payoutStatus;
+        $this->_payoutStatusFilters = $config->payoutStatusFilters;
     }
 
     /**
@@ -120,6 +136,19 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
                 array('label' => 'N/A', 'value' => 'na'),
                 array('label' => 'XEND', 'value' => 'xend'),
                 array('label' => 'Pick-up', 'value' => 'pickup')
+            )
+        ))
+        ->append(array(
+            'payoutStatus' => array(
+                array('label' => 'Pending', 'value' => 'pending'),
+                array('label' => 'Paid', 'value' => 'paid')
+            )
+        ))
+        ->append(array(
+            'payoutStatusFilters' => array(
+                'all'     => 'All',
+                'pending' => 'Pending',
+                'paid'    => 'Paid',
             )
         ));
 
@@ -370,5 +399,60 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ));
 
         return parent::optionlist($config);
+    }
+
+    /**
+     * Generates payout status list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function payoutStatus(array $config = array())
+    {
+        // Override options
+        if ($config['payoutStatus']) {
+            $this->_payoutStatus = $config['payoutStatus'];
+        }
+
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'status',
+            'selected' => null,
+            'options'  => $this->_payoutStatus,
+            'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
+    }
+
+    /**
+     * Generates payout status filter buttons
+     *
+     * @param array $config [optional]
+     *
+     * @return  string  html
+     */
+    public function payoutStatusFilter(array $config = array())
+    {
+        $status = $this->_payoutStatusFilters;
+
+        // Merge with user-defined status
+        if ($config['statusFilters']) {
+            $status = $status->merge($config['statusFilters']);
+        }
+
+        $result = '';
+
+        foreach ($status as $value => $label)
+        {
+            $class = ($config['active_status'] == $value) ? 'class="active"' : null;
+            $href  = ($config['active_status'] <> $value) ? 'href="' . $this->getTemplate()->route("status={$value}") . '"' : null;
+            $label = $this->getObject('translator')->translate($label);
+
+            $result .= "<a {$class} {$href}>{$label}</a>";
+        }
+
+        return $result;
     }
 }

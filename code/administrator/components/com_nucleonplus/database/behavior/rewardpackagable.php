@@ -17,7 +17,6 @@
 class ComNucleonplusDatabaseBehaviorRewardpackagable extends KDatabaseBehaviorAbstract
 {
     /**
-     * Set created information
      *
      * @param KDatabaseContext  $context A database context object
      * @return void
