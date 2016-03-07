@@ -32,7 +32,7 @@ defined('KOOWA') or die; ?>
                     <?php echo helper('listbox.payoutStatusFilter', array('active_status' => parameters()->status)); ?>
                 </div>
                 <div class="scopebar-search">
-                    <?= helper('grid.search', array('submit_on_clear' => true)) ?>
+                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Account Number or Member\'s Name')) ?>
                 </div>
             </div>
             <div class="nucleonplus_table_container">
@@ -43,13 +43,16 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.checkall')?>
                             </th>
                             <th class="nucleonplus_table__title_field">
-                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'Payout Request ID')); ?>
-                            </th>
-                            <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
+                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'ID')); ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>
+                            </th>
+                            <th>
+                                <?= helper('grid.sort', array('column' => 'name', 'title' => 'Member')); ?>
+                            </th>
+                            <th>
+                                <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'amount', 'title' => 'Amount')); ?>
@@ -64,15 +67,15 @@ defined('KOOWA') or die; ?>
                             <?= import('default_payouts.html', ['payouts' => $payouts]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" align="center" style="text-align: center;">
-                                    <?= translate('No payout requests.') ?>
+                                <td colspan="7" align="center" style="text-align: center;">
+                                    <?= translate('No payout request') ?>
                                 </td>
                             </tr>
                         <? endif; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>

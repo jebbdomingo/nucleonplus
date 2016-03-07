@@ -28,8 +28,7 @@
                 <tr>
                     <td><label><strong><?= translate('Date') ?></strong></label></td>
                     <td>
-                        <div><?= helper('date.humanize', array('date' => $payout->created_on)) ?></div>
-                        <div><?= $order->created_on ?></div>
+                        <div><?= helper('date.format', array('date' => $payout->created_on)) ?></div>
                     </td>
                 </tr>
             </tbody>

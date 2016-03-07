@@ -32,7 +32,7 @@ defined('KOOWA') or die; ?>
                     <?php echo helper('listbox.orderStatusFilter', array('active_status' => parameters()->order_status)); ?>
                 </div>
                 <div class="scopebar-search">
-                    <?= helper('grid.search', array('submit_on_clear' => true)) ?>
+                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Account Number or Member\'s Name')) ?>
                 </div>
             </div>
             <div class="nucleonplus_table_container">
@@ -52,7 +52,7 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'invoice_status', 'title' => 'Invoice Status')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'name', 'title' => 'Member Name')); ?>
+                                <?= helper('grid.sort', array('column' => 'name', 'title' => 'Member')); ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>

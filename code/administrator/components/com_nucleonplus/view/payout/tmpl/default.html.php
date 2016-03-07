@@ -16,7 +16,7 @@ defined('KOOWA') or die; ?>
 <ktml:style src="media://com_nucleonplus/css/admin-read.css" />
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="Payout Request <?= ($payout->id); ?>" icon="task-add icon-book">
+    <ktml:toolbar type="actionbar" title="Payout #<?= ($payout->id); ?>" icon="task-add icon-book">
 </ktml:module>
 
 <div class="row-fluid">
@@ -25,7 +25,7 @@ defined('KOOWA') or die; ?>
 
         <fieldset class="form-vertical">
 
-            <?//= import('com://admin/nucleonplus.order.default_order.html', ['payout' => $payout]) ?>
+            <?= import('com://admin/nucleonplus.payout.default_account.html', ['payout' => $payout]) ?>
 
         </fieldset>
         

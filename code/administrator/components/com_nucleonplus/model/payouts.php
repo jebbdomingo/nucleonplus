@@ -17,6 +17,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
         $this->getState()
             ->insert('account_id', 'int')
             ->insert('status', 'string')
+            ->insert('search', 'string')
             ;
     }
 
@@ -24,7 +25,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('account_id', 'status'))
+                // 'searchable' => array('columns' => array('account_number', 'status'))
             )
         ));
 
@@ -37,6 +38,9 @@ class ComNucleonplusModelPayouts extends KModelDatabase
 
         $query
             ->columns('a.account_number')
+            ->columns('a.status AS account_status')
+            ->columns('a.created_on AS account_created_on')
+            ->columns('u.name')
             ;
     }
 
@@ -44,6 +48,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
     {
         $query
             ->join(array('a' => 'nucleonplus_accounts'), 'tbl.account_id = a.nucleonplus_account_id')
+            ->join(array('u' => 'users'), 'a.user_id = u.id')
         ;
 
         parent::_buildQueryJoins($query);
@@ -61,6 +66,15 @@ class ComNucleonplusModelPayouts extends KModelDatabase
 
         if ($state->status && $state->status <> 'all') {
             $query->where('tbl.status = :status')->bind(['status' => $state->status]);
+        }
+
+        if ($state->search)
+        {
+            $conditions = array(
+                'a.account_number LIKE :keyword',
+                'u.name LIKE :keyword',
+            );
+            $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
         }
     }
 }

@@ -17,6 +17,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
         $this->getState()
             ->insert('account_id', 'int')
             ->insert('order_status', 'string')
+            ->insert('search', 'string')
             ;
     }
 
@@ -24,7 +25,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('nucleonplus_order_id', 'package_name', 'account_number', 'invoice_status'))
+                //'searchable' => array('columns' => array('nucleonplus_order_id', 'package_name', 'account_number', 'invoice_status'))
             )
         ));
 
@@ -63,6 +64,15 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         if ($state->order_status && $state->order_status <> 'all') {
             $query->where('tbl.order_status = :order_status')->bind(['order_status' => $state->order_status]);
+        }
+
+        if ($state->search)
+        {
+            $conditions = array(
+                'a.account_number LIKE :keyword',
+                'u.name LIKE :keyword',
+            );
+            $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
         }
     }
 }

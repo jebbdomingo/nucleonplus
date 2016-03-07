@@ -41,9 +41,7 @@
             </a>
         </td>
         <td>
-            <?= helper('date.humanize', array('date' => $order->created_on)) ?>
-            <br />
-            <?= $order->created_on ?>
+            <?= helper('date.format', array('date' => $order->created_on)) ?>
         </td>
         <td>
             <?= escape($order->payment_reference) ?>
