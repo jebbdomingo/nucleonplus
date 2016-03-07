@@ -13,14 +13,21 @@
 
 class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 {
+    public function __construct(KObjectConfig $config)
+    {
+        parent::__construct($config);
+
+        $this->addCommandCallback('before.add', '_validate');
+    }
+
     /**
-     * Create payout request
+     * Validate and construct data
      *
      * @param KControllerContextInterface $context
-     *
-     * @return entity
+     * 
+     * @return KModelEntityInterface
      */
-    protected function _actionAdd(KControllerContextInterface $context)
+    protected function _validate(KControllerContextInterface $context)
     {
         $contextData  = $context->request->data;
         $user         = $this->getObject('user');
@@ -38,6 +45,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
             if (is_null($rebates->id)) {
                 throw new Exception("There is discrepancy in your request ref# {$id}");
+                return false;
             }
 
             foreach ($rebates as $rebate)
@@ -49,6 +57,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
                 if ($rewardFrom->prpv <> $rebate->points) {
                     throw new Exception("There is a discrepancy in your rewards ref# {$rewardFrom->id}-{$rebate->id}");
+                    return false;
                 }
                 else $totalRebates += $rewardFrom->prpv;
             }
@@ -62,7 +71,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
         $context->getRequest()->setData($data->toArray());
 
-        return parent::_actionAdd($context);
+        return true;
     }
 
     /**

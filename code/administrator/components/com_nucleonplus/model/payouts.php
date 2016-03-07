@@ -77,4 +77,18 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
         }
     }
+
+    /**
+     * Set default sorting
+     *
+     * @param KModelContextInterface $context A model context object
+     *
+     * @return void
+     */
+    protected function _beforeFetch(KModelContextInterface $context)
+    {
+        if (is_null($context->state->sort)) {
+            $context->query->order('u.name', 'desc');
+        }
+    }
 }
