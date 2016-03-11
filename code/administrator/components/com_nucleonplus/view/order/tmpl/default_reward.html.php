@@ -20,7 +20,11 @@
                         <span class="label label-<?= ($order->_reward_status == 'pending') ? 'default' : 'info' ?>"><?= ucwords(escape($order->_reward_status)) ?></span>
                     </td>
                 </tr>
-                <? if ($order->invoice_status == 'paid' && $order->_reward_status <> 'active'): ?>
+                <? if ($order->invoice_status == 'paid' && !in_array($order->_reward_status, [
+                        'active',
+                        'processing',
+                        'claimed'
+                    ])): ?>
                     <tr>
                         <td><label><strong><?= translate('Action'); ?></strong></label></td>
                         <td>

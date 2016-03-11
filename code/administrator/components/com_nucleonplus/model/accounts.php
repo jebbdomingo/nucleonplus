@@ -75,63 +75,22 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     }
 
     /**
-     * Get total direct referrals
-     *
-     * @return KDatabaseRowsetDefault
-     */
-    public function getTotalDirectReferrals()
-    {
-        $state = $this->getState();
-
-        $table = $this->getObject('com://admin/nucleonplus.database.table.referralbonuses');
-        $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_referralbonuses AS tbl')
-            ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
-            ->where('tbl.referral_type = :referral_type')->bind(['referral_type' => 'dr'])
-            ->group('tbl.account_id')
-        ;
-
-        return $table->select($query);
-    }
-
-    /**
-     * Get total indirect referrals
-     *
-     * @return KDatabaseRowsetDefault
-     */
-    public function getTotalIndirectReferrals()
-    {
-        $state = $this->getState();
-
-        $table = $this->getObject('com://admin/nucleonplus.database.table.referralbonuses');
-        $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_referralbonuses AS tbl')
-            ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
-            ->where('tbl.referral_type = :referral_type')->bind(['referral_type' => 'ir'])
-            ->group('tbl.account_id')
-        ;
-
-        return $table->select($query);
-    }
-
-    /**
-     * Get total referral bonus per account
+     * Get total available referral bonus per account
      * i.e. dr and ir bonuses
      *
      * @return KDatabaseRowsetDefault
      */
-    public function getTotalReferralBonus()
+    public function getTotalAvailableReferralBonus()
     {
         $state = $this->getState();
 
         $table = $this->getObject('com://admin/nucleonplus.database.table.referralbonuses');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_referralbonuses AS tbl')
-            ->columns('(SUM(tbl.credit) - SUM(tbl.debit)) AS total')
+            ->columns('SUM(tbl.points) AS total')
             ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
             ->where('tbl.referral_type IN :referral_type')->bind(['referral_type' => ['dr','ir']])
+            ->where('tbl.payout_id = :payout_id')->bind(['payout_id' => 0])
             ->group('tbl.account_id')
         ;
 
@@ -139,12 +98,12 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     }
 
     /**
-     * Get total product rebates per account
+     * Get total available product rebates per account
      * i.e. pr
      *
      * @return KDatabaseRowsetDefault
      */
-    public function getTotalRebates()
+    public function getTotalAvailableRebates()
     {
         $state = $this->getState();
 
@@ -154,6 +113,8 @@ class ComNucleonplusModelAccounts extends KModelDatabase
             ->columns('SUM(tbl.points) AS total')
             ->join(array('r' => 'nucleonplus_rewards'), 'tbl.reward_id_to = r.nucleonplus_reward_id')
             ->where('r.customer_id = :account_id')->bind(['account_id' => $state->id])
+            ->where('r.status = :status')->bind(['status' => 'ready'])
+            ->where('r.payout_id = :payout_id')->bind(['payout_id' => 0])
             ->group('r.customer_id')
         ;
 

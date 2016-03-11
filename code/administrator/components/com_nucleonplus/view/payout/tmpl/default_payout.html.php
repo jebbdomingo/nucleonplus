@@ -18,12 +18,7 @@
                 </tr>
                 <tr>
                     <td><label><strong><?= translate('Status'); ?></strong></label></td>
-                    <td>
-                        <?= helper('listbox.payoutStatus', array(
-                            'name'     => 'status',
-                            'selected' => $payout->status,
-                        )) ?>
-                    </td>
+                    <td><?= $payout->status ?></td>
                 </tr>
                 <tr>
                     <td><label><strong><?= translate('Date') ?></strong></label></td>

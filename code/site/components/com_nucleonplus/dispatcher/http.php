@@ -23,13 +23,11 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
     {
         if (!$this->getUser()->isAuthentic())
         {
-            $response = $context->getResponse();
-            $response->addMessage('Please login to access your account');
-
             $identifier = $context->getSubject()->getIdentifier();
             $url        = sprintf('index.php?option=com_%s', $identifier->package);
-
-            $response->setRedirect(JRoute::_($url, false));
+            $message    = 'Please login to access your account';
+            
+            $context->response->setRedirect(JRoute::_($url, false), $message, 'error');
         }
         else return parent::_actionDispatch($context);
     }

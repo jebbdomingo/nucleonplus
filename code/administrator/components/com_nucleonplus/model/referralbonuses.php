@@ -8,16 +8,15 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusModelRewards extends KModelDatabase
+class ComNucleonplusModelReferralbonuses extends KModelDatabase
 {
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
 
         $this->getState()
-            ->insert('status', 'string')
-            ->insert('product_id', 'int')
-            ->insert('customer_id', 'int')
+            ->insert('referral_type', 'string')
+            ->insert('account_id', 'int')
             ->insert('payout_id', 'int')
         ;
     }
@@ -26,7 +25,7 @@ class ComNucleonplusModelRewards extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('status', 'product_id'))
+                //'searchable' => array('columns' => array('product_id'))
             )
         ));
 
@@ -39,16 +38,12 @@ class ComNucleonplusModelRewards extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->status) {
-            $query->where('tbl.status = :status')->bind(['status' => $state->status]);
+        if ($state->referral_type) {
+            $query->where('tbl.referral_type = :referral_type')->bind(['referral_type' => $state->referral_type]);
         }
 
-        if ($state->product_id) {
-            $query->where('tbl.product_id = :product_id')->bind(['product_id' => $state->product_id]);
-        }
-
-        if ($state->customer_id) {
-            $query->where('tbl.customer_id) = :customer_id)')->bind(['customer_id)' => $state->customer_id]);
+        if ($state->account_id) {
+            $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
         }
 
         if ($state->payout_id === 0 || $state->payout_id > 0) {

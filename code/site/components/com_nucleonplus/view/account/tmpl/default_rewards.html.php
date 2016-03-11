@@ -23,19 +23,19 @@ defined('KOOWA') or die; ?>
             <tbody>
                 <tr>
                     <td>Available Product Rebates</td>
-                    <td class="text-right"><?= number_format($rebates, 2) ?></td>
+                    <td class="text-right"><?= number_format($total_rebates, 2) ?></td>
                 </tr>
                 <tr>
                     <td>Available Referral Bonuses</td>
-                    <td class="text-right"><?= number_format($bonus, 2) ?></td>
+                    <td class="text-right"><?= number_format($total_referral_bonus, 2) ?></td>
                 </tr>
                 <tr class="info">
                     <td>Total Available Rewards</td>
-                    <th class="text-right"><?= number_format($total, 2) ?></th>
+                    <th class="text-right"><?= number_format($total_bonus, 2) ?></th>
                 </tr>
             </tbody>
         </table>
 
-        <p class="pull-right"><a class="btn btn-primary btn-md" href="#" role="button"><?= translate('Redeem') ?></a></p>
+        <p class="pull-right"><a class="btn btn-primary btn-md" href="<?= route('view=account&layout=rewards&tmpl=koowa') ?>" role="button"><?= translate('Claim') ?></a></p>
     </div>
 </div>

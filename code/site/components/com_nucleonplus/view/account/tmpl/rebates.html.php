@@ -18,20 +18,17 @@ defined('KOOWA') or die; ?>
         <thead>
             <th>Order #</th>
             <th>Product Package</th>
-            <th>Slots</th>
             <th class="text-right">Points</th>
         </thead>
         <tbody>
-            <? foreach ($rewards as $reward): ?>
+            <? foreach ($rebates as $rebate): ?>
                 <tr>
                     <td>
-                        <input type="hidden" name="rewards[]" value="<?= $reward->id ?>" />
-                        <input type="hidden" name="total_rebates[]" value="<?= $reward->total ?>" />
-                        <?= $reward->product_id ?>
+                        <input type="hidden" name="rebates[]" value="<?= $rebate->id ?>" />
+                        <?= $rebate->product_id ?>
                     </td>
-                    <td><?= $reward->product_name ?></td>
-                    <td><?= $reward->slots ?></td>
-                    <td class="text-right"><strong><?= number_format($reward->total, 2) ?></strong></td>
+                    <td><?= $rebate->product_name ?></td>
+                    <td class="text-right"><strong><?= number_format($rebate->points, 2) ?></strong></td>
                 </tr>
             <? endforeach ?>
         </tbody>

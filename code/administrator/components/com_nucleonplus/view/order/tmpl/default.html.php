@@ -21,21 +21,23 @@ defined('KOOWA') or die; ?>
 
 <div class="row-fluid">
 
-    <div class="span8">
+    <div class="span4">
 
         <fieldset class="form-vertical">
 
-            <?= import('com://admin/nucleonplus.order.default_order.html', ['order' => $order]) ?>
+            <?= import('com://admin/nucleonplus.order.default_account.html', ['order' => $order]) ?>
+
+            <?= import('com://admin/nucleonplus.order.default_reward.html', ['order' => $order]) ?>
 
         </fieldset>
         
     </div>
 
-    <div class="span4">
+    <div class="span8">
 
         <fieldset class="form-vertical">
 
-            <?= import('com://admin/nucleonplus.order.default_reward.html', ['order' => $order]) ?>
+            <?= import('com://admin/nucleonplus.order.default_order.html', ['order' => $order]) ?>
 
         </fieldset>
         

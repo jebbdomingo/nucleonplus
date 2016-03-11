@@ -14,8 +14,16 @@ defined('KOOWA') or die; ?>
 
     <legend><?= translate('My Referral Bonus') ?></legend>
 
-    <input type="hidden" name="direct_referral" value="<?= $directReferrals ?>" />
-    <input type="hidden" name="indirect_referral" value="<?= $indirectReferrals ?>" />
+    <? foreach ($dr_bonuses as $dr_bonus): ?>
+        <? $dr_bonus_points += $dr_bonus->points ?>
+        <input type="hidden" name="dr_bonuses[]" value="<?= $dr_bonus->id ?>" />
+    <? endforeach ?>
+
+    <? foreach ($ir_bonuses as $ir_bonus): ?>
+        <? $ir_bonus_points += $ir_bonus->points ?>
+        <input type="hidden" name="ir_bonuses[]" value="<?= $ir_bonus->id ?>" />
+    <? endforeach ?>
+
     <table class="table">
         <thead>
             <th>Referral Type</th>
@@ -24,15 +32,15 @@ defined('KOOWA') or die; ?>
         <tbody>
             <tr>
                 <td>Direct Referrals</td>
-                <td class="text-right"><?= number_format($directReferrals, 2) ?></td>
+                <td class="text-right"><?= number_format($dr_bonus_points, 2) ?></td>
             </tr>
             <tr>
                 <td>Indirect Referrals</td>
-                <td class="text-right"><?= number_format($indirectReferrals, 2) ?></td>
+                <td class="text-right"><?= number_format($ir_bonus_points, 2) ?></td>
             </tr>
             <tr>
                 <td>Total</td>
-                <td class="text-right"><strong><?= number_format($totalRewards, 2) ?></strong></td>
+                <td class="text-right"><strong><?= number_format(($dr_bonus_points + $ir_bonus_points), 2) ?></strong></td>
             </tr>
         </tbody>
     </table>

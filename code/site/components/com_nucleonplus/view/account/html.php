@@ -11,23 +11,35 @@ class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
 {
     protected function _fetchData(KViewContext $context)
     {
-        $model  = $this->getModel();
-        $entity = $model->fetch();
+        $model   = $this->getModel();
+        $account = $model->fetch();
 
         // Rewards summary
-        $context->data->bonus   = $model->getTotalReferralBonus()->total;
-        $context->data->rebates = $model->getTotalRebates()->total;
-        $context->data->total   = ($context->data->bonus + $context->data->rebates);
+        $context->data->total_referral_bonus = $model->getTotalAvailableReferralBonus()->total;
+        $context->data->total_rebates        = $model->getTotalAvailableRebates()->total;
+        $context->data->total_bonus          = ($context->data->total_referral_bonus + $context->data->total_rebates);
 
         // Rewards payout details
-        $context->data->directReferrals   = $model->getTotalDirectReferrals()->total;
-        $context->data->indirectReferrals = $model->getTotalIndirectReferrals()->total;
-        $context->data->totalRewards      = ($context->data->directReferrals + $context->data->indirectReferrals);
+        $context->data->dr_bonuses = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
+            ->account_id($account->id)
+            ->referral_type('dr')
+            ->payout_id(0)
+            ->fetch()
+        ;
 
-        $context->data->rewards = $this->getObject('com://admin/nucleonplus.model.rewards')
-            ->customer_id($entity->id)
-            ->status('ready')
-            ->getRebates();
+        //var_dump($context->data->dr_bonuses->id);
+
+        $context->data->ir_bonuses = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
+            ->account_id($account->id)
+            ->referral_type('ir')
+            ->payout_id(0)
+            ->fetch()
+        ;
+        $context->data->rebates = $this->getObject('com://admin/nucleonplus.model.rebates')
+            ->customer_id($account->id)
+            ->payout_id(0)
+            ->fetch()
+        ;
 
         parent::_fetchData($context);
     }

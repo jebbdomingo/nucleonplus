@@ -91,7 +91,7 @@ class ComNucleonplusRebatePackagereferral extends KObject
             'reward_id'     => $order->_reward_id,
             'account_id'    => $account->getIdFromSponsor(),
             'referral_type' => 'dr', // Direct Referral
-            'credit'        => ($order->_reward_drpv * $order->_reward_slots)
+            'points'        => ($order->_reward_drpv * $order->_reward_slots)
         ];
 
         $controller->add($data);
@@ -125,7 +125,7 @@ class ComNucleonplusRebatePackagereferral extends KObject
             'reward_id'     => $order->_reward_id,
             'account_id'    => $indirectReferrer->id,
             'referral_type' => 'ir', // Indirect Referral
-            'credit'        => ($order->_reward_irpv * $order->_reward_slots)
+            'points'        => ($order->_reward_irpv * $order->_reward_slots)
         ];
 
         // Record pay for the first immediate referrer
@@ -146,7 +146,7 @@ class ComNucleonplusRebatePackagereferral extends KObject
                 'reward_id'     => $order->_reward_id,
                 'account_id'    => $indirectReferrer->id,
                 'referral_type' => 'ir', // Indirect Referral
-                'credit'        => ($order->_reward_irpv * $order->_reward_slots)
+                'points'        => ($order->_reward_irpv * $order->_reward_slots)
             ];
             
             $controller->add($data);
