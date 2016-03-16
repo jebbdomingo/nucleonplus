@@ -222,6 +222,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
         $payout = parent::_actionEdit($context);
 
+        // TODO what if there's no reward?
         $reward = $this->getObject('com:nucleonplus.model.rewards')->payout_id($payout->id)->fetch();
         $reward->status = 'claimed';
         $reward->save();

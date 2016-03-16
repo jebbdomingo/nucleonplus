@@ -62,12 +62,13 @@ class ComNucleonplusRebatePackagereferral extends KObject
      *
      * @return void
      */
-    public function create(KModelEntityInterface $object)
+    public function create(KModelEntityInterface $orders)
     {
-        foreach ($object as $entity)
+        foreach ($orders as $order)
         {
-            $this->_recordDirectReferrals($entity);
-            $this->_recordIndirectReferrals($entity);
+            $account = $this->getObject('com:nucleonplus.model.accounts')->id($order->account_id)->fetch();
+
+            $this->_recordDirectReferrals($account, $order);
         }
     }
 
@@ -78,10 +79,9 @@ class ComNucleonplusRebatePackagereferral extends KObject
      *
      * @return void
      */
-    private function _recordDirectReferrals(KModelEntityInterface $order)
+    private function _recordDirectReferrals(KModelEntityInterface $account, KModelEntityInterface $order)
     {
         $controller = $this->getObject($this->_controller);
-        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($order->account_id)->fetch();
 
         if (is_null($account->sponsor_id)) {
             return null;
@@ -95,29 +95,25 @@ class ComNucleonplusRebatePackagereferral extends KObject
         ];
 
         $controller->add($data);
+
+        // Check if direct referrer has sponsor as well
+        $directReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($account->getIdFromSponsor())->fetch();
+
+        if (!is_null($directReferrer->sponsor_id)) {
+            $this->_recordIndirectReferrals($directReferrer, $order);
+        }
     }
 
     /**
      * Record indirect referrals
      *
-     * @param KModelEntityRow $order
+     * @param KModelEntityInterface $order
      *
      * @return void
      */
-    private function _recordIndirectReferrals(KModelEntityRow $order)
+    private function _recordIndirectReferrals(KModelEntityInterface $directReferrer, KModelEntityInterface $order)
     {
         $controller = $this->getObject($this->_controller);
-        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($order->account_id)->fetch();
-
-        if (is_null($account->sponsor_id)) {
-            return null;
-        }
-
-        $directReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($account->getIdFromSponsor())->fetch();
-
-        if (is_null($directReferrer->sponsor_id)) {
-            return null;
-        }
 
         $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($directReferrer->getIdFromSponsor())->fetch();
 

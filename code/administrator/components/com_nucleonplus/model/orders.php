@@ -40,7 +40,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
             ->columns('a.account_number')
             ->columns('a.status')
             ->columns('u.name')
-            ;
+        ;
     }
 
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)

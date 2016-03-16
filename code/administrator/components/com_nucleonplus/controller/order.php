@@ -19,6 +19,72 @@
 class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 {
     /**
+     * Inventory Service
+     *
+     * @var ComNucleonplusAccountingServiceInventory
+     */
+    protected $_inventory_service;
+
+    /**
+     * Journal Service
+     *
+     * @var ComNucleonplusAccountingServiceJournalInterface
+     */
+    protected $_journal_service;
+
+    /**
+     * Constructor.
+     *
+     * @param KObjectConfig $config Configuration options.
+     */
+    public function __construct(KObjectConfig $config)
+    {
+        parent::__construct($config);
+
+        // Inventory service
+        $identifier       = $this->getIdentifier($config->inventory_service);
+        $inventoryService = $this->getObject($identifier);
+
+        if (!($inventoryService instanceof ComNucleonplusAccountingServiceInventory))
+        {
+            throw new UnexpectedValueException(
+                "Inventory Service $identifier does not implement ComNucleonplusAccountingServiceInventory"
+            );
+        }
+        else $this->_inventory_service = $inventoryService;
+
+        // Journal service
+        $identifier     = $this->getIdentifier($config->journal_service);
+        $journalService = $this->getObject($identifier);
+
+        if (!($journalService instanceof ComNucleonplusAccountingServiceJournalInterface))
+        {
+            throw new UnexpectedValueException(
+                "Journal Service $identifier does not implement ComNucleonplusAccountingServiceJournalInterface"
+            );
+        }
+        else $this->_journal_service = $journalService;
+    }
+
+    /**
+     * Initializes the default configuration for the object
+     *
+     * Called from {@link __construct()} as a first step of object instantiation.
+     *
+     * @param   KObjectConfig $config Configuration options
+     * @return void
+     */
+    protected function _initialize(KObjectConfig $config)
+    {
+        $config->append(array(
+            'inventory_service' => 'com:nucleonplus.accounting.service.inventory',
+            'journal_service'   => 'com:nucleonplus.accounting.service.journal',
+        ));
+
+        parent::_initialize($config);
+    }
+
+    /**
      * Create Order
      *
      * @param KControllerContextInterface $context
@@ -39,7 +105,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'note'               => $context->request->data->note,
         ]);
 
-        switch ($context->request->data->form_type) {
+        switch ($context->request->data->form_type)
+        {
              case 'pos':
                 $data->merge([
                     'order_status'    => 'completed',
@@ -61,7 +128,16 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $context->getRequest()->setData($data->toArray());
 
-        return parent::_actionAdd($context);
+        $order = parent::_actionAdd($context);
+
+        // Record sale and update inventory
+        if ($order->invoice_status == 'paid')
+        {
+            $this->_journal_service->recordSale($order);
+            $this->_inventory_service->decreaseQuantity($order);
+        }
+
+        return $order;
     }
 
     /**

@@ -23,6 +23,16 @@ defined('KOOWA') or die; ?>
 
 <div class="row-fluid">
 
+    <div class="span4">
+
+        <fieldset class="form-vertical">
+
+            <?= import('com://admin/nucleonplus.order.default_reward.html', ['order' => $order]) ?>
+
+        </fieldset>
+
+    </div>
+
     <div class="span8">
 
         <fieldset class="form-vertical">
@@ -80,16 +90,6 @@ defined('KOOWA') or die; ?>
 
         </fieldset>
         
-    </div>
-
-    <div class="span4">
-
-        <fieldset class="form-vertical">
-
-            <?= import('com://admin/nucleonplus.order.default_reward.html', ['order' => $order]) ?>
-
-        </fieldset>
-
     </div>
 
 </div>
