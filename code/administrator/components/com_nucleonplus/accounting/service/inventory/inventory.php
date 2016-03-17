@@ -9,6 +9,9 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
+/**
+ * @todo Implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
+ */
 class ComNucleonplusAccountingServiceInventory extends ComNucleonplusAccountingServiceObject implements ComNucleonplusAccountingServiceInventoryInterface
 {
     /**
@@ -22,7 +25,7 @@ class ComNucleonplusAccountingServiceInventory extends ComNucleonplusAccountingS
     {
         foreach ($order->getItems() as $item)
         {
-            $inventoryItem = $this->find->find($item->inventory_item_id);
+            $inventoryItem = $this->find($item->inventory_item_id);
 
             $oldQty = $inventoryItem->getQtyOnHand();
             $newQty = ($inventoryItem->getQtyOnHand() - $item->quantity);

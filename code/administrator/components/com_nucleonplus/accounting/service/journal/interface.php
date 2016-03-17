@@ -26,15 +26,6 @@ interface ComNucleonplusAccountingServiceJournalInterface
     public function recordSale(KModelEntityInterface $order);
 
     /**
-     * Record cost of goods sold
-     *
-     * @param KModelEntityInterface $order
-     *
-     * @return mixed
-     */
-    public function recordCostOfGoodsSold(KModelEntityInterface $order);
-
-    /**
      * Record sales allocations
      *
      * @param KModelEntityInterface $order

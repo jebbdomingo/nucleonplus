@@ -133,6 +133,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         // Record sale and update inventory
         if ($order->invoice_status == 'paid')
         {
+            // TODO implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
             $this->_journal_service->recordSale($order);
             $this->_inventory_service->decreaseQuantity($order);
         }

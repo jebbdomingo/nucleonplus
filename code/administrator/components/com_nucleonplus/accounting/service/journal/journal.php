@@ -9,14 +9,31 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
+/**
+ * @todo Implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
+ */
 class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingServiceObject implements ComNucleonplusAccountingServiceJournalInterface
 {
     /**
      * Item Service
      *
-     * @var ComNucleonplusAccountingServiceItemInterface
+     * @var ComNucleonplusAccountingServiceInventoryInterface
      */
-    protected $_item_service;
+    protected $_inventory_service;
+
+    /**
+     * Undeposited funds account
+     *
+     * @var integer
+     */
+    protected $_undeposited_funds_account;
+
+    /**
+     * Sales of product account
+     *
+     * @var integer
+     */
+    protected $_sales_of_product_account;
 
     /**
      * Constructor.
@@ -28,16 +45,20 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
         parent::__construct($config);
 
         // Item service
-        $identifier   = $this->getIdentifier($config->item_service);
-        $item_service = $this->getObject($identifier);
+        $identifier   = $this->getIdentifier($config->inventory_service);
+        $inventory_service = $this->getObject($identifier);
 
-        if (!($item_service instanceof ComNucleonplusAccountingServiceItemInterface))
+        if (!($inventory_service instanceof ComNucleonplusAccountingServiceInventoryInterface))
         {
             throw new UnexpectedValueException(
-                "Item Service $identifier does not implement ComNucleonplusAccountingServiceItemInterface"
+                "Item Service $identifier does not implement ComNucleonplusAccountingServiceInventoryInterface"
             );
         }
-        else $this->_item_service = $item_service;
+        else $this->_inventory_service = $inventory_service;
+
+        // Accounts
+        $this->_undeposited_funds_account = $config->undeposited_funds_account;
+        $this->_sales_of_product_account = $config->sales_of_product_account;
     }
 
     /**
@@ -51,7 +72,9 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'item_service' => 'com:nucleonplus.accounting.service.item',
+            'inventory_service'         => 'com:nucleonplus.accounting.service.inventory',
+            'undeposited_funds_account' => 92,
+            'sales_of_product_account'  => 124,
         ));
 
         parent::_initialize($config);
@@ -65,20 +88,21 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
     protected $JournalEntry;
 
     /**
-     * Record sale in accounting system
+     * Record sale and cost of goods sold in the accounting system 
      *
-     * @param KModelEntityInterface $order
+     * @param KModelEntityInterface $order [description]
      *
-     * @return void
+     * @return [type]                [description]
      */
-    public function recordCostOfGoodsSold(KModelEntityInterface $order)
+    public function recordSale(KModelEntityInterface $order)
     {
         $this->_createJournalEntry($order->id);
 
         foreach ($order->getItems() as $item)
         {
-            $inventoryItem = $this->_item_service->find($item->inventory_item_id);
+            $inventoryItem = $this->_inventory_service->find($item->inventory_item_id);
 
+            // Cost of goods sold transaction
             $this->_createDebitLine(array(
                 'account'     => QuickBooks_IPP_IDS::usableIDType($inventoryItem->getExpenseAccountRef()),
                 'description' => 'test',
@@ -90,10 +114,25 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
                 'description' => 'test',
                 'amount'      => ($inventoryItem->getPurchaseCost() * $item->quantity),
             ));
+
+            // Sale transaction
+            $this->_createDebitLine(array(
+                'account'     => $this->_undeposited_funds_account,
+                'description' => 'test',
+                'amount'      => ($inventoryItem->getUnitPrice() * $item->quantity),
+            ));
+
+            $this->_createCreditLine(array(
+                'account'     => $this->_sales_of_product_account,
+                'description' => 'test',
+                'amount'      => ($inventoryItem->getUnitPrice() * $item->quantity),
+            ));
         }
 
         $this->_save();
     }
+
+    public function recordSalesAllocations(KModelEntityInterface $order) {}
 
     /**
      * Save

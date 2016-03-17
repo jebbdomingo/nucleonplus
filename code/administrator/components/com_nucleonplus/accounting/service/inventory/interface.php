@@ -19,10 +19,9 @@ interface ComNucleonplusAccountingServiceInventoryInterface
     /**
      * Decrease an item's quantity
      *
-     * @param mixed   $id       ID of the item in inventory system
-     * @param integer $quantity Quantity number of items to be deducted
+     * @param KModelEntityInterface $order
      *
      * @return void
      */
-    public function decreaseQuantity($id, $quantity);
+    public function decreaseQuantity(KModelEntityInterface $order);
 }
