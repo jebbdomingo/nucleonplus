@@ -68,7 +68,7 @@ class ComNucleonplusRebatePackagereferral extends KObject
         {
             $account = $this->getObject('com:nucleonplus.model.accounts')->id($order->account_id)->fetch();
 
-            $this->_recordDirectReferrals($account, $order);
+            $this->_recordReferrals($account, $order);
         }
     }
 
@@ -79,10 +79,11 @@ class ComNucleonplusRebatePackagereferral extends KObject
      *
      * @return void
      */
-    private function _recordDirectReferrals(KModelEntityInterface $account, KModelEntityInterface $order)
+    private function _recordReferrals(KModelEntityInterface $account, KModelEntityInterface $order)
     {
         $controller = $this->getObject($this->_controller);
 
+        // Record direct referral
         if (is_null($account->sponsor_id)) {
             return null;
         }
@@ -95,6 +96,9 @@ class ComNucleonplusRebatePackagereferral extends KObject
         ];
 
         $controller->add($data);
+
+        // Post direct referral to accounting system
+        $this->_journal_service->recordReferralBonusAllocation($order);
 
         // Check if direct referrer has sponsor as well
         $directReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($account->getIdFromSponsor())->fetch();

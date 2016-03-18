@@ -26,11 +26,11 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected $_inventory_service;
 
     /**
-     * Journal Service
+     * Sales Receipt Service
      *
      * @var ComNucleonplusAccountingServiceJournalInterface
      */
-    protected $_journal_service;
+    protected $_salesreceipt_service;
 
     /**
      * Constructor.
@@ -53,17 +53,17 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else $this->_inventory_service = $inventoryService;
 
-        // Journal service
-        $identifier     = $this->getIdentifier($config->journal_service);
-        $journalService = $this->getObject($identifier);
+        // Sales Receipt Service
+        $identifier          = $this->getIdentifier($config->salesreceipt_service);
+        $salesreceiptService = $this->getObject($identifier);
 
-        if (!($journalService instanceof ComNucleonplusAccountingServiceJournalInterface))
+        if (!($salesreceiptService instanceof ComNucleonplusAccountingServiceSalesreceiptInterface))
         {
             throw new UnexpectedValueException(
-                "Journal Service $identifier does not implement ComNucleonplusAccountingServiceJournalInterface"
+                "Sales Receipt Service $identifier does not implement ComNucleonplusAccountingServiceSalesreceiptInterface"
             );
         }
-        else $this->_journal_service = $journalService;
+        else $this->_salesreceipt_service = $salesreceiptService;
     }
 
     /**
@@ -78,7 +78,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     {
         $config->append(array(
             'inventory_service' => 'com:nucleonplus.accounting.service.inventory',
-            'journal_service'   => 'com:nucleonplus.accounting.service.journal',
+            'salesreceipt_service'   => 'com:nucleonplus.accounting.service.salesreceipt',
         ));
 
         parent::_initialize($config);
@@ -133,9 +133,11 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         // Record sale and update inventory
         if ($order->invoice_status == 'paid')
         {
+            //$order = $this->getModel()->fetch();
+            
             // TODO implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
-            $this->_journal_service->recordSale($order);
-            $this->_inventory_service->decreaseQuantity($order);
+            $this->_salesreceipt_service->recordSale($order);
+            //$this->_inventory_service->decreaseQuantity($order);
         }
 
         return $order;

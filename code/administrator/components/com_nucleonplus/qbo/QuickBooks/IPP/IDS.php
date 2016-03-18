@@ -155,6 +155,8 @@ class QuickBooks_IPP_IDS
 	const RESOURCE_SHIPMETHOD = 'ShipMethod';
 	
 	const RESOURCE_TIMEACTIVITY = 'TimeActivity';
+
+	const RESOURCE_TRANSFER = 'Transfer';
 	
 	/**
 	 * IDS v2 - QuickBooks Desktop

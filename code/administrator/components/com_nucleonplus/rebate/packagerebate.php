@@ -230,6 +230,8 @@ class ComNucleonplusRebatePackagerebate extends KObject
             $unpaidSlot->{$unpaidSlot->available_leg} = $slot->id;
             $unpaidSlot->save();
             $slot->consume();
+
+            $this->_journal_service->recordRebatesAllocation($slot);
             
             // Process member rebates
             // @todo move to dedicated rewards processing method

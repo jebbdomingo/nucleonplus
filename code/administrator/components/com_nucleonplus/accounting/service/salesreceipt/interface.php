@@ -10,11 +10,11 @@
  */
 
 /**
- * Journal Interface.
+ * Sale Receipt Interface.
  *
  * @author Jebb Domingo <https://github.com/jebbdomingo>
  */
-interface ComNucleonplusAccountingServiceJournalInterface
+interface ComNucleonplusAccountingServiceSalesreceiptInterface
 {
     /**
      * Record sale
@@ -24,22 +24,4 @@ interface ComNucleonplusAccountingServiceJournalInterface
      * @return mixed
      */
     public function recordSale(KModelEntityInterface $order);
-
-    /**
-     * Record rebates allocation
-     *
-     * @param KModelEntityInterface $slot
-     *
-     * @return mixed
-     */
-    public function recordRebatesAllocation(KModelEntityInterface $slot);
-
-    /**
-     * Record referral bonus allocation
-     *
-     * @param KModelEntityInterface $order
-     *
-     * @return mixed
-     */
-    public function recordReferralBonusAllocation(KModelEntityInterface $reward);
 }

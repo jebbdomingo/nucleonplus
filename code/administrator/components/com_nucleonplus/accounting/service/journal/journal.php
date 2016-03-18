@@ -36,6 +36,69 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
     protected $_sales_of_product_account;
 
     /**
+     * System fee account
+     *
+     * @var integer
+     */
+    protected $_system_fee_account;
+
+    /**
+     * Contingency fund account
+     *
+     * @var integer
+     */
+    protected $_contingency_fund_account;
+
+    /**
+     * Operating expense budget account
+     *
+     * @var integer
+     */
+    protected $_operating_expense_budget_account;
+
+    /**
+     * Sales account
+     *
+     * @var integer
+     */
+    protected $_sales_account;
+
+    /**
+     * System fee 
+     *
+     * @var float
+     */
+    protected $_system_fee_rate;
+
+    /**
+     * Contingecy fund rate
+     *
+     * @var float
+     */
+    protected $_contingency_fund_rate;
+
+    /**
+     * Operating expense rate
+     *
+     * @var float
+     */
+    protected $_operating_expense_rate;
+
+    /**
+     * Rebates account
+     *
+     * @var integer
+     */
+    protected $_rebates_account;
+
+    /**
+     * Referral bonus account
+     *
+     * @var integer
+     */
+    protected $_referral_bonus_account;
+
+    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -57,8 +120,17 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
         else $this->_inventory_service = $inventory_service;
 
         // Accounts
-        $this->_undeposited_funds_account = $config->undeposited_funds_account;
-        $this->_sales_of_product_account = $config->sales_of_product_account;
+        $this->_undeposited_funds_account        = $config->undeposited_funds_account;
+        $this->_sales_of_product_account         = $config->sales_of_product_account;
+        $this->_system_fee_account               = $config->system_fee_account;
+        $this->_contingency_fund_account         = $config->contingency_fund_account;
+        $this->_operating_expense_budget_account = $config->operating_expense_budget_account;
+        $this->_sales_account                    = $config->sales_account;
+        $this->_system_fee_rate                  = $config->system_fee_rate;
+        $this->_contingency_fund_rate            = $config->contingency_fund_rate;
+        $this->_operating_expense_rate           = $config->operating_expense_rate;
+        $this->_rebates_account                  = $config->rebates_account;
+        $this->_referral_bonus_account           = $config->referral_bonus_account;
     }
 
     /**
@@ -72,9 +144,18 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'inventory_service'         => 'com:nucleonplus.accounting.service.inventory',
-            'undeposited_funds_account' => 92,
-            'sales_of_product_account'  => 124,
+            'inventory_service'                => 'com:nucleonplus.accounting.service.inventory',
+            'undeposited_funds_account'        => 92,
+            'sales_of_product_account'         => 124,
+            'system_fee_account'               => 138,
+            'contingency_fund_account'         => 139;
+            'operating_expense_budget_account' => 140;
+            'sales_account'                    => 96;
+            'system_fee_rate'                  => 10.00;
+            'contingency_fund_rate'            => 50.00;
+            'operating_expense_rate'           => 60.00;
+            'rebates_account'                  => 141;
+            'referral_bonus_account'           => 142;
         ));
 
         parent::_initialize($config);
@@ -88,11 +169,11 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
     protected $JournalEntry;
 
     /**
-     * Record sale and cost of goods sold in the accounting system 
+     * Record sales transaction in the accounting system 
      *
-     * @param KModelEntityInterface $order [description]
+     * @param KModelEntityInterface $order
      *
-     * @return [type]                [description]
+     * @return void
      */
     public function recordSale(KModelEntityInterface $order)
     {
@@ -102,37 +183,154 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
         {
             $inventoryItem = $this->_inventory_service->find($item->inventory_item_id);
 
-            // Cost of goods sold transaction
-            $this->_createDebitLine(array(
-                'account'     => QuickBooks_IPP_IDS::usableIDType($inventoryItem->getExpenseAccountRef()),
-                'description' => 'test',
-                'amount'      => ($inventoryItem->getPurchaseCost() * $item->quantity),
-            ));
+            // Cost of goods sold distribution line
+            $this->_createCostOfSaleLine($inventoryItem->getPurchaseCost(), $item->quantity);
 
-            $this->_createCreditLine(array(
-                'account'     => QuickBooks_IPP_IDS::usableIDType($inventoryItem->getAssetAccountRef()),
-                'description' => 'test',
-                'amount'      => ($inventoryItem->getPurchaseCost() * $item->quantity),
-            ));
-
-            // Sale transaction
-            $this->_createDebitLine(array(
-                'account'     => $this->_undeposited_funds_account,
-                'description' => 'test',
-                'amount'      => ($inventoryItem->getUnitPrice() * $item->quantity),
-            ));
-
-            $this->_createCreditLine(array(
-                'account'     => $this->_sales_of_product_account,
-                'description' => 'test',
-                'amount'      => ($inventoryItem->getUnitPrice() * $item->quantity),
-            ));
+            // Sales distribution line
+            $this->_createSaleLine($inventoryItem->getUnitPrice(), $item->quantity);
         }
+
+        $this->_createSalesAllocationLine($order);
 
         $this->_save();
     }
 
-    public function recordSalesAllocations(KModelEntityInterface $order) {}
+    /**
+     * Record rebates allocation
+     *
+     * @param KModelEntityInterface $slot
+     *
+     * @return void
+     */
+    public function recordRebatesAllocation(KModelEntityInterface $slot)
+    {
+        $this->_createJournalEntry($slot->product_id);
+
+        $this->_createDebitLine(array(
+            'account'     => $this->_rebates_account,
+            'description' => 'Rebates for Members',
+            'amount'      => $slot->prpv,
+        ));
+
+        $this->_createCreditLine(array(
+            'account'     => $this->_sales_account,
+            'description' => 'Rebates for Members',
+            'amount'      => $slot->prpv,
+        ));
+
+        $this->_save();
+    }
+
+    /**
+     * Record referral bonus allocation
+     *
+     * @param KModelEntityInterface $order
+     *
+     * @return void
+     */
+    public function recordReferralBonusAllocation(KModelEntityInterface $order)
+    {
+        $this->_createJournalEntry($order->id);
+
+        $this->_createDebitLine(array(
+            'account'     => $this->_rebates_account,
+            'description' => 'Rebates for Members',
+            'amount'      => ($order->_reward_drpv * $order->_reward_slots),
+        ));
+
+        $this->_createCreditLine(array(
+            'account'     => $this->_sales_account,
+            'description' => 'Rebates for Members',
+            'amount'      => ($order->_reward_drpv * $order->_reward_slots),
+        ));
+
+        $this->_save();
+    }
+
+    /**
+     * Create cost of goods sold distribution line
+     *
+     * @param float   $cost
+     * @param integer $qty
+     *
+     * @return void
+     */
+    protected function _createCostOfSaleLine($cost, $qty)
+    {
+        $this->_createDebitLine(array(
+            'account'     => QuickBooks_IPP_IDS::usableIDType($inventoryItem->getExpenseAccountRef()),
+            'description' => 'test',
+            'amount'      => ($cost * $qty),
+        ));
+
+        $this->_createCreditLine(array(
+            'account'     => QuickBooks_IPP_IDS::usableIDType($inventoryItem->getAssetAccountRef()),
+            'description' => 'test',
+            'amount'      => ($cost * $qty),
+        ));
+    }
+
+    /**
+     * Create sales distribution line
+     *
+     * @param float   $unitPrice
+     * @param integer $qty
+     *
+     * @return void
+     */
+    protected function _createSaleLine($unitPrice, $qty)
+    {
+        $this->_createDebitLine(array(
+            'account'     => $this->_undeposited_funds_account,
+            'description' => 'test',
+            'amount'      => ($unitPrice * $qty),
+        ));
+
+        $this->_createCreditLine(array(
+            'account'     => $this->_sales_of_product_account,
+            'description' => 'test',
+            'amount'      => ($unitPrice * $qty),
+        ));
+    }
+
+    /**
+     * Create sales allocations distribution line
+     *
+     * @param KModelEntityInterface $order
+     *
+     * @return void
+     */
+    protected function _createSalesAllocationLine(KModelEntityInterface $order)
+    {
+        $systemFee       = ($this->_system_fee_rate * $order->_reward_slots);
+        $contingencyFund = ($this->_contingency_fund_rate * $order->_reward_slots);
+        $operatingFund   = ($this->_operating_expense_rate * $order->_reward_slots);
+        $total           = ($systemFee + $contingencyFund + $operatingFund);
+
+        $this->_createDebitLine(array(
+            'account'     => $this->_system_fee_account,
+            'description' => 'System Fee',
+            'amount'      => $systemFee,
+        ));
+
+        $this->_createDebitLine(array(
+            'account'     => $this->_contingency_fund_account,
+            'description' => 'Contingency Fund',
+            'amount'      => $contingencyFund,
+        ));
+
+        $this->_createDebitLine(array(
+            'account'     => $this->_operating_expense_budget_account,
+            'description' => 'Operating Expense Fund',
+            'amount'      => $operatingFund,
+        ));
+
+        $this->_createCreditLine(array(
+            'account'     => $this->_sales_account,
+            'description' => 'Sales',
+            'amount'      => $total,
+        ));
+    }
 
     /**
      * Save

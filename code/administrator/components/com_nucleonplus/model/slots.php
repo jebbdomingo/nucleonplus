@@ -35,19 +35,19 @@ class ComNucleonplusModelSlots extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('rb.product_id')
-            ->columns('rb.customer_id')
-            ->columns('rb.slots')
-            ->columns('rb.prpv')
-            ->columns('rb.drpv')
-            ->columns('rb.irpv')
+            ->columns('r.product_id')
+            ->columns('r.customer_id')
+            ->columns('r.slots')
+            ->columns('r.prpv')
+            ->columns('r.drpv')
+            ->columns('r.irpv')
             ;
     }
 
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('rb' => 'nucleonplus_rewards'), 'tbl.reward_id = rb.nucleonplus_reward_id')
+            ->join(array('r' => 'nucleonplus_rewards'), 'tbl.reward_id = r.nucleonplus_reward_id')
         ;
 
         parent::_buildQueryJoins($query);
