@@ -114,7 +114,11 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         if ($order->invoice_status == 'paid')
         {
             // TODO implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
-            $this->_salesreceipt_service->recordSale($order);
+            try {
+                $this->_salesreceipt_service->recordSale($order);
+            } catch (Exception $e) {
+                $context->response->addMessage($e->getMessage());
+            }
         }
 
         return $order;
