@@ -19,13 +19,6 @@
 class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 {
     /**
-     * Inventory Service
-     *
-     * @var ComNucleonplusAccountingServiceInventory
-     */
-    protected $_inventory_service;
-
-    /**
      * Sales Receipt Service
      *
      * @var ComNucleonplusAccountingServiceJournalInterface
@@ -40,18 +33,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
-
-        // Inventory service
-        $identifier       = $this->getIdentifier($config->inventory_service);
-        $inventoryService = $this->getObject($identifier);
-
-        if (!($inventoryService instanceof ComNucleonplusAccountingServiceInventory))
-        {
-            throw new UnexpectedValueException(
-                "Inventory Service $identifier does not implement ComNucleonplusAccountingServiceInventory"
-            );
-        }
-        else $this->_inventory_service = $inventoryService;
 
         // Sales Receipt Service
         $identifier          = $this->getIdentifier($config->salesreceipt_service);
@@ -130,14 +111,10 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $order = parent::_actionAdd($context);
 
-        // Record sale and update inventory
         if ($order->invoice_status == 'paid')
         {
-            //$order = $this->getModel()->fetch();
-            
             // TODO implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
             $this->_salesreceipt_service->recordSale($order);
-            //$this->_inventory_service->decreaseQuantity($order);
         }
 
         return $order;
@@ -161,7 +138,17 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'note'              => $context->request->data->note,
         ]);
 
-        return parent::_actionEdit($context);
+        $entity = parent::_actionEdit($context);
+
+        if ($entity->invoice_status == 'paid')
+        {
+            $order = $this->getModel()->fetch();
+            
+            // TODO implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
+            $this->_salesreceipt_service->recordSale($order);
+        }
+
+        return $entity;
     }
 
     /**

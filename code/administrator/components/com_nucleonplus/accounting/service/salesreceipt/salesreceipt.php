@@ -23,17 +23,29 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
     {
         parent::__construct($config);
 
-        // Item service
+        // Inventory service
         $identifier   = $this->getIdentifier($config->inventory_service);
         $inventory_service = $this->getObject($identifier);
 
         if (!($inventory_service instanceof ComNucleonplusAccountingServiceInventoryInterface))
         {
             throw new UnexpectedValueException(
-                "Item Service $identifier does not implement ComNucleonplusAccountingServiceInventoryInterface"
+                "Service $identifier does not implement ComNucleonplusAccountingServiceInventoryInterface"
             );
         }
         else $this->_inventory_service = $inventory_service;
+
+        // Accounting service
+        $identifier         = $this->getIdentifier($config->accounting_service);
+        $accounting_service = $this->getObject($identifier);
+
+        if (!($accounting_service instanceof ComNucleonplusAccountingServiceTransferInterface))
+        {
+            throw new UnexpectedValueException(
+                "Service $identifier does not implement ComNucleonplusAccountingServiceTransferInterface"
+            );
+        }
+        else $this->_accounting_service = $accounting_service;
 
         // Accounts
         $this->_undeposited_funds_account        = $config->undeposited_funds_account;
@@ -61,6 +73,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
     {
         $config->append(array(
             'inventory_service'                => 'com:nucleonplus.accounting.service.inventory',
+            'accounting_service'               => 'com:nucleonplus.accounting.service.transfer',
             'undeposited_funds_account'        => 92,
             'system_fee_account'               => 138,
             'contingency_fund_account'         => 139,
@@ -99,7 +112,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
 
             $this->_createLine(array(
                 'description' => $item->name,
-                'item_id'     => $item->inventory_item_id,
+                'item_id'     => $inventoryItem->getId(),
                 'qty'         => $item->quantity,
                 'amount'      => ($inventoryItem->getUnitPrice() * $item->quantity),
             ));
@@ -117,8 +130,10 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
         // Record sale
         $this->_save();
 
-        // Transfer to rebates
-        $this->_transferToRebates(1000);
+        // Allocation parts of sale
+        $this->_accounting_service->allocateSystemFee($this->_system_fee_rate);
+        $this->_accounting_service->allocateContingencyFund($this->_contingency_fund_rate);
+        $this->_accounting_service->allocateOperationsFund($this->_operating_expense_rate);
     }
 
     /**
@@ -178,25 +193,5 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
             return $resp;
         }
         else throw new Exception($SalesReceiptService->lastError($this->Context));
-    }
-
-    protected function _transferToRebates($amount)
-    {
-        $Transfer = new QuickBooks_IPP_Object_Transfer();
-        $Transfer->setFromAccountRef($this->_undeposited_funds_account);
-        $Transfer->setToAccountRef($this->_rebates_account);
-        $Transfer->setAmount($amount);
-
-        return $this->_transfer($Transfer);
-    }
-
-    protected function _transfer($transfer)
-    {
-        $TransferService = new QuickBooks_IPP_Service_Transfer();
-
-        if ($resp = $TransferService->add($this->Context, $this->realm, $transfer)) {
-            return $resp;
-        }
-        else throw new Exception($TransferService->lastError($this->Context));
     }
 }

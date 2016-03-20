@@ -38,4 +38,9 @@ class ComNucleonplusModelEntitySlot extends KModelEntityRow
     {
         return false;
     }
+
+    public function getReward()
+    {
+        return $this->getObject('com:nucleonplus.model.rewards')->id($this->reward_id)->fetch();
+    }
 }

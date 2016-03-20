@@ -27,6 +27,8 @@ defined('KOOWA') or die; ?>
 
         <fieldset class="form-vertical">
 
+            <?= import('com://admin/nucleonplus.order.default_account.html', ['order' => $order]) ?>
+
             <?= import('com://admin/nucleonplus.order.default_reward.html', ['order' => $order]) ?>
 
         </fieldset>

@@ -83,6 +83,7 @@ class ComNucleonplusModelSlots extends KModelDatabase
         $slots = $table->select($query);
 
         // Double check that the member's slot will not be placed in his own slot since it is done in Rewardable::placeOwnSlots()
+        // TODO find another way how to do this properly
         if ($slots->reward_id == $state->reward_id) {
             return null;
         }
