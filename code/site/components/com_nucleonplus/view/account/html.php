@@ -35,6 +35,7 @@ class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
             ->payout_id(0)
             ->fetch()
         ;
+
         $context->data->rebates = $this->getObject('com://admin/nucleonplus.model.rebates')
             ->customer_id($account->id)
             ->payout_id(0)

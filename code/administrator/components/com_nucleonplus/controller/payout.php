@@ -30,7 +30,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
     protected function _validate(KControllerContextInterface $context)
     {
         $user    = $this->getObject('user');
-        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->id)->fetch();
+        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
         
         $totalPr      = 0;
         $totalDrBonus = 0;
@@ -76,6 +76,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         foreach ($contextData->dr_bonuses as $id)
         {
             $referral = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
+                ->id($id)
                 ->account_id($account->id)
                 ->referral_type('dr')
                 ->payout_id(0)
@@ -110,6 +111,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         foreach ($contextData->ir_bonuses as $id)
         {
             $referral = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
+                ->id($id)
                 ->account_id($account->id)
                 ->referral_type('ir')
                 ->payout_id(0)
@@ -205,7 +207,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             $referral->payout_id = $entity->id;
             $referral->save();
         }
-        
+
         return $entity;
     }
 

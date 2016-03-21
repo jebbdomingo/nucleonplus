@@ -88,7 +88,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
     protected function _beforeFetch(KModelContextInterface $context)
     {
         if (is_null($context->state->sort)) {
-            $context->query->order('u.name', 'desc');
+            $context->query->order('u.name', 'asc');
         }
     }
 }
