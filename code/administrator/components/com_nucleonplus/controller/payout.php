@@ -216,18 +216,35 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
      *
      * @param KControllerContextInterface $context
      *
-     * @return entity
+     * @return KModelEntityInterface
      */
     protected function _actionGeneratecheck(KControllerContextInterface $context)
     {
         $context->getRequest()->setData(['status' => 'checkgenerated']);
 
+        return parent::_actionEdit($context);
+    }
+
+    /**
+     * Disburse
+     *
+     * @param KControllerContextInterface $context
+     *
+     * @return KModelEntityInterface
+     */
+    protected function _actionDisburse(KControllerContextInterface $context)
+    {
+        $context->getRequest()->setData(['status' => 'disbursed']);
+
         $payout = parent::_actionEdit($context);
 
-        // TODO what if there's no reward?
         $reward = $this->getObject('com:nucleonplus.model.rewards')->payout_id($payout->id)->fetch();
-        $reward->status = 'claimed';
-        $reward->save();
+
+        if ($reward->id)
+        {
+            $reward->status = 'claimed';
+            $reward->save();
+        }
 
         return $payout;
     }
