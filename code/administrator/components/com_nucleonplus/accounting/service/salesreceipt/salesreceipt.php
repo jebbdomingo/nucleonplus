@@ -14,19 +14,6 @@
  */
 class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccountingServiceObject implements ComNucleonplusAccountingServiceSalesreceiptInterface
 {
-
-    /**
-     *
-     * @var ComKoowaControllerModel
-     */
-    protected $_salesreceipt;
-
-    /**
-     *
-     * @var ComKoowaControllerModel
-     */
-    protected $_salesreceipt_line;
-
     /**
      *
      * @var ComKoowaControllerModel
@@ -41,30 +28,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
-
-        // Inventory service
-        /*$identifier   = $this->getIdentifier($config->inventory_service);
-        $inventory_service = $this->getObject($identifier);
-
-        if (!($inventory_service instanceof ComNucleonplusAccountingServiceInventoryInterface))
-        {
-            throw new UnexpectedValueException(
-                "Service $identifier does not implement ComNucleonplusAccountingServiceInventoryInterface"
-            );
-        }
-        else $this->_inventory_service = $inventory_service;
-
-        // Accounting service
-        $identifier         = $this->getIdentifier($config->accounting_service);
-        $accounting_service = $this->getObject($identifier);
-
-        if (!($accounting_service instanceof ComNucleonplusAccountingServiceTransferInterface))
-        {
-            throw new UnexpectedValueException(
-                "Service $identifier does not implement ComNucleonplusAccountingServiceTransferInterface"
-            );
-        }
-        else $this->_accounting_service = $accounting_service;*/
 
         // Accounts
         $this->_undeposited_funds_account        = $config->undeposited_funds_account;
@@ -115,13 +78,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
     }
 
     /**
-     * Sales Receipt object
-     *
-     * @var QuickBooks_IPP_Object_SalesReceipt
-     */
-    protected $SalesReceipt;
-
-    /**
      * Record sales transaction in the accounting system 
      *
      * @param KModelEntityInterface $order
@@ -130,7 +86,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
      */
     public function recordSale(KModelEntityInterface $order)
     {
-        //$this->_createSalesReceipt($order->id);
         $salesReceipt = $this->_salesreceipt->add(array(
             'DocNumber' => $order->id,
             'TxnDate' => date('Y-m-d'),
@@ -138,7 +93,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
 
         foreach ($order->getItems() as $item)
         {
-            //$inventoryItem = $this->_inventory_service->find($item->inventory_item_id);
             $inventoryItem = $this->_item_controller
                 ->id($item->inventory_item_id)
                 ->getModel()
@@ -152,16 +106,8 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
                 'Qty'          => $item->quantity,
                 'Amount'       => ($inventoryItem->getUnitPrice() * $item->quantity),
             ));
-
-            /*$this->_createLine(array(
-                'description' => $item->name,
-                'item_id'     => $inventoryItem->getId(),
-                'qty'         => $item->quantity,
-                'amount'      => ($inventoryItem->getUnitPrice() * $item->quantity),
-            ));*/
         }
 
-        //$serviceItem = $this->_inventory_service->find($order->getPackage()->inventory_service_id);
         $serviceItem = $this->_item_controller
             ->id($order->getPackage()->inventory_service_id)
             ->getModel()
@@ -175,16 +121,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
             'Qty'          => 1,
             'Amount'       => $serviceItem->getUnitPrice(),
         ));
-
-        /*$this->_createLine(array(
-            'description' => "{$order->package_name} Service",
-            'item_id'     => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
-            'qty'         => 1,
-            'amount'      => $serviceItem->getUnitPrice(),
-        ));*/
-
-        // Record sale
-        //$this->_save();
 
         // Allocation parts of sale
         /*$this->_accounting_service->allocateSystemFee($this->_system_fee_rate);

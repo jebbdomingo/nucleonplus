@@ -47,6 +47,7 @@ class ComQbsyncControllerSalesreceipt extends ComKoowaControllerModel
      * Called from {@link __construct()} as a first step of object instantiation.
      *
      * @param   KObjectConfig $config Configuration options
+     * 
      * @return void
      */
     protected function _initialize(KObjectConfig $config)
@@ -76,11 +77,20 @@ class ComQbsyncControllerSalesreceipt extends ComKoowaControllerModel
      */
     protected function _actionSync(KControllerContextInterface $context)
     {
+        // process sync here ..
+
         $context->getRequest()->setData(['status' => 'synced']);
 
         parent::_actionEdit($context);
     }
 
+    /**
+     * Add
+     *
+     * @param KControllerContextInterface $context
+     *
+     * @return KModelEntityInterface
+     */
     protected function _actionAdd(KControllerContextInterface $context)
     {
         if (is_null($context->request->data->DepositToAccountRef)) {
