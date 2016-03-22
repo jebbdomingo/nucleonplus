@@ -77,11 +77,29 @@ class ComQbsyncControllerSalesreceipt extends ComKoowaControllerModel
      */
     protected function _actionSync(KControllerContextInterface $context)
     {
-        // process sync here ..
+        if(!$context->result instanceof KModelEntityInterface) {
+            $entities = $this->getModel()->fetch();
+        } else {
+            $entities = $context->result;
+        }
 
-        $context->getRequest()->setData(['status' => 'synced']);
+        if(count($entities))
+        {
+            foreach($entities as $entity) {
+                $entity->setProperties($context->request->data->toArray());
+            }
 
-        parent::_actionEdit($context);
+            //Only throw an error if the action explicitly failed.
+            if ($entities->sync() === false)
+            {
+                $error = $entities->getStatusMessage();
+                throw new KControllerExceptionActionFailed($error ? $error : 'Sync Action Failed');
+            }
+            else $context->response->setStatus(KHttpResponse::NO_CONTENT);
+        }
+        else throw new KControllerExceptionResourceNotFound('Resource Not Found');
+
+        return $entities;
     }
 
     /**

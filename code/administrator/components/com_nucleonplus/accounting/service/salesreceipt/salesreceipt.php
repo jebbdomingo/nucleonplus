@@ -58,8 +58,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            // 'inventory_service'                => 'com:nucleonplus.accounting.service.inventory',
-            'accounting_service'               => 'com:nucleonplus.accounting.service.transfer',
             'salesreceipt_controller'          => 'com:qbsync.controller.salesreceipt',
             'salesreceipt_line_controller'     => 'com:qbsync.controller.salesreceiptline',
             'item_controller'                  => 'com:qbsync.controller.item',
