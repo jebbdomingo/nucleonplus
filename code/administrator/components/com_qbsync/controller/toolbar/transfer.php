@@ -9,7 +9,7 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComQbsyncControllerToolbarSalesreceipt extends ComKoowaControllerToolbarActionbar
+class ComQbsyncControllerToolbarTransfer extends ComKoowaControllerToolbarActionbar
 {
     /**
      * Sync Command
@@ -33,6 +33,8 @@ class ComQbsyncControllerToolbarSalesreceipt extends ComKoowaControllerToolbarAc
 
     protected function _afterBrowse(KControllerContextInterface $context)
     {
+        parent::_afterBrowse($context);
+
         $controller = $this->getController();
         $canSave    = ($controller->isEditable() && $controller->canSave());
         $allowed    = true;
@@ -47,9 +49,5 @@ class ComQbsyncControllerToolbarSalesreceipt extends ComKoowaControllerToolbarAc
                 'allowed' => $allowed,
             ));
         }
-
-        parent::_afterBrowse($context);
-
-        $this->removeCommand('new');
     }
 }

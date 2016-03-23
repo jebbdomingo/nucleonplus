@@ -9,44 +9,8 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComQbsyncControllerSalesreceipt extends ComKoowaControllerModel
+class ComQbsyncControllerTransfer extends ComKoowaControllerModel
 {
-    /**
-     * Undeposited funds account
-     *
-     * @var integer
-     */
-    protected $_undeposited_funds_account;
-
-    /**
-     * Constructor.
-     *
-     * @param KObjectConfig $config Configuration options.
-     */
-    public function __construct(KObjectConfig $config)
-    {
-        parent::__construct($config);
-
-        $this->_undeposited_funds_account = $config->undeposited_funds_account;
-    }
-
-    /**
-     * Initializes the default configuration for the object
-     *
-     * Called from {@link __construct()} as a first step of object instantiation.
-     *
-     * @param   KObjectConfig $config Configuration options
-     * @return void
-     */
-    protected function _initialize(KObjectConfig $config)
-    {
-        $config->append(array(
-            'undeposited_funds_account' => 92,
-        ));
-
-        parent::_initialize($config);
-    }
-
     /**
      * Sync Action
      *
@@ -71,30 +35,15 @@ class ComQbsyncControllerSalesreceipt extends ComKoowaControllerModel
 
                 if ($entity->sync() === false)
                 {
-                    $error = $entity->getStatusMessage();
+                    $error = $entities->getStatusMessage();
                     $context->response->addMessage($error ? $error : 'Sync Action Failed', 'error');
                 }
                 else $context->response->setStatus(KHttpResponse::NO_CONTENT);
             }
+
         }
         else throw new KControllerExceptionResourceNotFound('Resource Not Found');
 
         return $entities;
-    }
-
-    /**
-     * Add
-     *
-     * @param KControllerContextInterface $context
-     *
-     * @return KModelEntityInterface
-     */
-    protected function _actionAdd(KControllerContextInterface $context)
-    {
-        if (is_null($context->request->data->DepositToAccountRef)) {
-            $context->request->data->DepositToAccountRef = $this->_undeposited_funds_account;
-        }
-
-        return parent::_actionAdd($context);
     }
 }

@@ -21,7 +21,7 @@ defined('KOOWA') or die; ?>
 </ktml:module>
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="COM_QBSYNC_SUBMENU_SALESRECEIPTS" icon="task icon-stack">
+    <ktml:toolbar type="actionbar" title="COM_QBSYNC_SUBMENU_TRANSFERS" icon="task icon-stack">
 </ktml:module>
 
 <div class="nucleonplus-container">
@@ -32,7 +32,7 @@ defined('KOOWA') or die; ?>
                     <?= helper('listbox.filterList', array('active_status' => parameters()->synced)); ?>
                 </div>
                 <div class="scopebar-search">
-                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Doc Number')) ?>
+                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Private Note')) ?>
                 </div>
             </div>
             <div class="nucleonplus_table_container">
@@ -48,23 +48,29 @@ defined('KOOWA') or die; ?>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'synced', 'title' => 'Synced')); ?>
                             </th>
-                            <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'DepositToAccountRef', 'title' => 'Deposit To Account Ref.')); ?>
+                            <th>
+                                <?= helper('grid.sort', array('column' => 'order', 'title' => 'Order #')); ?>
                             </th>
                             <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'DocNumber', 'title' => 'Doc Number')); ?>
+                                <?= helper('grid.sort', array('column' => 'FromAccountRef', 'title' => 'From Account Ref.')); ?>
+                            </th>
+                            <th data-hide="phone,phablet">
+                                <?= helper('grid.sort', array('column' => 'ToAccountRef', 'title' => 'To Account Ref.')); ?>
+                            </th>
+                            <th data-hide="phone,phablet">
+                                <?= helper('grid.sort', array('column' => 'Amount', 'title' => 'Amount')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'TxnDate', 'title' => 'Date')); ?>
+                                <?= helper('grid.sort', array('column' => 'PrivateNote', 'title' => 'Private Note')); ?>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <? if (count($salesreceipts)): ?>
-                            <?= import('default_salesreceipts.html', ['salesreceipts' => $salesreceipts]) ?>
+                        <? if (count($transfers)): ?>
+                            <?= import('default_transfers.html', ['transfers' => $transfers]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" align="center" style="text-align: center;">
+                                <td colspan="7" align="center" style="text-align: center;">
                                     <?= translate('No record(s) found.') ?>
                                 </td>
                             </tr>
@@ -72,7 +78,7 @@ defined('KOOWA') or die; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>

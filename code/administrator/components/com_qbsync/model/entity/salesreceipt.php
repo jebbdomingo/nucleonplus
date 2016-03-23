@@ -68,4 +68,29 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
 
         return false;
     }
+
+    public function delete()
+    {
+        foreach ($this->getLineItems() as $line)
+        {
+            if (!$line->delete())
+            {
+                $this->setStatusMessage("Deleting Sales Receipt Item #{$line->id} failed");
+                return false;
+            }
+        }
+
+        $transfers = $this->getObject('com:qbsync.model.transfers')->order_id($this->DocNumber)->fetch();
+
+        foreach ($this->getObject('com:qbsync.model.transfers')->order_id($this->DocNumber)->fetch() as $transfer)
+        {
+            if (!$transfer->delete())
+            {
+                $this->setStatusMessage("Deleting Related Transfer Transaction #{$transfer->id} failed for Sales Receipt Doc Number {$this->DocNumber}");
+                return false;
+            }
+        }
+
+        return parent::delete();
+    }
 }

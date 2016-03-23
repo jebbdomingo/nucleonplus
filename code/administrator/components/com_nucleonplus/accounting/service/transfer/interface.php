@@ -16,74 +16,74 @@
 interface ComNucleonplusAccountingServiceTransferInterface
 {
     /**
-     *
+     * @param integer $orderId
      * @param decimal $amount
      *
      * @return mixed
      */
-    public function allocateRebates($amount);
+    public function allocateRebates($orderId, $amount);
 
     /**
-     *
+     * @param integer $orderId
      * @param decimal $amount
      *
      * @return mixed
      */
-    public function allocateSurplusRebates($amount);
+    public function allocateSurplusRebates($orderId, $amount);
 
     /**
-     *
+     * @param integer $orderId
      * @param decimal $amount
      *
      * @return mixed
      */
-    public function allocateDRBonus($amount);
+    public function allocateDRBonus($orderId, $amount);
 
     /**
-     *
+     * @param integer $orderId
      * @param decimal $amount
      *
      * @return mixed
      */
-    public function allocateIRBonus($amount);
+    public function allocateIRBonus($orderId, $amount);
 
     /**
-     *
+     * @param integer $orderId
      * @param decimal $amount
      *
      * @return mixed
      */
-    public function allocateSurplusDRBonus($amount);
+    public function allocateSurplusDRBonus($orderId, $amount);
 
     /**
-     *
+     * @param integer $orderId
      * @param decimal $amount
      *
      * @return mixed
      */
-    public function allocateSurplusIRBonus($amount);
+    public function allocateSurplusIRBonus($orderId, $amount);
 
     /**
-     *
+     * @param integer $orderId
      * @param decimal $amount
      *
      * @return mixed
      */
-    public function allocateSystemFee($amount);
+    public function allocateSystemFee($orderId, $amount);
 
     /**
-     *
+     * @param integer $orderId
      * @param decimal $amount
      *
      * @return mixed
      */
-    public function allocateContingencyFund($amount);
+    public function allocateContingencyFund($orderId, $amount);
 
     /**
-     *
+     * @param integer $orderId
      * @param decimal $amount
      *
      * @return mixed
      */
-    public function allocateOperationsFund($amount);
+    public function allocateOperationsFund($orderId, $amount);
 }

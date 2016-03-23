@@ -244,6 +244,8 @@ class ComNucleonplusRebatePackagerebate extends KObject
      */
     private function connectToOtherSlot(KModelEntityRow $slot)
     {
+        $slotReward = $slot->getReward();
+
         // All the slots from the rewards system
         if ($unpaidSlot = $this->getObject($this->_model)->reward_id($slot->reward_id)->getUnpaidSlots())
         {
@@ -251,7 +253,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
             $unpaidSlot->save();
             $slot->consume();
 
-            $this->_accounting_service->allocateRebates($slot->getReward()->prpv);
+            $this->_accounting_service->allocateRebates($slotReward->product_id, $slotReward->prpv);
             
             // Process member rebates
             // TODO move to dedicated rewards processing method
@@ -261,7 +263,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
         else
         {
             // Transfer surplus rebates i.e. a slot that doesn't have available slot to connect with
-            $this->_accounting_service->allocateSurplusRebates($slot->getReward()->prpv);
+            $this->_accounting_service->allocateSurplusRebates($slotReward->product_id, $slotReward->prpv);
         }
     }
 }

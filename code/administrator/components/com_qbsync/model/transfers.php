@@ -8,7 +8,7 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComQbsyncModelSalesreceipts extends KModelDatabase
+class ComQbsyncModelTransfers extends KModelDatabase
 {
     public function __construct(KObjectConfig $config)
     {
@@ -16,6 +16,7 @@ class ComQbsyncModelSalesreceipts extends KModelDatabase
 
         $this->getState()
             ->insert('synced', 'string', 'no')
+            ->insert('order_id', 'int')
         ;
     }
 
@@ -23,7 +24,7 @@ class ComQbsyncModelSalesreceipts extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('DocNumber'))
+                'searchable' => array('columns' => array('PrivateNote'))
             )
         ));
 
@@ -48,9 +49,14 @@ class ComQbsyncModelSalesreceipts extends KModelDatabase
                 $synced = 0;
                 break;
         }
+
     
         if ($state->synced <> 'all') {
             $query->where('tbl.synced = :synced')->bind(['synced' => $synced]);
+        }
+
+        if ($state->order_id) {
+            $query->where('tbl.order_id = :order_id')->bind(['order_id' => $state->order_id]);
         }
     }
 }

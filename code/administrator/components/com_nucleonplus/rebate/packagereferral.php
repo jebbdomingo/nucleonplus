@@ -105,8 +105,8 @@ class ComNucleonplusRebatePackagereferral extends KObject
 
         if (is_null($account->sponsor_id))
         {
-            $this->_accounting_service->allocateSurplusDRBonus($points);
-            $this->_accounting_service->allocateSurplusIRBonus(($order->_reward_irpv * $this->_unilevel_count));
+            $this->_accounting_service->allocateSurplusDRBonus($order->id, $points);
+            $this->_accounting_service->allocateSurplusIRBonus($order->id, ($order->_reward_irpv * $this->_unilevel_count));
 
             return true;
         }
@@ -122,7 +122,7 @@ class ComNucleonplusRebatePackagereferral extends KObject
         $this->_controller->add($data);
 
         // Post direct referral to accounting system
-        $this->_accounting_service->allocateDRBonus($points);
+        $this->_accounting_service->allocateDRBonus($order->id, $points);
 
         // Check if direct referrer has sponsor as well
         $directSponsor = $this->getObject('com:nucleonplus.model.accounts')->id($account->getIdFromSponsor())->fetch();
@@ -134,7 +134,7 @@ class ComNucleonplusRebatePackagereferral extends KObject
         }
         else
         {
-            $this->_accounting_service->allocateSurplusIRBonus(($order->_reward_irpv * $this->_unilevel_count));
+            $this->_accounting_service->allocateSurplusIRBonus($order->id, ($order->_reward_irpv * $this->_unilevel_count));
         }
     }
 
@@ -164,7 +164,7 @@ class ComNucleonplusRebatePackagereferral extends KObject
             );
 
             $this->_controller->add($data);
-            $this->_accounting_service->allocateIRBonus($points);
+            $this->_accounting_service->allocateIRBonus($order->id, $points);
             
             $x++;
 
@@ -176,7 +176,7 @@ class ComNucleonplusRebatePackagereferral extends KObject
                 {
 
                     $points = ($this->_unilevel_count - $x) * $order->_reward_irpv;
-                    $this->_accounting_service->allocateSurplusIRBonus($points);
+                    $this->_accounting_service->allocateSurplusIRBonus($order->id, $points);
 
                     break;
 
@@ -188,65 +188,4 @@ class ComNucleonplusRebatePackagereferral extends KObject
             $id = $indirectReferrer->getIdFromSponsor();
         }
     }
-
-    /**
-     * Record indirect referrals
-     *
-     * @param KModelEntityInterface $order
-     *
-     * @return void
-     */
-    /*private function _recordIndirectReferrals(KModelEntityInterface $directReferrer, KModelEntityInterface $order)
-    {
-        $controller = $this->getObject($this->_controller);
-
-        $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($directReferrer->getIdFromSponsor())->fetch();
-
-        $points = ($order->_reward_irpv * $order->_reward_slots);
-
-        $data = [
-            'reward_id'     => $order->_reward_id,
-            'account_id'    => $indirectReferrer->id,
-            'referral_type' => 'ir', // Indirect Referral
-            'points'        => $points
-        ];
-
-        // Record pay for the first immediate referrer
-        $controller->add($data);
-
-        $this->_accounting_service->allocateIRBonus($points);
-
-        // Try to get referrers up to the 10th level
-        for ($x = 0; $x < ($this->_unilevel_count - 1); $x++)
-        {
-            // Terminate execution if the immediate indirect referrer has no sponsor
-            // i.e. there are no other indirect referrers to pay
-            if (is_null($indirectReferrer->sponsor_id)) {
-                return null;
-            }
-
-            $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($indirectReferrer->getIdFromSponsor())->fetch();
-
-            $points = ($order->_reward_irpv * $order->_reward_slots);
-
-            $data = [
-                'reward_id'     => $order->_reward_id,
-                'account_id'    => $indirectReferrer->id,
-                'referral_type' => 'ir', // Indirect Referral
-                'points'        => $points,
-            ];
-            
-            $controller->add($data);
-
-            $this->_accounting_service->allocateIRBonus($points);
-        }
-
-        if ($x < ($this->_unilevel_count - 1))
-        {
-            $x = ($this->_unilevel_count - 1) - $x;
-            $points = $x * $order->_reward_irpv;
-
-            $this->_accounting_service->allocateSurplusIRBonus($points);
-        }
-    }*/
 }

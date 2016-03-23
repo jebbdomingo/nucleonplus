@@ -19,13 +19,13 @@
                 <?= $salesreceipt->id ?>
             </a>
         </td>
+        <td>
+            <span class="label <?= ($salesreceipt->synced == 0) ? 'label-default' : 'label-info' ?>"><?= ucwords(escape(($salesreceipt->synced == 0) ? 'No' : 'Yes')) ?></span>
+        </td>
         <td><?= $salesreceipt->DepositToAccountRef ?></td>
         <td><?= $salesreceipt->DocNumber ?></td>
         <td>
             <?= helper('date.format', array('date' => $salesreceipt->TxnDate)) ?>
-        </td>
-        <td>
-            <span class="label <?= ($salesreceipt->synced == 0) ? 'label-default' : 'label-info' ?>"><?= ucwords(escape(($salesreceipt->synced == 0) ? 'No' : 'Yes')) ?></span>
         </td>
     </tr>
 <? endforeach; ?>
