@@ -119,8 +119,9 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
     public function recordSale(KModelEntityInterface $order)
     {
         $salesReceipt = $this->_salesreceipt->add(array(
-            'DocNumber' => $order->id,
-            'TxnDate' => date('Y-m-d'),
+            'DocNumber'   => $order->id,
+            'TxnDate'     => date('Y-m-d'),
+            'CustomerRef' => 59,
         ));
 
         foreach ($order->getItems() as $item)

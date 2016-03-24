@@ -38,6 +38,7 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
         $SalesReceipt->setDepositToAccountRef($this->DepositToAccountRef);
         $SalesReceipt->setDocNumber($this->DocNumber);
         $SalesReceipt->setTxnDate($this->TxnDate);
+        $SalesReceipt->setCustomerRef($this->CustomerRef);
 
         foreach ($this->getLineItems() as $line)
         {
@@ -62,6 +63,8 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
             $this->synced = 1;
             $this->save();
 
+            $this->_syncTransfers();
+
             return true;
         }
         else $this->setStatusMessage($SalesReceiptService->lastError($this->Context));
@@ -69,6 +72,30 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
         return false;
     }
 
+    /**
+     * Sync releated account funds transfers
+     *
+     * @return boolean
+     */
+    protected function _syncTransfers()
+    {
+        $transfers = $this->getObject('com:qbsync.model.transfers')->order_id($this->DocNumber)->fetch();
+
+        foreach ($this->getObject('com:qbsync.model.transfers')->order_id($this->DocNumber)->fetch() as $transfer)
+        {
+            if (!$transfer->sync())
+            {
+                $this->setStatusMessage("Syncing Related Transfer Transaction #{$transfer->id} failed for Sales Receipt with Doc Number {$this->DocNumber}");
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Delete
+     *
+     * @return boolean
+     */
     public function delete()
     {
         foreach ($this->getLineItems() as $line)
@@ -86,7 +113,7 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
         {
             if (!$transfer->delete())
             {
-                $this->setStatusMessage("Deleting Related Transfer Transaction #{$transfer->id} failed for Sales Receipt Doc Number {$this->DocNumber}");
+                $this->setStatusMessage("Deleting Related Transfer Transaction #{$transfer->id} failed for Sales Receipt with Doc Number {$this->DocNumber}");
                 return false;
             }
         }
