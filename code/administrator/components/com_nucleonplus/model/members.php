@@ -15,23 +15,23 @@ class ComNucleonplusModelMembers extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('a.bank_account_number')
-            ->columns('a.bank_account_name')
-            ->columns('a.bank_account_type')
-            ->columns('a.bank_account_branch')
-            ->columns('a.phone')
-            ->columns('a.mobile')
-            ->columns('a.street')
-            ->columns('a.city')
-            ->columns('a.state')
-            ->columns('a.postal_code')
+            ->columns('_account.bank_account_number')
+            ->columns('_account.bank_account_name')
+            ->columns('_account.bank_account_type')
+            ->columns('_account.bank_account_branch')
+            ->columns('_account.phone')
+            ->columns('_account.mobile')
+            ->columns('_account.street')
+            ->columns('_account.city')
+            ->columns('_account.state')
+            ->columns('_account.postal_code')
         ;
     }
 
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('a' => 'nucleonplus_accounts'), 'tbl.id = a.user_id')
+            ->join(array('_account' => 'nucleonplus_accounts'), 'tbl.id = _account.user_id')
         ;
 
         parent::_buildQueryJoins($query);

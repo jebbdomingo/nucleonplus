@@ -70,8 +70,8 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         $this->_item_controller   = $this->getObject($config->item_controller);
 
         // Transfer service
-        $identifier   = $this->getIdentifier($config->transfer_service);
-        $service = $this->getObject($identifier);
+        $identifier = $this->getIdentifier($config->transfer_service);
+        $service    = $this->getObject($identifier);
 
         if (!($service instanceof ComNucleonplusAccountingServiceTransferInterface))
         {
