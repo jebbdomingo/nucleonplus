@@ -54,15 +54,11 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
             {
                 $this->setStatusMessage($this->getObject('translator')->translate('An account already exist for this member'));
                 $this->setStatus(KDatabase::STATUS_FAILED);
-
-                return;
-            }
+                return false;
+            } else return $this->_generateAccountNumber();
         }
 
-        parent::save();
-
-        // Generate and set account number
-        return $this->_generateAccountNumber();
+        return parent::save();
     }
 
     /**

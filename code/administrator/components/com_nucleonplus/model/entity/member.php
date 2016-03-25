@@ -92,9 +92,18 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             $account          = $this->_createAccount($user->id, $user->sponsor_id);
             $this->account_id = $account->id;
 
-            $this->_member_service->createMember($account);
+            $this->_member_service->pushMember($account);
         }
-        else $this->account_id = $this->_updateAccount($user->id)->id;
+        else
+        {
+            $account          = $this->_updateAccount($user->id);
+            $this->account_id = $account->id;
+
+            // Only push an update to a synced member/customer to accounting system
+            if ($account->CustomerRef) {
+                $this->_member_service->pushMember($account, 'update');
+            }
+        }
 
         return true;
     }
@@ -105,7 +114,7 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
      * @param integer $userId
      * @param integer $sponsorId
      *
-     * @return boolean
+     * @return KModelEntityInterface|boolean
      */
     protected function _createAccount($userId, $sponsorId)
     {
@@ -127,15 +136,9 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             'postal_code'         => $this->postal_code,
         ));
         
-        // TODO delete the user if account creation failed
-        if ($account->save())
-        {
-            $account = $model->id($account->id)->fetch();
-            return $account;
-        }
-        else throw new Exception('Could not create account for user');
-
-        return false;
+        $account->save();
+        $account = $model->id($account->id)->fetch();
+        return $account;
     }
 
     /**
@@ -143,7 +146,7 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
      *
      * @param integer $userId
      *
-     * @return KModelEntityInterface|boolean
+     * @return KModelEntityInterface
      */
     protected function _updateAccount($userId)
     {
@@ -159,12 +162,9 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
         $account->city                = $this->city;
         $account->state               = $this->state;
         $account->postal_code         = $this->postal_code;
-        
-        if ($account->save()) {
-            return $account;
-        }
 
-        return false;
+        $account->save();
+        return $account;
     }
 
     /**

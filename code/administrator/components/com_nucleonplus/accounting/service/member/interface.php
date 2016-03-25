@@ -17,8 +17,9 @@ interface ComNucleonplusAccountingServiceMemberInterface
 {
     /**
      * @param KModelEntityInterface $member
+     * @param string                $action
      *
      * @return mixed
      */
-    public function createMember(KModelEntityInterface $member);
+    public function pushMember(KModelEntityInterface $member, $action);
 }

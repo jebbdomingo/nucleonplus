@@ -52,12 +52,14 @@ class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleo
     /**
      *
      * @param KModelEntityInterface $account
+     * @param string                $action
      *
-     * @return KModelEntityInterface
+     * @return void
      */
-    public function createMember(KModelEntityInterface $account)
+    public function pushMember(KModelEntityInterface $account, $action = 'add')
     {
         $data = array(
+            'CustomerRef'      => $account->CustomerRef,
             'account_id'       => $account->id,
             'DisplayName'      => $account->_name,
             'PrimaryPhone'     => $account->phone,
@@ -66,8 +68,10 @@ class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleo
             'PrintOnCheckName' => $account->_name,
             'Line1'            => $account->street,
             'City'             => $account->city,
+            'State'            => $account->state,
             'PostalCode'       => $account->postal_code,
             'Country'          => 'Philippines',
+            'action'           => $action,
         );
 
         return $this->_customer_controller->add($data);

@@ -58,8 +58,8 @@ class ComQbsyncTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ))
         ->append(array(
             'sync' => array(
-                array('label' => 'No', 'value' => 0),
-                array('label' => 'Yes', 'value' => 1)
+                array('label' => 'No', 'value' => 'no'),
+                array('label' => 'Yes', 'value' => 'yes')
             )
         ));
 
@@ -83,7 +83,7 @@ class ComQbsyncTemplateHelperListbox extends ComKoowaTemplateHelperListbox
             'filter'   => array()
         ));
 
-        return parent::booleanlist($config);
+        return parent::radiolist($config);
     }
 
     /**

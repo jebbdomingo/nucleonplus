@@ -21,7 +21,7 @@ defined('KOOWA') or die; ?>
 </ktml:module>
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="COM_NUCLEONPLUS_SUBMENU_ACCOUNTS" icon="task icon-stack">
+    <ktml:toolbar type="actionbar" title="COM_QBSYNC_SUBMENU_CUSTOMERS" icon="task icon-stack">
 </ktml:module>
 
 <div class="nucleonplus-container">
@@ -29,10 +29,10 @@ defined('KOOWA') or die; ?>
         <form action="" method="get" class="-koowa-grid">
             <div class="scopebar">
                 <div class="scopebar-group last hidden-tablet hidden-phone">
-                    <?php echo helper('listbox.filterList', array('active_status' => parameters()->status)); ?>
+                    <?= helper('listbox.filterList', array('active_status' => parameters()->synced)); ?>
                 </div>
                 <div class="scopebar-search">
-                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Find by Account Number or Status')) ?>
+                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Display Name')) ?>
                 </div>
             </div>
             <div class="nucleonplus_table_container">
@@ -43,33 +43,36 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.checkall')?>
                             </th>
                             <th class="nucleonplus_table__title_field">
-                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'Member Name')); ?>
+                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'ID')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>
+                                <?= helper('grid.sort', array('column' => 'synced', 'title' => 'Synced')); ?>
+                            </th>
+                            <th>
+                                <?= helper('grid.sort', array('column' => 'account_id', 'title' => 'Account ID')); ?>
                             </th>
                             <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
+                                <?= helper('grid.sort', array('column' => 'CustomerRef', 'title' => 'Customer Ref.')); ?>
                             </th>
                             <th data-hide="phone,phablet">
-                                Sponsor
+                                <?= helper('grid.sort', array('column' => 'DisplayName', 'title' => 'Display Name')); ?>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <? if (count($accounts)): ?>
-                            <?= import('default_accounts.html') ?>
+                        <? if (count($customers)): ?>
+                            <?= import('default_customers.html', ['customers' => $customers]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="5" align="center" style="text-align: center;">
-                                    <?= translate('No account(s) found.') ?>
+                                <td colspan="6" align="center" style="text-align: center;">
+                                    <?= translate('No record(s) found.') ?>
                                 </td>
                             </tr>
                         <? endif; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>
