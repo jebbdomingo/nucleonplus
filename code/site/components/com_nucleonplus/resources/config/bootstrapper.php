@@ -13,11 +13,11 @@ return array(
         'com://site/nucleonplus.controller.payout'              => 'com://admin/nucleonplus.controller.payout',
     ),
     'identifiers' => array(
-        'com://site/nucleonplus.controller.order' => array(
+        /*'com://site/nucleonplus.controller.order' => array(
             'behaviors' => array(
                 'rewardable'
             ),
-        ),
+        ),*/
         'com://site/nucleonplus.database.table.orders' => array(
             'behaviors' => array(
                 'com://site/nucleonplus.database.behavior.permissible'

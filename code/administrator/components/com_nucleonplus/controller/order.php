@@ -121,9 +121,11 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $order = parent::_actionAdd($context);
 
+        // Create reward
+        $this->_reward->create($order);
+
         if ($order->invoice_status == 'paid')
         {
-            $this->_reward->create($order);
 
             try {
                 $this->_salesreceipt_service->recordSale($order);

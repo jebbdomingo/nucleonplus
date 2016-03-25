@@ -19,6 +19,43 @@
 class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 {
     /**
+     * Reward
+     *
+     * @var ComNucleonplusRebatePackagereward
+     */
+    protected $_reward;
+
+    /**
+     * Constructor.
+     *
+     * @param KObjectConfig $config Configuration options.
+     */
+    public function __construct(KObjectConfig $config)
+    {
+        parent::__construct($config);
+
+        // Reward service
+        $this->_reward = $this->getObject($config->reward);
+    }
+
+    /**
+     * Initializes the default configuration for the object
+     *
+     * Called from {@link __construct()} as a first step of object instantiation.
+     *
+     * @param   KObjectConfig $config Configuration options
+     * @return void
+     */
+    protected function _initialize(KObjectConfig $config)
+    {
+        $config->append(array(
+            'reward' => 'com:nucleonplus.rebate.packagereward',
+        ));
+
+        parent::_initialize($config);
+    }
+
+    /**
      * Create Order
      *
      * @param KControllerContextInterface $context
@@ -49,6 +86,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $response = $context->getResponse();
         $response->addMessage("Please deposit your payment to BDO account # 0123456789 and enter the reference number found in your deposit slip to \"Deposit slip reference #\" field in your <a href=\"component/nucleonplus/?view=order&id={$order->id}&layout=form&tmpl=koowa\">Order #{$order->id}</a>.");
+
+        // Create reward
+        $this->_reward->create($order);
 
         return $order;
     }
