@@ -39,107 +39,116 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         $contextData  = $context->request->data;
 
         // Ensure there is no discrepancy in member's requested payout in his rebates
-        foreach ($contextData->rebates as $id)
+        if ($contextData->rebates)
         {
-            $rebate = $this->getObject('com://admin/nucleonplus.model.rebates')
-                ->customer_id($account->id)
-                ->id($id)
-                ->fetch()
-            ;
-
-            if (is_null($rebate->id))
+            foreach ($contextData->rebates as $id)
             {
-                throw new Exception("There is a discrepancy in your rebates payout request. ref# {$id}");
+                $rebate = $this->getObject('com://admin/nucleonplus.model.rebates')
+                    ->customer_id($account->id)
+                    ->id($id)
+                    ->fetch()
+                ;
 
-                return false;
-            }
+                if (is_null($rebate->id))
+                {
+                    throw new Exception("There is a discrepancy in your rebates payout request. ref# {$id}");
 
-            $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
-                ->id($rebate->reward_id_from)
-                ->fetch()
-            ;
+                    return false;
+                }
 
-            // Ensure rebates are paid based on the matched reward/slots
-            if ($rewardFrom->prpv <> $rebate->points) {
-                throw new Exception("There is a discrepancy in your rewards. ref# {$rewardFrom->id}-{$rebate->id}");
+                $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
+                    ->id($rebate->reward_id_from)
+                    ->fetch()
+                ;
 
-                return false;
-            }
-            else
-            {
-                $totalPr += $rewardFrom->prpv;
-                $redeemedPr[] = $rebate->id;
+                // Ensure rebates are paid based on the matched reward/slots
+                if ($rewardFrom->prpv <> $rebate->points) {
+                    throw new Exception("There is a discrepancy in your rewards. ref# {$rewardFrom->id}-{$rebate->id}");
+
+                    return false;
+                }
+                else
+                {
+                    $totalPr += $rewardFrom->prpv;
+                    $redeemedPr[] = $rebate->id;
+                }
             }
         }
 
         // Ensure there is no discrepancy in member's requested payout in his direct referral bonuses
-        foreach ($contextData->dr_bonuses as $id)
+        if ($contextData->dr_bonuses)
         {
-            $referral = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
-                ->id($id)
-                ->account_id($account->id)
-                ->referral_type('dr')
-                ->payout_id(0)
-                ->fetch()
-            ;
-
-            if (is_null($referral->id))
+            foreach ($contextData->dr_bonuses as $id)
             {
-                throw new Exception("There is a discrepancy in your direct referral payout request. ref# {$id}");
+                $referral = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
+                    ->id($id)
+                    ->account_id($account->id)
+                    ->referral_type('dr')
+                    ->payout_id(0)
+                    ->fetch()
+                ;
 
-                return false;
-            }
+                if (is_null($referral->id))
+                {
+                    throw new Exception("There is a discrepancy in your direct referral payout request. ref# {$id}");
 
-            $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
-                ->id($referral->reward_id_from)
-                ->fetch()
-            ;
+                    return false;
+                }
 
-            // Ensure referral bonus are paid based on the paying reward
-            if ($rewardFrom->drpv <> $referral->points) {
-                throw new Exception("There is a discrepancy in your direct referral bonus. ref# {$rewardFrom->id}-{$referral->id}");
-                return false;
-            }
-            else
-            {
-                $totalDr      += $rewardFrom->drpv;
-                $redeemedDr[] = $referral->id;
+                $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
+                    ->id($referral->reward_id)
+                    ->fetch()
+                ;
+
+                // Ensure referral bonus are paid based on the paying reward
+                if ($rewardFrom->drpv <> $referral->points) {
+                    throw new Exception("There is a discrepancy in your direct referral bonus. ref# {$rewardFrom->id}-{$referral->id}");
+                    return false;
+                }
+                else
+                {
+                    $totalDr      += $rewardFrom->drpv;
+                    $redeemedDr[] = $referral->id;
+                }
             }
         }
 
         // Ensure there is no discrepancy in member's requested payout in his indirect referral bonuses
-        foreach ($contextData->ir_bonuses as $id)
+        if ($contextData->ir_bonuses)
         {
-            $referral = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
-                ->id($id)
-                ->account_id($account->id)
-                ->referral_type('ir')
-                ->payout_id(0)
-                ->fetch()
-            ;
-
-            if (is_null($referral->id))
+            foreach ($contextData->ir_bonuses as $id)
             {
-                throw new Exception("There is a discrepancy in your indirect referral payout request. ref# {$id}");
+                $referral = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
+                    ->id($id)
+                    ->account_id($account->id)
+                    ->referral_type('ir')
+                    ->payout_id(0)
+                    ->fetch()
+                ;
 
-                return false;
-            }
+                if (is_null($referral->id))
+                {
+                    throw new Exception("There is a discrepancy in your indirect referral payout request. ref# {$id}");
 
-            $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
-                ->id($referral->reward_id_from)
-                ->payout_id(0)
-                ->fetch()
-            ;
+                    return false;
+                }
 
-            // Ensure referral bonus are paid based on the paying reward
-            if ($rewardFrom->irpv <> $referral->points) {
-                throw new Exception("There is a discrepancy in your indirect referral bonus. ref# {$rewardFrom->id}-{$referral->id}");
-                return false;
-            }
-            else
-            {
-                $totalIr      += $rewardFrom->irpv;
-                $redeemedIr[] = $referral->id;
+                $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
+                    ->id($referral->reward_id)
+                    ->payout_id(0)
+                    ->fetch()
+                ;
+
+                // Ensure referral bonus are paid based on the paying reward
+                if ($rewardFrom->irpv <> $referral->points) {
+                    throw new Exception("There is a discrepancy in your indirect referral bonus. ref# {$rewardFrom->id}-{$referral->id}");
+                    return false;
+                }
+                else
+                {
+                    $totalIr      += $rewardFrom->irpv;
+                    $redeemedIr[] = $referral->id;
+                }
             }
         }
 

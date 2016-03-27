@@ -32,7 +32,7 @@ defined('KOOWA') or die; ?>
                     <?php echo helper('listbox.filterList', array('active_status' => parameters()->status)); ?>
                 </div>
                 <div class="scopebar-search">
-                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Find by Account Number or Status')) ?>
+                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Find by Account Number')) ?>
                 </div>
             </div>
             <div class="nucleonplus_table_container">

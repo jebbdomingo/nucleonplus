@@ -60,7 +60,7 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
 
         if ($resp = $SalesReceiptService->add($this->Context, $this->realm, $SalesReceipt))
         {
-            $this->synced = 1;
+            $this->synced = 'yes';
             $this->save();
 
             $this->_syncTransfers();

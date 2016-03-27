@@ -143,14 +143,14 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ->append(array(
             'payoutStatus' => array(
                 array('label' => 'Pending', 'value' => 'pending'),
-                array('label' => 'Check Generated', 'value' => 'checkgenerated')
+                array('label' => 'Check Generated', 'value' => 'check_generated')
             )
         ))
         ->append(array(
             'payoutStatusFilters' => array(
                 'all'     => 'All',
                 'pending' => 'Pending',
-                'checkgenerated'    => 'Check Generated',
+                'check_generated'    => 'Check Generated',
             )
         ));
 

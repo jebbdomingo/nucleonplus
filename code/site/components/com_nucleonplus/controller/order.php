@@ -26,6 +26,13 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected $_reward;
 
     /**
+     * Reward
+     *
+     * @var string
+     */
+    protected $_nucleonplus_bank_account_number;
+
+    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -36,6 +43,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         // Reward service
         $this->_reward = $this->getObject($config->reward);
+        $this->_nucleonplus_bank_account_number = $config->nucleonplus_bank_account_number;
     }
 
     /**
@@ -49,7 +57,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'reward' => 'com:nucleonplus.rebate.packagereward',
+            'reward'                          => 'com://admin/nucleonplus.rebate.packagereward',
+            'nucleonplus_bank_account_number' => '9900000001',
         ));
 
         parent::_initialize($config);
@@ -85,7 +94,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $order = parent::_actionAdd($context);
 
         $response = $context->getResponse();
-        $response->addMessage("Please deposit your payment to BDO account # 0123456789 and enter the reference number found in your deposit slip to \"Deposit slip reference #\" field in your <a href=\"component/nucleonplus/?view=order&id={$order->id}&layout=form&tmpl=koowa\">Order #{$order->id}</a>.");
+        $response->addMessage("Please deposit your payment to BDO account # {$this->_nucleonplus_bank_account_number} and enter the reference number found in your deposit slip to \"Deposit slip reference #\" field in your <a href=\"component/nucleonplus/?view=order&id={$order->id}&layout=form&tmpl=koowa\">Order #{$order->id}</a>.");
 
         // Create reward
         $this->_reward->create($order);

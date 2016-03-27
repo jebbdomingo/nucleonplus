@@ -55,7 +55,8 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
                 $this->setStatusMessage($this->getObject('translator')->translate('An account already exist for this member'));
                 $this->setStatus(KDatabase::STATUS_FAILED);
                 return false;
-            } else return $this->_generateAccountNumber();
+            }
+            else return $this->_generateAccountNumber();
         }
 
         return parent::save();
@@ -68,7 +69,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     private function _generateAccountNumber()
     {
-        $this->account_number = date('ymd') . "-{$this->user_id}-{$this->getProperty('id')}";
+        $this->account_number = date('ymd') . "-{$this->user_id}";
 
         return parent::save();
     }

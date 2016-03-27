@@ -18,7 +18,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             ->insert('account_id', 'int')
             ->insert('status', 'string')
             ->insert('search', 'string')
-            ;
+        ;
     }
 
     protected function _initialize(KObjectConfig $config)

@@ -36,6 +36,8 @@ defined('KOOWA') or die; ?>
             </tbody>
         </table>
 
-        <p class="pull-right"><a class="btn btn-primary btn-md" href="<?= route('view=account&layout=rewards&tmpl=koowa') ?>" role="button"><?= translate('Claim') ?></a></p>
+        <? if ($total_bonus): ?>
+            <p class="pull-right"><a class="btn btn-primary btn-md" href="<?= route('view=account&layout=rewards&tmpl=koowa') ?>" role="button"><?= translate('Claim') ?></a></p>
+        <? endif ?>
     </div>
 </div>

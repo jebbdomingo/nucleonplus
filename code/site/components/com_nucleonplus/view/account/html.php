@@ -27,8 +27,6 @@ class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
             ->fetch()
         ;
 
-        //var_dump($context->data->dr_bonuses->id);
-
         $context->data->ir_bonuses = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
             ->account_id($account->id)
             ->referral_type('ir')

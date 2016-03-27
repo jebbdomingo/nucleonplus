@@ -121,7 +121,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         $salesReceipt = $this->_salesreceipt->add(array(
             'DocNumber'   => $order->id,
             'TxnDate'     => date('Y-m-d'),
-            'CustomerRef' => 59,
+            'CustomerRef' => $order->_account_customer_ref,
         ));
 
         foreach ($order->getItems() as $item)
