@@ -44,6 +44,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         // Reward service
         $this->_reward = $this->getObject($config->reward);
         $this->_nucleonplus_bank_account_number = $config->nucleonplus_bank_account_number;
+
+        // Validation
+        $this->addCommandCallback('before.add', '_validate');
     }
 
     /**
@@ -62,6 +65,18 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         ));
 
         parent::_initialize($config);
+    }
+
+    /**
+     * Validate and construct data
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validate(KControllerContextInterface $context)
+    {
+        
     }
 
     /**
