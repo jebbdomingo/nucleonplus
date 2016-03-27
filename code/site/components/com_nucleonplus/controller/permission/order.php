@@ -21,8 +21,23 @@ class ComNucleonplusControllerPermissionOrder extends ComKoowaControllerPermissi
     {
         if ($this->getModel()->fetch()->created_by === $this->getObject('user')->getId()) {
             return true;
-        } else {
-            return parent::canSave();
         }
+        else return parent::canSave();
+    }
+
+    /**
+     * Specialized permission check
+     * Checks if the user can add an order
+     *
+     * @return boolean
+     */
+    public function canAdd()
+    {
+        $user = $this->getObject('user');
+        $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        if (in_array($account->status, array('new', 'pending'))) {
+            return false;
+        }
+        else return parent::canAdd();
     }
 }

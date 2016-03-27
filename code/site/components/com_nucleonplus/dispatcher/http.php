@@ -36,15 +36,11 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
     {
         $request = parent::getRequest();
         $query   = $request->query;
-        
         $user    = $this->getObject('user');
-        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
 
         if ($query->view == 'account') {
-            $query->id = $account->id;
-        }
-
-        $query->account_id = $account->id;
+            $query->id = (int) $user->getId();
+        } else $query->account_id = (int) $user->getId();
 
         return $request;
     }

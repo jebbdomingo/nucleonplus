@@ -12,13 +12,13 @@
 class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarActionbar
 {
     /**
-     * Check generated Command
+     * Generate check Command
      *
      * @param KControllerToolbarCommand $command
      *
      * @return void
      */
-    protected function _commandCheckgenerated(KControllerToolbarCommand $command)
+    protected function _commandGeneratecheck(KControllerToolbarCommand $command)
     {
         $command->icon = 'icon-32-save';
 
@@ -29,6 +29,26 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
         ));
 
         $command->label = 'Check Generated';
+    }
+
+    /**
+     * Disburse Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandDisburse(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'disburse'
+            )
+        ));
+
+        $command->label = 'Disbursed';
     }
 
     protected function _afterRead(KControllerContextInterface $context)
@@ -45,7 +65,14 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
         if ($canSave && ($context->result->status == 'pending'))
         {
-            $this->addCommand('checkgenerated', [
+            $this->addCommand('generatecheck', [
+                'allowed' => $allowed
+            ]);
+        }
+
+        if ($canSave && ($context->result->status == 'checkgenerated'))
+        {
+            $this->addCommand('disburse', [
                 'allowed' => $allowed
             ]);
         }

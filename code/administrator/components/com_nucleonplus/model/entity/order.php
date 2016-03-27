@@ -47,4 +47,14 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     {
         return $this->getObject('com:nucleonplus.model.packages')->id($this->package_id)->fetch();
     }
+
+    /**
+     * Get the reward details
+     *
+     * @return array
+     */
+    public function getReward()
+    {
+        return $this->getObject('com:nucleonplus.model.rewards')->product_id($this->id)->fetch();
+    }
 }

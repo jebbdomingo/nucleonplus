@@ -26,7 +26,7 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('status', 'account_number'))
+                'searchable' => array('columns' => array('account_number'))
             )
         ));
 
@@ -38,14 +38,15 @@ class ComNucleonplusModelAccounts extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('u.name')
-            ;
+            ->columns(array('_name' => '_user.name'))
+            ->columns(array('_email' => '_user.email'))
+        ;
     }
 
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('u' => 'users'), 'tbl.user_id = u.id')
+            ->join(array('_user' => 'users'), 'tbl.user_id = _user.id')
         ;
 
         parent::_buildQueryJoins($query);
@@ -58,7 +59,7 @@ class ComNucleonplusModelAccounts extends KModelDatabase
         $state = $this->getState();
 
         if (!is_null($state->status) && $state->status <> 'all') {
-            $query->where('(tbl.status IN :status)')->bind(array('status' => (array) $state->status));
+            $query->where('tbl.status = :status')->bind(['status' => $state->status]);
         }
 
         if ($state->account_number) {

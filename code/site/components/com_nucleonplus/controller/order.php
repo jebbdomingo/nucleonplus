@@ -19,6 +19,67 @@
 class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 {
     /**
+     * Reward
+     *
+     * @var ComNucleonplusRebatePackagereward
+     */
+    protected $_reward;
+
+    /**
+     * Reward
+     *
+     * @var string
+     */
+    protected $_nucleonplus_bank_account_number;
+
+    /**
+     * Constructor.
+     *
+     * @param KObjectConfig $config Configuration options.
+     */
+    public function __construct(KObjectConfig $config)
+    {
+        parent::__construct($config);
+
+        // Reward service
+        $this->_reward = $this->getObject($config->reward);
+        $this->_nucleonplus_bank_account_number = $config->nucleonplus_bank_account_number;
+
+        // Validation
+        $this->addCommandCallback('before.add', '_validate');
+    }
+
+    /**
+     * Initializes the default configuration for the object
+     *
+     * Called from {@link __construct()} as a first step of object instantiation.
+     *
+     * @param   KObjectConfig $config Configuration options
+     * @return void
+     */
+    protected function _initialize(KObjectConfig $config)
+    {
+        $config->append(array(
+            'reward'                          => 'com://admin/nucleonplus.rebate.packagereward',
+            'nucleonplus_bank_account_number' => '9900000001',
+        ));
+
+        parent::_initialize($config);
+    }
+
+    /**
+     * Validate and construct data
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validate(KControllerContextInterface $context)
+    {
+        
+    }
+
+    /**
      * Create Order
      *
      * @param KControllerContextInterface $context
@@ -48,7 +109,10 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $order = parent::_actionAdd($context);
 
         $response = $context->getResponse();
-        $response->addMessage("Please deposit your payment to BDO account # 0123456789 and enter the reference number found in your deposit slip to \"Deposit slip reference #\" field in your <a href=\"component/nucleonplus/?view=order&id={$order->id}&layout=form&tmpl=koowa\">Order #{$order->id}</a>.");
+        $response->addMessage("Please deposit your payment to BDO account # {$this->_nucleonplus_bank_account_number} and enter the reference number found in your deposit slip to \"Deposit slip reference #\" field in your <a href=\"component/nucleonplus/?view=order&id={$order->id}&layout=form&tmpl=koowa\">Order #{$order->id}</a>.");
+
+        // Create reward
+        $this->_reward->create($order);
 
         return $order;
     }

@@ -15,7 +15,7 @@ $button_size = 'btn-small';
 
 <div class="koowa_toolbar">
     <div class="btn-toolbar koowa-toolbar" id="toolbar-rewards">
-        <? if ($show_save): ?>
+        <? if ($total_bonus && $show_save): ?>
             <div class="btn-group" id="toolbar-save">
                 <a class="toolbar btn <?= $button_size ?> btn-success" data-action="save" href="#">
                     <?= translate('Encash'); ?>

@@ -12,8 +12,50 @@
 /**
  * @todo Implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
  */
-class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccountingServiceObject implements ComNucleonplusAccountingServiceSalesreceiptInterface
+class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements ComNucleonplusAccountingServiceSalesreceiptInterface
 {
+    /**
+     *
+     * @var ComKoowaControllerModel
+     */
+    protected $_salesreceipt;
+
+    /**
+     *
+     * @var ComKoowaControllerModel
+     */
+    protected $_salesreceipt_line;
+
+    /**
+     *
+     * @var ComKoowaControllerModel
+     */
+    protected $_item_controller;
+
+    /**
+     *
+     * @var ComNucleonplusAccountingServiceTransferInterface
+     */
+    protected $_transfer_service;
+
+    /**
+     *
+     * @var decimal
+     */
+    protected $_system_fee_rate;
+
+    /**
+     *
+     * @var decimal
+     */
+    protected $_contingency_fund_rate;
+
+    /**
+     *
+     * @var decimal
+     */
+    protected $_operating_expense_rate;
+
     /**
      * Constructor.
      *
@@ -23,42 +65,25 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
     {
         parent::__construct($config);
 
-        // Inventory service
-        $identifier   = $this->getIdentifier($config->inventory_service);
-        $inventory_service = $this->getObject($identifier);
+        $this->_salesreceipt      = $this->getObject($config->salesreceipt_controller);
+        $this->_salesreceipt_line = $this->getObject($config->salesreceipt_line_controller);
+        $this->_item_controller   = $this->getObject($config->item_controller);
 
-        if (!($inventory_service instanceof ComNucleonplusAccountingServiceInventoryInterface))
-        {
-            throw new UnexpectedValueException(
-                "Service $identifier does not implement ComNucleonplusAccountingServiceInventoryInterface"
-            );
-        }
-        else $this->_inventory_service = $inventory_service;
+        // Transfer service
+        $identifier = $this->getIdentifier($config->transfer_service);
+        $service    = $this->getObject($identifier);
 
-        // Accounting service
-        $identifier         = $this->getIdentifier($config->accounting_service);
-        $accounting_service = $this->getObject($identifier);
-
-        if (!($accounting_service instanceof ComNucleonplusAccountingServiceTransferInterface))
+        if (!($service instanceof ComNucleonplusAccountingServiceTransferInterface))
         {
             throw new UnexpectedValueException(
                 "Service $identifier does not implement ComNucleonplusAccountingServiceTransferInterface"
             );
         }
-        else $this->_accounting_service = $accounting_service;
+        else $this->_transfer_service = $service;
 
-        // Accounts
-        $this->_undeposited_funds_account        = $config->undeposited_funds_account;
-        $this->_sales_of_product_account         = $config->sales_of_product_account;
-        $this->_system_fee_account               = $config->system_fee_account;
-        $this->_contingency_fund_account         = $config->contingency_fund_account;
-        $this->_operating_expense_budget_account = $config->operating_expense_budget_account;
-        $this->_sales_account                    = $config->sales_account;
-        $this->_system_fee_rate                  = $config->system_fee_rate;
-        $this->_contingency_fund_rate            = $config->contingency_fund_rate;
-        $this->_operating_expense_rate           = $config->operating_expense_rate;
-        $this->_rebates_account                  = $config->rebates_account;
-        $this->_referral_bonus_account           = $config->referral_bonus_account;
+        $this->_system_fee_rate        = $config->system_fee_rate;
+        $this->_contingency_fund_rate  = $config->contingency_fund_rate;
+        $this->_operating_expense_rate = $config->operating_expense_rate;
     }
 
     /**
@@ -72,28 +97,17 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'inventory_service'                => 'com:nucleonplus.accounting.service.inventory',
-            'accounting_service'               => 'com:nucleonplus.accounting.service.transfer',
-            'undeposited_funds_account'        => 92,
-            'system_fee_account'               => 138,
-            'contingency_fund_account'         => 139,
-            'operating_expense_budget_account' => 140,
-            'rebates_account'                  => 141,
-            'referral_bonus_account'           => 142,
-            'system_fee_rate'                  => 10.00,
-            'contingency_fund_rate'            => 50.00,
-            'operating_expense_rate'           => 60.00,
+            'salesreceipt_controller'      => 'com:qbsync.controller.salesreceipt',
+            'salesreceipt_line_controller' => 'com:qbsync.controller.salesreceiptline',
+            'item_controller'              => 'com:qbsync.controller.item',
+            'transfer_service'             => 'com:nucleonplus.accounting.service.transfer',
+            'system_fee_rate'              => 10.00,
+            'contingency_fund_rate'        => 50.00,
+            'operating_expense_rate'       => 60.00,
         ));
 
         parent::_initialize($config);
     }
-
-    /**
-     * Sales Receipt object
-     *
-     * @var QuickBooks_IPP_Object_SalesReceipt
-     */
-    protected $SalesReceipt;
 
     /**
      * Record sales transaction in the accounting system 
@@ -104,94 +118,50 @@ class ComNucleonplusAccountingServiceSalesreceipt extends ComNucleonplusAccounti
      */
     public function recordSale(KModelEntityInterface $order)
     {
-        $this->_createSalesReceipt($order->id);
+        $salesReceipt = $this->_salesreceipt->add(array(
+            'DocNumber'   => $order->id,
+            'TxnDate'     => date('Y-m-d'),
+            'CustomerRef' => $order->_account_customer_ref,
+        ));
 
         foreach ($order->getItems() as $item)
         {
-            $inventoryItem = $this->_inventory_service->find($item->inventory_item_id);
+            $inventoryItem = $this->_item_controller
+                ->id($item->inventory_item_id)
+                ->getModel()
+                ->fetch()
+            ;
 
-            $this->_createLine(array(
-                'description' => $item->name,
-                'item_id'     => $inventoryItem->getId(),
-                'qty'         => $item->quantity,
-                'amount'      => ($inventoryItem->getUnitPrice() * $item->quantity),
+            $this->_salesreceipt_line->add(array(
+                'SalesReceipt' => $salesReceipt->id,
+                'Description'  => $item->name,
+                'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($inventoryItem->getId()),
+                'Qty'          => $item->quantity,
+                'Amount'       => ($inventoryItem->getUnitPrice() * $item->quantity),
             ));
         }
 
-        $serviceItem = $this->_inventory_service->find($order->getPackage()->inventory_service_id);
+        $serviceItem = $this->_item_controller
+            ->id($order->getPackage()->inventory_service_id)
+            ->getModel()
+            ->fetch()
+        ;
 
-        $this->_createLine(array(
-            'description' => "{$order->package_name} Service",
-            'item_id'     => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
-            'qty'         => 1,
-            'amount'      => $serviceItem->getUnitPrice(),
+        $this->_salesreceipt_line->add(array(
+            'SalesReceipt' => $salesReceipt->id,
+            'Description'  => "{$order->package_name} Service",
+            'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
+            'Qty'          => 1,
+            'Amount'       => $serviceItem->getUnitPrice(),
         ));
 
-        // Record sale
-        $this->_save();
-
         // Allocation parts of sale
-        $this->_accounting_service->allocateSystemFee($this->_system_fee_rate);
-        $this->_accounting_service->allocateContingencyFund($this->_contingency_fund_rate);
-        $this->_accounting_service->allocateOperationsFund($this->_operating_expense_rate);
-    }
+        $systemFee        = ($this->_system_fee_rate * $order->getReward()->slots);
+        $contingencyFund  = ($this->_contingency_fund_rate * $order->getReward()->slots);
+        $operatingExpense = ($this->_operating_expense_rate * $order->getReward()->slots);
 
-    /**
-     * Create debit line
-     *
-     * @param array $data
-     *
-     * @return this
-     */
-    protected function _createLine(array $data)
-    {
-        $Line = new QuickBooks_IPP_Object_Line();
-        $Line->setDetailType('SalesItemLineDetail');
-        $Line->setDescription($data['description']);
-        $Line->setAmount($data['amount']);
-
-        $Details = new QuickBooks_IPP_Object_SalesItemLineDetail();
-        $Details->setItemRef($data['item_id']);
-        $Details->setQty($data['qty']);
-
-        $Line->addSalesItemLineDetail($Details);
-
-        $this->SalesReceipt->addLine($Line);
-
-        return $this;
-    }
-
-    /**
-     * Create sales receipt object
-     *
-     * @param string $docNumber
-     *
-     * @return this
-     */
-    protected function _createSalesReceipt($docNumber)
-    {
-        $SalesReceipt = new QuickBooks_IPP_Object_SalesReceipt();
-        $SalesReceipt->setDepositToAccountRef($this->_undeposited_funds_account);
-        $SalesReceipt->setDocNumber($docNumber);
-        $SalesReceipt->setTxnDate(date('Y-m-d'));
-
-        $this->SalesReceipt = $SalesReceipt;
-
-        return $this;
-    }
-
-    /**
-     * Save
-     *
-     * @return mixed
-     */
-    protected function _save()
-    {
-        $SalesReceiptService = new QuickBooks_IPP_Service_SalesReceipt();
-
-        if ($resp = $SalesReceiptService->add($this->Context, $this->realm, $this->SalesReceipt)) {
-            return $resp;
-        }
-        else throw new Exception($SalesReceiptService->lastError($this->Context));
+        $this->_transfer_service->allocateSystemFee($order->id, $systemFee);
+        $this->_transfer_service->allocateContingencyFund($order->id, $contingencyFund);
+        $this->_transfer_service->allocateOperationsFund($order->id, $operatingExpense);
     }
 }

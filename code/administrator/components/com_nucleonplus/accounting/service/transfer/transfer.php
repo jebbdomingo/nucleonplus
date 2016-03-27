@@ -12,8 +12,14 @@
 /**
  * @todo Implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
  */
-class ComNucleonplusAccountingServiceTransfer extends ComNucleonplusAccountingServiceObject implements ComNucleonplusAccountingServiceTransferInterface
+class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucleonplusAccountingServiceTransferInterface
 {
+    /**
+     *
+     * @var ComKoowaControllerModel
+     */
+    protected $_transfer_controller;
+
     /**
      * Constructor.
      *
@@ -22,6 +28,8 @@ class ComNucleonplusAccountingServiceTransfer extends ComNucleonplusAccountingSe
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
+
+        $this->_transfer_controller = $this->getObject($config->transfer_controller);
 
         // Accounts
         $this->_undeposited_funds_account              = $config->undeposited_funds_account;
@@ -47,6 +55,7 @@ class ComNucleonplusAccountingServiceTransfer extends ComNucleonplusAccountingSe
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
+            'transfer_controller'                    => 'com:qbsync.controller.transfer',
             'undeposited_funds_account'              => 92,
             'system_fee_account'                     => 138,
             'contingency_fund_account'               => 139,
@@ -64,142 +73,144 @@ class ComNucleonplusAccountingServiceTransfer extends ComNucleonplusAccountingSe
 
     /**
      *
-     * @param decimal $order
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return void
      */
-    public function allocateRebates($amount)
+    public function allocateRebates($orderId, $amount)
     {
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_rebates_account;
         $note          = 'Transfer part of sale to rebates asset account';
 
-        return $this->_transfer($sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     *
-     * @param decimal $order
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return void
      */
-    public function allocateSurplusRebates($amount)
+    public function allocateSurplusRebates($orderId, $amount)
     {
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_surplusrebates_account;
         $note          = 'Transfer surplus rebates i.e. a slot that doesn\'t have available slot to connect with';
 
-        return $this->_transfer($sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     *
-     * @param decimal $order
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return void
      */
-    public function allocateDRBonus($amount)
+    public function allocateDRBonus($orderId, $amount)
     {
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_directreferral_bonus_account;
         $note          = 'Transfer part of sale to direct referral incentives asset account';
 
-        return $this->_transfer($sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     *
-     * @param decimal $order
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return void
      */
-    public function allocateIRBonus($amount)
+    public function allocateIRBonus($orderId, $amount)
     {
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_indirectreferral_bonus_account;
         $note          = 'Transfer part of sale to indirect referral incentives asset account';
 
-        return $this->_transfer($sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     *
-     * @param decimal $order
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return void
      */
-    public function allocateSurplusDRBonus($amount)
+    public function allocateSurplusDRBonus($orderId, $amount)
     {
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_surplus_directreferral_bonus_account;
         $note          = 'Transfer surplus direct referral bonus i.e. an account that doesn\'t have a referrer';
 
-        return $this->_transfer($sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     *
-     * @param decimal $order
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return void
      */
-    public function allocateSurplusIRBonus($amount)
+    public function allocateSurplusIRBonus($orderId, $amount)
     {
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_surplus_indirectreferral_bonus_account;
         $note          = 'Transfer surplus indirect referral bonus i.e. an account that doesn\'t have an indirect referrer';
 
-        return $this->_transfer($sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     *
-     * @param decimal $order
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return void
      */
-    public function allocateSystemFee($amount)
+    public function allocateSystemFee($orderId, $amount)
     {
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_system_fee_account;
         $note          = 'Transfer part of sale to system fee asset account';
 
-        return $this->_transfer($sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     *
-     * @param decimal $order
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return void
      */
-    public function allocateContingencyFund($amount)
+    public function allocateContingencyFund($orderId, $amount)
     {
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_contingency_fund_account;
         $note          = 'Transfer part of sale to contingency fund asset account';
 
-        return $this->_transfer($sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     *
-     * @param decimal $order
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return void
      */
-    public function allocateOperationsFund($amount)
+    public function allocateOperationsFund($orderId, $amount)
     {
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_operating_expense_budget_account;
         $note          = 'Transfer part of sale to operating budget asset account';
 
-        return $this->_transfer($sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
      * Transfer funds
-     *
+     * 
+     * @param integer $orderId
      * @param integer $fromAccount
      * @param integer $toAccount
      * @param decimal $amount
@@ -209,19 +220,14 @@ class ComNucleonplusAccountingServiceTransfer extends ComNucleonplusAccountingSe
      *
      * @return resource
      */
-    protected function _transfer($fromAccount, $toAccount, $amount, $note = null)
+    protected function _transfer($orderId, $fromAccount, $toAccount, $amount, $note = null)
     {
-        $Transfer = new QuickBooks_IPP_Object_Transfer();
-        $Transfer->setFromAccountRef($fromAccount);
-        $Transfer->setToAccountRef($toAccount);
-        $Transfer->setAmount($amount);
-        $Transfer->setPrivateNote($note);
-
-        $TransferService = new QuickBooks_IPP_Service_Transfer();
-
-        if ($resp = $TransferService->add($this->Context, $this->realm, $Transfer)) {
-            return $resp;
-        }
-        else throw new Exception($TransferService->lastError($this->Context));
+        return $this->_transfer_controller->add(array(
+             'order_id'       => $orderId,
+             'FromAccountRef' => $fromAccount,
+             'ToAccountRef'   => $toAccount,
+             'Amount'         => $amount,
+             'PrivateNote'    => $note,
+        ));
     }
 }

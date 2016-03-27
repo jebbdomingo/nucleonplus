@@ -21,7 +21,7 @@ class ComNucleonplusAccountingServiceInventory extends ComNucleonplusAccountingS
      *
      * @return resource
      */
-    public function decreaseQuantity(KModelEntityInterface $order)
+    /*public function decreaseQuantity(KModelEntityInterface $order)
     {
         foreach ($order->getItems() as $item)
         {
@@ -35,7 +35,7 @@ class ComNucleonplusAccountingServiceInventory extends ComNucleonplusAccountingS
         }
 
         return $this->update($inventoryItem);
-    }
+    }*/
 
     /**
      * Get an item
@@ -67,7 +67,7 @@ class ComNucleonplusAccountingServiceInventory extends ComNucleonplusAccountingS
      * 
      * @return  void
      */
-    public function update($item)
+    /*public function update($item)
     {
         $itemService = new QuickBooks_IPP_Service_Item();
 
@@ -75,5 +75,5 @@ class ComNucleonplusAccountingServiceInventory extends ComNucleonplusAccountingS
             return $res;
         }
         else throw new Exception($itemService->lastError($this->Context));
-    }
+    }*/
 }

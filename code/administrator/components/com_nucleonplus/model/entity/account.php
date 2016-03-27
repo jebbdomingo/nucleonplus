@@ -45,22 +45,21 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
     public function save()
     {
         // Only one account is allowed for each user
-        if ($this->user_id && $this->isNew()) {
+        if ($this->user_id && $this->isNew())
+        {
             $account = $this->getObject('com:nucleonplus.model.accounts')->user_id($this->user_id)->fetch();
 
             // Check if an account if the same user id exists
-            if ($account->id) {
+            if ($account->id)
+            {
                 $this->setStatusMessage($this->getObject('translator')->translate('An account already exist for this member'));
                 $this->setStatus(KDatabase::STATUS_FAILED);
-
-                return;
+                return false;
             }
+            else return $this->_generateAccountNumber();
         }
 
-        parent::save();
-
-        // Generate and set account number
-        return $this->_generateAccountNumber();
+        return parent::save();
     }
 
     /**
@@ -70,7 +69,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     private function _generateAccountNumber()
     {
-        $this->account_number = date('ymd') . "-{$this->user_id}-{$this->getProperty('id')}";
+        $this->account_number = date('ymd') . "-{$this->user_id}";
 
         return parent::save();
     }

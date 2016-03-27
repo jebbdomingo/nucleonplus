@@ -26,6 +26,13 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected $_salesreceipt_service;
 
     /**
+     * Reward
+     *
+     * @var ComNucleonplusRebatePackagereward
+     */
+    protected $_reward;
+
+    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -35,16 +42,19 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         parent::__construct($config);
 
         // Sales Receipt Service
-        $identifier          = $this->getIdentifier($config->salesreceipt_service);
-        $salesreceiptService = $this->getObject($identifier);
+        $identifier = $this->getIdentifier($config->salesreceipt_service);
+        $service    = $this->getObject($identifier);
 
-        if (!($salesreceiptService instanceof ComNucleonplusAccountingServiceSalesreceiptInterface))
+        if (!($service instanceof ComNucleonplusAccountingServiceSalesreceiptInterface))
         {
             throw new UnexpectedValueException(
-                "Sales Receipt Service $identifier does not implement ComNucleonplusAccountingServiceSalesreceiptInterface"
+                "Service $identifier does not implement ComNucleonplusAccountingServiceSalesreceiptInterface"
             );
         }
-        else $this->_salesreceipt_service = $salesreceiptService;
+        else $this->_salesreceipt_service = $service;
+
+        // Reward service
+        $this->_reward = $this->getObject($config->reward);
     }
 
     /**
@@ -58,8 +68,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'inventory_service' => 'com:nucleonplus.accounting.service.inventory',
-            'salesreceipt_service'   => 'com:nucleonplus.accounting.service.salesreceipt',
+            'salesreceipt_service' => 'com:nucleonplus.accounting.service.salesreceipt',
+            'reward'               => 'com:nucleonplus.rebate.packagereward',
         ));
 
         parent::_initialize($config);
@@ -111,16 +121,22 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $order = parent::_actionAdd($context);
 
+        // Create reward
+        $this->_reward->create($order);
+
         if ($order->invoice_status == 'paid')
         {
-            // TODO implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
+            // Fetch the newly created Order from the data store to get the joined columns
+            $order = $this->getObject('com:nucleonplus.model.orders')->id($order->id)->fetch();
+
             try {
                 $this->_salesreceipt_service->recordSale($order);
             } catch (Exception $e) {
                 $context->response->addMessage($e->getMessage());
             }
-        }
 
+        }
+        
         return $order;
     }
 
@@ -147,8 +163,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         if ($entity->invoice_status == 'paid')
         {
             $order = $this->getModel()->fetch();
-            
-            // TODO implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
             $this->_salesreceipt_service->recordSale($order);
         }
 
