@@ -77,4 +77,35 @@ class ComNucleonplusModelOrders extends KModelDatabase
             $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
         }
     }
+
+    /**
+     * Check if the member has existing order at this moment
+     *
+     * conditions: orders
+     * - owned by the $accountId
+     * - created today
+     * - excluding cancelled orders
+     *
+     * @param [type] $accountId [description]
+     *
+     * @return boolean [description]
+     */
+    public function hasCurrentOrder($accountId)
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.orders');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_orders AS tbl')
+            ->columns('COUNT(tbl.account_id) AS count')
+            ->where('tbl.account_id = :account_id')->bind(['account_id' => $accountId])
+            ->where('tbl.created_on >= :created_on')->bind(array('created_on' => date('Y-m-d')))
+            ->where('tbl.order_status != :status')->bind(['status' => 'cancelled'])
+            ->group('tbl.account_id')
+        ;
+
+        $entities = $table->select($query);
+
+        return (intval($entities->count) > 0) ? true : false;
+    }
 }

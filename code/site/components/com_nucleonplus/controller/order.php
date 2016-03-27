@@ -76,7 +76,27 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     protected function _validate(KControllerContextInterface $context)
     {
-        
+        $result = true;
+
+        try
+        {
+            $user       = $this->getObject('user');
+            $translator = $this->getObject('translator');
+            
+            if ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($user->getId())) {
+                throw new KControllerExceptionRequestInvalid($translator->translate('You can only purchase one product package per day'));
+                $result = false;
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+
+            $result = false;
+        }
+
+        return $result;
     }
 
     /**
