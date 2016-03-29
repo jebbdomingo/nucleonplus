@@ -86,4 +86,12 @@ interface ComNucleonplusAccountingServiceTransferInterface
      * @return mixed
      */
     public function allocateOperationsFund($orderId, $amount);
+
+    /**
+     * @param integer $orderId
+     * @param decimal $amount
+     *
+     * @return mixed
+     */
+    public function allocateDeliveryExpense($orderId, $amount);
 }

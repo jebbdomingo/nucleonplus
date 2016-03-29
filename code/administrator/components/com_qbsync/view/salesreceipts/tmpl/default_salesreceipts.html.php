@@ -20,7 +20,7 @@
             </a>
         </td>
         <td>
-            <span class="label <?= ($salesreceipt->synced == 0) ? 'label-default' : 'label-info' ?>"><?= ucwords(escape(($salesreceipt->synced == 0) ? 'No' : 'Yes')) ?></span>
+            <span class="label <?= ($salesreceipt->synced == 'no') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape(($salesreceipt->synced == 'no') ? 'No' : 'Yes')) ?></span>
         </td>
         <td><?= $salesreceipt->DepositToAccountRef ?></td>
         <td><?= $salesreceipt->DocNumber ?></td>

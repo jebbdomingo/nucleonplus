@@ -20,7 +20,7 @@ class ComQbsyncModelEntityTransfer extends ComQbsyncQuickbooksModelEntityRow
      */
     public function sync()
     {
-        if ($this->synced == 1) {
+        if ($this->synced == 'yes') {
             $this->setStatusMessage("Transfer #{$this->id} is already synced");
             return false;
         }
@@ -35,7 +35,7 @@ class ComQbsyncModelEntityTransfer extends ComQbsyncQuickbooksModelEntityRow
 
         if ($resp = $TransferService->add($this->Context, $this->realm, $Transfer))
         {
-            $this->synced = 1;
+            $this->synced = 'yes';
             $this->save();
 
             return true;

@@ -42,6 +42,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         $this->_surplusrebates_account                 = $config->surplusrebates_account;
         $this->_surplus_directreferral_bonus_account   = $config->surplus_directreferral_bonus_account;
         $this->_surplus_indirectreferral_bonus_account = $config->surplus_indirectreferral_bonus_account;
+        $this->_delivery_expense_account               = $config->delivery_expense_account;
     }
 
     /**
@@ -66,6 +67,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
             'surplusrebates_account'                 => 144,
             'surplus_directreferral_bonus_account'   => 146,
             'surplus_indirectreferral_bonus_account' => 147,
+            'delivery_expense_account'               => 148,
         ));
 
         parent::_initialize($config);
@@ -203,6 +205,21 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         $sourceAccount = $this->_undeposited_funds_account;
         $targetAccount = $this->_operating_expense_budget_account;
         $note          = 'Transfer part of sale to operating budget asset account';
+
+        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+    }
+
+    /**
+     * @param integer $orderId
+     * @param decimal $amount
+     *
+     * @return void
+     */
+    public function allocateDeliveryExpense($orderId, $amount)
+    {
+        $sourceAccount = $this->_undeposited_funds_account;
+        $targetAccount = $this->_delivery_expense_account;
+        $note          = 'Transfer part of sale to delivery expense allocation asset account';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }

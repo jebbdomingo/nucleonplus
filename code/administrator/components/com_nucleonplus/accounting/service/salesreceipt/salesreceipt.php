@@ -118,12 +118,15 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
      */
     public function recordSale(KModelEntityInterface $order)
     {
-        $salesReceipt = $this->_salesreceipt->add(array(
+        // Create sales receipt sync queue
+        $salesReceiptData = array(
             'DocNumber'   => $order->id,
             'TxnDate'     => date('Y-m-d'),
             'CustomerRef' => $order->_account_customer_ref,
-        ));
+        );
+        $salesReceipt = $this->_salesreceipt->add($salesReceiptData);
 
+        // Create corresponding sales receipt line items
         foreach ($order->getItems() as $item)
         {
             $inventoryItem = $this->_item_controller
@@ -141,19 +144,46 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             ));
         }
 
-        $serviceItem = $this->_item_controller
-            ->id($order->getPackage()->inventory_service_id)
-            ->getModel()
-            ->fetch()
-        ;
+        // Create package item
+        if ($order->shipping_method == 'xend')
+        {
+            // Product package + delivery service charge
+            $serviceItem = $this->_item_controller
+                ->id($order->getPackage()->acctg_item_delivery_id)
+                ->getModel()
+                ->fetch()
+            ;
+            $this->_salesreceipt_line->add(array(
+                'SalesReceipt' => $salesReceipt->id,
+                'Description'  => "{$order->package_name} + Delivery Charge",
+                'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
+                'Qty'          => 1,
+                'Amount'       => $serviceItem->getUnitPrice(),
+            ));
 
-        $this->_salesreceipt_line->add(array(
-            'SalesReceipt' => $salesReceipt->id,
-            'Description'  => "{$order->package_name} Service",
-            'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
-            'Qty'          => 1,
-            'Amount'       => $serviceItem->getUnitPrice(),
-        ));
+            // Delivery charge
+            $deliveryExpense = $order->getPackage()->delivery_charge;
+
+            if ($order->payment_method == 'deposit') {
+                $this->_transfer_service->allocateDeliveryExpense($order->id, $deliveryExpense);
+            }
+        }
+        else
+        {
+            // Product package
+            $serviceItem = $this->_item_controller
+                ->id($order->getPackage()->acctg_item_id)
+                ->getModel()
+                ->fetch()
+            ;
+            $this->_salesreceipt_line->add(array(
+                'SalesReceipt' => $salesReceipt->id,
+                'Description'  => "{$order->package_name} Service",
+                'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
+                'Qty'          => 1,
+                'Amount'       => $serviceItem->getUnitPrice(),
+            ));
+        }
 
         // Allocation parts of sale
         $systemFee        = ($this->_system_fee_rate * $order->getReward()->slots);

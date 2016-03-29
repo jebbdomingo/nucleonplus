@@ -70,7 +70,7 @@ defined('KOOWA') or die; ?>
                             <?= import('default_transfers.html', ['transfers' => $transfers]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" align="center" style="text-align: center;">
+                                <td colspan="8" align="center" style="text-align: center;">
                                     <?= translate('No record(s) found.') ?>
                                 </td>
                             </tr>
@@ -78,7 +78,7 @@ defined('KOOWA') or die; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="7">
+                            <td colspan="8">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>

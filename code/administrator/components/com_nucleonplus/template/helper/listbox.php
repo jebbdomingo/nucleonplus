@@ -52,6 +52,13 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     protected $_payoutStatusFilters = [];
 
     /**
+     * Packages
+     *
+     * @var array
+     */
+    protected $_packages = [];
+
+    /**
      * Constructor
      *
      * @param KObjectConfig $config [description]
@@ -65,6 +72,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $this->_shippingMethods     = $config->shippingMethods;
         $this->_payoutStatus        = $config->payoutStatus;
         $this->_payoutStatusFilters = $config->payoutStatusFilters;
+        $this->_packages            = $config->packages;
     }
 
     /**
@@ -158,7 +166,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $packages = [];
         foreach ($this->getObject('com:nucleonplus.model.packages')->fetch() as $package) {
             $packages[] = [
-                'label' => "{$package->name} (slots: {$package->_rewardpackage_slots}) Php {$package->price}",
+                'label' => "{$package->name} PHP {$package->price} ({$package->_rewardpackage_slots} slot/s) + PHP {$package->delivery_charge} delivery fee",
                 'value' => $package->id
             ];
         }
@@ -306,7 +314,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $config->append(array(
             'name'     => 'status',
             'selected' => null,
-            'options'  => $this->getConfig()->packages,
+            'options'  => $this->_packages,
             'filter'   => array()
         ));
 

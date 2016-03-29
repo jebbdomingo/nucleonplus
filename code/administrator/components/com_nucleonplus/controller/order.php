@@ -126,15 +126,13 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         if ($order->invoice_status == 'paid')
         {
-            // Fetch the newly created Order from the data store to get the joined columns
-            $order = $this->getObject('com:nucleonplus.model.orders')->id($order->id)->fetch();
-
             try {
+                // Fetch the newly created Order from the data store to get the joined columns
+                $order = $this->getObject('com:nucleonplus.model.orders')->id($order->id)->fetch();
                 $this->_salesreceipt_service->recordSale($order);
             } catch (Exception $e) {
                 $context->response->addMessage($e->getMessage());
             }
-
         }
         
         return $order;
