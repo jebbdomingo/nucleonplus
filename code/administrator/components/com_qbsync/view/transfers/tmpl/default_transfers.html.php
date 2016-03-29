@@ -20,9 +20,9 @@
             </a>
         </td>
         <td>
-            <span class="label <?= ($transfer->synced == 0) ? 'label-default' : 'label-info' ?>"><?= ucwords(escape(($transfer->synced == 0) ? 'No' : 'Yes')) ?></span>
+            <span class="label <?= ($transfer->synced == 'no') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape(($transfer->synced == 'no') ? 'No' : 'Yes')) ?></span>
         </td>
-        <td><?= $transfer->order ?></td>
+        <td><?= $transfer->order_id ?></td>
         <td><?= $transfer->FromAccountRef ?></td>
         <td><?= $transfer->ToAccountRef ?></td>
         <td><?= $transfer->Amount ?></td>

@@ -29,7 +29,7 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
      */
     public function sync()
     {
-        if ($this->synced == 1) {
+        if ($this->synced == 'yes') {
             $this->setStatusMessage("Sales Receipt #{$this->id} with DocNumber {$this->DocNumber} is already synced");
             return false;
         }
@@ -38,7 +38,10 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
         $SalesReceipt->setDepositToAccountRef($this->DepositToAccountRef);
         $SalesReceipt->setDocNumber($this->DocNumber);
         $SalesReceipt->setTxnDate($this->TxnDate);
-        $SalesReceipt->setCustomerRef($this->CustomerRef);
+
+        if ($this->CustomerRef > 0) {
+            $SalesReceipt->setCustomerRef($this->CustomerRef);
+        }
 
         foreach ($this->getLineItems() as $line)
         {
