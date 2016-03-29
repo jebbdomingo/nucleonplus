@@ -41,7 +41,7 @@ class ComQbsyncControllerSalesreceipt extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'undeposited_funds_account' => 92,
+            'undeposited_funds_account' => 182,
         ));
 
         parent::_initialize($config);

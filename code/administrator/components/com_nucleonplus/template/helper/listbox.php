@@ -59,6 +59,13 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     protected $_packages = [];
 
     /**
+     * Savings types
+     *
+     * @var array
+     */
+    protected $_bank_account_types = [];
+
+    /**
      * Constructor
      *
      * @param KObjectConfig $config [description]
@@ -73,6 +80,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $this->_payoutStatus        = $config->payoutStatus;
         $this->_payoutStatusFilters = $config->payoutStatusFilters;
         $this->_packages            = $config->packages;
+        $this->_bank_account_types  = $config->bank_account_types;
     }
 
     /**
@@ -159,6 +167,13 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
                 'all'     => 'All',
                 'pending' => 'Pending',
                 'check_generated'    => 'Check Generated',
+            )
+        ))
+        ->append(array(
+            'bank_account_types' => array(
+                array('label' => 'Select', 'value' => null),
+                array('label' => 'Savings', 'value' => 'savings'),
+                array('label' => 'Check', 'value' => 'check'),
             )
         ));
 
@@ -464,5 +479,25 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         }
 
         return $result;
+    }
+
+    /**
+     * Bank account types list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function bankAccountTypes(array $config = array())
+    {
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'bank_account_type',
+            'selected' => null,
+            'options'  => $this->_bank_account_types,
+            'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
     }
 }

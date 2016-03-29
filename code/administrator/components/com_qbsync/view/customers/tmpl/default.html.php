@@ -46,6 +46,9 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'id', 'title' => 'ID')); ?>
                             </th>
                             <th>
+                                <?= helper('grid.sort', array('column' => 'action', 'title' => 'Action')); ?>
+                            </th>
+                            <th>
                                 <?= helper('grid.sort', array('column' => 'synced', 'title' => 'Synced')); ?>
                             </th>
                             <th>
@@ -64,7 +67,7 @@ defined('KOOWA') or die; ?>
                             <?= import('default_customers.html', ['customers' => $customers]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" align="center" style="text-align: center;">
+                                <td colspan="7" align="center" style="text-align: center;">
                                     <?= translate('No record(s) found.') ?>
                                 </td>
                             </tr>
@@ -72,7 +75,7 @@ defined('KOOWA') or die; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>

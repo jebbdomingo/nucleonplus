@@ -50,7 +50,10 @@
                 <tr>
                     <td><label><strong><?= translate('Bank Account Type') ?></strong></label></td>
                     <td>
-                        <input name="bank_account_type" id="bank_account_type" value="<?= $member->bank_account_type ?>" />
+                        <?= helper('listbox.bankAccountTypes', array(
+                            'name'     => 'bank_account_type',
+                            'selected' => $member->bank_account_type,
+                        )) ?>
                     </td>
                 </tr>
                 <tr>

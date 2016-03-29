@@ -19,6 +19,7 @@
                 <?= $customer->id ?>
             </a>
         </td>
+        <td><?= ucwords($customer->action) ?></td>
         <td>
             <span class="label <?= ($customer->synced == 'no') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape(($customer->synced == 'no') ? 'No' : 'Yes')) ?></span>
         </td>

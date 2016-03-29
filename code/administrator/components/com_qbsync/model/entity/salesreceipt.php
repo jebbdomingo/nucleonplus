@@ -36,11 +36,15 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
 
         $SalesReceipt = new QuickBooks_IPP_Object_SalesReceipt();
         $SalesReceipt->setDepositToAccountRef($this->DepositToAccountRef);
-        $SalesReceipt->setDocNumber($this->DocNumber);
+        $SalesReceipt->setDocNumber("NUC-SR-{$this->DocNumber}");
         $SalesReceipt->setTxnDate($this->TxnDate);
 
         if ($this->CustomerRef > 0) {
             $SalesReceipt->setCustomerRef($this->CustomerRef);
+        }
+
+        if ($this->DepartmentRef) {
+            $SalesReceipt->setDepartmentRef($this->DepartmentRef);
         }
 
         foreach ($this->getLineItems() as $line)

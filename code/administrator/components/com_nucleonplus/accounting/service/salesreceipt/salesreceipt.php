@@ -46,6 +46,12 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
 
     /**
      *
+     * @var integer
+     */
+    protected $_department_ref;
+
+    /**
+     *
      * @var decimal
      */
     protected $_contingency_fund_rate;
@@ -68,6 +74,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         $this->_salesreceipt      = $this->getObject($config->salesreceipt_controller);
         $this->_salesreceipt_line = $this->getObject($config->salesreceipt_line_controller);
         $this->_item_controller   = $this->getObject($config->item_controller);
+        $this->_department_ref    = $config->department_ref;
 
         // Transfer service
         $identifier = $this->getIdentifier($config->transfer_service);
@@ -101,6 +108,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             'salesreceipt_line_controller' => 'com:qbsync.controller.salesreceiptline',
             'item_controller'              => 'com:qbsync.controller.item',
             'transfer_service'             => 'com:nucleonplus.accounting.service.transfer',
+            'department_ref'               => 2,
             'system_fee_rate'              => 10.00,
             'contingency_fund_rate'        => 50.00,
             'operating_expense_rate'       => 60.00,
@@ -120,10 +128,14 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
     {
         // Create sales receipt sync queue
         $salesReceiptData = array(
-            'DocNumber'   => $order->id,
-            'TxnDate'     => date('Y-m-d'),
-            'CustomerRef' => $order->_account_customer_ref,
+            'DocNumber'    => $order->id,
+            'TxnDate'      => date('Y-m-d'),
+            'CustomerRef'  => $order->_account_customer_ref,
+            'CustomerMemo' => 'Thank you for your business and have a great day!',
         );
+        if ($order->payment_method == 'deposit') {
+            $salesReceiptData['DepartmentRef'] = $this->_department_ref; // Angono EC Valle store
+        }
         $salesReceipt = $this->_salesreceipt->add($salesReceiptData);
 
         // Create corresponding sales receipt line items

@@ -57,17 +57,17 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $config->append(array(
             'transfer_controller'                    => 'com:qbsync.controller.transfer',
-            'undeposited_funds_account'              => 92,
-            'system_fee_account'                     => 138,
-            'contingency_fund_account'               => 139,
-            'operating_expense_budget_account'       => 140,
-            'rebates_account'                        => 141,
-            'directreferral_bonus_account'           => 142,
-            'indirectreferral_bonus_account'         => 145,
-            'surplusrebates_account'                 => 144,
-            'surplus_directreferral_bonus_account'   => 146,
-            'surplus_indirectreferral_bonus_account' => 147,
-            'delivery_expense_account'               => 148,
+            'undeposited_funds_account'              => 182,
+            'system_fee_account'                     => 224,
+            'contingency_fund_account'               => 223,
+            'operating_expense_budget_account'       => 225,
+            'rebates_account'                        => 228,
+            'directreferral_bonus_account'           => 226,
+            'indirectreferral_bonus_account'         => 227,
+            'surplusrebates_account'                 => 231,
+            'surplus_directreferral_bonus_account'   => 229,
+            'surplus_indirectreferral_bonus_account' => 230,
+            'delivery_expense_account'               => 234,
         ));
 
         parent::_initialize($config);
