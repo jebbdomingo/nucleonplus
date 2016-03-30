@@ -38,16 +38,23 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
     {
         $context->getRequest()->setData(['status' => 'disbursed']);
 
-        $payout = parent::_actionEdit($context);
+        $payouts = parent::_actionEdit($context);
 
-        $reward = $this->getObject('com:nucleonplus.model.rewards')->payout_id($payout->id)->fetch();
-
-        if ($reward->id)
+        foreach ($payouts as $payout)
         {
-            $reward->status = 'claimed';
-            $reward->save();
+            $reward = $this->getObject('com:nucleonplus.model.rewards')
+                ->payout_id($payout->id)
+                ->status('ready')
+                ->fetch()
+            ;
+
+            if ($reward->id)
+            {
+                $reward->status = 'claimed';
+                $reward->save();
+            }
         }
 
-        return $payout;
+        return $payouts;
     }
 }
