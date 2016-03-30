@@ -20,7 +20,7 @@ defined('KOOWA') or die; ?>
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
 
 <? // Toolbar ?>
-<?= import('com://site/nucleonplus.account.rewards_manage.html', ['reward' => $reward]) ?>
+<?= import('com://site/nucleonplus.account.rewards_manage.html') ?>
 
 <div class="koowa_form">
 
@@ -30,7 +30,7 @@ defined('KOOWA') or die; ?>
 
             <div class="span12">
 
-                <?= import('com://site/nucleonplus.account.rebates.html', ['reward' => $reward]) ?>
+                <?= import('com://site/nucleonplus.account.rebates.html', ['rebates' => $rebates]) ?>
 
                 <?= import('com://site/nucleonplus.account.referral_bonuses.html') ?>
 

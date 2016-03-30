@@ -159,14 +159,16 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ->append(array(
             'payoutStatus' => array(
                 array('label' => 'Pending', 'value' => 'pending'),
-                array('label' => 'Check Generated', 'value' => 'check_generated')
+                array('label' => 'Check Generated', 'value' => 'check_generated'),
+                array('label' => 'Disbursed', 'value' => 'disbursed')
             )
         ))
         ->append(array(
             'payoutStatusFilters' => array(
-                'all'     => 'All',
-                'pending' => 'Pending',
-                'check_generated'    => 'Check Generated',
+                'all'             => 'All',
+                'pending'         => 'Pending',
+                'check_generated' => 'Check Generated',
+                'disbursed'       => 'Disbursed',
             )
         ))
         ->append(array(
@@ -463,7 +465,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $status = $this->_payoutStatusFilters;
 
         // Merge with user-defined status
-        if ($config['statusFilters']) {
+        if (isset($config['statusFilters']) && $config['statusFilters']) {
             $status = $status->merge($config['statusFilters']);
         }
 

@@ -83,12 +83,28 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
         parent::_afterBrowse($context);
 
         $controller = $this->getController();
+        $canSave    = ($controller->isEditable() && $controller->canSave());
         $allowed    = true;
 
         if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
             $allowed = false;
         }
 
+        // We do not allow manual addition and deletion of entity
+        $this->removeCommand('new');
         $this->removeCommand('delete');
+
+        if ($canSave)
+        {
+            // Batch check
+            $this->addCommand('generatecheck', [
+                'allowed' => $allowed
+            ]);
+
+            // Batch disburse
+            $this->addCommand('disburse', [
+                'allowed' => $allowed
+            ]);
+        }
     }
 }

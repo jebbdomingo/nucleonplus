@@ -1,5 +1,3 @@
-<? $locked = (is_null($order->id) || $order->invoice_status <> 'paid') ? false : true; ?>
-
 <form method="post" class="-koowa-form">
 
     <div class="panel panel-default">

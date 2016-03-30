@@ -8,7 +8,11 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-defined('KOOWA') or die; ?>
+defined('KOOWA') or die;
+
+$dr_bonus_points = 0;
+$ir_bonus_points = 0;
+?>
 
 <fieldset>
 
