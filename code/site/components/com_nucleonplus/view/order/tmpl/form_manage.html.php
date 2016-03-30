@@ -11,6 +11,7 @@ defined('KOOWA') or die('Nooku Framework Not Found');
 
 $show_save   = $order->canPerform('edit');
 $button_size = 'btn-small';
+$show_cancel = false;
 
 if (is_null($order->id))
 {

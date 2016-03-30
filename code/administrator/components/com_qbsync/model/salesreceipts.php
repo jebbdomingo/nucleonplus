@@ -15,7 +15,7 @@ class ComQbsyncModelSalesreceipts extends KModelDatabase
         parent::__construct($config);
 
         $this->getState()
-            ->insert('synced', 'string', 'no')
+            ->insert('synced', 'string')
         ;
     }
 
@@ -36,21 +36,8 @@ class ComQbsyncModelSalesreceipts extends KModelDatabase
 
         $state = $this->getState();
 
-        switch ($state->synced) {
-            case 'yes':
-                $synced = 1;
-                break;
-
-            case 'no':
-                $synced = 0;
-            
-            default:
-                $synced = 0;
-                break;
-        }
-    
-        if ($state->synced <> 'all') {
-            $query->where('tbl.synced = :synced')->bind(['synced' => $synced]);
+        if (!is_null($state->synced) && $state->synced <> 'all') {
+            $query->where('tbl.synced = :synced')->bind(['synced' => $state->synced]);
         }
     }
 }

@@ -106,7 +106,9 @@ class ComNucleonplusRebatePackagereferral extends KObject
         if (is_null($account->sponsor_id))
         {
             $this->_accounting_service->allocateSurplusDRBonus($order->id, $points);
-            $this->_accounting_service->allocateSurplusIRBonus($order->id, ($order->_reward_irpv * $this->_unilevel_count));
+
+            $points = (($order->_reward_irpv * $this->_unilevel_count) * $order->_reward_slots);
+            $this->_accounting_service->allocateSurplusIRBonus($order->id, $points);
 
             return true;
         }

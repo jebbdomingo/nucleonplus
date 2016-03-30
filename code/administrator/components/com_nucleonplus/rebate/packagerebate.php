@@ -58,13 +58,6 @@ class ComNucleonplusRebatePackagerebate extends KObject
     protected $_item_paid_status;
 
     /**
-     * Accounting Service
-     *
-     * @var ComNucleonplusAccountingServiceTransferInterface
-     */
-    protected $_accounting_service;
-
-    /**
      * Slots
      *
      * @var array
@@ -86,17 +79,6 @@ class ComNucleonplusRebatePackagerebate extends KObject
         $this->_reward_active_status = $config->reward_active_status;
         $this->_item_status_column   = $config->item_status_column;
         $this->_item_paid_status     = $config->item_paid_status;
-
-        $identifier = $this->getIdentifier($config->accounting_service);
-        $service    = $this->getObject($identifier);
-
-        if (!($service instanceof ComNucleonplusAccountingServiceTransferInterface))
-        {
-            throw new UnexpectedValueException(
-                "Service $identifier does not implement ComNucleonplusAccountingServiceTransferInterface"
-            );
-        }
-        else $this->_accounting_service = $service;
     }
 
     /**
@@ -116,7 +98,6 @@ class ComNucleonplusRebatePackagerebate extends KObject
             'item_model'           => 'com:nucleonplus.model.packages', // Product or Item object's identifier
             'item_status_column'   => 'invoice_status', // Order or Item's payment status column
             'item_paid_status'     => 'paid', // The payment status of the Order to activate this rebate with
-            'accounting_service'   => 'com:nucleonplus.accounting.service.transfer'
         ));
 
         parent::_initialize($config);
@@ -244,8 +225,6 @@ class ComNucleonplusRebatePackagerebate extends KObject
      */
     private function connectToOtherSlot(KModelEntityRow $slot)
     {
-        $slotReward = $slot->getReward();
-
         // All the slots from the rewards system
         if ($unpaidSlot = $this->getObject($this->_model)->reward_id($slot->reward_id)->getUnpaidSlots())
         {
@@ -253,17 +232,11 @@ class ComNucleonplusRebatePackagerebate extends KObject
             $unpaidSlot->save();
             $slot->consume();
 
-            $this->_accounting_service->allocateRebates($slotReward->product_id, $slotReward->prpv);
-            
             // Process member rebates
             // TODO move to dedicated rewards processing method
             $reward = $this->getObject($this->_reward_model)->id($unpaidSlot->reward_id)->fetch();
             $reward->processRebate();
         }
-        else
-        {
-            // Transfer surplus rebates i.e. a slot that doesn't have available slot to connect with
-            $this->_accounting_service->allocateSurplusRebates($slotReward->product_id, $slotReward->prpv);
-        }
+        else $slot->flushOut();
     }
 }

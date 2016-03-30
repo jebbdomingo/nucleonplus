@@ -21,7 +21,7 @@ defined('KOOWA') or die; ?>
 
     <div class="col-md-12">
 
-        <p><a href=<?= route('view=order&id='.$order->id.'&layout=form&tmpl=koowa') ?> class="btn btn-primary">Buy Product Package</a></p>
+        <p><a href=<?= route('view=order&layout=form&tmpl=koowa') ?> class="btn btn-primary">Buy Product Package</a></p>
 
         <fieldset class="form-vertical">
 

@@ -21,6 +21,11 @@ class ComNucleonplusViewOrderHtml extends KViewHtml
     {
         parent::__construct($config);
 
-        $this->_data['account_id'] = $this->getUrl()->getQuery(true)['account_id'];
+        $query = $this->getUrl()->getQuery(true);
+
+        if (isset($query['account_id']) && $query['account_id']) {
+            $this->_data['account_id'] = $query['account_id'];
+        }
+        else $this->_data['account_id'] = null;
     }
 }

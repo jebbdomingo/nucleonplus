@@ -105,6 +105,7 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
      */
     public function delete()
     {
+        // Delete related sales receipt line items
         foreach ($this->getLineItems() as $line)
         {
             if (!$line->delete())
@@ -114,6 +115,7 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
             }
         }
 
+        // Delete the transfer transactions that are related to the sales receipt
         $transfers = $this->getObject('com:qbsync.model.transfers')->order_id($this->DocNumber)->fetch();
 
         foreach ($this->getObject('com:qbsync.model.transfers')->order_id($this->DocNumber)->fetch() as $transfer)
@@ -125,6 +127,7 @@ class ComQbsyncModelEntitySalesreceipt extends ComQbsyncQuickbooksModelEntityRow
             }
         }
 
+        // Delete sales receipt
         return parent::delete();
     }
 }

@@ -266,7 +266,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $status = $this->getConfig()->statusFilters;
 
         // Merge with user-defined status
-        if ($config['status']) {
+        if (isset($config['status']) && $config['status']) {
             $status = $status->merge($config['status']);
         }
 
@@ -298,7 +298,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $status = $this->_orderStatusFilters;
 
         // Merge with user-defined status
-        if ($config['status']) {
+        if (isset($config['status']) && $config['status']) {
             $status = $status->merge($config['status']);
         }
 

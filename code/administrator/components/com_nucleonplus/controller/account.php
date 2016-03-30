@@ -96,15 +96,21 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
         {
             if ($entity->status == 'pending')
             {
-                $this->_member_service->pushMember($entity);
-                $context->response->addMessage("Account #{$entity->account_number} has been activated");
-            } else {
-                $context->response->addMessage("Unable to activate Account #{$entity->account_number}, only pending accounts can be activated", 'error');
+                $customer = $this->_member_service->pushMember($entity);
+                
+                if ($customer->sync() === false) {
+                    $context->response->addMessage("Unable to sync Account #{$entity->account_number} to the Accounting System", 'error');
+                }
+                else
+                {
+                    $entity->status = 'active';
+                    $entity->save();
+                    $context->response->addMessage("Account #{$entity->account_number} has been activated");
+                }
             }
+            else $context->response->addMessage("Unable to activate Account #{$entity->account_number}, only pending accounts can be activated", 'warning');
         }
 
-        $context->getRequest()->setData(['status' => 'active']);
-
-        return parent::_actionEdit($context);
+        return $entities;
     }
 }

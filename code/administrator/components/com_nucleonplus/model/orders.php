@@ -37,9 +37,9 @@ class ComNucleonplusModelOrders extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('a.account_number')
-            ->columns('a.status')
-            ->columns(array('_account_customer_ref' => 'a.CustomerRef'))
+            ->columns('_account.account_number')
+            ->columns('_account.status')
+            ->columns(array('_account_customer_ref' => '_account.CustomerRef'))
             ->columns('u.name')
         ;
     }
@@ -47,8 +47,8 @@ class ComNucleonplusModelOrders extends KModelDatabase
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('a' => 'nucleonplus_accounts'), 'tbl.account_id = a.nucleonplus_account_id')
-            ->join(array('u' => 'users'), 'a.user_id = u.id')
+            ->join(array('_account' => 'nucleonplus_accounts'), 'tbl.account_id = _account.nucleonplus_account_id')
+            ->join(array('u' => 'users'), '_account.user_id = u.id')
         ;
 
         parent::_buildQueryJoins($query);

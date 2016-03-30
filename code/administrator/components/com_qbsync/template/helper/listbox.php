@@ -100,7 +100,7 @@ class ComQbsyncTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $status = $this->_sync_filters;
 
         // Merge with user-defined status
-        if ($config['status']) {
+        if (isset($config['status']) && $config['status']) {
             $status = $status->merge($config['status']);
         }
 
