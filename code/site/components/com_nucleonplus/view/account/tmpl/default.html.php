@@ -28,7 +28,6 @@ defined('KOOWA') or die; ?>
 
             <form method="post" class="-koowa-grid">
 
-
                 <?= import('com://site/nucleonplus.account.default_rewards.html', ['account' => $account]) ?>
 
                 <?= import('com://admin/nucleonplus.account.default_direct_referrals.html', ['account' => $account]) ?>

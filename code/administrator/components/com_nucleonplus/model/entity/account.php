@@ -28,13 +28,21 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
     }
 
     /**
-     * Get purchases
+     * Get latest purchases
+     *
+     * @param integer $limit [optional]
      *
      * @return array
      */
-    public function getPurchases()
+    public function getLatestPurchases($limit = 5)
     {
-        return $this->getObject('com:nucleonplus.model.orders')->account_id($this->id)->fetch();
+        return $this->getObject('com:nucleonplus.model.orders')
+            ->account_id($this->id)
+            ->sort('created_on')
+            ->direction('desc')
+            ->limit($limit)
+            ->fetch()
+        ;
     }
 
     /**

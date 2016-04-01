@@ -54,6 +54,9 @@ defined('KOOWA') or die; ?>
                             <th data-hide="phone,phablet">
                                 <?= helper('grid.sort', array('column' => 'DocNumber', 'title' => 'Doc Number')); ?>
                             </th>
+                            <th data-hide="phone,phablet">
+                                <?= helper('grid.sort', array('column' => 'CustomerRef', 'title' => 'Customer Ref')); ?>
+                            </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'TxnDate', 'title' => 'Date')); ?>
                             </th>
@@ -64,7 +67,7 @@ defined('KOOWA') or die; ?>
                             <?= import('default_salesreceipts.html', ['salesreceipts' => $salesreceipts]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" align="center" style="text-align: center;">
+                                <td colspan="7" align="center" style="text-align: center;">
                                     <?= translate('No record(s) found.') ?>
                                 </td>
                             </tr>
@@ -72,7 +75,7 @@ defined('KOOWA') or die; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>

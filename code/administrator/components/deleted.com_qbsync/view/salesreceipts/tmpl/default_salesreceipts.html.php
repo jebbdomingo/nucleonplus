@@ -24,6 +24,7 @@
         </td>
         <td><?= $salesreceipt->DepositToAccountRef ?></td>
         <td><?= $salesreceipt->DocNumber ?></td>
+        <td><?= $salesreceipt->CustomerRef ?></td>
         <td>
             <?= helper('date.format', array('date' => $salesreceipt->TxnDate)) ?>
         </td>

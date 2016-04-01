@@ -7,6 +7,10 @@
         <table class="table">
             <tbody>
                 <tr>
+                    <td><label><strong><?= translate('Payout No.'); ?></strong></label></td>
+                    <td><?= $payout->id ?></td>
+                </tr>
+                <tr>
                     <td><label><strong><?= translate('Account Number'); ?></strong></label></td>
                     <td><?= $payout->account_number ?></td>
                 </tr>

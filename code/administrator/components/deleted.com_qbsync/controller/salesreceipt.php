@@ -63,7 +63,7 @@ class ComQbsyncControllerSalesreceipt extends ComKoowaControllerModel
             $entities = $context->result;
         }
 
-        if(count($entities))
+        if (count($entities))
         {
             foreach($entities as $entity)
             {

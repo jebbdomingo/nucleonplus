@@ -36,6 +36,10 @@ defined('KOOWA') or die; ?>
                     <td><input type="text" name="DocNumber" value="<?= $salesreceipt->DocNumber ?>" /></td>
                 </tr>
                 <tr>
+                    <td><label><strong><?= translate('Customer Ref') ?></strong></label></td>
+                    <td><input type="text" name="CustomerRef" value="<?= $salesreceipt->CustomerRef ?>" /></td>
+                </tr>
+                <tr>
                     <td><label><strong><?= translate('Date') ?></strong></label></td>
                     <td>
                         <?= helper('date.humanize', array('date' => $salesreceipt->TxnDate)) ?>

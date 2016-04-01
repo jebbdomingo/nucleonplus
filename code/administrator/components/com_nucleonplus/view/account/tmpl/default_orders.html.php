@@ -1,7 +1,8 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">
-            Orders
+            Last 5 Purchases
+            <a href="<?= route('view=orders&account_id' . $account->id) ?>" class="btn btn-default">View All</a>
         </h3>
     </div>
     <div class="panel-body">
@@ -15,7 +16,7 @@
                 <th>Ordered On</th>
             </thead>
             <tbody>
-                <? if (count($purchases = $account->getPurchases()) > 0): ?>
+                <? if (count($purchases = $account->getLatestPurchases(5)) > 0): ?>
                     <? foreach ($purchases as $order): ?>
                         <tr>
                             <td>

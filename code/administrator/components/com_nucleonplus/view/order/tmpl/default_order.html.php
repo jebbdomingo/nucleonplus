@@ -9,6 +9,10 @@
         <table class="table">
             <tbody>
                 <tr>
+                    <td><label><strong><?= translate('Order No.') ?></strong></label></td>
+                    <td><?= $order->id ?></td>
+                </tr>
+                <tr>
                     <td><label><strong><?= translate('Account No.') ?></strong></label></td>
                     <td>
                         <?= helper('listbox.accounts', array(

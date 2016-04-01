@@ -16,7 +16,7 @@ defined('KOOWA') or die; ?>
 <ktml:style src="media://com_nucleonplus/css/admin-read.css" />
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="Payout #<?= ($payout->id); ?>" icon="task-add icon-book">
+    <ktml:toolbar type="actionbar" title="COM_NUCLEONPLUS_PAYOUT" icon="task-add icon-book">
 </ktml:module>
 
 <div class="row-fluid">

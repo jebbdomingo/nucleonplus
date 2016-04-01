@@ -3,6 +3,10 @@
     <table class="table table-condensed">
         <tbody>
             <tr>
+                <td><label><strong><?= translate('Name') ?></strong></label></td>
+                <td><?= $account->_name ?></td>
+            </tr>
+            <tr>
                 <td><label><strong><?= translate('Account No.') ?></strong></label></td>
                 <td><?= $account->account_number ?></td>
             </tr>
