@@ -19,8 +19,6 @@ require_once dirname(__FILE__) . '/../../../QuickBooks.php';
  */
 require_once dirname(__FILE__) . '/config.php';
 
-var_dump($quickbooks_oauth_url);die;
-
 // Try to handle the OAuth request 
 if ($IntuitAnywhere->handle($the_username, $the_tenant))
 {

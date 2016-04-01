@@ -14,37 +14,45 @@ defined('KOOWA') or die; ?>
 
 <?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.koowa'); ?>
-<?= helper('behavior.modal'); ?>
 <?= helper('behavior.keepalive'); ?>
 <?= helper('behavior.validator'); ?>
 
-<ktml:style src="media://koowa/com_koowa/css/koowa.css" />
+<ktml:style src="media://koowa/com_koowa/css/site.css" />
 
 <? // Toolbar ?>
 <?= import('com://site/nucleonplus.order.form_manage.html', ['order' => $order]) ?>
 
+<? // Form ?>
 <div class="koowa_form">
 
-    <form method="post" class="form-horizontal -koowa-form" action="<?= route('option=com_nucleonplus&view=order'); ?>">
+    <div class="nucleonplus_form_layout">
 
-        <input type="hidden" name="account_id" value="<?= $account->id ?>" />
+        <form method="post" class="-koowa-form">
 
-        <div class="row-fluid">
+            <input type="hidden" name="account_id" value="<?= $account->id ?>" />
 
-            <div class="span8">
+            <div class="koowa_container">
 
-                <? // Order form ?>
-                <?= import('com://site/nucleonplus.order.form_order.html', ['order' => $order]) ?>
+                <div class="koowa_grid__row">
 
-                <? // Payment reference form ?>
-                <? if ($order->id): ?>
-                    <?= import('com://site/nucleonplus.order.form_payment_reference.html', ['order' => $order]) ?>
-                <? endif ?>
+                    <div class="koowa_grid__item">
+
+                        <? // Order form ?>
+                        <?= import('com://site/nucleonplus.order.form_order.html', ['order' => $order]) ?>
+
+                        <? // Payment reference form ?>
+                        <? if ($order->id): ?>
+                            <?= import('com://site/nucleonplus.order.form_payment_reference.html', ['order' => $order]) ?>
+                        <? endif ?>
+
+                    </div>
+
+                </div>
 
             </div>
 
-        </div>
+        </form>
 
-    </form>
+    </div>
 
 </div>
