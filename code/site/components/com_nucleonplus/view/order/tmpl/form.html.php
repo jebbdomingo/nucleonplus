@@ -27,13 +27,11 @@ defined('KOOWA') or die; ?>
 
     <div class="nucleonplus_form_layout">
 
-        <a href="?view=orders">Back to Orders List</a>
-
         <form method="post" class="-koowa-form">
-
             <input type="hidden" name="account_id" value="<?= $account->id ?>" />
 
             <div class="koowa_container">
+                <a href="?view=orders">< Back to Orders List</a>
 
                 <div class="koowa_grid__row">
 

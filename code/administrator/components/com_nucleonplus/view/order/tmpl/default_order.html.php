@@ -13,7 +13,7 @@
                     <td><?= $order->id ?></td>
                 </tr>
                 <tr>
-                    <td><label><strong><?= translate('Account No.') ?></strong></label></td>
+                    <td><label><strong><?= translate('Account Number.') ?></strong></label></td>
                     <td>
                         <?= helper('listbox.accounts', array(
                             'name'     => 'account_id',

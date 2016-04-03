@@ -183,7 +183,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $packages = [];
         foreach ($this->getObject('com:nucleonplus.model.packages')->fetch() as $package) {
             $packages[] = [
-                'label' => "{$package->name} PHP {$package->price} ({$package->_rewardpackage_slots} slot/s) + PHP {$package->delivery_charge} delivery fee",
+                'label' => "{$package->name} P{$package->price} + P{$package->delivery_charge} delivery fee",
                 'value' => $package->id
             ];
         }
@@ -332,7 +332,11 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
             'name'     => 'status',
             'selected' => null,
             'options'  => $this->_packages,
-            'filter'   => array()
+            'filter'   => array(),
+            'attribs'  => array(
+                'size'  => 5,
+                'style' => 'width: 300px' 
+            )
         ));
 
         return parent::optionlist($config);
