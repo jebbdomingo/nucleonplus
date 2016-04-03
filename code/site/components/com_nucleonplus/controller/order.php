@@ -126,13 +126,26 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'note'               => $context->request->data->note,
         ]);
 
-        $order = parent::_actionAdd($context);
+        try
+        {
+            $order = parent::_actionAdd($context);
 
-        $response = $context->getResponse();
-        $response->addMessage("Please deposit your payment to BDO account # {$this->_nucleonplus_bank_account_number} and enter the reference number found in your deposit slip to \"Deposit slip reference #\" field in your <a href=\"component/nucleonplus/?view=order&id={$order->id}&layout=form&tmpl=koowa\">Order #{$order->id}</a>.");
+            $response = $context->getResponse();
+            $response->addMessage("Please deposit your payment to BDO account # {$this->_nucleonplus_bank_account_number} and enter the reference number found in your deposit slip to \"Deposit slip reference #\" field in your <a href=\"component/nucleonplus/?view=order&id={$order->id}&layout=form&tmpl=koowa\">Order #{$order->id}</a>.");
 
-        // Create reward
-        $this->_reward->create($order);
+            // Create reward
+            $this->_reward->create($order);
+        }
+        catch(Exception $e)
+        {
+            $context->response->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+
+            if (!$context->result instanceof KModelEntityInterface) {
+                $order = $this->getModel()->fetch();
+            } else {
+                $order = $context->result;
+            }
+        }
 
         return $order;
     }

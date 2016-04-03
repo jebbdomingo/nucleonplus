@@ -85,24 +85,29 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
      */
     protected function _afterRead(KControllerContextInterface $context)
     {
-        //parent::_afterRead($context);
-
         $controller = $this->getController();
         $allowed    = true;
 
         if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
             $allowed = false;
         }
-        
 
         if (is_null($context->result->id)) {
             $user    = $this->getObject('user');
             $account = $this->getObject('com:nucleonplus.model.accounts')->user_id($user->getId())->fetch();
 
             $this->addCommand('apply', array(
-                'allowed' => ($allowed && !in_array($account->status, array('new', 'pending'))),
-                'label' => 'Place Order'
+                'allowed' => ($allowed && !in_array($account->status, array('new', 'pending', 'terminated'))),
+                'label'   => 'Place Order'
             ));
+
+            if (in_array($account->status, array('new', 'pending'))) {
+                $context->response->addMessage('Sorry you cannot place an order for now, your account is currently inactive', 'warning');
+            }
+
+            if ($account->status, 'terminated') {
+                $context->response->addMessage('Your account was terminated for some reason, please contact Nucleon +', 'error');
+            }
         }
         elseif ($context->result->order_status == 'awaiting_payment')
         {

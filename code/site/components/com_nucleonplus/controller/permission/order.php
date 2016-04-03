@@ -36,7 +36,7 @@ class ComNucleonplusControllerPermissionOrder extends ComKoowaControllerPermissi
         $user    = $this->getObject('user');
         $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
 
-        if (in_array($account->status, array('new', 'pending'))) {
+        if (in_array($account->status, array('new', 'pending', 'terminated'))) {
             return false;
         }
         else return parent::canAdd();

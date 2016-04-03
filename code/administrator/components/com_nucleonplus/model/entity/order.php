@@ -29,6 +29,34 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     }
 
     /**
+     * Save action
+     *
+     * @return boolean
+     */
+    public function save()
+    {
+        $account = $this->getObject('com:nucleonplus.model.accounts')->id($this->account_id)->fetch();
+
+        switch ($account->status)
+        {
+            case 'new':
+            case 'pending':
+                $this->setStatusMessage($this->getObject('translator')->translate('Unable to place order, the account is currently inactive'));
+                return false;
+                break;
+
+            case 'terminated':
+                $this->setStatusMessage($this->getObject('translator')->translate('Unable to place order, the account was terminated'));
+                return false;
+                break;
+            
+            default:
+                return parent::save();
+                break;
+        }
+    }
+
+    /**
      * Get the package items of this order
      *
      * @return array
