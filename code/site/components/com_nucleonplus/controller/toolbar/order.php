@@ -11,19 +11,6 @@
 class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActionbar
 {
     /**
-     * Back to Orders Command
-     *
-     * @param KControllerToolbarCommand $command
-     *
-     * @return void
-     */
-    protected function _commandCancel(KControllerToolbarCommand $command)
-    {
-        $command->href  = 'view=orders';
-        $command->label = 'Back to Orders List';
-    }
-
-    /**
      * Cancel Order Command
      *
      * @param KControllerToolbarCommand $command
@@ -105,7 +92,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
                 $context->response->addMessage('Sorry you cannot place an order for now, your account is currently inactive', 'warning');
             }
 
-            if ($account->status, 'terminated') {
+            if ($account->status == 'terminated') {
                 $context->response->addMessage('Your account was terminated for some reason, please contact Nucleon +', 'error');
             }
         }
@@ -126,6 +113,5 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         }
 
         $this->removeCommand('save');
-        $this->addCommand('cancel');
     }
 }
