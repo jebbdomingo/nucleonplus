@@ -103,7 +103,8 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
                 }
                 else
                 {
-                    $entity->status = 'active';
+                    $entity->status      = 'active';
+                    $entity->CustomerRef = $customer->CustomerRef;
                     $entity->save();
                     $context->response->addMessage("Account #{$entity->account_number} has been activated");
                 }
