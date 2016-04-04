@@ -142,7 +142,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             foreach ($entities as $entity)
             {
                 if (!in_array($entity->order_status, array('awaiting_payment', 'awaiting_verification'))) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid order status: Verified and cancelled orders cannot be voided'));
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid order status: Verified and Cancelled orders cannot be voided'));
                     $result = false;
                 }
             }
