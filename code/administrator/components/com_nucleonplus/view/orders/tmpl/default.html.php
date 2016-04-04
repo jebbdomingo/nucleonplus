@@ -29,10 +29,10 @@ defined('KOOWA') or die; ?>
         <form action="" method="get" class="-koowa-grid">
             <div class="scopebar">
                 <div class="scopebar-group last hidden-tablet hidden-phone">
-                    <?php echo helper('listbox.filterList', array('active_status' => parameters()->status)); ?>
+                    <?php echo helper('listbox.orderStatusFilter', array('active_status' => parameters()->order_status)); ?>
                 </div>
                 <div class="scopebar-search">
-                    <?= helper('grid.search', array('submit_on_clear' => true)) ?>
+                    <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Account Number or Member\'s Name')) ?>
                 </div>
             </div>
             <div class="nucleonplus_table_container">
@@ -45,18 +45,6 @@ defined('KOOWA') or die; ?>
                             <th class="nucleonplus_table__title_field">
                                 <?= helper('grid.sort', array('column' => 'id', 'title' => 'Order No.')); ?>
                             </th>
-                            <th>
-                                <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
-                            </th>
-                            <th>
-                                <?= helper('grid.sort', array('column' => 'package_name', 'title' => 'Product Package')); ?>
-                            </th>
-                            <th>
-                                <?= helper('grid.sort', array('column' => 'package_slots', 'title' => 'Slots')); ?>
-                            </th>
-                            <th>
-                                <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
-                            </th>
                             <th data-hide="phone,phablet">
                                 <?= helper('grid.sort', array('column' => 'order_status', 'title' => 'Order Status')); ?>
                             </th>
@@ -64,7 +52,19 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'invoice_status', 'title' => 'Invoice Status')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'payout', 'title' => 'Pay-out')); ?>
+                                <?= helper('grid.sort', array('column' => 'name', 'title' => 'Member')); ?>
+                            </th>
+                            <th>
+                                <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
+                            </th>
+                            <th>
+                                <?= helper('grid.sort', array('column' => 'package_name', 'title' => 'Product Package')); ?>
+                            </th>
+                            <th>
+                                <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
+                            </th>
+                            <th data-hide="phone,phablet">
+                                Payment Reference
                             </th>
                         </tr>
                     </thead>

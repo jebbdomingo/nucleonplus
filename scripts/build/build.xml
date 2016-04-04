@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+<project name="Nucleon Plus" default="build">
+
+    <property file="build.properties" />
+
+    <target name="build">
+        <delete dir="tmp" includeemptydirs="true" />
+
+        <copy todir="tmp">
+            <fileset dir="../../code" />
+        </copy>
+
+        <move file="tmp/administrator/components/com_nucleonplus/nucleonplus.xml" tofile="tmp/nucleonplus.xml" overwrite="true" />
+        <copy todir="tmp/resources/install">
+            <fileset dir="tmp/administrator/components/com_nucleonplus/resources/install/" />
+        </copy>
+
+        <!-- ckeditor begin >>> -->
+        <if>
+            <isset property="components.location" />
+            <then>
+                <echo message="Using local checkout of com_ckeditor" />
+                <copy todir="tmp/ckeditor_clone">
+                    <fileset dir="${components.location}" defaultexcludes="no" />
+                </copy>
+
+                <gitcheckout
+                        gitPath="git"
+                        repository="tmp/ckeditor_clone"
+                        branchname="${components.branch}" />
+            </then>
+            <else>
+                <echo message="Cloning com_ckeditor" />
+                <exec command="git clone --depth 1 --branch ${components.branch} https://github.com/joomlatools/joomlatools-framework-ckeditor.git ${project.basedir}/tmp/ckeditor_clone" />
+            </else>
+        </if>
+
+        <copy todir="tmp/extensions/ckeditor">
+            <fileset dir="tmp/ckeditor_clone" />
+        </copy>
+
+        <delete dir="tmp/ckeditor_clone" includeemptydirs="true" />
+        <!-- <<< ckeditor end -->
+
+        <!-- take out source mapping from CSS files -->
+        <reflexive>
+            <fileset dir="tmp/media/com_nucleonplus/css">
+                <include name="*.css" />
+            </fileset>
+            <fileset dir="tmp/extensions/comments/resources/assets/css">
+                <include name="*.css" />
+            </fileset>
+            <fileset dir="tmp/extensions/ckeditor/resources/assets/css">
+                <include name="*.css" />
+            </fileset>
+            <filterchain>
+                <replaceregexp>
+                    <regexp pattern="\/\*# sourceMappingURL.*?\*\/" replace="" ignoreCase="true"/>
+                </replaceregexp>
+            </filterchain>
+        </reflexive>
+
+        <!-- delete SCSS map files -->
+        <delete>
+            <fileset dir="tmp/extensions/comments/resources/assets/css">
+                <include name="*.map" />
+            </fileset>
+            <fileset dir="tmp/extensions/ckeditor/resources/assets/css">
+                <include name="*.map" />
+            </fileset>
+        </delete>
+
+        <delete file="com_nucleonplus.zip" quiet="true" />
+        <zip destfile="com_nucleonplus.zip" basedir="tmp" />
+
+        <delete dir="tmp" includeemptydirs="true" />
+    </target>
+</project>

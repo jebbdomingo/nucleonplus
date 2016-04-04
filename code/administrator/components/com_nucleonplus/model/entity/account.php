@@ -28,40 +28,102 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
     }
 
     /**
-     * Get purchases
+     * Get latest purchases
+     *
+     * @param integer $limit [optional]
      *
      * @return array
      */
-    public function getPurchases()
+    public function getLatestPurchases($limit = 5)
     {
-        return $this->getObject('com:nucleonplus.model.orders')->account_number($this->account_number)->fetch();
+        return $this->getObject('com:nucleonplus.model.orders')
+            ->account_id($this->id)
+            ->sort('created_on')
+            ->direction('desc')
+            ->limit($limit)
+            ->fetch()
+        ;
     }
 
+    /**
+     * Save
+     *
+     * @return string
+     */
     public function save()
     {
         // Only one account is allowed for each user
-        if ($this->user_id && $this->isNew()) {
+        if ($this->user_id && $this->isNew())
+        {
             $account = $this->getObject('com:nucleonplus.model.accounts')->user_id($this->user_id)->fetch();
 
             // Check if an account if the same user id exists
-            if ($account->id) {
+            if ($account->id)
+            {
                 $this->setStatusMessage($this->getObject('translator')->translate('An account already exist for this member'));
                 $this->setStatus(KDatabase::STATUS_FAILED);
-
-                return;
+                return false;
             }
+            else return $this->_generateAccountNumber();
         }
 
-        parent::save();
-
-        // Generate and set account number
-        return $this->generateAccountNumber();
+        return parent::save();
     }
 
-    private function generateAccountNumber()
+    /**
+     * Generate account number
+     *
+     * @return KModelEntityRow
+     */
+    private function _generateAccountNumber()
     {
-        $this->account_number = date('ymd') . "-{$this->user_id}-{$this->getProperty('id')}";
+        $this->account_number = date('ymd') . "-{$this->user_id}";
 
         return parent::save();
+    }
+
+    /**
+     * Get the Account ID from the Account Number
+     *
+     * @return integer
+     */
+    public function getIdFromAccountNumber()
+    {
+        return $this->_extractIdFromNumber($this->account_number);
+    }
+
+    /**
+     * Get the Account ID from the Sponsor Account Number
+     *
+     * @return integer
+     */
+    public function getIdFromSponsor()
+    {
+        return $this->_extractIdFromNumber($this->sponsor_id);
+    }
+
+    /**
+     * Extract the Account ID from the Account Number
+     *
+     * @param string $accountNumber
+     *
+     * @return integer
+     */
+    private function _extractIdFromNumber($accountNumber)
+    {
+        $accountNumber = explode('-', $accountNumber);
+        
+        return (int) array_pop($accountNumber);
+    }
+
+    /**
+     * Prevent deletion of account
+     * An account can only be deactivated or terminated but not deleted
+     *
+     * @return boolean FALSE
+     */
+    public function delete()
+    {
+        return false;
     }
 }

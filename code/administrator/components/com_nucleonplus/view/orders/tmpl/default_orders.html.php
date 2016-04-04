@@ -20,7 +20,18 @@
             </a>
         </td>
         <td>
-            <a href="<?= route('view=account&id='.$order->getAccountId()); ?>">
+            <span class="label <?= ($order->order_status == 'cancelled') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->order_status)) ?></span>
+        </td>
+        <td>
+            <span class="label <?= ($order->invoice_status == 'sent') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span>
+        </td>
+        <td>
+            <a href="<?= route('view=account&id='.$order->account_id); ?>">
+                <?= $order->name ?>
+            </a>
+        </td>
+        <td>
+            <a href="<?= route('view=account&id='.$order->account_id); ?>">
                 <?= $order->account_number ?>
             </a>
         </td>
@@ -29,18 +40,11 @@
                 <?= $order->package_name ?>
             </a>
         </td>
-        <td><?= $order->package_slots ?></td>
         <td>
-            <?= helper('date.humanize', array('date' => $order->created_on)) ?>
-            <br />
-            <?= $order->created_on ?>
+            <?= helper('date.format', array('date' => $order->created_on)) ?>
         </td>
         <td>
-            <span class="label <?= ($order->order_status == 'cancelled') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->order_status)) ?></span>
+            <?= escape($order->payment_reference) ?>
         </td>
-        <td>
-            <span class="label <?= ($order->invoice_status == 'sent') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span>
-        </td>
-        <td><?= ($order->payout) ? $order->payout : '-' ?></td>
     </tr>
 <? endforeach; ?>

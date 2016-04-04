@@ -19,14 +19,30 @@
                 <?= object('user.provider')->load($account->user_id)->getName() ?>
             </a>
         </td>
+        <td>
+            <?
+            // TODO create a template helper for account status label
+            switch ($account->status) {
+                case 'closed':
+                    $statusLabel = 'label-default';
+                    break;
+
+                case 'pending':
+                    $statusLabel = 'label-warning';
+                    break;
+                
+                default:
+                    $statusLabel = 'label-info';
+                    break;
+            }
+            ?>
+            <span class="label <?= $statusLabel ?>"><?= ucwords(escape($account->status)) ?></span>
+        </td>
         <td >
             <a href="<?= route('view=account&id='.$account->id); ?>">
                 <?= $account->account_number ?>
             </a>
         </td>
         <td><?= ($account->sponsor_id) ? $account->sponsor_id : '-' ?></td>
-        <td>
-            <span class="label <?= ($account->status == 'closed') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($account->status)) ?></span>
-        </td>
     </tr>
 <? endforeach; ?>

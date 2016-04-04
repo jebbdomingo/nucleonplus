@@ -9,52 +9,74 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-/**
- * Order Entity.
- *
- * @author  Jebb Domingo <https://github.com/jebbdomingo>
- * @package Component\Nucelonplus
- */
 class ComNucleonplusModelEntityOrder extends KModelEntityRow
 {
     /**
-     * Process reward, check if this order is ready for payout
+     * Prevent deletion of order
+     * An order can only be void but not deleted
      *
-     * @return boolean|void
+     * @return boolean FALSE
      */
-    public function processReward()
+    public function delete()
     {
-        if ($this->payout) {
-            return false;
-        }
-
-        $slots  = $this->getObject('com:nucleonplus.model.slots')->product_id($this->id)->fetch();
-        $payout = 0;
-        
-        foreach ($slots as $slot)
-        {
-            if (is_null($slot->lf_slot_id) || is_null($slot->rt_slot_id)) {
-                $payout = null;
-
-                break;
-            } else {
-                $payout += 1100;
-            }
-        }
-
-        $this->payout = $payout;
-        $this->save();
+        return false;
     }
 
     /**
-     * Get Account ID from the Account Number
+     * Save action
      *
-     * @return string
+     * @return boolean
      */
-    public function getAccountId()
+    public function save()
     {
-        $accountNumber = explode('-', $this->account_number);
+        $account = $this->getObject('com:nucleonplus.model.accounts')->id($this->account_id)->fetch();
 
-        return (int) array_pop($accountNumber);
+        switch ($account->status)
+        {
+            case 'new':
+            case 'pending':
+                $this->setStatusMessage($this->getObject('translator')->translate('Unable to place order, the account is currently inactive'));
+                return false;
+                break;
+
+            case 'terminated':
+                $this->setStatusMessage($this->getObject('translator')->translate('Unable to place order, the account was terminated'));
+                return false;
+                break;
+            
+            default:
+                return parent::save();
+                break;
+        }
+    }
+
+    /**
+     * Get the package items of this order
+     *
+     * @return array
+     */
+    public function getItems()
+    {
+        return $this->getObject('com:nucleonplus.model.packageitems')->package_id($this->package_id)->fetch();
+    }
+
+    /**
+     * Get the package details
+     *
+     * @return array
+     */
+    public function getPackage()
+    {
+        return $this->getObject('com:nucleonplus.model.packages')->id($this->package_id)->fetch();
+    }
+
+    /**
+     * Get the reward details
+     *
+     * @return array
+     */
+    public function getReward()
+    {
+        return $this->getObject('com:nucleonplus.model.rewards')->product_id($this->id)->fetch();
     }
 }

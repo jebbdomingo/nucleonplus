@@ -15,8 +15,7 @@ class ComNucleonplusModelSlots extends KModelDatabase
         parent::__construct($config);
 
         $this->getState()
-            ->insert('product_id', 'int')
-            ->insert('account_id', 'string')
+            ->insert('reward_id', 'int')
             ;
     }
 
@@ -31,14 +30,37 @@ class ComNucleonplusModelSlots extends KModelDatabase
         parent::_initialize($config);
     }
 
+    protected function _buildQueryColumns(KDatabaseQueryInterface $query)
+    {
+        parent::_buildQueryColumns($query);
+
+        $query
+            ->columns('r.product_id')
+            ->columns('r.customer_id')
+            ->columns('r.slots')
+            ->columns('r.prpv')
+            ->columns('r.drpv')
+            ->columns('r.irpv')
+            ;
+    }
+
+    protected function _buildQueryJoins(KDatabaseQueryInterface $query)
+    {
+        $query
+            ->join(array('r' => 'nucleonplus_rewards'), 'tbl.reward_id = r.nucleonplus_reward_id')
+        ;
+
+        parent::_buildQueryJoins($query);
+    }
+
     protected function _buildQueryWhere(KDatabaseQueryInterface $query)
     {
         parent::_buildQueryWhere($query);
 
         $state = $this->getState();
 
-        if ($state->product_id) {
-            $query->where('tbl.product_id = :product_id')->bind(['product_id' => $state->product_id]);
+        if ($state->reward_id) {
+            $query->where('tbl.reward_id = :reward_id')->bind(['reward_id' => $state->reward_id]);
         }
     }
 
@@ -54,19 +76,20 @@ class ComNucleonplusModelSlots extends KModelDatabase
         $table = $this->getObject('com://admin/nucleonplus.database.table.slots');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_slots AS tbl')
-            ->where('tbl.account_id != :account_id')->bind(['account_id' => $state->account_id])
-            ->where('tbl.lf_slot_id IS NULL OR tbl.rt_slot_id IS NULL')
+            ->where('tbl.reward_id != :reward_id')->bind(['reward_id' => $state->reward_id])
+            ->where('tbl.lf_slot_id = 0 OR tbl.rt_slot_id = 0')
         ;
 
         $slots = $table->select($query);
 
         // Double check that the member's slot will not be placed in his own slot since it is done in Rewardable::placeOwnSlots()
-        if ($slots->account_id == $state->account_id) {
+        // TODO find another way how to do this properly
+        if ($slots->reward_id == $state->reward_id) {
             return null;
         }
 
         // Determine which leg is available
-        $slots->available_leg = (is_null($slots->lf_slot_id)) ? 'lf_slot_id' : 'rt_slot_id';
+        $slots->available_leg = ($slots->lf_slot_id == 0) ? 'lf_slot_id' : 'rt_slot_id';
 
         return $slots;
     }

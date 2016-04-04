@@ -13,14 +13,14 @@ return array(
     'identifiers' => array(
         'com://admin/nucleonplus.controller.account' => array(
             'behaviors' => array(
-                'com:activities.controller.behavior.loggable'
+                'com:activities.controller.behavior.loggable',
             ),
         ),
-        'com://admin/nucleonplus.controller.order' => array(
+        /*'com://admin/nucleonplus.controller.order' => array(
             'behaviors' => array(
-                'com:nucleonplus.controller.behavior.rewardable'
+                'com:nucleonplus.controller.behavior.rewardable',
             ),
-        ),
+        ),*/
     ),
 
     'aliases' => array()

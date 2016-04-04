@@ -15,7 +15,8 @@ class ComNucleonplusDatabaseTableOrders extends KDatabaseTableAbstract
         $config->append(array(
             'behaviors' => array(
                 'modifiable',
-                'creatable'
+                'creatable',
+                'rewardable'
             ),
             'filters' => array(
             )
