@@ -108,7 +108,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             'salesreceipt_line_controller' => 'com:qbsync.controller.salesreceiptline',
             'item_controller'              => 'com:qbsync.controller.item',
             'transfer_service'             => 'com:nucleonplus.accounting.service.transfer',
-            'department_ref'               => 2,
+            'department_ref'               => 3,
             'system_fee_rate'              => 10.00,
             'contingency_fund_rate'        => 50.00,
             'operating_expense_rate'       => 60.00,
