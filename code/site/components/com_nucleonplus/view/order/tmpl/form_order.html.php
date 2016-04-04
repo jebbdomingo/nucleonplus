@@ -11,7 +11,7 @@ $disabled = is_null($order->id) ? false : true;
         <div class="controls">
             <?= helper('listbox.productList', array(
                 'name'     => 'package_id',
-                'selected' => $order->package_id,
+                'selected' => ($package_id) ? $package_id : $order->package_id,
                 'attribs'  => ['disabled' => $disabled])) ?>
         </div>
     </div>

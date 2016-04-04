@@ -9,12 +9,6 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-/**
- * Account Entity.
- *
- * @author  Jebb Domingo <https://github.com/jebbdomingo>
- * @package Component\Nucelonplus
- */
 class ComNucleonplusModelEntityOrder extends KModelEntityRow
 {
     /**

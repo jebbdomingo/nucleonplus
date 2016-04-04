@@ -30,6 +30,19 @@ class ComNucleonplusModelPackages extends KModelDatabase
         parent::_initialize($config);
     }
 
+    protected function _buildQueryColumns(KDatabaseQueryInterface $query)
+    {
+        parent::_buildQueryColumns($query);
+
+        $query
+            ->columns(array('_rewardpackage_name' => '_rewardpackages.name'))
+            ->columns(array('_rewardpackage_slots' => '_rewardpackages.slots'))
+            ->columns(array('_rewardpackage_prpv' => '_rewardpackages.prpv'))
+            ->columns(array('_rewardpackage_drpv' => '_rewardpackages.drpv'))
+            ->columns(array('_rewardpackage_irpv' => '_rewardpackages.irpv'))
+        ;
+    }
+
     protected function _buildQueryWhere(KDatabaseQueryInterface $query)
     {
         parent::_buildQueryWhere($query);
@@ -39,5 +52,14 @@ class ComNucleonplusModelPackages extends KModelDatabase
         if ($state->rewardpackage_id) {
             $query->where('tbl._rewardpackage_id = :rewardpackage_id')->bind(['rewardpackage_id' => $state->rewardpackage_id]);
         }
+    }
+
+    protected function _buildQueryJoins(KDatabaseQueryInterface $query)
+    {
+        $query
+            ->join(array('_rewardpackages' => 'nucleonplus_rewardpackages'), 'tbl.rewardpackage_id = _rewardpackages.nucleonplus_rewardpackage_id')
+        ;
+
+        parent::_buildQueryJoins($query);
     }
 }

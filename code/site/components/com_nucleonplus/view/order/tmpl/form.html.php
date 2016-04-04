@@ -12,12 +12,13 @@ defined('KOOWA') or die; ?>
 
 <? $account = object('com:nucleonplus.model.accounts')->user_id(object('user')->getId())->fetch(); ?>
 
-<?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.koowa'); ?>
+<?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.keepalive'); ?>
 <?= helper('behavior.validator'); ?>
 
 <ktml:style src="media://koowa/com_koowa/css/site.css" />
+<ktml:style src="media://com_nucleonplus/css/bootstrap.css" />
 
 <? // Toolbar ?>
 <?= import('com://site/nucleonplus.order.form_manage.html', ['order' => $order]) ?>
@@ -31,7 +32,9 @@ defined('KOOWA') or die; ?>
             <input type="hidden" name="account_id" value="<?= $account->id ?>" />
 
             <div class="koowa_container">
-                <a href="?view=orders">< Back to Orders List</a>
+                <p><a href="?view=orders">< Back to Orders List</a></p>
+
+                <?= helper('alerts.paymentInstruction') ?>
 
                 <div class="koowa_grid__row">
 

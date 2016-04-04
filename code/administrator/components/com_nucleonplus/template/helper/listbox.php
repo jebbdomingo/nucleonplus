@@ -123,7 +123,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ->append(array(
             'orderStatus' => array(
                 array('label' => 'Awaiting Payment', 'value' => 'awaiting_payment'),
-                array('label' => 'Verifying', 'value' => 'verifying'),
+                array('label' => 'Awaiting Verification', 'value' => 'awaiting_verification'),
                 array('label' => 'Processing', 'value' => 'processing'),
                 array('label' => 'Shipped', 'value' => 'shipped'),
                 array('label' => 'Delivered', 'value' => 'delivered'),
@@ -133,14 +133,14 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ))
         ->append(array(
             'orderStatusFilters' => array(
-                'all'              => 'All',
-                'awaiting_payment' => 'Awaiting Payment',
-                'verifying'        => 'Verifying',
-                'processing'       => 'Processing',
-                'shipped'          => 'Shipped',
-                'delivered'        => 'Delivered',
-                'cancelled'        => 'Cancelled',
-                'completed'        => 'Completed',
+                'all'                   => 'All',
+                'awaiting_payment'      => 'Awaiting Payment',
+                'awaiting_verification' => 'Awaiting Verification',
+                'processing'            => 'Processing',
+                'shipped'               => 'Shipped',
+                'delivered'             => 'Delivered',
+                'cancelled'             => 'Cancelled',
+                'completed'             => 'Completed',
             )
         ))
         ->append(array(

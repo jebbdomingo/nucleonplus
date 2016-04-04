@@ -26,13 +26,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected $_reward;
 
     /**
-     * Reward
-     *
-     * @var string
-     */
-    protected $_nucleonplus_bank_account_number;
-
-    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -43,10 +36,10 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         // Reward service
         $this->_reward = $this->getObject($config->reward);
-        $this->_nucleonplus_bank_account_number = $config->nucleonplus_bank_account_number;
 
         // Validation
         $this->addCommandCallback('before.add', '_validate');
+        $this->addCommandCallback('before.confirm', '_validateConfirm');
     }
 
     /**
@@ -60,15 +53,14 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'reward'                          => 'com://admin/nucleonplus.rebate.packagereward',
-            'nucleonplus_bank_account_number' => '9900000001',
+            'reward' => 'com://admin/nucleonplus.rebate.packagereward',
         ));
 
         parent::_initialize($config);
     }
 
     /**
-     * Validate and construct data
+     * Validate order
      *
      * @param KControllerContextInterface $context
      * 
@@ -85,6 +77,37 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             
             if ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($user->getId())) {
                 throw new KControllerExceptionRequestInvalid($translator->translate('You can only purchase one product package per day'));
+                $result = false;
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Validate payment confirmation
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validateConfirm(KControllerContextInterface $context)
+    {
+        $result = true;
+
+        try
+        {
+            $translator = $this->getObject('translator');
+            
+            if (empty(trim($context->request->data->payment_reference))) {
+                throw new KControllerExceptionRequestInvalid($translator->translate('Please enter your deposit slip reference #'));
                 $result = false;
             }
         }
@@ -131,7 +154,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             $order = parent::_actionAdd($context);
 
             $response = $context->getResponse();
-            $response->addMessage("Please deposit your payment to BDO account # {$this->_nucleonplus_bank_account_number} and enter the reference number found in your deposit slip to \"Deposit slip reference #\" field in your <a href=\"component/nucleonplus/?view=order&id={$order->id}&layout=form&tmpl=koowa\">Order #{$order->id}</a>.");
+            $response->addMessage("Thank you for your business, we will process your order once you confirm your payment. Please see the instruction below.");
 
             // Create reward
             $this->_reward->create($order);
@@ -160,7 +183,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _actionConfirm(KControllerContextInterface $context)
     {
         $context->getRequest()->setData([
-            'order_status'      => 'verifying',
+            'order_status'      => 'awaiting_verification',
             'payment_reference' => $context->getRequest()->data->payment_reference
         ]);
 

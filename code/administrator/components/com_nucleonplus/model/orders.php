@@ -84,7 +84,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
      * conditions: orders
      * - owned by the $accountId
      * - created today
-     * - excluding cancelled orders
+     * - excluding cancelled and void orders
      *
      * @param [type] $accountId [description]
      *
@@ -100,7 +100,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
             ->columns('COUNT(tbl.account_id) AS count')
             ->where('tbl.account_id = :account_id')->bind(['account_id' => $accountId])
             ->where('tbl.created_on >= :created_on')->bind(array('created_on' => date('Y-m-d')))
-            ->where('tbl.order_status != :status')->bind(['status' => 'cancelled'])
+            ->where('tbl.order_status NOT IN :status')->bind(['status' => array('cancelled', 'void')])
             ->group('tbl.account_id')
         ;
 

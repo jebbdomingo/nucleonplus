@@ -41,6 +41,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     {
         parent::__construct($config);
 
+        $this->addCommandCallback('before.verifypayment', '_validateVerify');
+        $this->addCommandCallback('before.void', '_validateVoid');
+
         // Sales Receipt Service
         $identifier = $this->getIdentifier($config->salesreceipt_service);
         $service    = $this->getObject($identifier);
@@ -73,6 +76,86 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         ));
 
         parent::_initialize($config);
+    }
+
+    /**
+     * Validate payment
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validateVerify(KControllerContextInterface $context)
+    {
+        $result = true;
+
+        if (!$context->result instanceof KModelEntityInterface) {
+            $entities = $this->getModel()->fetch();
+        } else {
+            $entities = $context->result;
+        }
+
+        try
+        {
+            $translator = $this->getObject('translator');
+
+            foreach ($entities as $entity)
+            {
+                if ($entity->order_status <> 'awaiting_verification') {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid order status: Only those Orders with "Awaiting Verification" status can be verified'));
+                    $result = false;
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Validate void action
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validateVoid(KControllerContextInterface $context)
+    {
+        $result = true;
+
+        if (!$context->result instanceof KModelEntityInterface) {
+            $entities = $this->getModel()->fetch();
+        } else {
+            $entities = $context->result;
+        }
+
+        try
+        {
+            $translator = $this->getObject('translator');
+
+            foreach ($entities as $entity)
+            {
+                if (!in_array($entity->order_status, array('awaiting_payment', 'awaiting_verification'))) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid order status: Verified and cancelled orders cannot be voided'));
+                    $result = false;
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+
+            $result = false;
+        }
+
+        return $result;
     }
 
     /**
@@ -161,7 +244,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         if ($entity->invoice_status == 'paid')
         {
             $order = $this->getModel()->fetch();
-            $this->_salesreceipt_service->recordSale($order);
+            //$this->_salesreceipt_service->recordSale($order);
         }
 
         return $entity;
@@ -214,6 +297,25 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     {
         $context->getRequest()->setData([
             'order_status' => 'completed'
+        ]);
+
+        return parent::_actionEdit($context);
+    }
+
+    /**
+     * Specialized save action, changing state by updating the order status
+     *
+     * @param   KControllerContextInterface $context A command context object
+     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
+     * 
+     * @return  KModelEntityInterface
+     */
+    protected function _actionVoid(KControllerContextInterface $context)
+    {
+        // Mark as Paid
+        $context->getRequest()->setData([
+            'order_status' => 'void',
+            'note'         => $context->request->data->note,
         ]);
 
         return parent::_actionEdit($context);

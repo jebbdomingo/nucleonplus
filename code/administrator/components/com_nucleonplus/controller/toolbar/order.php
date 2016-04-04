@@ -91,6 +91,26 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         $command->label = 'Mark as Completed';
     }
 
+    /**
+     * Void Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandVoid(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'void'
+            )
+        ));
+
+        $command->label = 'Void';
+    }
+
     protected function _afterRead(KControllerContextInterface $context)
     {
         parent::_afterRead($context);
@@ -104,7 +124,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         }
 
         // Verify payment command
-        if ($canSave && ($context->result->order_status == 'verifying'))
+        if ($canSave && ($context->result->order_status == 'awaiting_verification'))
         {
             $this->addCommand('markpaid', [
                 'allowed' => $allowed,
@@ -138,6 +158,14 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
                 'attribs' => ['data-novalidate' => 'novalidate']
             ]);
         }
+
+        // Void command
+        if ($canSave && (in_array($context->result->order_status, array('awaiting_payment', 'awaiting_verification'))))
+        {
+            $this->addCommand('void', [
+                'allowed' => $allowed
+            ]);
+        }
     }
 
     protected function _afterBrowse(KControllerContextInterface $context)
@@ -152,6 +180,22 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         }
 
         $this->removeCommand('delete');
+
+        // Verify payment command
+        if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('markpaid', [
+                'allowed' => $allowed
+            ]);
+        }
+
+        // Void command
+        if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('void', [
+                'allowed' => $allowed
+            ]);
+        }
 
         /*if ($controller->isEditable() && $controller->canSave())
         {
