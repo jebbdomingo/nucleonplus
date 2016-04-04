@@ -244,7 +244,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         if ($entity->invoice_status == 'paid')
         {
             $order = $this->getModel()->fetch();
-            //$this->_salesreceipt_service->recordSale($order);
+            $this->_salesreceipt_service->recordSale($order);
         }
 
         return $entity;
