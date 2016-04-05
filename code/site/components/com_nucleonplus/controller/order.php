@@ -81,14 +81,14 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             $user       = $this->getObject('user');
             $translator = $this->getObject('translator');
             
-            if ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($user->getId())) {
-                throw new KControllerExceptionRequestInvalid($translator->translate('You can only purchase one product package per day'));
-                $result = false;
-            }
-
             if (empty(trim($entity->package_id)))
             {
                 throw new KControllerExceptionRequestInvalid($translator->translate('Please select a Product Pack'));
+                $result = false;
+            }
+            elseif ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($user->getId()))
+            {
+                throw new KControllerExceptionRequestInvalid($translator->translate('You can only purchase one product package per day'));
                 $result = false;
             }
             else
@@ -102,6 +102,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                     $result = false;
                 }
             }
+
         }
         catch(Exception $e)
         {

@@ -21,7 +21,11 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
     protected function _actionDispatch(KDispatcherContextInterface $context)
     {
-        if (!$this->getUser()->isAuthentic())
+        $excemptions = array(
+            'packages'
+        );
+
+        if (!in_array($this->getRequest()->query->view, $excemptions) && !$this->getUser()->isAuthentic())
         {
             $identifier = $context->getSubject()->getIdentifier();
             $url        = sprintf('index.php?option=com_%s', $identifier->package);

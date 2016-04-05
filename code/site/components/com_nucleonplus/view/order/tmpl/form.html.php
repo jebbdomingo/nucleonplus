@@ -32,8 +32,6 @@ defined('KOOWA') or die; ?>
             <input type="hidden" name="account_id" value="<?= $account->id ?>" />
 
             <div class="koowa_container">
-                <p><a href="?view=orders">< Back to Orders List</a></p>
-
                 <?= helper('alerts.paymentInstruction') ?>
 
                 <div class="koowa_grid__row">

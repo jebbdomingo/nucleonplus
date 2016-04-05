@@ -8,7 +8,11 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-defined('KOOWA') or die; ?>
+defined('KOOWA') or die;
+
+$isAuthenticated = object('user')->isAuthentic();
+$disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
+?>
 
 <div class="row">
     <? foreach ($packages as $package): ?>
@@ -57,7 +61,20 @@ defined('KOOWA') or die; ?>
                             </td>
                         </tr>
                     </table>
-                    <p><a href="<?= route('view=order&package_id=' . $package->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary" role="button">Order Now</a></p>
+
+                    <p>
+                        <? if ($isAuthenticated): ?>
+                            <a href="<?= route('view=order&package_id=' . $package->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
+                                <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                                Order Now
+                            </a>
+                        <? else: ?>
+                            <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
+                                <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
+                                Log-in to order
+                            </a>
+                        <? endif; ?>
+                    </p>
                 </div>
             </div>
         </div>
