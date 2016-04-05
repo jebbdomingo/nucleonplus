@@ -41,7 +41,9 @@ defined('KOOWA') or die; ?>
                             </td>
                             <td>
                                 <? if ($order->order_status == 'shipped'): ?>
-                                    <a href="<?= route('view=order&id=' . $order->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary btn-xs" role="button">Confirm Receipt of Order</a>
+                                    <a href="<?= route('view=order&id=' . $order->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary btn-xs" role="button"><?= translate('Confirm Receipt of Order') ?></a>
+                                <? elseif ($order->order_status == 'awaiting_payment'): ?>
+                                    <a href="<?= route('view=order&id=' . $order->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary btn-xs" role="button"><?= translate('Confirm your payment') ?></a>
                                 <? endif ?>
                             </td>
                         </tr>

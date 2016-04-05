@@ -10,8 +10,6 @@
 
 defined('KOOWA') or die; ?>
 
-<? $account = object('com:nucleonplus.model.accounts')->user_id(object('user')->getId())->fetch(); ?>
-
 <?= helper('behavior.koowa'); ?>
 <?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.keepalive'); ?>
@@ -29,10 +27,7 @@ defined('KOOWA') or die; ?>
     <div class="nucleonplus_form_layout">
 
         <form method="post" class="-koowa-form">
-            <input type="hidden" name="account_id" value="<?= $account->id ?>" />
-
             <div class="koowa_container">
-                <?= helper('alerts.paymentInstruction') ?>
 
                 <div class="koowa_grid__row">
 
@@ -49,6 +44,8 @@ defined('KOOWA') or die; ?>
                     </div>
 
                 </div>
+
+                <?= helper('alerts.paymentInstructionPanel') ?>
 
             </div>
 

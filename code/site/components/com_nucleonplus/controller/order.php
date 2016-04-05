@@ -60,7 +60,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     }
 
     /**
-     * Validate order
+     * Validate add
      *
      * @param KControllerContextInterface $context
      * 
@@ -81,6 +81,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             $user       = $this->getObject('user');
             $translator = $this->getObject('translator');
             
+            // Validate package id and if the member has current order
             if (empty(trim($entity->package_id)))
             {
                 throw new KControllerExceptionRequestInvalid($translator->translate('Please select a Product Pack'));
@@ -103,6 +104,14 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 }
             }
 
+            // Validate account
+            $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+
+            if (count($account) === 0)
+            {
+                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Account'));
+                $result = false;
+            }
         }
         catch(Exception $e)
         {
@@ -111,6 +120,19 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
             $result = false;
         }
+
+        $data = new KObjectConfig([
+            'account_id'      => $account->id,
+            'package_id'      => $package->id,
+            'package_name'    => $package->name,
+            'package_price'   => $package->price,
+            'order_status'    => 'awaiting_payment',
+            'invoice_status'  => 'sent',
+            'payment_method'  => 'deposit',
+            'shipping_method' => 'xend',
+        ]);
+
+        $context->getRequest()->setData($data->toArray());
 
         return $result;
     }
@@ -155,33 +177,22 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     protected function _actionAdd(KControllerContextInterface $context)
     {
-        $package = $this->getObject('com:nucleonplus.model.packages')->id($context->request->data->package_id)->fetch();
-
-        $context->getRequest()->setData([
-            // Copy the package data in the order table
-            'package_name'       => $package->name,
-            'package_price'      => $package->price,
-
-            'account_id'         => $context->request->data->account_id,
-            'package_id'         => $context->request->data->package_id,
-            'order_status'       => 'awaiting_payment',
-            'invoice_status'     => 'sent',
-            'payment_method'     => 'deposit',
-            'shipping_method'    => 'xend',
-            'tracking_reference' => $context->request->data->tracking_reference,
-            'payment_reference'  => $context->request->data->payment_reference,
-            'note'               => $context->request->data->note,
-        ]);
-
         try
         {
-            $order = parent::_actionAdd($context);
-
+            $order    = parent::_actionAdd($context);
             $response = $context->getResponse();
+
             $response->addMessage("Thank you for your business, we will process your order once you confirm your payment. Please see the instruction below.");
+
+            $paymentInstruction = $context->getSubject()->getView()->getTemplate()->invoke('alerts.paymentInstructionMessage');
+            $response->addMessage($paymentInstruction, 'info');
 
             // Create reward
             $this->_reward->create($order);
+
+            $identifier = $context->getSubject()->getIdentifier();
+            $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
+            $response->setRedirect(JRoute::_($url, false));
         }
         catch(Exception $e)
         {
@@ -218,8 +229,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $response->addMessage('Thank you for your payment, we will ship your order immediately once your payment has been verified.');
 
         $identifier = $context->getSubject()->getIdentifier();
-        $view       = KStringInflector::singularize($identifier->name);
-        $url        = sprintf('index.php?option=com_%s&view=%s&layout=form&tmpl=koowa&id=%d', $identifier->package, $view, $order->id);
+        $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
 
         $response->setRedirect(JRoute::_($url, false));
     }
@@ -238,7 +248,15 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'order_status' => 'delivered'
         ]);
 
-        return parent::_actionEdit($context);
+        $order = parent::_actionEdit($context);
+
+        $response = $context->getResponse();
+        $response->addMessage('Thank you for your business.', 'info');
+
+        $identifier = $context->getSubject()->getIdentifier();
+        $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
+
+        $response->setRedirect(JRoute::_($url, false));
     }
 
     /**
@@ -256,11 +274,10 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $order = parent::_actionEdit($context);
 
         $response = $context->getResponse();
-        $response->addMessage('Your order has been cancelled.');
+        $response->addMessage('Your order has been cancelled.', 'warning');
 
         $identifier = $context->getSubject()->getIdentifier();
-        $view       = KStringInflector::singularize($identifier->name);
-        $url        = sprintf('index.php?option=com_%s&view=%s&layout=form&tmpl=koowa&id=%d', $identifier->package, $view, $order->id);
+        $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
 
         $response->setRedirect(JRoute::_($url, false));
     }
