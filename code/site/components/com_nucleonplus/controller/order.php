@@ -68,6 +68,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     protected function _validate(KControllerContextInterface $context)
     {
+        if(!$context->result instanceof KModelEntityInterface) {
+            $entity = $this->getModel()->create($context->request->data->toArray());
+        } else {
+            $entity = $context->result;
+        }
+
         $result = true;
 
         try
@@ -78,6 +84,23 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             if ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($user->getId())) {
                 throw new KControllerExceptionRequestInvalid($translator->translate('You can only purchase one product package per day'));
                 $result = false;
+            }
+
+            if (empty(trim($entity->package_id)))
+            {
+                throw new KControllerExceptionRequestInvalid($translator->translate('Please select a Product Pack'));
+                $result = false;
+            }
+            else
+            {
+                $id      = (int) $entity->package_id;
+                $package = $this->getObject('com:nucleonplus.model.packages')->id($id)->fetch();
+
+                if (count($package) === 0)
+                {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
+                    $result = false;
+                }
             }
         }
         catch(Exception $e)
