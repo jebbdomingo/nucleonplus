@@ -81,6 +81,15 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             $user       = $this->getObject('user');
             $translator = $this->getObject('translator');
             
+            // Validate account
+            $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+
+            if (count($account) === 0)
+            {
+                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Account'));
+                $result = false;
+            }
+            
             // Validate package id and if the member has current order
             if (empty(trim($entity->package_id)))
             {
@@ -104,14 +113,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 }
             }
 
-            // Validate account
-            $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
-
-            if (count($account) === 0)
-            {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Account'));
-                $result = false;
-            }
         }
         catch(Exception $e)
         {
