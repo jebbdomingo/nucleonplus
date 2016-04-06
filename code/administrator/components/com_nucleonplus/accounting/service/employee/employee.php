@@ -9,13 +9,13 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleonplusAccountingServiceMemberInterface
+class ComNucleonplusAccountingServiceEmployee extends KObject implements ComNucleonplusAccountingServiceEmployeeInterface
 {
     /**
      *
      * @var ComKoowaControllerModel
      */
-    protected $_customer_controller;
+    protected $_employee_controller;
 
     /**
      * Constructor.
@@ -26,7 +26,7 @@ class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleo
     {
         parent::__construct($config);
 
-        $this->_customer_controller = $this->getObject($config->customer_controller);
+        $this->_employee_controller = $this->getObject($config->employee_controller);
     }
 
     /**
@@ -40,7 +40,7 @@ class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleo
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'customer_controller' => 'com:qbsync.controller.customer',
+            'employee_controller' => 'com:qbsync.controller.employee',
         ));
 
         parent::_initialize($config);
@@ -48,29 +48,29 @@ class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleo
 
     /**
      *
-     * @param KModelEntityInterface $account
+     * @param KModelEntityInterface $employee
      * @param string                $action
      *
      * @return void
      */
-    public function pushMember(KModelEntityInterface $account, $action = 'add')
+    public function pushEmployee(KModelEntityInterface $employee, $action = 'add')
     {
         $data = array(
-            'CustomerRef'      => $account->CustomerRef,
-            'account_id'       => $account->id,
-            'DisplayName'      => $account->_name,
-            'PrimaryPhone'     => $account->phone,
-            'Mobile'           => $account->mobile,
-            'PrimaryEmailAddr' => $account->_email,
-            'PrintOnCheckName' => $account->_name,
-            'Line1'            => $account->street,
-            'City'             => $account->city,
-            'State'            => $account->state,
-            'PostalCode'       => $account->postal_code,
+            'EmployeeRef'      => $employee->EmployeeRef,
+            'employee_id'      => $employee->id,
+            'DisplayName'      => $employee->_name,
+            'PrimaryPhone'     => $employee->phone,
+            'Mobile'           => $employee->mobile,
+            'PrimaryEmailAddr' => $employee->_email,
+            'PrintOnCheckName' => $employee->_name,
+            'Line1'            => $employee->street,
+            'City'             => $employee->city,
+            'State'            => $employee->state,
+            'PostalCode'       => $employee->postal_code,
             'Country'          => 'Philippines',
             'action'           => $action,
         );
 
-        return $this->_customer_controller->add($data);
+        return $this->_employee_controller->add($data);
     }
 }

@@ -18,7 +18,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
             ->insert('account_id', 'int')
             ->insert('order_status', 'string')
             ->insert('search', 'string')
-            ;
+        ;
     }
 
     protected function _initialize(KObjectConfig $config)
