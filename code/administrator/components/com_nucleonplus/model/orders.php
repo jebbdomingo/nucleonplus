@@ -71,7 +71,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
         if ($state->search)
         {
             $conditions = array(
-                'a.account_number LIKE :keyword',
+                '_account.account_number LIKE :keyword',
                 'u.name LIKE :keyword',
             );
             $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
