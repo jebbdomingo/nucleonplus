@@ -333,10 +333,6 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
             'selected' => null,
             'options'  => $this->_packages,
             'filter'   => array(),
-            'attribs'  => array(
-                'size'  => 5,
-                'style' => 'width: 300px' 
-            )
         ));
 
         return parent::optionlist($config);

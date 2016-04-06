@@ -26,12 +26,12 @@ defined('KOOWA') or die; ?>
 
     <div class="nucleonplus_form_layout">
 
-        <form method="post" class="-koowa-form">
+        <form method="post" class="form-horizontal -koowa-form">
             <div class="koowa_container">
 
                 <div class="koowa_grid__row">
 
-                    <div class="koowa_grid__item">
+                    <div class="koowa_grid__item two-thirds">
 
                         <? // Order form ?>
                         <?= import('com://site/nucleonplus.order.form_order.html', ['order' => $order]) ?>
@@ -43,9 +43,11 @@ defined('KOOWA') or die; ?>
 
                     </div>
 
-                </div>
+                    <div class="koowa_grid__item one-third">
+                        <?= helper('alerts.paymentInstructionPanel') ?>
+                    </div>
 
-                <?= helper('alerts.paymentInstructionPanel') ?>
+                </div>
 
             </div>
 

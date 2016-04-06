@@ -7,12 +7,16 @@ $disabled = is_null($order->id) ? false : true;
 
     <? // Product Package ?>
     <div class="control-group">
-        <label class="control-label" for="package_id"><?= translate('Choose a Package') ?></label>
+        <label class="control-label" for="package_id"><?= translate('Choose a Product') ?></label>
         <div class="controls">
             <?= helper('listbox.productList', array(
                 'name'     => 'package_id',
                 'selected' => ($package_id) ? $package_id : $order->package_id,
-                'attribs'  => ['disabled' => $disabled])) ?>
+                'attribs'  => array(
+                    'disabled' => $disabled,
+                    'style'    => 'width: 300px'
+                )
+            )); ?>
         </div>
     </div>
 
