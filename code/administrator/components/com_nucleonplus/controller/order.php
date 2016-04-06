@@ -199,7 +199,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             foreach ($entities as $entity)
             {
                 if ($entity->order_status <> 'awaiting_verification') {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid order status: Only those Orders with "Awaiting Verification" status can be verified'));
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified'));
                     $result = false;
                 }
             }
@@ -239,7 +239,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             foreach ($entities as $entity)
             {
                 if (!in_array($entity->order_status, array('awaiting_payment', 'awaiting_verification'))) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid order status: Verified and Cancelled orders cannot be voided'));
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Payment" or "Awaiting Verfication" status can be voided'));
                     $result = false;
                 }
             }
