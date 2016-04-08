@@ -54,7 +54,13 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
      *
      * @var integer
      */
-    protected $_deposit_to_account_ref;
+    protected $_bank_account_ref;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $_undeposited_account_ref;
 
     /**
      *
@@ -77,11 +83,12 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
     {
         parent::__construct($config);
 
-        $this->_salesreceipt           = $this->getObject($config->salesreceipt_controller);
-        $this->_salesreceipt_line      = $this->getObject($config->salesreceipt_line_controller);
-        $this->_item_controller        = $this->getObject($config->item_controller);
-        $this->_department_ref         = $config->department_ref;
-        $this->_deposit_to_account_ref = $config->deposit_to_account_ref;
+        $this->_salesreceipt            = $this->getObject($config->salesreceipt_controller);
+        $this->_salesreceipt_line       = $this->getObject($config->salesreceipt_line_controller);
+        $this->_item_controller         = $this->getObject($config->item_controller);
+        $this->_department_ref          = $config->department_ref;
+        $this->_bank_account_ref        = $config->bank_account_ref;
+        $this->_undeposited_account_ref = $config->undeposited_account_ref;
 
         // Transfer service
         $identifier = $this->getIdentifier($config->transfer_service);
@@ -116,7 +123,8 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             'item_controller'              => 'com:qbsync.controller.item',
             'transfer_service'             => 'com:nucleonplus.accounting.service.transfer',
             'department_ref'               => 3,
-            'deposit_to_account_ref'       => 269, // Bank Account
+            'bank_account_ref'             => 269, // Bank Account
+            'undeposited_account_ref'      => 237, // Undeposited Funds Account
             'system_fee_rate'              => 10.00,
             'contingency_fund_rate'        => 50.00,
             'operating_expense_rate'       => 60.00,
@@ -145,8 +153,9 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         if ($order->payment_method == 'deposit')
         {
             $salesReceiptData['DepartmentRef']       = $this->_department_ref; // Angono EC Valle store
-            $salesReceiptData['DepositToAccountRef'] = $this->_deposit_to_account_ref; // Bank Account
+            $salesReceiptData['DepositToAccountRef'] = $this->_bank_account_ref; // Bank Account
         }
+        else $salesReceiptData['DepositToAccountRef'] = $this->_undeposited_account_ref; // Undeposited Funds Account
 
         $salesReceipt = $this->_salesreceipt->add($salesReceiptData);
 

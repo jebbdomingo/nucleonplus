@@ -61,27 +61,33 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
      */
     public function save()
     {
-        jimport( 'joomla.user.helper');
+        /*jimport( 'joomla.user.helper');
 
-        $employee = new KObjectConfig($this->getProperties());
+        $employee = new KObjectConfig($this->getProperties());*/
 
         // Merge the following fields as these are not automatically updated by Nooku
-        $employee->merge([
+        /*$employee->merge([
             'password'     => JUserHelper::genRandomPassword(),
             'requireReset' => 1,
             'sendEmail'    => 1,
-        ]);
+        ]);*/
 
-        $user = new JUser;
+        /*$user = new JUser;
 
         $data = $employee->toArray();
         if(!$user->bind($data)) {
             throw new Exception("Could not bind data. Error: " . $user->getError());
-        }
+        }*/
 
-        if (!$user->save()) {
-            throw new Exception("Could not save user. Error: " . $user->getError());
-        }
+        /*if ($user->save() === false) {
+            //throw new Exception("Could not save user. Error: " . $user->getError());
+        }*/
+
+        $this->password = JUserHelper::genRandomPassword();
+        $this->requireReset = 1;
+        $this->sendEmail = 1;
+
+        parent::save();
 
         if ($this->isNew())
         {
@@ -90,7 +96,7 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
             $employee          = $this->_createEmployee($user->id);
             $this->employee_id = $employee->id;
 
-            $this->_employee_service->pushEmployee($employee);
+            //$this->_employee_service->pushEmployee($employee);
         }
         else
         {
@@ -99,7 +105,7 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
 
             // Only push an update to a synced employee to accounting system
             if ($employee->EmployeeRef) {
-                $this->_employee_service->pushEmployee($employee, 'update');
+                //$this->_employee_service->pushEmployee($employee, 'update');
             }
         }
 

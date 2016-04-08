@@ -28,7 +28,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><label><strong><?= translate('Store') ?></strong></label></td>
+                    <td><label><strong><?= translate('Department Ref.') ?></strong></label></td>
                     <td>
                         <input name="DepartmentRef" id="DepartmentRef" value="<?= $employee->DepartmentRef ?>" />
                     </td>

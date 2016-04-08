@@ -106,6 +106,24 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
                     $entity->status      = 'active';
                     $entity->CustomerRef = $customer->CustomerRef;
                     $entity->save();
+
+                    // Send email notification
+                    $config = JFactory::getConfig();
+                    $emailBody = JText::sprintf(
+                        'COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
+                        $data['name'],
+                        $data['siteurl'],
+                        $data['username']
+                    );
+
+                    $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $entity->email, $emailSubject, $emailBody);
+
+                    // Check for an error.
+                    if ($return !== true)
+                    {
+                        $context->response->addMessage(JText::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'), 'error');
+                    }
+
                     $context->response->addMessage("Account #{$entity->account_number} has been activated");
                 }
             }

@@ -44,7 +44,7 @@ class ComNucleonplusModelEmployees extends KModelDatabase
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('_employee' => 'nucleonplus_employees'), 'tbl.id = _employee.user_id')
+            ->join(array('_employee' => 'nucleonplus_employees'), 'tbl.id = _employee.user_id', 'INNER')
         ;
 
         parent::_buildQueryJoins($query);
