@@ -9,7 +9,7 @@
  */
 ?>
 
-<? foreach ($employees as $employee): ?>
+<? foreach ($employeeaccounts as $employee): ?>
     <tr>
         <td style="text-align: center;">
             <?= helper('grid.checkbox', array('entity' => $employee)) ?>
@@ -20,10 +20,11 @@
             </a>
         </td>
         <td>
-            <a href="<?= route('view=employee&id='.$employee->name); ?>">
-                <?= $employee->name ?>
+            <a href="<?= route('view=employee&id='.$employee->_user_name); ?>">
+                <?= $employee->_user_name ?>
             </a>
         </td>
+        <td><?= $employee->_user_email ?></td>
         <td>
             <?= $employee->DepartmentRef ?>
         </td>

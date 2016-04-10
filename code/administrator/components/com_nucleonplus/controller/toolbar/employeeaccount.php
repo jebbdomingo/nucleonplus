@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Nucleon Plus
  *
@@ -9,38 +8,12 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarActionbar
+class ComNucleonplusControllerToolbarEmployeeaccount extends ComKoowaControllerToolbarActionbar
 {
     protected function _commandNew(KControllerToolbarCommand $command)
     {
-        $command->href  = 'view=member';
-        $command->label = 'New Member';
-    }
-
-    protected function _commandActivate(KControllerToolbarCommand $command)
-    {
-        $command->icon = 'icon-32-save';
-
-        $command->append(array(
-            'attribs' => array(
-                'data-action'     => 'activate',
-                'data-novalidate' => 'novalidate' // This is needed for koowa-grid and view without form
-            )
-        ));
-
-        $command->label = 'Activate';
-    }
-
-    protected function _commandPlaceorder(KControllerToolbarCommand $command)
-    {
-        $command->icon  = 'icon-32-new';
-        $command->label = 'Place an Order';
-    }
-
-    protected function _commandPos(KControllerToolbarCommand $command)
-    {
-        $command->icon  = 'icon-32-new';
-        $command->label = 'POS';
+        $command->href  = 'view=employee';
+        $command->label = 'New Employee';
     }
 
     protected function _afterRead(KControllerContextInterface $context)
@@ -79,28 +52,8 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
             ]);
         }
 
-        if ($controller->isEditable() && $controller->canSave() && !in_array($context->result->status, array('new', 'pending'))) {
-            $this->addCommand('placeorder', [
-                'allowed' => $allowed,
-                'href'    => 'view=order&account_id=' . $context->result->id
-            ]);
-        }
-
-        if ($controller->isEditable() && $controller->canSave() && !in_array($context->result->status, array('new', 'pending'))) {
-            $this->addCommand('pos', [
-                'allowed' => $allowed,
-                'href' => 'view=order&account_id=' . $context->result->id . '&layout=pos'
-            ]);
-        }
-
-        if ($controller->isEditable() && $controller->canSave() && in_array($context->result->status, array('new', 'pending'))) {
-            $this->addCommand('activate', [
-                'allowed' => $allowed,
-            ]);
-        }
-
         $this->addCommand('back', array(
-            'href'  => 'option=com_' . $controller->getIdentifier()->getPackage() . '&view=accounts',
+            'href'  => 'option=com_' . $controller->getIdentifier()->getPackage() . '&view=employeeaccounts',
             'label' => 'Back to List'
         ));
 

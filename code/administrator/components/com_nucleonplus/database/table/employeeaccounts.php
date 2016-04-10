@@ -8,12 +8,15 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusDatabaseTableEmployees extends KDatabaseTableAbstract
+class ComNucleonplusDatabaseTableEmployeeaccounts extends KDatabaseTableAbstract
 {
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'name' => 'users',
+            'behaviors' => array(
+                'modifiable',
+                'creatable'
+            )
         ));
         
         parent::_initialize($config);

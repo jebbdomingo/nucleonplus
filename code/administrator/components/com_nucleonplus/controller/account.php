@@ -106,17 +106,18 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
                     $entity->status      = 'active';
                     $entity->CustomerRef = $customer->CustomerRef;
                     $entity->save();
-
+                    
                     // Send email notification
                     $config = JFactory::getConfig();
-                    $emailBody = JText::sprintf(
-                        'COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
-                        $data['name'],
-                        $data['siteurl'],
-                        $data['username']
+
+                    $emailSubject = "Your Nucleon Plus Account has been activated";
+                    $emailBody    = JText::sprintf(
+                        'COM_NUCLEONPLUS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
+                        $entity->_name,
+                        JUri::root()
                     );
 
-                    $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $entity->email, $emailSubject, $emailBody);
+                    $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $entity->_email, $emailSubject, $emailBody);
 
                     // Check for an error.
                     if ($return !== true)

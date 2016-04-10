@@ -61,51 +61,45 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
      */
     public function save()
     {
-        /*jimport( 'joomla.user.helper');
+        jimport( 'joomla.user.helper');
 
-        $employee = new KObjectConfig($this->getProperties());*/
+        $employee = new KObjectConfig($this->getProperties());
 
         // Merge the following fields as these are not automatically updated by Nooku
-        /*$employee->merge([
+        $employee->merge([
             'password'     => JUserHelper::genRandomPassword(),
             'requireReset' => 1,
             'sendEmail'    => 1,
-        ]);*/
+        ]);
 
-        /*$user = new JUser;
+        $user = new JUser;
 
         $data = $employee->toArray();
         if(!$user->bind($data)) {
             throw new Exception("Could not bind data. Error: " . $user->getError());
-        }*/
+        }
 
-        /*if ($user->save() === false) {
-            //throw new Exception("Could not save user. Error: " . $user->getError());
-        }*/
-
-        $this->password = JUserHelper::genRandomPassword();
-        $this->requireReset = 1;
-        $this->sendEmail = 1;
-
-        parent::save();
+        if ($user->save() === false) {
+            throw new Exception("Could not save user. Error: " . $user->getError());
+        }
 
         if ($this->isNew())
         {
             JUserHelper::addUserToGroup($user->id, self::_USER_GROUP_MANAGER_);
             $this->id          = $user->id;
-            $employee          = $this->_createEmployee($user->id);
+            $employee          = $this->_createAccount($user->id);
             $this->employee_id = $employee->id;
 
-            //$this->_employee_service->pushEmployee($employee);
+            $this->_employee_service->pushEmployee($employee);
         }
         else
         {
-            $employee          = $this->_updateEmployee($user->id);
+            $employee          = $this->_updateAccount($user->id);
             $this->employee_id = $employee->id;
 
             // Only push an update to a synced employee to accounting system
             if ($employee->EmployeeRef) {
-                //$this->_employee_service->pushEmployee($employee, 'update');
+                $this->_employee_service->pushEmployee($employee, 'update');
             }
         }
 
@@ -117,13 +111,13 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
      *
      * @param integer $userId
      *
-     * @return KModelEntityInterface|boolean
+     * @return KModelEntityInterface
      */
-    protected function _createEmployee($userId)
+    protected function _createAccount($userId)
     {
-        $model = $this->getObject('com://admin/nucleonplus.model.employees');
+        $model = $this->getObject('com://admin/nucleonplus.model.employeeaccounts');
 
-        $employee = $model->create(array(
+        $account = $model->create(array(
             'id'                  => $userId,
             'user_id'             => $userId,
             'status'              => 'active',
@@ -140,10 +134,10 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
             'postal_code'         => $this->postal_code,
         ));
         
-        $employee->save();
-        $employee = $model->id($employee->id)->fetch();
+        $account->save();
+        $account = $model->id($account->id)->fetch();
 
-        return $employee;
+        return $account;
     }
 
     /**
@@ -153,22 +147,22 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
      *
      * @return KModelEntityInterface
      */
-    protected function _updateEmployee($userId)
+    protected function _updateAccount($userId)
     {
-        $employee = $this->getObject('com://admin/nucleonplus.model.employees')->user_id($userId)->fetch();
-        $employee->DepartmentRef       = $this->DepartmentRef;
-        $employee->bank_account_number = $this->bank_account_number;
-        $employee->bank_account_name   = $this->bank_account_name;
-        $employee->bank_account_type   = $this->bank_account_type;
-        $employee->bank_account_branch = $this->bank_account_branch;
-        $employee->phone               = $this->phone;
-        $employee->mobile              = $this->mobile;
-        $employee->street              = $this->street;
-        $employee->city                = $this->city;
-        $employee->state               = $this->state;
-        $employee->postal_code         = $this->postal_code;
-        $employee->save();
+        $account = $this->getObject('com://admin/nucleonplus.model.employeeaccounts')->user_id($userId)->fetch();
+        $account->DepartmentRef       = $this->DepartmentRef;
+        $account->bank_account_number = $this->bank_account_number;
+        $account->bank_account_name   = $this->bank_account_name;
+        $account->bank_account_type   = $this->bank_account_type;
+        $account->bank_account_branch = $this->bank_account_branch;
+        $account->phone               = $this->phone;
+        $account->mobile              = $this->mobile;
+        $account->street              = $this->street;
+        $account->city                = $this->city;
+        $account->state               = $this->state;
+        $account->postal_code         = $this->postal_code;
+        $account->save();
 
-        return $employee;
+        return $account;
     }
 }

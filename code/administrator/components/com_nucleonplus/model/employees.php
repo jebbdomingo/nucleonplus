@@ -27,24 +27,25 @@ class ComNucleonplusModelEmployees extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('_employee.DepartmentRef')
-            ->columns('_employee.bank_account_number')
-            ->columns('_employee.bank_account_name')
-            ->columns('_employee.bank_account_type')
-            ->columns('_employee.bank_account_branch')
-            ->columns('_employee.phone')
-            ->columns('_employee.mobile')
-            ->columns('_employee.street')
-            ->columns('_employee.city')
-            ->columns('_employee.state')
-            ->columns('_employee.postal_code')
+            ->columns(array('_employee_check_name' => '_employee.PrintOnCheckName'))
+            ->columns(array('_employee_department_ref' => '_employee.DepartmentRef'))
+            ->columns(array('_employee_bank_account_number' => '_employee.bank_account_number'))
+            ->columns(array('_employee_bank_account_name' => '_employee.bank_account_name'))
+            ->columns(array('_employee_bank_account_type' => '_employee.bank_account_type'))
+            ->columns(array('_employee_bank_account_branch' => '_employee.bank_account_branch'))
+            ->columns(array('_employee_phone' => '_employee.phone'))
+            ->columns(array('_employee_mobile' => '_employee.mobile'))
+            ->columns(array('_employee_street' => '_employee.street'))
+            ->columns(array('_employee_city' => '_employee.city'))
+            ->columns(array('_employee_state' => '_employee.state'))
+            ->columns(array('_employee_postal_code'  => '_employee.postal_code'))
         ;
     }
 
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('_employee' => 'nucleonplus_employees'), 'tbl.id = _employee.user_id', 'INNER')
+            ->join(array('_employee' => 'nucleonplus_employeeaccounts'), 'tbl.id = _employee.user_id', 'INNER')
         ;
 
         parent::_buildQueryJoins($query);

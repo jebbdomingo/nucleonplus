@@ -155,43 +155,39 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             $salesReceiptData['DepartmentRef']       = $this->_department_ref; // Angono EC Valle store
             $salesReceiptData['DepositToAccountRef'] = $this->_bank_account_ref; // Bank Account
         }
-        else $salesReceiptData['DepositToAccountRef'] = $this->_undeposited_account_ref; // Undeposited Funds Account
+        else
+        {
+            $user     = $this->getObject('user');
+            $employee = $this->getObject('com:nucleonplus.model.employeeaccounts')->user_id($user->getId())->fetch();
+            
+            $salesReceiptData['DepartmentRef']       = $employee->DepartmentRef; // Store branch
+            $salesReceiptData['DepositToAccountRef'] = $this->_undeposited_account_ref; // Undeposited Funds Account
+        }
 
         $salesReceipt = $this->_salesreceipt->add($salesReceiptData);
 
-        // Create corresponding sales receipt line items
+        // Product line items
         foreach ($order->getItems() as $item)
         {
-            $inventoryItem = $this->_item_controller
-                ->id($item->inventory_item_id)
-                ->getModel()
-                ->fetch()
-            ;
-
             $this->_salesreceipt_line->add(array(
                 'SalesReceipt' => $salesReceipt->id,
                 'Description'  => $item->name,
-                'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($inventoryItem->getId()),
+                'ItemRef'      => $item->_qboitem_itemref,
                 'Qty'          => $item->quantity,
-                'Amount'       => ($inventoryItem->getUnitPrice() * $item->quantity),
+                'Amount'       => ($item->_qboitem_unitprice * $item->quantity),
             ));
         }
 
-        // Create package item
+        // Service line items
+        $package = $order->getPackage();
         if ($order->shipping_method == 'xend')
         {
-            // Product package + delivery service charge
-            $serviceItem = $this->_item_controller
-                ->id($order->getPackage()->acctg_item_delivery_id)
-                ->getModel()
-                ->fetch()
-            ;
             $this->_salesreceipt_line->add(array(
                 'SalesReceipt' => $salesReceipt->id,
                 'Description'  => "{$order->package_name} + Delivery Charge",
-                'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
+                'ItemRef'      => $package->_qbopackage_itemref2,
                 'Qty'          => 1,
-                'Amount'       => $serviceItem->getUnitPrice(),
+                'Amount'       => $package->_qbopackage_unitprice2,
             ));
 
             // Delivery charge
@@ -203,18 +199,12 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         }
         else
         {
-            // Product package
-            $serviceItem = $this->_item_controller
-                ->id($order->getPackage()->acctg_item_id)
-                ->getModel()
-                ->fetch()
-            ;
             $this->_salesreceipt_line->add(array(
                 'SalesReceipt' => $salesReceipt->id,
                 'Description'  => "{$order->package_name} Service",
-                'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
+                'ItemRef'      => $package->_qbopackage_itemref,
                 'Qty'          => 1,
-                'Amount'       => $serviceItem->getUnitPrice(),
+                'Amount'       => $package->_qbopackage_unitprice,
             ));
         }
 

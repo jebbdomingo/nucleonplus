@@ -40,6 +40,10 @@ class ComNucleonplusModelPackages extends KModelDatabase
             ->columns(array('_rewardpackage_prpv' => '_rewardpackages.prpv'))
             ->columns(array('_rewardpackage_drpv' => '_rewardpackages.drpv'))
             ->columns(array('_rewardpackage_irpv' => '_rewardpackages.irpv'))
+            ->columns(array('_qbopackage_itemref' => '_qbopackages.ItemRef'))
+            ->columns(array('_qbopackage_unitprice' => '_qbopackages.UnitPrice'))
+            ->columns(array('_qbopackage_itemref2' => '_qbopackages.ItemRef2'))
+            ->columns(array('_qbopackage_unitprice2' => '_qbopackages.UnitPrice2'))
         ;
     }
 
@@ -58,6 +62,7 @@ class ComNucleonplusModelPackages extends KModelDatabase
     {
         $query
             ->join(array('_rewardpackages' => 'nucleonplus_rewardpackages'), 'tbl.rewardpackage_id = _rewardpackages.nucleonplus_rewardpackage_id')
+            ->join(array('_qbopackages' => 'nucleonplus_qbopackages'), 'tbl.nucleonplus_package_id = _qbopackages.package_id')
         ;
 
         parent::_buildQueryJoins($query);

@@ -91,8 +91,6 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             $this->id         = $user->id;
             $account          = $this->_createAccount($user->id, $user->sponsor_id);
             $this->account_id = $account->id;
-
-            $this->_member_service->pushMember($account);
         }
         else
         {
@@ -124,7 +122,8 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             'id'                  => $userId,
             'user_id'             => $userId,
             'sponsor_id'          => $sponsorId,
-            'status'              => 'active',
+            'PrintOnCheckName'    => $this->PrintOnCheckName,
+            'status'              => 'pending',
             'bank_account_number' => $this->bank_account_number,
             'bank_account_name'   => $this->bank_account_name,
             'bank_account_type'   => $this->bank_account_type,
@@ -153,6 +152,7 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
     {
         $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($userId)->fetch();
 
+        $account->PrintOnCheckName    = $this->PrintOnCheckName;
         $account->bank_account_number = $this->bank_account_number;
         $account->bank_account_name   = $this->bank_account_name;
         $account->bank_account_type   = $this->bank_account_type;

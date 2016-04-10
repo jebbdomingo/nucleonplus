@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Nucleon Plus
  *
@@ -8,14 +7,16 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusModelPackageitems extends KModelDatabase
+
+class ComNucleonplusModelEmployeeaccounts extends KModelDatabase
 {
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
 
         $this->getState()
-            ->insert('package_id', 'int')
+            ->insert('status', 'string')
+            ->insert('user_id', 'int')
         ;
     }
 
@@ -24,19 +25,15 @@ class ComNucleonplusModelPackageitems extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('i.name')
-            ->columns('i.price')
-            ->columns('i.inventory_item_id')
-            ->columns(array('_qboitem_itemref' => '_qboitem.ItemRef'))
-            ->columns(array('_qboitem_unitprice' => '_qboitem.UnitPrice'))
+            ->columns(array('_user_name' => '_user.name'))
+            ->columns(array('_user_email' => '_user.email'))
         ;
     }
 
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('i' => 'nucleonplus_items'), 'tbl.item_id = i.nucleonplus_item_id')
-            ->join(array('_qboitem' => 'nucleonplus_qboitems'), 'i.nucleonplus_item_id = _qboitem.item_id')
+            ->join(array('_user' => 'users'), 'tbl.user_id = _user.id')
         ;
 
         parent::_buildQueryJoins($query);
@@ -48,8 +45,12 @@ class ComNucleonplusModelPackageitems extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->package_id) {
-            $query->where('(tbl.package_id = :package_id)')->bind(array('package_id' => $state->package_id));
+        if (!is_null($state->status) && $state->status <> 'all') {
+            $query->where('tbl.status = :status')->bind(['status' => $state->status]);
+        }
+
+        if ($state->user_id) {
+            $query->where('tbl.user_id = :user_id')->bind(['user_id' => $state->user_id]);
         }
     }
 }

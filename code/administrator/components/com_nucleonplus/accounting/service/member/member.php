@@ -56,13 +56,13 @@ class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleo
     public function pushMember(KModelEntityInterface $account, $action = 'add')
     {
         $data = array(
+            'PrintOnCheckName' => $account->PrintOnCheckName,
             'CustomerRef'      => $account->CustomerRef,
             'account_id'       => $account->id,
             'DisplayName'      => $account->_name,
             'PrimaryPhone'     => $account->phone,
             'Mobile'           => $account->mobile,
             'PrimaryEmailAddr' => $account->_email,
-            'PrintOnCheckName' => $account->_name,
             'Line1'            => $account->street,
             'City'             => $account->city,
             'State'            => $account->state,

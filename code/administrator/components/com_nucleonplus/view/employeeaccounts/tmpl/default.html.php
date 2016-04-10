@@ -49,6 +49,9 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'name', 'title' => 'Name')); ?>
                             </th>
                             <th>
+                                <?= helper('grid.sort', array('column' => 'email', 'title' => 'Email')); ?>
+                            </th>
+                            <th>
                                 <?= helper('grid.sort', array('column' => 'DepartmentRef', 'title' => 'Store')); ?>
                             </th>
                             <th>
@@ -63,8 +66,8 @@ defined('KOOWA') or die; ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <? if (count($employees)): ?>
-                            <?= import('default_employees.html', ['employees' => $employees]) ?>
+                        <? if (count($employeeaccounts)): ?>
+                            <?= import('default_employees.html', ['employeeaccounts' => $employeeaccounts]) ?>
                         <?php else: ?>
                             <tr>
                                 <td colspan="9" align="center" style="text-align: center;">
