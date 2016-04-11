@@ -64,10 +64,11 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
         jimport( 'joomla.user.helper');
 
         $member = new KObjectConfig($this->getProperties());
-        $user   = new JUser;
 
         if ($this->isNew())
         {
+            $user = new JUser;
+            
             // Merge the following fields as these are not automatically updated by Nooku
             $member->merge([
                 'password'     => JUserHelper::genRandomPassword(),
@@ -91,12 +92,16 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
         }
         else
         {
+            $user = new JUser($member->id);
+
+            $member->remove('password');
             $data = $member->toArray();
+
             if(!$user->bind($data)) {
                 throw new Exception("Could not bind data. Error: " . $user->getError());
             }
 
-            if (!$user->save()) {
+            if (!$user->save(true)) {
                 throw new Exception("Could not save user. Error: " . $user->getError());
             }
 

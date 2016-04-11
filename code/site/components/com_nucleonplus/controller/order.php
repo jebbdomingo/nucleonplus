@@ -120,7 +120,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 $result = false;
             }
 
-            // Check inventory
+            // Check inventory for available stock
             foreach ($package->getItems() as $item)
             {
                 $inventoryItem = $this->_item_controller

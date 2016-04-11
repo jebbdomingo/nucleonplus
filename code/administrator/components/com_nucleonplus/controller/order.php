@@ -222,9 +222,28 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
             foreach ($entities as $entity)
             {
+                // Check order status if it can be verified
                 if ($entity->order_status <> 'awaiting_verification') {
                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified'));
                     $result = false;
+                }
+
+                // Check inventory for available stock
+                $package_id = (int) trim($entity->package_id);
+                $package    = $this->getObject('com:nucleonplus.model.packages')->id($package_id)->fetch();
+                foreach ($package->getItems() as $item)
+                {
+                    $inventoryItem = $this->_item_controller
+                        ->id($item->_qboitem_itemref)
+                        ->getModel()
+                        ->fetch()
+                    ;
+
+                    if ($item->quantity > $inventoryItem->getQtyOnHand())
+                    {
+                        throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
+                        $result = false;
+                    }
                 }
             }
         }
