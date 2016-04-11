@@ -17,11 +17,11 @@
 interface ComNucleonplusAccountingServiceInventoryInterface
 {
     /**
-     * Decrease an item's quantity
+     * Get an item
      *
-     * @param KModelEntityInterface $order
+     * @param integer $id
      *
      * @return void
      */
-    public function decreaseQuantity(KModelEntityInterface $order);
+    public function find($id);
 }

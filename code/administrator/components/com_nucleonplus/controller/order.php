@@ -21,9 +21,16 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     /**
      * Sales Receipt Service
      *
-     * @var ComNucleonplusAccountingServiceJournalInterface
+     * @var ComNucleonplusAccountingServiceSalesreceiptInterface
      */
     protected $_salesreceipt_service;
+
+    /**
+     * Inventory Service
+     *
+     * @var ComQbsyncControllerItem
+     */
+    protected $_item_controller;
 
     /**
      * Reward
@@ -57,6 +64,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else $this->_salesreceipt_service = $service;
 
+        // Inventory service
+        $this->_item_controller = $this->getObject($config->item_controller);
+
         // Reward service
         $this->_reward = $this->getObject($config->reward);
     }
@@ -73,7 +83,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     {
         $config->append(array(
             'salesreceipt_service' => 'com:nucleonplus.accounting.service.salesreceipt',
+            'inventory_service'    => 'com:nucleonplus.accounting.service.inventory',
             'reward'               => 'com:nucleonplus.rebate.packagereward',
+            'item_controller'      => 'com:qbsync.controller.item',
         ));
 
         parent::_initialize($config);
@@ -99,8 +111,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         try
         {
             $translator = $this->getObject('translator');
-            $account_id = (int) $entity->account_id;
-            $package_id = (int) $entity->package_id;
+            $account_id = (int) trim($entity->account_id);
+            $package_id = (int) trim($entity->package_id);
+            $package    = $this->getObject('com:nucleonplus.model.packages')->id($package_id)->fetch();
             
             // Validate account
             $account = $this->getObject('com:nucleonplus.model.accounts')->id($account_id)->fetch();
@@ -121,16 +134,27 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 throw new KControllerExceptionRequestInvalid($translator->translate('Only one product package can be purchased per account per day'));
                 $result = false;
             }
-            else
+            elseif (count($package) === 0)
             {
-                $package = $this->getObject('com:nucleonplus.model.packages')->id($package_id)->fetch();
-                if (count($package) === 0)
+                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
+                $result = false;
+            }
+
+            // Check inventory
+            foreach ($package->getItems() as $item)
+            {
+                $inventoryItem = $this->_item_controller
+                    ->id($item->_qboitem_itemref)
+                    ->getModel()
+                    ->fetch()
+                ;
+
+                if ($item->quantity > $inventoryItem->getQtyOnHand())
                 {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
+                    throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
                     $result = false;
                 }
             }
-
         }
         catch(Exception $e)
         {

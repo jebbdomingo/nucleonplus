@@ -24,9 +24,8 @@ class ComNucleonplusModelPackageitems extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('i.name')
-            ->columns('i.price')
-            ->columns('i.inventory_item_id')
+            ->columns(array('_item_name' => '_item.name'))
+            ->columns(array('_item_price' => '_item.price'))
             ->columns(array('_qboitem_itemref' => '_qboitem.ItemRef'))
             ->columns(array('_qboitem_unitprice' => '_qboitem.UnitPrice'))
         ;
@@ -35,8 +34,8 @@ class ComNucleonplusModelPackageitems extends KModelDatabase
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('i' => 'nucleonplus_items'), 'tbl.item_id = i.nucleonplus_item_id')
-            ->join(array('_qboitem' => 'nucleonplus_qboitems'), 'i.nucleonplus_item_id = _qboitem.item_id')
+            ->join(array('_item' => 'nucleonplus_items'), 'tbl.item_id = _item.nucleonplus_item_id')
+            ->join(array('_qboitem' => 'nucleonplus_qboitems'), '_item.nucleonplus_item_id = _qboitem.item_id')
         ;
 
         parent::_buildQueryJoins($query);

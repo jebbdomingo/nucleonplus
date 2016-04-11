@@ -40,7 +40,7 @@ class ComNucleonplusAccountingServiceInventory extends ComNucleonplusAccountingS
     /**
      * Get an item
      *
-     * @param array $data
+     * @param integer $id
      * 
      * @return object
      */
