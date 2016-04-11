@@ -68,7 +68,7 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
         if ($this->isNew())
         {
             $user = new JUser;
-            
+
             // Merge the following fields as these are not automatically updated by Nooku
             $member->merge([
                 'password'     => JUserHelper::genRandomPassword(),
@@ -163,6 +163,7 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
     {
         $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($userId)->fetch();
 
+        $account->sponsor_id          = $this->sponsor_id;
         $account->PrintOnCheckName    = $this->PrintOnCheckName;
         $account->bank_account_number = $this->bank_account_number;
         $account->bank_account_name   = $this->bank_account_name;

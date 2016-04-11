@@ -18,7 +18,7 @@ defined('KOOWA') or die; ?>
 
     <div class="col-md-4">
 
-        <?= import('com://admin/nucleonplus.account.default_account_summary.html', ['account' => $account]) ?>
+        <?= import('com://site/nucleonplus.account.account_summary.html', ['account' => $account]) ?>
 
     </div>
 

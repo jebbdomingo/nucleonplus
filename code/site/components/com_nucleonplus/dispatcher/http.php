@@ -46,6 +46,10 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             $query->id = (int) $user->getId();
         } else $query->account_id = (int) $user->getId();
 
+        if ($query->view == 'member') {
+            $query->id = (int) $user->getId();
+        }
+
         return $request;
     }
 }

@@ -13,6 +13,7 @@ defined('KOOWA') or die; ?>
 <?= helper('behavior.koowa'); ?>
 
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
+<ktml:style src="media://com_nucleonplus/css/bootstrap.css" />
 
 <ktml:module position="toolbar">
     <ktml:toolbar type="actionbar" title="COM_NUCLEONPLUS_MEMBER" icon="task-add icon-pencil-2">
