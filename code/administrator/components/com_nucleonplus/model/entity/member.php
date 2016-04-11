@@ -64,29 +64,26 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
         jimport( 'joomla.user.helper');
 
         $member = new KObjectConfig($this->getProperties());
-
-        // Merge the following fields as these are not automatically updated by Nooku
-        $member->merge([
-            'password'     => JUserHelper::genRandomPassword(),
-            'requireReset' => 1,
-            'sendEmail'    => 1,
-            // 'activation' => JApplicationHelper::getHash($this->password);
-            // 'block'      => 1;
-        ]);
-
-        $user = new JUser;
-
-        $data = $member->toArray();
-        if(!$user->bind($data)) {
-            throw new Exception("Could not bind data. Error: " . $user->getError());
-        }
-
-        if (!$user->save()) {
-            throw new Exception("Could not save user. Error: " . $user->getError());
-        }
+        $user   = new JUser;
 
         if ($this->isNew())
         {
+            // Merge the following fields as these are not automatically updated by Nooku
+            $member->merge([
+                'password'     => JUserHelper::genRandomPassword(),
+                'requireReset' => 1,
+                'sendEmail'    => 1,
+            ]);
+
+            $data = $member->toArray();
+            if(!$user->bind($data)) {
+                throw new Exception("Could not bind data. Error: " . $user->getError());
+            }
+
+            if (!$user->save()) {
+                throw new Exception("Could not save user. Error: " . $user->getError());
+            }
+
             JUserHelper::addUserToGroup($user->id, self::_USER_GROUP_REGISTERED_);
             $this->id         = $user->id;
             $account          = $this->_createAccount($user->id, $user->sponsor_id);
@@ -94,6 +91,15 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
         }
         else
         {
+            $data = $member->toArray();
+            if(!$user->bind($data)) {
+                throw new Exception("Could not bind data. Error: " . $user->getError());
+            }
+
+            if (!$user->save()) {
+                throw new Exception("Could not save user. Error: " . $user->getError());
+            }
+
             $account          = $this->_updateAccount($user->id);
             $this->account_id = $account->id;
 
