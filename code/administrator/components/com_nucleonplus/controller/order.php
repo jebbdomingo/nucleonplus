@@ -345,15 +345,18 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'note'              => $context->request->data->note,
         ]);
 
-        $entity = parent::_actionEdit($context);
+        $entities = parent::_actionEdit($context);
 
-        if ($entity->invoice_status == 'paid')
+        foreach ($entities as $entity)
         {
-            $order = $this->getModel()->fetch();
-            $this->_salesreceipt_service->recordSale($order);
+            if ($entity->invoice_status == 'paid')
+            {
+                $order = $this->getModel()->id($entity->id)->fetch();
+                $this->_salesreceipt_service->recordSale($order);
+            }
         }
-
-        return $entity;
+        
+        return $entities;
     }
 
     /**
