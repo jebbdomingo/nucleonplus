@@ -44,20 +44,6 @@ class ComNucleonplusRebatePackagerebate extends KObject
     protected $_reward_active_status;
 
     /**
-     * The payment status column of the Item or Order
-     *
-     * @var string
-     */
-    protected $_item_status_column;
-
-    /**
-     * The payment status of the Item or Order
-     *
-     * @var string
-     */
-    protected $_item_paid_status;
-
-    /**
      * Slots
      *
      * @var array
@@ -77,8 +63,6 @@ class ComNucleonplusRebatePackagerebate extends KObject
         $this->_model                = $config->model;
         $this->_reward_model         = $config->reward_model;
         $this->_reward_active_status = $config->reward_active_status;
-        $this->_item_status_column   = $config->item_status_column;
-        $this->_item_paid_status     = $config->item_paid_status;
     }
 
     /**
@@ -96,8 +80,6 @@ class ComNucleonplusRebatePackagerebate extends KObject
             'reward_model'         => 'com:nucleonplus.model.rewards',
             'reward_active_status' => 'active', // Reward's active status
             'item_model'           => 'com:nucleonplus.model.packages', // Product or Item object's identifier
-            'item_status_column'   => 'invoice_status', // Order or Item's payment status column
-            'item_paid_status'     => 'paid', // The payment status of the Order to activate this rebate with
         ));
 
         parent::_initialize($config);
@@ -106,23 +88,22 @@ class ComNucleonplusRebatePackagerebate extends KObject
     /**
      * Create corresponding slots in the Rewards system
      *
-     * @param KModelEntityInterface $order Order entity
+     * @param KModelEntityInterface $reward
      *
      * @return void
      */
-    public function create(KModelEntityInterface $order)
+    public function create(KModelEntityInterface $reward)
     {
-        $reward = $this->getObject($this->_reward_model)->product_id($order->id)->fetch();
+        $reward = $this->getObject($this->_reward_model)->product_id($reward->id)->fetch();
 
-        // Create the slots only if the order/item is paid and the reward is not yet activated
-        if (($order->{$this->_item_status_column} == $this->_item_paid_status)
-            && ($reward->status <> $this->_reward_active_status))
+        // Create the slots only if the reward is not yet activated
+        if ($reward->status <> $this->_reward_active_status)
         {
             $reward->status = $this->_reward_active_status;
             $reward->save();
 
             // Create and organize member's own set of slots
-            $slot = $this->createOwnSlots($order, $reward->slots);
+            $slot = $this->createOwnSlots($reward);
 
             // Connect the member's primary slot to an available slot of other members in the rewards sytem
             $this->connectToOtherSlot($slot);
@@ -133,18 +114,17 @@ class ComNucleonplusRebatePackagerebate extends KObject
     /**
      * Create and organize own slots
      *
-     * @param KModelEntityRow $order
-     * @param integer         $num_slots
+     * @param KModelEntityInterface $reward
      *
-     * @return KModelEntityRow Primary Slot
+     * @return KModelEntityInterface Primary Slot
      */
-    private function createOwnSlots($order, $num_slots)
+    private function createOwnSlots(KModelEntityInterface $reward)
     {
         $slots = array();
 
-        for ($i=0; $i < $num_slots; $i++)
+        for ($i=0; $i < $reward->slots; $i++)
         {
-            $slot             = $this->createSlot($order);
+            $slot             = $this->createSlot($reward);
             $slots[$i]        = $slot;
             $unpaidParentSlot = $this->getOwnUnpaidSlot($slots);
 
@@ -163,15 +143,15 @@ class ComNucleonplusRebatePackagerebate extends KObject
     /**
      * Slot factory
      *
-     * @param KModelEntityRow $order
+     * @param KModelEntityInterface $reward
      *
-     * @return KModelEntityRow
+     * @return KModelEntityInterface
      */
-    private function createSlot(KModelEntityRow $order)
+    private function createSlot(KModelEntityInterface $reward)
     {
         $controller = $this->getObject($this->_controller);
 
-        $data['reward_id'] = $order->_reward_id;
+        $data['reward_id'] = $reward->id;
 
         return $controller->add($data);
     }

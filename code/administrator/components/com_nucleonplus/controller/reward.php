@@ -87,22 +87,18 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
             $rewards = $context->result;
         }
 
-        try {
+        try
+        {
             $rebatePackage   = $this->getObject($this->_rebate_package);
             $referralPackage = $this->getObject($this->_referral_package);
 
             foreach ($rewards as $reward)
             {
-                $orders = $this->getObject($this->_order_identifier)->id($reward->product_id)->fetch();
+                // Create corresponding slots for this order reward
+                $rebatePackage->create($reward);
 
-                foreach ($orders as $order)
-                {
-                    // Create corresponding slots for this order reward
-                    $rebatePackage->create($order);
-
-                    // Create referral bonus payouts
-                    $referralPackage->create($order);
-                }
+                // Create referral bonus payouts
+                $referralPackage->create($reward);
             }
         } catch (Exception $e) {
             $identifier = $this->getIdentifier();

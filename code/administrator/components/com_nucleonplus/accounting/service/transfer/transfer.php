@@ -84,7 +84,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_rebates_account;
-        $note          = 'Transfer part of sale to rebates asset account';
+        $note          = 'Rebates';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -99,7 +99,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_surplusrebates_account;
-        $note          = 'Transfer surplus rebates i.e. a slot that doesn\'t have available slot to connect with';
+        $note          = 'Surplus Rebates i.e. a slot that doesn\'t have available slot to connect with';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -114,7 +114,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_directreferral_bonus_account;
-        $note          = 'Transfer part of sale to direct referral incentives asset account';
+        $note          = 'Direct Referral';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -129,7 +129,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_indirectreferral_bonus_account;
-        $note          = 'Transfer part of sale to indirect referral incentives asset account';
+        $note          = 'Indirect Referral';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -144,7 +144,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_surplus_directreferral_bonus_account;
-        $note          = 'Transfer surplus direct referral bonus i.e. an account that doesn\'t have a referrer';
+        $note          = 'Flushout Direct Referral i.e. an account that doesn\'t have a referrer';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -159,7 +159,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_surplus_indirectreferral_bonus_account;
-        $note          = 'Transfer surplus indirect referral bonus i.e. an account that doesn\'t have an indirect referrer';
+        $note          = 'Flushout Indirect Referral i.e. an account that doesn\'t have an indirect referrer';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -174,7 +174,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_system_fee_account;
-        $note          = 'Transfer part of sale to system fee asset account';
+        $note          = 'System Fee';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -189,7 +189,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_contingency_fund_account;
-        $note          = 'Transfer part of sale to contingency fund asset account';
+        $note          = 'Contingency Fund';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -204,7 +204,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_operating_expense_budget_account;
-        $note          = 'Transfer part of sale to operating budget asset account';
+        $note          = 'Operating Expense';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -219,7 +219,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_delivery_expense_account;
-        $note          = 'Transfer part of sale to delivery expense allocation asset account';
+        $note          = 'Delivery Expense';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }

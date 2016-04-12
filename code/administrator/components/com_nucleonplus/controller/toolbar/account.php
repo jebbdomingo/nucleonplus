@@ -93,7 +93,7 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
             ]);
         }
 
-        if ($controller->isEditable() && $controller->canSave() && in_array($context->result->status, array('new', 'pending'))) {
+        if ($controller->isEditable() && $controller->canSave() && $context->result->status == 'pending') {
             $this->addCommand('activate', [
                 'allowed' => $allowed,
             ]);

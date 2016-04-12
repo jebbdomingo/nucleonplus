@@ -78,44 +78,40 @@ class ComNucleonplusRebatePackagereferral extends KObject
     /**
      * Record referral bonus payouts
      *
-     * @param KModelEntityInterface $orders
+     * @param KModelEntityInterface $reward
      *
      * @return void
      */
-    public function create(KModelEntityInterface $orders)
+    public function create(KModelEntityInterface $reward)
     {
-        foreach ($orders as $order)
-        {
-            $account = $this->getObject('com:nucleonplus.model.accounts')->id($order->account_id)->fetch();
-
-            $this->_recordReferrals($account, $order);
-        }
+        $account = $this->getObject('com:nucleonplus.model.accounts')->id($reward->customer_id)->fetch();
+        $this->_recordReferrals($account, $reward);
     }
 
     /**
      * Record direct referrals
      *
-     * @param KModelEntityInterface $order
+     * @param KModelEntityInterface $reward
      *
      * @return void
      */
-    private function _recordReferrals(KModelEntityInterface $account, KModelEntityInterface $order)
+    private function _recordReferrals(KModelEntityInterface $account, KModelEntityInterface $reward)
     {
-        $points = ($order->_reward_drpv * $order->_reward_slots);
+        $points = ($reward->drpv * $reward->slots);
 
         if (is_null($account->sponsor_id))
         {
-            $this->_accounting_service->allocateSurplusDRBonus($order->id, $points);
+            $this->_accounting_service->allocateSurplusDRBonus($reward->product_id, $points);
 
-            $points = (($order->_reward_irpv * $this->_unilevel_count) * $order->_reward_slots);
-            $this->_accounting_service->allocateSurplusIRBonus($order->id, $points);
+            $points = (($reward->irpv * $this->_unilevel_count) * $reward->slots);
+            $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, $points);
 
             return true;
         }
 
         // Record direct referral
         $data = [
-            'reward_id'     => $order->_reward_id,
+            'reward_id'     => $reward->id,
             'account_id'    => $account->getIdFromSponsor(),
             'referral_type' => 'dr', // Direct Referral
             'points'        => $points,
@@ -124,7 +120,7 @@ class ComNucleonplusRebatePackagereferral extends KObject
         $this->_controller->add($data);
 
         // Post direct referral to accounting system
-        $this->_accounting_service->allocateDRBonus($order->id, $points);
+        $this->_accounting_service->allocateDRBonus($reward->product_id, $points);
 
         // Check if direct referrer has sponsor as well
         $directSponsor = $this->getObject('com:nucleonplus.model.accounts')->id($account->getIdFromSponsor())->fetch();
@@ -132,11 +128,11 @@ class ComNucleonplusRebatePackagereferral extends KObject
         if (!is_null($directSponsor->sponsor_id))
         {
             $immediateSponsorId = $directSponsor->getIdFromSponsor();
-            $this->_recordIndirectReferrals($immediateSponsorId, $order);
+            $this->_recordIndirectReferrals($immediateSponsorId, $reward);
         }
         else
         {
-            $this->_accounting_service->allocateSurplusIRBonus($order->id, ($order->_reward_irpv * $this->_unilevel_count));
+            $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, ($reward->irpv * $this->_unilevel_count));
         }
     }
 
@@ -144,13 +140,13 @@ class ComNucleonplusRebatePackagereferral extends KObject
      * Record indirect referrals
      *
      * @param integer               $id Sponsor/indirect referrer ID
-     * @param KModelEntityInterface $order
+     * @param KModelEntityInterface $reward
      *
      * @return void
      */
-    private function _recordIndirectReferrals($id, KModelEntityInterface $order)
+    private function _recordIndirectReferrals($id, KModelEntityInterface $reward)
     {
-        $points = ($order->_reward_irpv * $order->_reward_slots);
+        $points = ($reward->irpv * $reward->slots);
         $x      = 0;
 
         // Try to get referrers up to the 10th level
@@ -159,14 +155,14 @@ class ComNucleonplusRebatePackagereferral extends KObject
             $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($id)->fetch();
 
             $data = array(
-                'reward_id'     => $order->_reward_id,
+                'reward_id'     => $reward->id,
                 'account_id'    => $indirectReferrer->id,
                 'referral_type' => 'ir', // Indirect Referral
                 'points'        => $points
             );
 
             $this->_controller->add($data);
-            $this->_accounting_service->allocateIRBonus($order->id, $points);
+            $this->_accounting_service->allocateIRBonus($reward->product_id, $points);
             
             $x++;
 
@@ -177,8 +173,8 @@ class ComNucleonplusRebatePackagereferral extends KObject
                 if ($x < $this->_unilevel_count)
                 {
 
-                    $points = ($this->_unilevel_count - $x) * $order->_reward_irpv;
-                    $this->_accounting_service->allocateSurplusIRBonus($order->id, $points);
+                    $points = ($this->_unilevel_count - $x) * $reward->irpv;
+                    $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, $points);
 
                     break;
 

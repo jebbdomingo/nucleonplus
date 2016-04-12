@@ -125,6 +125,7 @@ class ComNucleonplusRebatePackagereward extends KObject
         $item       = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
 
         $data = array(
+            'id'               => $this->_getProductId($object), // Item or Product ID
             'customer_id'      => $this->_getAccountData($object), // Member's Account ID
             'product_id'       => $this->_getProductId($object), // Item or Product ID
             'product_name'     => $this->_getProductName($object), // Item or Product Name
