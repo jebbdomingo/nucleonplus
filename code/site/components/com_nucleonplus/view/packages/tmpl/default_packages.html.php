@@ -51,7 +51,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                                         <tbody>
                                             <? foreach ($package->getItems() as $item): ?>
                                                 <tr>
-                                                    <td><?= $item->name ?></td>
+                                                    <td><?= $item->_item_name ?></td>
                                                     <td class="text-right"><?= $item->quantity ?></td>
                                                 </tr>
                                             <? endforeach; ?>
