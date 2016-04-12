@@ -33,13 +33,6 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
     private $_referral_package;
 
     /**
-     * Order Model Identifier
-     *
-     * @var ComKoowaControllerModel
-     */
-    private $_order_identifier;
-
-    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -50,7 +43,6 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
 
         $this->_rebate_package   = $config->rebate_package;
         $this->_referral_package = $config->referral_package;
-        $this->_order_identifier = $config->order_identifier;
     }
 
     /**
@@ -65,7 +57,6 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
         $config->append(array(
             'rebate_package'   => 'com:nucleonplus.rebate.packagerebate',
             'referral_package' => 'com:nucleonplus.rebate.packagereferral',
-            'order_identifier' => 'com:nucleonplus.model.orders'
         ));
 
         parent::_initialize($config);
@@ -94,7 +85,7 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
 
             foreach ($rewards as $reward)
             {
-                // Create corresponding slots for this order reward
+                // Create corresponding slots for this reward
                 $rebatePackage->create($reward);
 
                 // Create referral bonus payouts
@@ -106,8 +97,6 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
 
             return JFactory::getApplication()->redirect($url, $e->getMessage(), 'exception');
         }
-
-        // Redirect
 
         return $rewards;
     }
