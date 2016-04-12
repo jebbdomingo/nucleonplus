@@ -149,6 +149,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                     ->fetch()
                 ;
 
+                if (!$inventoryItem)
+                {
+                    throw new KControllerExceptionRequestInvalid($translator->translate("Inventory: communication error"));
+                    $result = false;
+                }
+
                 if ($item->quantity > $inventoryItem->getQtyOnHand())
                 {
                     throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
@@ -239,6 +245,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                         ->fetch()
                     ;
 
+                    if (!$inventoryItem)
+                    {
+                        throw new KControllerExceptionRequestInvalid($translator->translate("Inventory: communication error"));
+                        $result = false;
+                    }
+
                     if ($item->quantity > $inventoryItem->getQtyOnHand())
                     {
                         throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
@@ -320,7 +332,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 $order = $this->getObject('com:nucleonplus.model.orders')->id($order->id)->fetch();
                 $this->_salesreceipt_service->recordSale($order);
             } catch (Exception $e) {
-                $context->response->addMessage($e->getMessage());
+                $context->response->addMessage($e->getMessage(), 'exception');
             }
         }
         
@@ -452,8 +464,11 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             {
                 foreach ($orders as $order)
                 {
+                    // Try to activate reward
                     $reward = $this->getObject('com:nucleonplus.model.rewards')->product_id($order->id)->fetch();
                     $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
+
+                    $context->response->addMessage("Reward #{$reward->id} has been activated");
                 }
             }
             catch (Exception $e)
@@ -463,6 +478,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             }
         }
         else throw new KControllerExceptionResourceNotFound('Resource could not be found');
+
 
         return $orders;
     }

@@ -80,11 +80,24 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
 
         if (count($rewards))
         {
+            $translator      = $this->getObject('translator');
             $rebatePackage   = $this->getObject($this->_rebate_package);
             $referralPackage = $this->getObject($this->_referral_package);
 
             foreach ($rewards as $reward)
             {
+                switch ($reward->status) {
+                    case 'active':
+                        throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is already active"));
+                        $result = false;
+                        break;
+                    
+                    case 'ready':
+                        throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is ready for payout"));
+                        $result = false;
+                        break;
+                }
+
                 // Create corresponding slots for this reward
                 $rebatePackage->create($reward);
 
