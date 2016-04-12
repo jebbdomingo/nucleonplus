@@ -94,8 +94,6 @@ class ComNucleonplusRebatePackagerebate extends KObject
      */
     public function create(KModelEntityInterface $reward)
     {
-        $reward = $this->getObject($this->_reward_model)->product_id($reward->id)->fetch();
-
         // Create the slots only if the reward is not yet activated
         if ($reward->status <> $this->_reward_active_status)
         {
@@ -108,7 +106,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
             // Connect the member's primary slot to an available slot of other members in the rewards sytem
             $this->connectToOtherSlot($slot);
         }
-        else throw new KControllerExceptionRequestInvalid('Invalid Request');
+        else throw new KControllerExceptionRequestInvalid('Rebate Package: Invalid Request');
     }
 
     /**

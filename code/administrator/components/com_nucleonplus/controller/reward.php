@@ -78,7 +78,7 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
             $rewards = $context->result;
         }
 
-        try
+        if (count($rewards))
         {
             $rebatePackage   = $this->getObject($this->_rebate_package);
             $referralPackage = $this->getObject($this->_referral_package);
@@ -91,12 +91,8 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
                 // Create referral bonus payouts
                 $referralPackage->create($reward);
             }
-        } catch (Exception $e) {
-            $identifier = $this->getIdentifier();
-            $url        = sprintf('index.php?option=com_%s&view=order&id=%d', $identifier->package, $this->getRequest()->query->id);
-
-            return JFactory::getApplication()->redirect($url, $e->getMessage(), 'exception');
         }
+        else throw new KControllerExceptionResourceNotFound('Resource could not be found');
 
         return $rewards;
     }

@@ -431,6 +431,43 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     }
 
     /**
+     * Activates the reward and create corresponding slots
+     *
+     * @param   KControllerContextInterface $context A command context object
+     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
+     * 
+     * @return  KModelEntityInterface
+     */
+    protected function _actionActivatereward(KControllerContextInterface $context)
+    {
+        if (!$context->result instanceof KModelEntityInterface) {
+            $orders = $this->getModel()->fetch();
+        } else {
+            $orders = $context->result;
+        }
+
+        if (count($orders))
+        {
+            try
+            {
+                foreach ($orders as $order)
+                {
+                    $reward = $this->getObject('com:nucleonplus.model.rewards')->product_id($order->id)->fetch();
+                    $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
+                }
+            }
+            catch (Exception $e)
+            {
+                $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'exception');
+                $context->getResponse()->send();
+            }
+        }
+        else throw new KControllerExceptionResourceNotFound('Resource could not be found');
+
+        return $orders;
+    }
+
+    /**
      * Process Members Rebates
      *
      * @param KControllerContextInterface $context

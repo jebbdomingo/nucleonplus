@@ -12,6 +12,26 @@
 class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActionbar
 {
     /**
+     * Activate Reward Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandActivatereward(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'activatereward'
+            )
+        ));
+
+        $command->label = 'Activate Reward';
+    }
+
+    /**
      * Confirm payment Command
      *
      * @param KControllerToolbarCommand $command
@@ -185,6 +205,14 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         if ($controller->isEditable() && $controller->canSave())
         {
             $this->addCommand('markpaid', [
+                'allowed' => $allowed
+            ]);
+        }
+
+        // Activate reward command
+        if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('activatereward', [
                 'allowed' => $allowed
             ]);
         }
