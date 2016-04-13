@@ -129,9 +129,15 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                     ->fetch()
                 ;
 
+                if (!$inventoryItem)
+                {
+                    throw new KControllerExceptionResourceNotFound($translator->translate("Inventory: communication error"));
+                    $result = false;
+                }
+
                 if ($item->quantity > $inventoryItem->getQtyOnHand())
                 {
-                    throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
+                    throw new KControllerExceptionRequestNotAllowed($translator->translate("Insufficient stock of {$item->_item_name}"));
                     $result = false;
                 }
             }

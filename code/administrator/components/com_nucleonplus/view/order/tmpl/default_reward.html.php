@@ -20,18 +20,6 @@
                         <span class="label label-<?= ($order->_reward_status == 'pending') ? 'default' : 'info' ?>"><?= ucwords(escape($order->_reward_status)) ?></span>
                     </td>
                 </tr>
-                <? if ($order->invoice_status == 'paid' && !in_array($order->_reward_status, [
-                        'active',
-                        'processing',
-                        'claimed'
-                    ])): ?>
-                    <tr>
-                        <td><label><strong><?= translate('Action'); ?></strong></label></td>
-                        <td>
-                            <input class="btn btn-small btn-success" type="submit" value="<?= translate('Activate Reward') ?>" />
-                        </td>
-                    </tr>
-                <? endif; ?>
             </tbody>
         </table>
     </div>

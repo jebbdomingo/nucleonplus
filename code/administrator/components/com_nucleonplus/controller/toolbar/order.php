@@ -48,7 +48,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
             )
         ));
 
-        $command->label = 'Verify Payment';
+        $command->label = 'Verify Payment &amp; Activate Reward';
     }
 
     /**
@@ -134,6 +134,14 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
     protected function _afterRead(KControllerContextInterface $context)
     {
         parent::_afterRead($context);
+
+        $this->removeCommand('save');
+
+        // Disallow direct editing once has been created
+        if ($context->result->order_status)
+        {
+            $this->removeCommand('apply');
+        }
         
         $controller = $this->getController();
         $canSave    = ($controller->isEditable() && $controller->canSave());
@@ -147,6 +155,16 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         if ($canSave && ($context->result->order_status == 'awaiting_verification'))
         {
             $this->addCommand('markpaid', [
+                'allowed' => $allowed,
+                'attribs' => ['data-novalidate' => 'novalidate']
+            ]);
+        }
+
+        // Acivate reward
+        // In rare case that a reward isn't activated when the order is paid we can use this button to activate the reward
+        if ($canSave && $context->result->_reward_status == 'pending' && (in_array($context->result->order_status, array('processing', 'completed'))))
+        {
+            $this->addCommand('activatereward', [
                 'allowed' => $allowed,
                 'attribs' => ['data-novalidate' => 'novalidate']
             ]);
@@ -209,14 +227,6 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
             ]);
         }
 
-        // Activate reward command
-        if ($controller->isEditable() && $controller->canSave())
-        {
-            $this->addCommand('activatereward', [
-                'allowed' => $allowed
-            ]);
-        }
-
         // Void command
         if ($controller->isEditable() && $controller->canSave())
         {
@@ -224,18 +234,6 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
                 'allowed' => $allowed
             ]);
         }
-
-        /*if ($controller->isEditable() && $controller->canSave())
-        {
-            $this->addCommand('processrebates', ['allowed' => $allowed]);
-        }
-
-        if ($controller->isEditable() && $controller->canSave())
-        {
-            $this->addCommand('markpaid', [
-                'allowed' => $allowed
-            ]);
-        }*/
     }
 
     /**

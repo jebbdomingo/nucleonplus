@@ -151,13 +151,13 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
                 if (!$inventoryItem)
                 {
-                    throw new KControllerExceptionRequestInvalid($translator->translate("Inventory: communication error"));
+                    throw new KControllerExceptionResourceNotFound($translator->translate("Inventory: communication error"));
                     $result = false;
                 }
 
                 if ($item->quantity > $inventoryItem->getQtyOnHand())
                 {
-                    throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
+                    throw new KControllerExceptionActionFailed($translator->translate("Insufficient stock of {$item->_item_name}"));
                     $result = false;
                 }
             }
@@ -331,12 +331,33 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 // Fetch the newly created Order from the data store to get the joined columns
                 $order = $this->getObject('com:nucleonplus.model.orders')->id($order->id)->fetch();
                 $this->_salesreceipt_service->recordSale($order);
-            } catch (Exception $e) {
+                $context->response->addMessage("Order #{$order->id} has been created and paid");
+
+                // Automatically activate reward
+                $reward = $this->_activateReward($order);
+                $context->response->addMessage("Reward #{$reward->id} has been activated");
+            }
+            catch (Exception $e)
+            {
                 $context->response->addMessage($e->getMessage(), 'exception');
             }
         }
         
         return $order;
+    }
+
+    /**
+     * Disallow direct editing
+     *
+     * @param KControllerContextInterface $context
+     *
+     * @throws KControllerExceptionRequestNotAllowed
+     *
+     * @return void
+     */
+    protected function _actionEdit(KControllerContextInterface $context)
+    {
+        throw new KControllerExceptionRequestNotAllowed('Direct editing of order is not allowed');
     }
 
     /**
@@ -357,18 +378,22 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'note'              => $context->request->data->note,
         ]);
 
-        $entities = parent::_actionEdit($context);
+        $orders = parent::_actionEdit($context);
 
-        foreach ($entities as $entity)
+        foreach ($orders as $order)
         {
-            if ($entity->invoice_status == 'paid')
+            if ($order->invoice_status == 'paid')
             {
-                $order = $this->getModel()->id($entity->id)->fetch();
+                $order = $this->getModel()->id($order->id)->fetch();
                 $this->_salesreceipt_service->recordSale($order);
+                $context->response->addMessage("Payment for Order #{$order->id} has been verified");
+
+                // Automatically activate reward
+                $this->activatereward($context);
             }
         }
         
-        return $entities;
+        return $orders;
     }
 
     /**
@@ -462,12 +487,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         {
             try
             {
-                foreach ($orders as $order)
-                {
-                    // Try to activate reward
-                    $reward = $this->getObject('com:nucleonplus.model.rewards')->product_id($order->id)->fetch();
-                    $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
-
+                foreach ($orders as $order) {
+                    $reward = $this->_activateReward($order);
                     $context->response->addMessage("Reward #{$reward->id} has been activated");
                 }
             }
@@ -479,23 +500,32 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else throw new KControllerExceptionResourceNotFound('Resource could not be found');
 
-
         return $orders;
     }
 
     /**
-     * Process Members Rebates
+     * Activates the reward
      *
-     * @param KControllerContextInterface $context
-     *
-     * @return void
+     * @param   KModelEntityInterface $order
+     * 
+     * @throws  KControllerExceptionRequestInvalid
+     * @throws  KControllerExceptionResourceNotFound
+     * 
+     * @return  KModelEntityInterface
      */
-    /*protected function _actionProcessrewards(KControllerContextInterface $context)
+    protected function _activateReward(KModelEntityInterface $order)
     {
-        $rewards = $this->getObject('com:nucleonplus.model.rewards')->fetch();
+        $translator = $this->getObject('translator');
 
-        foreach ($rewards as $reward) {
-            $reward->processRebate();
+        // Check order status if its reward can be activated
+        if (!in_array($order->order_status, array('processing', 'completed'))) {
+            throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" status"));
         }
-    }*/
+
+        // Try to activate reward
+        $reward = $this->getObject('com:nucleonplus.model.rewards')->product_id($order->id)->fetch();
+        $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
+
+        return $reward;
+    }
 }

@@ -129,6 +129,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
                 array('label' => 'Delivered', 'value' => 'delivered'),
                 array('label' => 'Cancelled', 'value' => 'cancelled'),
                 array('label' => 'Completed', 'value' => 'completed'),
+                array('label' => 'Void', 'value' => 'void'),
             )
         ))
         ->append(array(
@@ -141,6 +142,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
                 'delivered'             => 'Delivered',
                 'cancelled'             => 'Cancelled',
                 'completed'             => 'Completed',
+                'void'                  => 'Void',
             )
         ))
         ->append(array(

@@ -96,6 +96,11 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
                         throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is ready for payout"));
                         $result = false;
                         break;
+
+                    case 'claimed':
+                        throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is already claimed"));
+                        $result = false;
+                        break;
                 }
 
                 // Create corresponding slots for this reward
