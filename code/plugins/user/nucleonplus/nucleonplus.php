@@ -28,7 +28,8 @@ class PlgUserNucleonplus extends JPlugin
                empty($newUser['activation']))
             {
                 // Push member to com:qbsync for later sync
-                $account  = KObjectManager::getInstance()->getObject('com:nucleonplus.model.accounts')->id($oldUser['id'])->fetch();
+                // TODO do this in registration
+                $account  = KObjectManager::getInstance()->getObject('com://admin/nucleonplus.model.accounts')->id($oldUser['id'])->fetch();
                 $customer = KObjectManager::getInstance()->getObject('com://admin/nucleonplus.accounting.service.member')->pushMember($account);
 
                 // Attempt to sync member as customer to QBO
@@ -42,15 +43,16 @@ class PlgUserNucleonplus extends JPlugin
                 // Attempt to send success email
                 $emailSubject = "Your Nucleon Plus Account has been activated";
                 $emailBody    = JText::sprintf(
-                    'PLG_USER_NUCLEONPLUS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
+                    'PLG_USER_NUCLEONPLUS_EMAIL_ACTIVATION_BODY',
                     $entity->_name,
                     JUri::root()
                 );
 
-                $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $entity->_email, $emailSubject, $emailBody);
+                $config = JFactory::getConfig();
+                $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $account->_email, $emailSubject, $emailBody);
                 if ($return !== true)
                 {
-                    throw new Exception(JText::_('PLG_USER_NUCLEONPLUS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
+                    throw new Exception(JText::sprintf('PLG_USER_NUCLEONPLUS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
                     return false;
                 }
 
