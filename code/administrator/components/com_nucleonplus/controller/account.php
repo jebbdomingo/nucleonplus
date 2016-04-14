@@ -94,12 +94,14 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
 
         foreach ($entities as $entity)
         {
-            if ($entity->status == 'pending')
+            if ($entity->status == 'new')
             {
                 $customer = $this->_member_service->pushMember($entity);
                 
-                if ($customer->sync() === false) {
-                    $context->response->addMessage("Unable to sync Account #{$entity->account_number} to the Accounting System", 'error');
+                if ($customer->sync() === false)
+                {
+                    $error = $entities->getStatusMessage();
+                    throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Account #{$entity->account_number}");
                 }
                 else
                 {
