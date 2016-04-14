@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" version="2.5" group="system" method="upgrade">
+    <identifier>plg:user.nucleonplus</identifier>
+    <name>PLG_USER_NUCLEONPLUS</name>
+    <version>1.0.0-beta1</version>
+    <author>Jebb Domingo</author>
+    <creationDate>April 2016</creationDate>
+    <copyright>Copyright (C) 2016 Nucleon + Co. (http://www.nucleonplus.com)</copyright>
+    <authorEmail>jebb.domingo@nucleonplus.com</authorEmail>
+    <authorUrl>www.nucleonplus.com</authorUrl>
+    <description>PLG_USER_NUCLEONPLUS_DESCRIPTION</description>
+    <files>
+        <filename plugin="nucleonplus">nucleonplus.php</filename>
+        <folder>language</folder>
+    </files>
+</extension>
