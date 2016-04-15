@@ -126,4 +126,19 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
     {
         return false;
     }
+
+    /**
+     * Activate
+     * Encapsulate activation business logic
+     *
+     * @return [type] [description]
+     */
+    public function activate()
+    {
+        if ($this->CustomerRef == 0) {
+            throw new Exception("Account Activation Error: CustomerRef is required");
+        }
+
+        $this->status = 'active';
+    }
 }
