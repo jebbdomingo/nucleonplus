@@ -105,8 +105,12 @@ class ComNucleonplusRebatePackagerebate extends KObject
 
             // Connect the member's primary slot to an available slot of other members in the rewards sytem
             $this->connectToOtherSlot($slot);
+
+            return true;
         }
         else throw new KControllerExceptionRequestInvalid('Rebate Package: Invalid Request');
+
+        return false;
     }
 
     /**
@@ -215,6 +219,9 @@ class ComNucleonplusRebatePackagerebate extends KObject
             $reward = $this->getObject($this->_reward_model)->id($unpaidSlot->reward_id)->fetch();
             $reward->processRebate();
         }
-        else $slot->flushOut();
+        else 
+        {
+            $slot->flushOut();
+        }
     }
 }

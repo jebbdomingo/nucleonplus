@@ -65,26 +65,26 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
 
         $employee = new KObjectConfig($this->getProperties());
 
-        // Merge the following fields as these are not automatically updated by Nooku
-        $employee->merge([
-            'password'     => JUserHelper::genRandomPassword(),
-            'requireReset' => 1,
-            'sendEmail'    => 1,
-        ]);
-
-        $user = new JUser;
-
-        $data = $employee->toArray();
-        if(!$user->bind($data)) {
-            throw new Exception("Could not bind data. Error: " . $user->getError());
-        }
-
-        if ($user->save() === false) {
-            throw new Exception("Could not save user. Error: " . $user->getError());
-        }
-
         if ($this->isNew())
         {
+            // Merge the following fields as these are not automatically updated by Nooku
+            $employee->merge([
+                'password'     => JUserHelper::genRandomPassword(),
+                'requireReset' => 1,
+                'sendEmail'    => 1,
+            ]);
+
+            $user = new JUser;
+
+            $data = $employee->toArray();
+            if(!$user->bind($data)) {
+                throw new Exception("Could not bind data. Error: " . $user->getError());
+            }
+
+            if ($user->save() === false) {
+                throw new Exception("Could not save user. Error: " . $user->getError());
+            }
+
             JUserHelper::addUserToGroup($user->id, self::_USER_GROUP_MANAGER_);
             $this->id          = $user->id;
             $employee          = $this->_createAccount($user->id);
@@ -94,6 +94,19 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
         }
         else
         {
+            $user = new JUser($employee->id);
+
+            $employee->remove('password');
+            $data = $employee->toArray();
+
+            if(!$user->bind($data)) {
+                throw new Exception("Could not bind data. Error: " . $user->getError());
+            }
+
+            if ($user->save() === false) {
+                throw new Exception("Could not save user. Error: " . $user->getError());
+            }
+
             $employee          = $this->_updateAccount($user->id);
             $this->employee_id = $employee->id;
 
@@ -120,7 +133,7 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
         $account = $model->create(array(
             'id'                  => $userId,
             'user_id'             => $userId,
-            'status'              => 'active',
+            'status'              => 'pending',
             'DepartmentRef'       => $this->DepartmentRef,
             'bank_account_number' => $this->bank_account_number,
             'bank_account_name'   => $this->bank_account_name,

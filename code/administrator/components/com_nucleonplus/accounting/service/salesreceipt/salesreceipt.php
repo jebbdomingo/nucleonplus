@@ -172,9 +172,9 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             $this->_salesreceipt_line->add(array(
                 'SalesReceipt' => $salesReceipt->id,
                 'Description'  => $item->_item_name,
-                'ItemRef'      => $item->_qboitem_itemref,
+                'ItemRef'      => $item->_syncitem_item_ref,
                 'Qty'          => $item->quantity,
-                'Amount'       => ($item->_qboitem_unitprice * $item->quantity),
+                'Amount'       => ($item->_syncitem_unit_price * $item->quantity),
             ));
         }
 

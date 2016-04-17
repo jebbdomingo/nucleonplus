@@ -26,16 +26,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected $_salesreceipt_service;
 
     /**
-     * Inventory Service
+     * Reward controller identifier
      *
-     * @var ComQbsyncControllerItem
-     */
-    protected $_item_controller;
-
-    /**
-     * Reward
-     *
-     * @var ComNucleonplusRebatePackagereward
+     * @var string
      */
     protected $_reward;
 
@@ -64,11 +57,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else $this->_salesreceipt_service = $service;
 
-        // Inventory service
-        $this->_item_controller = $this->getObject($config->item_controller);
-
         // Reward service
-        $this->_reward = $this->getObject($config->reward);
+        $this->_reward = $config->reward;
     }
 
     /**
@@ -85,7 +75,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'salesreceipt_service' => 'com:nucleonplus.accounting.service.salesreceipt',
             'inventory_service'    => 'com:nucleonplus.accounting.service.inventory',
             'reward'               => 'com:nucleonplus.rebate.packagereward',
-            'item_controller'      => 'com:qbsync.controller.item',
         ));
 
         parent::_initialize($config);
@@ -143,19 +132,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             // Check inventory
             foreach ($package->getItems() as $item)
             {
-                $inventoryItem = $this->_item_controller
-                    ->id($item->_qboitem_itemref)
-                    ->getModel()
-                    ->fetch()
-                ;
-
-                if (!$inventoryItem)
-                {
-                    throw new KControllerExceptionResourceNotFound($translator->translate("Inventory: communication error"));
-                    $result = false;
-                }
-
-                if ($item->quantity > $inventoryItem->getQtyOnHand())
+                if (!$item->hasAvailableStock())
                 {
                     throw new KControllerExceptionActionFailed($translator->translate("Insufficient stock of {$item->_item_name}"));
                     $result = false;
@@ -239,19 +216,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 $package    = $this->getObject('com:nucleonplus.model.packages')->id($package_id)->fetch();
                 foreach ($package->getItems() as $item)
                 {
-                    $inventoryItem = $this->_item_controller
-                        ->id($item->_qboitem_itemref)
-                        ->getModel()
-                        ->fetch()
-                    ;
-
-                    if (!$inventoryItem)
-                    {
-                        throw new KControllerExceptionRequestInvalid($translator->translate("Inventory: communication error"));
-                        $result = false;
-                    }
-
-                    if ($item->quantity > $inventoryItem->getQtyOnHand())
+                    if (!$item->hasAvailableStock())
                     {
                         throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
                         $result = false;
@@ -322,7 +287,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $order = parent::_actionAdd($context);
 
         // Create reward
-        $this->_reward->create($order);
+        $this->getObject($this->_reward)->create($order);
 
         if ($order->invoice_status == 'paid')
         {

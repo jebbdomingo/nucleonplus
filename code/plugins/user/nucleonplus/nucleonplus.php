@@ -10,6 +10,8 @@
 
 class PlgUserNucleonplus extends JPlugin
 {
+    const _USER_GROUP_REGISTERED_ = 2;
+
     public function __construct(&$subject, $config)
     {
         parent::__construct($subject, $config);
@@ -78,7 +80,7 @@ class PlgUserNucleonplus extends JPlugin
     public function onUserAfterSave($user, $isNew, $success, $msg)
     {
         // Registration succeeded
-        if ($isNew && $success)
+        if ($isNew && $success && in_array(self::_USER_GROUP_REGISTERED_, $user['groups']))
         {
             // Create corresponding Nucleon Plus Account upon user registration
             if ($account = $this->_createAccount($user))
@@ -100,7 +102,7 @@ class PlgUserNucleonplus extends JPlugin
      */
     protected function _validateSponsorId($user)
     {
-        if ($user['sponsor_id'])
+        if (isset($user['sponsor_id']) && $user['sponsor_id'])
         {
             $sponsor = KObjectManager::getInstance()->getObject('com://admin/nucleonplus.model.accounts')->account_number($user['sponsor_id'])->fetch();
 

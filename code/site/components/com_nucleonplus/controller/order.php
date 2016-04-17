@@ -123,19 +123,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             // Check inventory for available stock
             foreach ($package->getItems() as $item)
             {
-                $inventoryItem = $this->_item_controller
-                    ->id($item->_qboitem_itemref)
-                    ->getModel()
-                    ->fetch()
-                ;
-
-                if (!$inventoryItem)
-                {
-                    throw new KControllerExceptionResourceNotFound($translator->translate("Inventory: communication error"));
-                    $result = false;
-                }
-
-                if ($item->quantity > $inventoryItem->getQtyOnHand())
+                if (!$item->hasAvailableStock())
                 {
                     throw new KControllerExceptionRequestNotAllowed($translator->translate("Insufficient stock of {$item->_item_name}"));
                     $result = false;

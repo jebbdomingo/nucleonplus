@@ -26,8 +26,13 @@ class ComNucleonplusModelPackageitems extends KModelDatabase
         $query
             ->columns(array('_item_name' => '_item.name'))
             ->columns(array('_item_price' => '_item.price'))
-            ->columns(array('_qboitem_itemref' => '_qboitem.ItemRef'))
-            ->columns(array('_qboitem_unitprice' => '_qboitem.UnitPrice'))
+            ->columns(array('_syncitem_item_ref' => '_syncitem.ItemRef'))
+            ->columns(array('_syncitem_unit_price' => '_syncitem.UnitPrice'))
+            ->columns(array('_syncitem_purchase_cost' => '_syncitem.PurchaseCost'))
+            ->columns(array('_syncitem_qty_on_hand' => '_syncitem.QtyOnHand'))
+            ->columns(array('_syncitem_quantity_purchased' => '_syncitem.quantity_purchased'))
+            ->columns(array('_syncitem_last_synced_on' => '_syncitem.last_synced_on'))
+            ->columns(array('_syncitem_last_synced_by' => '_syncitem.last_synced_by'))
         ;
     }
 
@@ -35,7 +40,7 @@ class ComNucleonplusModelPackageitems extends KModelDatabase
     {
         $query
             ->join(array('_item' => 'nucleonplus_items'), 'tbl.item_id = _item.nucleonplus_item_id')
-            ->join(array('_qboitem' => 'nucleonplus_qboitems'), '_item.nucleonplus_item_id = _qboitem.item_id')
+            ->join(array('_syncitem' => 'qbsync_items'), '_item.nucleonplus_item_id = _syncitem.item_id')
         ;
 
         parent::_buildQueryJoins($query);
