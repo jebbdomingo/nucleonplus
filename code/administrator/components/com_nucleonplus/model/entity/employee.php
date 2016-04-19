@@ -134,6 +134,7 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
             'id'                  => $userId,
             'user_id'             => $userId,
             'status'              => 'pending',
+            'PrintOnCheckName'    => $this->name,
             'DepartmentRef'       => $this->DepartmentRef,
             'bank_account_number' => $this->bank_account_number,
             'bank_account_name'   => $this->bank_account_name,
@@ -163,6 +164,7 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
     protected function _updateAccount($userId)
     {
         $account = $this->getObject('com://admin/nucleonplus.model.employeeaccounts')->user_id($userId)->fetch();
+        $account->PrintOnCheckName    = $this->name;
         $account->DepartmentRef       = $this->DepartmentRef;
         $account->bank_account_number = $this->bank_account_number;
         $account->bank_account_name   = $this->bank_account_name;

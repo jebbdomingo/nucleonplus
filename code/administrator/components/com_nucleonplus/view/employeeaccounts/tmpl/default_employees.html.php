@@ -20,7 +20,7 @@
             </a>
         </td>
         <td>
-            <a href="<?= route('view=employee&id='.$employee->_user_name); ?>">
+            <a href="<?= route('view=employee&id='.$employee->id); ?>">
                 <?= $employee->_user_name ?>
             </a>
         </td>

@@ -94,7 +94,7 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
 
         foreach ($entities as $entity)
         {
-            if ($entity->status == 'new')
+            if ($entity->status == 'pending')
             {
                 $customer = $this->_member_service->pushMember($entity);
                 

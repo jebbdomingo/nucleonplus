@@ -28,12 +28,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><label><strong><?= translate('Name in Check') ?></strong></label></td>
-                    <td>
-                        <input name="PrintOnCheckName" id="PrintOnCheckName" value="<?= $employee->_employee_check_name ?>" />
-                    </td>
-                </tr>
-                <tr>
                     <td><label><strong><?= translate('Department Ref.') ?></strong></label></td>
                     <td>
                         <input name="DepartmentRef" id="DepartmentRef" value="<?= $employee->_employee_department_ref ?>" />
