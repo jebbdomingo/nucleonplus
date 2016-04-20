@@ -162,6 +162,7 @@ class PlgUserNucleonplus extends JPlugin
             'status'              => 'new',
             'id'                  => $user['id'],
             'user_id'             => $user['id'],
+            'PrintOnCheckName'    => $user['name'],
             'sponsor_id'          => $user['sponsor_id'],
             'bank_account_number' => $user['bank_account_number'],
             'bank_account_name'   => $user['bank_account_name'],

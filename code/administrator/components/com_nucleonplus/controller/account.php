@@ -87,27 +87,27 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
     protected function _actionActivate(KControllerContextInterface $context)
     {
         if(!$context->result instanceof KModelEntityInterface) {
-            $entities = $this->getModel()->fetch();
+            $accounts = $this->getModel()->fetch();
         } else {
-            $entities = $context->result;
+            $accounts = $context->result;
         }
 
-        foreach ($entities as $entity)
+        foreach ($accounts as $account)
         {
-            if ($entity->status == 'pending')
+            if ($account->status == 'pending')
             {
-                $customer = $this->_member_service->pushMember($entity);
+                $customer = $this->_member_service->pushMember($account);
                 
                 if ($customer->sync() === false)
                 {
-                    $error = $entities->getStatusMessage();
-                    throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Account #{$entity->account_number}");
+                    $error = $accounts->getStatusMessage();
+                    throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Account #{$account->account_number}");
                 }
                 else
                 {
-                    $entity->status      = 'active';
-                    $entity->CustomerRef = $customer->CustomerRef;
-                    $entity->save();
+                    $account->CustomerRef = $customer->CustomerRef;
+                    $account->activate();
+                    $account->save();
                     
                     // Send email notification
                     $config = JFactory::getConfig();
@@ -115,11 +115,11 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
                     $emailSubject = "Your Nucleon Plus Account has been activated";
                     $emailBody    = JText::sprintf(
                         'COM_NUCLEONPLUS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
-                        $entity->_name,
+                        $account->_name,
                         JUri::root()
                     );
 
-                    $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $entity->_email, $emailSubject, $emailBody);
+                    $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $account->_email, $emailSubject, $emailBody);
 
                     // Check for an error.
                     if ($return !== true)
@@ -127,12 +127,12 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
                         $context->response->addMessage(JText::_('COM_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'), 'error');
                     }
 
-                    $context->response->addMessage("Account #{$entity->account_number} has been activated");
+                    $context->response->addMessage("Account #{$account->account_number} has been activated");
                 }
             }
-            else $context->response->addMessage("Unable to activate Account #{$entity->account_number}, only pending accounts can be activated", 'warning');
+            else $context->response->addMessage("Unable to activate Account #{$account->account_number}, only pending accounts can be activated", 'warning');
         }
 
-        return $entities;
+        return $accounts;
     }
 }

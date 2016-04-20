@@ -87,7 +87,7 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
 
             JUserHelper::addUserToGroup($user->id, self::_USER_GROUP_REGISTERED_);
             $this->id         = $user->id;
-            $account          = $this->_createAccount($user->id, $user->sponsor_id);
+            $account          = $this->_createAccount($user->id);
             $this->account_id = $account->id;
         }
         else
@@ -121,18 +121,17 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
      * Create corresponding account for each member/user
      *
      * @param integer $userId
-     * @param integer $sponsorId
      *
      * @return KModelEntityInterface|boolean
      */
-    protected function _createAccount($userId, $sponsorId)
+    protected function _createAccount($userId)
     {
         $model = $this->getObject('com://admin/nucleonplus.model.accounts');
 
         $account = $model->create(array(
             'id'                  => $userId,
             'user_id'             => $userId,
-            'sponsor_id'          => $sponsorId,
+            'sponsor_id'          => $this->sponsor_id,
             'PrintOnCheckName'    => $this->PrintOnCheckName,
             'status'              => 'pending',
             'bank_account_number' => $this->bank_account_number,
