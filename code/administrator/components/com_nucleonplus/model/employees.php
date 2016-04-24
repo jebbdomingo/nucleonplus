@@ -27,6 +27,8 @@ class ComNucleonplusModelEmployees extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
+            ->columns(array('_employee_given_name' => '_employee.given_name'))
+            ->columns(array('_employee_family_name' => '_employee.family_name'))
             ->columns(array('_employee_check_name' => '_employee.PrintOnCheckName'))
             ->columns(array('_employee_department_ref' => '_employee.DepartmentRef'))
             ->columns(array('_employee_bank_account_number' => '_employee.bank_account_number'))

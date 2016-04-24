@@ -10,9 +10,15 @@
 
             <tbody>
                 <tr>
-                    <td><label><strong><?= translate('Name') ?></strong></label></td>
+                    <td><label><strong><?= translate('Given Name') ?></strong></label></td>
                     <td>
-                        <input name="name" id="name" value="<?= $employee->name ?>" />
+                        <input name="given_name" id="given_name" value="<?= $employee->_employee_given_name ?>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label><strong><?= translate('Family Name') ?></strong></label></td>
+                    <td>
+                        <input name="family_name" id="family_name" value="<?= $employee->_employee_family_name ?>" />
                     </td>
                 </tr>
                 <tr>

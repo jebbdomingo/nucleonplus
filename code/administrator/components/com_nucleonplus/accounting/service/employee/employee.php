@@ -58,7 +58,8 @@ class ComNucleonplusAccountingServiceEmployee extends KObject implements ComNucl
         $data = array(
             'EmployeeRef'      => $employee->EmployeeRef,
             'employee_id'      => $employee->id,
-            'DisplayName'      => $employee->_user_name,
+            'GivenName'        => $employee->given_name,
+            'FamilyName'       => $employee->family_name,
             'PrimaryPhone'     => $employee->phone,
             'Mobile'           => $employee->mobile,
             'PrimaryEmailAddr' => $employee->_user_email,

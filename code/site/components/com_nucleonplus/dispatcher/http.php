@@ -21,17 +21,15 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
     protected function _actionDispatch(KDispatcherContextInterface $context)
     {
-        $excemptions = array(
-            'packages'
-        );
+        $view        = $this->getRequest()->query->view;
+        $excemptions = array();
 
-        if (!in_array($this->getRequest()->query->view, $excemptions) && !$this->getUser()->isAuthentic())
+        if ($view && (!in_array($view, $excemptions) && !$this->getUser()->isAuthentic()))
         {
-            $identifier = $context->getSubject()->getIdentifier();
-            $url        = sprintf('index.php?option=com_%s', $identifier->package);
-            $message    = 'Please login to access your account';
+            $message = 'Please login to access your account';
             
-            $context->response->setRedirect(JRoute::_($url, false), $message, 'error');
+            $context->response->setRedirect($context->request->getBaseUrl()->toString(), $message, 'warning');
+            $context->response->send();
         }
         else return parent::_actionDispatch($context);
     }

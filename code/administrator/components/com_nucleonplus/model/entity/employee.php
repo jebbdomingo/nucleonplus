@@ -72,6 +72,7 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
                 'password'     => JUserHelper::genRandomPassword(),
                 'requireReset' => 1,
                 'sendEmail'    => 1,
+                'name'         => "{$this->given_name} {$this->family_name}",
             ]);
 
             $user = new JUser;
@@ -97,6 +98,10 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
             $user = new JUser($employee->id);
 
             $employee->remove('password');
+
+            $employee->merge([
+                'name' => "{$this->given_name} {$this->family_name}",
+            ]);
             $data = $employee->toArray();
 
             if(!$user->bind($data)) {
@@ -134,6 +139,8 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
             'id'                  => $userId,
             'user_id'             => $userId,
             'status'              => 'pending',
+            'given_name'          => $this->given_name,
+            'family_name'         => $this->family_name,
             'PrintOnCheckName'    => $this->name,
             'DepartmentRef'       => $this->DepartmentRef,
             'bank_account_number' => $this->bank_account_number,
@@ -164,6 +171,8 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
     protected function _updateAccount($userId)
     {
         $account = $this->getObject('com://admin/nucleonplus.model.employeeaccounts')->user_id($userId)->fetch();
+        $account->given_name          = $this->given_name;
+        $account->family_name         = $this->family_name;
         $account->PrintOnCheckName    = $this->name;
         $account->DepartmentRef       = $this->DepartmentRef;
         $account->bank_account_number = $this->bank_account_number;
