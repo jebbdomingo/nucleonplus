@@ -227,6 +227,22 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
             ]);
         }
 
+        // Mark order as delivered command
+        if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('markdelivered', [
+                'allowed' => $allowed
+            ]);
+        }
+
+        // Mark order as completed command
+        if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('markcompleted', [
+                'allowed' => $allowed
+            ]);
+        }
+
         // Void command
         if ($controller->isEditable() && $controller->canSave())
         {
@@ -235,53 +251,4 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
             ]);
         }
     }
-
-    /**
-     * Back button
-     *
-     * Just rename the toolbar button
-     *
-     * @param KControllerToolbarCommand $command
-     *
-     * @return
-     */
-    /*protected function _commandCancel(KControllerToolbarCommand $command)
-    {
-        $command->label = 'Back To List';
-
-        parent::_commandCancel($command);
-    }*/
-
-    /*protected function _commandProcessrebates(KControllerToolbarCommand $command)
-    {
-        $command->icon = 'icon-32-save';
-
-        $command->append(array(
-            'attribs' => array(
-                'data-action' => 'processrebates'
-                //'data-novalidate' => 'novalidate' // This is needed for koowa-grid
-            )
-        ));
-
-        $command->label = 'Process Rebates';
-    }*/
-
-    /**
-     * Add read view toolbar buttons
-     *
-     * @param KControllerContextInterface $context
-     *
-     * @return void
-     */
-    /*protected function _addReadCommands(KControllerContextInterface $context)
-    {
-        $controller = $this->getController();
-        $allowed    = true;
-
-        if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
-            $allowed = false;
-        }
-
-        $this->addCommand('cancel');
-    }*/
 }

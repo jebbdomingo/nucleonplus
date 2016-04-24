@@ -43,6 +43,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $this->addCommandCallback('before.add', '_validate');
         $this->addCommandCallback('before.verifypayment', '_validateVerify');
+        $this->addCommandCallback('before.markdelivered', '_validateDelivered');
+        $this->addCommandCallback('before.markcompleted', '_validateCompleted');
         $this->addCommandCallback('before.void', '_validateVoid');
 
         // Sales Receipt Service
@@ -260,6 +262,86 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             {
                 if (!in_array($entity->order_status, array('awaiting_payment', 'awaiting_verification'))) {
                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Payment" or "Awaiting Verfication" status can be voided'));
+                    $result = false;
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Validate delivered action
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validateDelivered(KControllerContextInterface $context)
+    {
+        $result = true;
+
+        if (!$context->result instanceof KModelEntityInterface) {
+            $entities = $this->getModel()->fetch();
+        } else {
+            $entities = $context->result;
+        }
+
+        try
+        {
+            $translator = $this->getObject('translator');
+
+            foreach ($entities as $entity)
+            {
+                if ($entity->order_status <> 'shipped') {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Shipped" status can be marked as "Delivered"'));
+                    $result = false;
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Validate completed action
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validateCompleted(KControllerContextInterface $context)
+    {
+        $result = true;
+
+        if (!$context->result instanceof KModelEntityInterface) {
+            $entities = $this->getModel()->fetch();
+        } else {
+            $entities = $context->result;
+        }
+
+        try
+        {
+            $translator = $this->getObject('translator');
+
+            foreach ($entities as $entity)
+            {
+                if ($entity->order_status <> 'delivered') {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Delivered" status can be marked as "Completed"'));
                     $result = false;
                 }
             }
