@@ -33,6 +33,8 @@ class PlgUserNucleonplus extends JPlugin
             // On user activation
             if(isset($oldUser['activation']) &&
                !empty($oldUser['activation']) &&
+               isset($oldUser['requireReset']) &&
+               $oldUser['requireReset'] == 0 &&
                isset($newUser['activation']) &&
                empty($newUser['activation']))
             {

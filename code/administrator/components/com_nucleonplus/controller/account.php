@@ -98,7 +98,7 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
             {
                 $customer = $this->_member_service->pushMember($account);
                 
-                if ($customer->sync() === false)
+                if ($customer->sync() == false)
                 {
                     $error = $accounts->getStatusMessage();
                     throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Account #{$account->account_number}");
