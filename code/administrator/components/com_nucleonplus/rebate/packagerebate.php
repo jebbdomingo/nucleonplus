@@ -203,25 +203,50 @@ class ComNucleonplusRebatePackagerebate extends KObject
      *
      * @param KModelEntityRow $slot The member's first slot in his set of slots based on his product package purchase
      *
-     * @return void
+     * @return null|void
      */
     private function connectToOtherSlot(KModelEntityRow $slot)
     {
-        // All the slots from the rewards system
-        if ($unpaidSlot = $this->getObject($this->_model)->reward_id($slot->reward_id)->getUnpaidSlots())
-        {
-            $unpaidSlot->{$unpaidSlot->available_leg} = $slot->id;
-            $unpaidSlot->save();
-            $slot->consume();
+        // Fetch an active reward which is next in line for payout
+        $reward = $this->getObject($this->_reward_model)->fetchActiveReward();
 
-            // Process member rebates
-            // TODO move to dedicated rewards processing method
-            $reward = $this->getObject($this->_reward_model)->id($unpaidSlot->reward_id)->fetch();
-            $reward->processRebate();
-        }
-        else 
+        // Validate the reward
+        if (count($reward) == 0)
         {
-            $slot->flushOut();
+            // If no reward which is next in line, just terminate the processing
+            return null;
         }
+        elseif ($reward->id == $slot->reward_id) {
+            // Avoid matching the slot to the same reward
+            return null;
+        }
+
+        // Pending slots == slots without left or right leg matches
+        $pendingSlots = $this->getObject($this->_model)->reward_id($reward->id)->fetch();
+
+        if (count($pendingSlots) > 0)
+        {
+            foreach ($pendingSlots as $pendingSlot)
+            {
+                if ($pendingSlot->lf_slot_id == 0 || $pendingSlot->rt_slot_id == 0)
+                {
+                    if ($pendingSlot->lf_slot_id == 0) {
+                        $pendingSlot->lf_slot_id = $slot->id;
+                    } elseif ($pendingSlot->rt_slot_id == 0) {
+                        $pendingSlot->rt_slot_id = $slot->id;
+                    }
+
+                    $pendingSlot->save();
+                    $slot->consume();
+
+                    // Process member rebates
+                    $reward = $this->getObject($this->_reward_model)->id($pendingSlot->reward_id)->fetch();
+                    $reward->processRebate();
+
+                    break;
+                }
+            }
+        }
+        else $slot->flushOut();
     }
 }
