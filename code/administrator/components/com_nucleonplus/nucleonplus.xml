@@ -40,6 +40,7 @@
             <menu view="accounts" link="option=com_nucleonplus&amp;view=accounts">COM_NUCLEONPLUS_SUBMENU_ACCOUNTS</menu>
             <menu view="orders" link="option=com_nucleonplus&amp;view=orders">COM_NUCLEONPLUS_SUBMENU_ORDERS</menu>
             <menu view="payouts" link="option=com_nucleonplus&amp;view=payouts">COM_NUCLEONPLUS_SUBMENU_PAYOUTS</menu>
+            <menu view="employeeaccounts" link="option=com_nucleonplus&amp;view=employeeaccounts">COM_NUCLEONPLUS_SUBMENU_EMPLOYEEACCOUNTS</menu>
         </submenu>
 
         <files folder="administrator/components/com_nucleonplus">
