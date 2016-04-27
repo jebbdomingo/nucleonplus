@@ -28,7 +28,9 @@
         <folder>controller</folder>
         <folder>database</folder>
         <folder>dispatcher</folder>
+        <folder>language</folder>
         <folder>resources</folder>
+        <folder>template</folder>
         <folder>view</folder>
 
         <filename>nucleonplus.php</filename>

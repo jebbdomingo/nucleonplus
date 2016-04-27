@@ -28,7 +28,9 @@ class ComNucleonplusModelEntityPackageitem extends KModelEntityRow
      */
     public function hasAvailableStock()
     {
-        if ($this->quantity > $this->_syncitem_qty_on_hand) {
+        $inventoryQty = ($this->_syncitem_qty_on_hand - $this->_syncitem_quantity_purchased);
+
+        if ($this->quantity > $inventoryQty) {
             return false;
         }
 

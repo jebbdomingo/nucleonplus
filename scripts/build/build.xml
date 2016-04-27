@@ -42,6 +42,13 @@
         <delete dir="tmp/ckeditor_clone" includeemptydirs="true" />
         <!-- <<< ckeditor end -->
 
+        <!-- plugins >>> -->
+        <copy todir="tmp/extensions/plg_user_nucleonplus">
+            <fileset dir="tmp/plugins/user" />
+        </copy>
+        <delete dir="tmp/plugins" includeemptydirs="true" />
+        <!-- <<< plugins -->
+
         <!-- take out source mapping from CSS files -->
         <reflexive>
             <fileset dir="tmp/media/com_nucleonplus/css">

@@ -55,19 +55,21 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      */
     protected function _initialize(KObjectConfig $config)
     {
+        $data = $this->getObject('com:nucleonplus.accounting.service.data');
+
         $config->append(array(
             'transfer_controller'                    => 'com:qbsync.controller.transfer',
-            'savings_account'                        => 269,
-            'system_fee_account'                     => 291,
-            'contingency_fund_account'               => 296,
-            'operating_expense_budget_account'       => 292,
-            'rebates_account'                        => 288,
-            'directreferral_bonus_account'           => 289,
-            'indirectreferral_bonus_account'         => 290,
-            'surplusrebates_account'                 => 295,
-            'surplus_directreferral_bonus_account'   => 293,
-            'surplus_indirectreferral_bonus_account' => 294,
-            'delivery_expense_account'               => 297,
+            'savings_account'                        => $data->ACCOUNT_SAVINGS,
+            'system_fee_account'                     => $data->ACCOUNT_SYSTEM_FEE,
+            'contingency_fund_account'               => $data->ACCOUNT_CONTINGENCY_FUND,
+            'operating_expense_budget_account'       => $data->ACCOUNT_EXPENSE_OPERATING,
+            'rebates_account'                        => $data->ACCOUNT_REBATES,
+            'directreferral_bonus_account'           => $data->ACCOUNT_REFERRAL_DIRECT,
+            'indirectreferral_bonus_account'         => $data->ACCOUNT_REFERRAL_INDIRECT,
+            'surplusrebates_account'                 => $data->ACCOUNT_REBATES_FLUSHOUT,
+            'surplus_directreferral_bonus_account'   => $data->ACCOUNT_REFERRAL_DIRECT_FLUSHOUT,
+            'surplus_indirectreferral_bonus_account' => $data->ACCOUNT_REFERRAL_INDIRECT_FLUSHOUT,
+            'delivery_expense_account'               => $data->ACCOUNT_EXPENSE_DELIVERY,
         ));
 
         parent::_initialize($config);

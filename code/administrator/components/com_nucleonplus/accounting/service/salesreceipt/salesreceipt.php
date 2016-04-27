@@ -117,17 +117,19 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
      */
     protected function _initialize(KObjectConfig $config)
     {
+        $data = $this->getObject('com:nucleonplus.accounting.service.data');
+
         $config->append(array(
             'salesreceipt_controller'      => 'com:qbsync.controller.salesreceipt',
             'salesreceipt_line_controller' => 'com:qbsync.controller.salesreceiptline',
             'item_controller'              => 'com:qbsync.controller.item',
             'transfer_service'             => 'com:nucleonplus.accounting.service.transfer',
-            'department_ref'               => 3,
-            'bank_account_ref'             => 269, // Bank Account
-            'undeposited_account_ref'      => 237, // Undeposited Funds Account
-            'system_fee_rate'              => 10.00,
-            'contingency_fund_rate'        => 50.00,
-            'operating_expense_rate'       => 60.00,
+            'department_ref'               => $data->store_angono,
+            'bank_account_ref'             => $data->account_bank_ref, // Bank Account
+            'undeposited_account_ref'      => $data->account_undeposited_ref, // Undeposited Funds Account
+            'system_fee_rate'              => $data->rate_system_fee,
+            'contingency_fund_rate'        => $data->rate_contingency_fund,
+            'operating_expense_rate'       => $data->rate_operating_expense,
         ));
 
         parent::_initialize($config);
@@ -176,6 +178,11 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
                 'Qty'          => $item->quantity,
                 'Amount'       => ($item->_syncitem_unit_price * $item->quantity),
             ));
+
+            // Update item's quantity purchased for real time inventory quantity tracking
+            $syncItem = $this->getObject('com:qbsync.model.items')->item_id($item->item_id)->fetch();
+            $syncItem->updateQuantityPurchased($item->quantity);
+            $syncItem->save();
         }
 
         // Service line items
