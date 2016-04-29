@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension type="plugin" version="2.5" group="system" method="upgrade">
+<extension type="plugin" version="2.5" group="user" method="upgrade">
     <identifier>plg:user.nucleonplus</identifier>
     <name>plg_user_nucleonplus</name>
-    <version>1.0.0-beta1</version>
+    <version>1.0.0</version>
     <author>Jebb Domingo</author>
     <creationDate>April 2016</creationDate>
     <copyright>Copyright (C) 2016 Nucleon + Co. (http://www.nucleonplus.com)</copyright>

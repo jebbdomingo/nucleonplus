@@ -208,18 +208,18 @@ class ComNucleonplusRebatePackagerebate extends KObject
     private function connectToOtherSlot(KModelEntityRow $slot)
     {
         // Fetch an active reward which is next in line for payout
-        $reward = $this->getObject($this->_reward_model)->fetchActiveReward();
+        $reward = $this->getObject($this->_reward_model)->getNextActiveReward($slot->reward_id);
 
         // Validate the reward
         if (count($reward) == 0)
         {
-            // If no reward which is next in line, just terminate the processing
+            // If no reward which is next in line, flushout the slot and terminate the processing
+            $slot->flushOut();
+
             return null;
         }
-        elseif ($reward->id == $slot->reward_id) {
-            // Avoid matching the slot to the same reward
-            return null;
-        }
+        // Avoid matching the slot to the same reward
+        elseif ($reward->id == $slot->reward_id) return null;
 
         // Pending slots == slots without left or right leg matches
         $pendingSlots = $this->getObject($this->_model)->reward_id($reward->id)->fetch();
@@ -247,6 +247,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
                 }
             }
         }
+        // TODO check if this is still needed since there's no active reward without a slot
         else $slot->flushOut();
     }
 }

@@ -16,6 +16,19 @@ class ComNucleonplusControllerToolbarEmployeeaccount extends ComKoowaControllerT
         $command->label = 'New Employee';
     }
 
+    protected function _commandActivate(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'activate',
+            )
+        ));
+
+        $command->label = 'Activate';
+    }
+
     protected function _afterRead(KControllerContextInterface $context)
     {
         parent::_afterRead($context);

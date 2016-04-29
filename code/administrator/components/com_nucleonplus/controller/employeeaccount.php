@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Nucleon Plus
  *
@@ -11,18 +10,18 @@
 
 
 /**
- * Account Controller
+ * Employee Controller
  *
  * @author  Jebb Domingo <http://github.com/jebbdomingo>
  * @package Nucleon Plus
  */
-class ComNucleonplusControllerAccount extends ComKoowaControllerModel
+class ComNucleonplusControllerEmployeeaccount extends ComKoowaControllerModel
 {
     /**
      *
-     * @var ComNucleonplusAccountingServiceMemberInterface
+     * @var ComNucleonplusAccountingServiceEmployeeInterface
      */
-    protected $_member_service;
+    protected $_employee_service;
 
     /**
      * Constructor.
@@ -33,16 +32,16 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
     {
         parent::__construct($config);
 
-        $identifier = $this->getIdentifier($config->member_service);
+        $identifier = $this->getIdentifier($config->employee_service);
         $service    = $this->getObject($identifier);
 
-        if (!($service instanceof ComNucleonplusAccountingServiceMemberInterface))
+        if (!($service instanceof ComNucleonplusAccountingServiceEmployeeInterface))
         {
             throw new UnexpectedValueException(
-                "Service $identifier does not implement ComNucleonplusAccountingServiceMemberInterface"
+                "Service $identifier does not implement ComNucleonplusAccountingServiceEmployeeInterface"
             );
         }
-        else $this->_member_service = $service;
+        else $this->_employee_service = $service;
     }
 
     /**
@@ -55,7 +54,7 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'member_service' => 'com:nucleonplus.accounting.service.member',
+            'employee_service' => 'com:nucleonplus.accounting.service.employee',
         ));
 
         parent::_initialize($config);
@@ -96,16 +95,16 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
         {
             if ($account->status == 'pending')
             {
-                $customer = $this->_member_service->pushMember($account);
+                $employee = $this->_employee_service->pushEmployee($account);
                 
-                if ($customer->sync() == false)
+                if ($employee->sync() == false)
                 {
-                    $error = $customer->getStatusMessage();
-                    throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Account #{$account->account_number}");
+                    $error = $employee->getStatusMessage();
+                    throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Employee #{$account->id}");
                 }
                 else
                 {
-                    $account->CustomerRef = $customer->CustomerRef;
+                    $account->EmployeeRef = $employee->EmployeeRef;
                     $account->activate();
                     $account->save();
                     
@@ -114,12 +113,11 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
 
                     $emailSubject = "Your Nucleon Plus Account has been activated";
                     $emailBody    = JText::sprintf(
-                        'COM_NUCLEONPLUS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
-                        $account->_name,
-                        JUri::root()
+                        'COM_NUCLEONPLUS_EMPLOYEE_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
+                        $account->_user_name
                     );
 
-                    $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $account->_email, $emailSubject, $emailBody);
+                    $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $account->_user_email, $emailSubject, $emailBody);
 
                     // Check for an error.
                     if ($return !== true)
@@ -127,10 +125,10 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
                         $context->response->addMessage(JText::_('COM_NUCLEONPLUS_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'), 'error');
                     }
 
-                    $context->response->addMessage("Account #{$account->account_number} has been activated");
+                    $context->response->addMessage("Employee #{$account->id} has been activated");
                 }
             }
-            else $context->response->addMessage("Unable to activate Account #{$account->account_number}, only pending accounts can be activated", 'warning');
+            else $context->response->addMessage("Unable to activate Employee #{$account->id}, only pending accounts can be activated", 'warning');
         }
 
         return $accounts;

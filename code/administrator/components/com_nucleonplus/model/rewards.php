@@ -57,19 +57,20 @@ class ComNucleonplusModelRewards extends KModelDatabase
     }
 
     /**
-     * Fetch an active reward
-     * This used in packagerebate for determining which reward is next in line for payout
+     * Fetch the next active reward
+     * This is used in packagerebate for determining which reward is next in line for payout
      *
      * @param integer $reward_id
      *
      * @return KModelEntityInterface
      */
-    public function fetchActiveReward()
+    public function getNextActiveReward($rewardId)
     {
         $table = $this->getObject('com://admin/nucleonplus.database.table.rewards');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_rewards AS tbl')
-            ->where('tbl.status = :status')->bind(['status' => 'active'])
+            ->where('tbl.status = :status')->bind(array('status' => 'active'))
+            ->where('tbl.nucleonplus_reward_id != :reward_id')->bind(array('reward_id' => $rewardId))
             ->limit(1)
             ->order('tbl.nucleonplus_reward_id', 'ASC')
         ;

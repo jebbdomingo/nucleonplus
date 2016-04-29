@@ -90,8 +90,6 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
             $this->id          = $user->id;
             $employee          = $this->_createAccount($user->id);
             $this->employee_id = $employee->id;
-
-            $this->_employee_service->pushEmployee($employee);
         }
         else
         {

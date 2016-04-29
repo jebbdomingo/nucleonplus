@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.0.0" method="upgrade">
+<extension type="component" version="2.5" method="upgrade">
     <identifier>com:nucleonplus</identifier>
-    <name>COM_NUCLEONPLUS</name>
+    <name>com_nucleonplus</name>
     <author>Jebb Domingo</author>
     <creationDate>January 2016</creationDate>
     <copyright>Copyright (C) 2016 - 2019 Nucleon + Co. (http://www.nucleonplus.com)</copyright>
@@ -35,6 +35,10 @@
 
         <filename>nucleonplus.php</filename>
     </files>
+    
+    <media folder="media">
+        <folder>com_nucleonplus</folder>
+    </media>
 
     <administration>
         <menu>COM_NUCLEONPLUS</menu>
@@ -58,12 +62,11 @@
             <folder>view</folder>
 
             <filename>access.xml</filename>
-            <filename>config.xml</filename>
             <filename>nucleonplus.php</filename>
         </files>
     </administration>
 
     <dependencies>
-        <dependency type="koowa-component" element="ckeditor">extensions/ckeditor</dependency>
+        <dependency type="plugin" element="nucleonplus" folder="user">extensions/plg_user_nucleonplus</dependency>
     </dependencies>
 </extension>
