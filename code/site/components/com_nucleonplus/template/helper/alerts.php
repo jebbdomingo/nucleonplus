@@ -60,9 +60,9 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
         $config = new KObjectConfig($config);
         $config->append(array(
             'bank_name'           => 'BDO',
-            'bank_account_number' => '9900000001',
-            'bank_account_type'   => 'Savings',
-            'bank_account_name'   => 'Nucleon + Co.',
+            'bank_account_number' => '010080055524',
+            'bank_account_type'   => 'SA',
+            'bank_account_name'   => 'NUCLEON + CO.',
             'bank_account_branch' => 'SM Angono',
         ));
 

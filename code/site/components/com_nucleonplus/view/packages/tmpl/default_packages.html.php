@@ -30,7 +30,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                             <td class="text-right">P<?= number_format($package->delivery_charge) ?></td>
                         </tr>
                         <tr class="success">
-                            <th>Rebates</th>
+                            <th>Commission</th>
                             <th class="text-right">
                                 P<?
                                 $rebates = ($package->_rewardpackage_prpv * $package->_rewardpackage_slots) * 2;
@@ -71,7 +71,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                         <? else: ?>
                             <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
                                 <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
-                                Log-in to order
+                                Log-in to Purchase
                             </a>
                         <? endif; ?>
                     </p>

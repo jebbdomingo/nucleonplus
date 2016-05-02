@@ -12,13 +12,13 @@ defined('KOOWA') or die; ?>
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title"><?= translate('My Payout') ?></h3>
+        <h3 class="panel-title"><?= translate('My Commission') ?></h3>
     </div>
     <div class="panel-body" style="padding: 0px">
 
         <table class="table table-striped footable">
             <thead>
-                <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Payout #')); ?></th>
+                <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Commission #')); ?></th>
                 <th>Status</th>
                 <th>Date</th>
                 <th>Amount</th>

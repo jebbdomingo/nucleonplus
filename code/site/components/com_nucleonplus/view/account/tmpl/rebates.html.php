@@ -12,12 +12,12 @@ defined('KOOWA') or die; ?>
 
 <fieldset>
 
-    <legend><?= translate('My Rebates') ?></legend>
+    <legend><?= translate('My Commissions') ?></legend>
 
     <table class="table">
         <thead>
             <th>Order #</th>
-            <th>Product Package</th>
+            <th>Product Pack</th>
             <th class="text-right">Points</th>
         </thead>
         <tbody>

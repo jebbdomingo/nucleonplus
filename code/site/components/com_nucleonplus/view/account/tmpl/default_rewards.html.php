@@ -12,25 +12,25 @@ defined('KOOWA') or die; ?>
 
 <div class="panel panel-primary">
     <div class="panel-heading">
-        <h3 class="panel-title"><?= translate('My Rewards') ?></h3>
+        <h3 class="panel-title"><?= translate('My Commission') ?></h3>
     </div>
     <div class="panel-body">
         <table class="table">
             <thead>
-                <th>Reward</th>
+                <th>&nbsp;</th>
                 <th class="text-right">Points</th>
             </thead>
             <tbody>
                 <tr>
-                    <td>Available Product Rebates</td>
+                    <td>Commission</td>
                     <td class="text-right"><?= number_format($total_rebates, 2) ?></td>
                 </tr>
                 <tr>
-                    <td>Available Referral Bonuses</td>
+                    <td>Referral Fees</td>
                     <td class="text-right"><?= number_format($total_referral_bonus, 2) ?></td>
                 </tr>
                 <tr class="info">
-                    <td>Total Available Rewards</td>
+                    <td>Total Commission</td>
                     <th class="text-right"><?= number_format($total_bonus, 2) ?></th>
                 </tr>
             </tbody>
