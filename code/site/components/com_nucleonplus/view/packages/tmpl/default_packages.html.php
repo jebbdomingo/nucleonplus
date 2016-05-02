@@ -29,10 +29,28 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                             <td>Shipping</td>
                             <td class="text-right">P<?= number_format($package->delivery_charge) ?></td>
                         </tr>
+                        <tr>
+                            <th>Referral Fee</th>
+                            <th class="text-right">
+                                <?
+                                $dr_fee = ($package->_rewardpackage_drpv * $package->_rewardpackage_slots);
+                                echo number_format($dr_fee);
+                                ?>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Indirect Referral Fee</th>
+                            <th class="text-right">
+                                <?
+                                $ir_fee = ($package->_rewardpackage_irpv * $package->_rewardpackage_slots);
+                                echo number_format($ir_fee);
+                                ?>
+                            </th>
+                        </tr>
                         <tr class="success">
                             <th>Commission</th>
                             <th class="text-right">
-                                P<?
+                                <?
                                 $rebates = ($package->_rewardpackage_prpv * $package->_rewardpackage_slots) * 2;
                                 echo number_format($rebates);
                                 ?>
