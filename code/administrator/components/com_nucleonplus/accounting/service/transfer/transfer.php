@@ -59,7 +59,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
 
         $config->append(array(
             'transfer_controller'                    => 'com:qbsync.controller.transfer',
-            'savings_account'                        => $data->ACCOUNT_SAVINGS,
+            'savings_account'                        => $data->ACCOUNT_BANK_REF,
             'system_fee_account'                     => $data->ACCOUNT_SYSTEM_FEE,
             'contingency_fund_account'               => $data->ACCOUNT_CONTINGENCY_FUND,
             'operating_expense_budget_account'       => $data->ACCOUNT_EXPENSE_OPERATING,
