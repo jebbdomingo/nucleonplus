@@ -43,6 +43,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $this->addCommandCallback('before.add', '_validate');
         $this->addCommandCallback('before.verifypayment', '_validateVerify');
+        $this->addCommandCallback('before.ship', '_validateShip');
         $this->addCommandCallback('before.markdelivered', '_validateDelivered');
         $this->addCommandCallback('before.markcompleted', '_validateCompleted');
         $this->addCommandCallback('before.void', '_validateVoid');
@@ -278,6 +279,45 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     }
 
     /**
+     * Validate ship action
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validateShip(KControllerContextInterface $context)
+    {
+        if (!$context->result instanceof KModelEntityInterface) {
+            $orders = $this->getModel()->fetch();
+        } else {
+            $orders = $context->result;
+        }
+
+        try
+        {
+            $translator = $this->getObject('translator');
+
+            foreach ($orders as $order)
+            {
+                $order->setProperties($context->request->data->toArray());
+
+                if ($order->order_status <> 'processing') {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Processing" status can be shipped'));
+                }
+
+                if (empty(trim($order->tracking_reference))) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Please enter shipment tracking reference'));
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+        }
+    }
+
+    /**
      * Validate delivered action
      *
      * @param KControllerContextInterface $context
@@ -418,28 +458,14 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _actionVerifypayment(KControllerContextInterface $context)
     {
         // Mark as Paid
-        $context->getRequest()->setData([
-            'invoice_status'    => 'paid',
-            'order_status'      => 'processing',
-            'payment_reference' => $context->request->data->payment_reference,
-            'note'              => $context->request->data->note,
-        ]);
+        $context->getRequest()->data->invoice_status = 'paid';
+        $context->getRequest()->data->order_status   = 'processing';
 
         $orders = parent::_actionEdit($context);
 
-        foreach ($orders as $order)
-        {
-            if ($order->invoice_status == 'paid')
-            {
-                $order = $this->getModel()->id($order->id)->fetch();
-                $this->_salesreceipt_service->recordSale($order);
-                $context->response->addMessage("Payment for Order #{$order->id} has been verified");
+        // Automatically activate reward
+        $this->activatereward($context);
 
-                // Automatically activate reward
-                $this->activatereward($context);
-            }
-        }
-        
         return $orders;
     }
 

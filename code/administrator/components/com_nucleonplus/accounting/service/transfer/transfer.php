@@ -86,7 +86,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_rebates_account;
-        $note          = 'Rebates';
+        $note          = 'Commission';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -101,7 +101,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_surplusrebates_account;
-        $note          = 'Surplus Rebates i.e. a slot that doesn\'t have available slot to connect with';
+        $note          = 'Flushout Commission i.e. a slot that doesn\'t have available slot to connect with';
 
         return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
     }

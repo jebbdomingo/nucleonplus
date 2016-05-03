@@ -41,6 +41,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             ->columns('a.status AS account_status')
             ->columns('a.created_on AS account_created_on')
             ->columns('u.name')
+            ->columns('u.email')
             ;
     }
 

@@ -201,7 +201,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             $reward->save();
         }
 
-        // Update direct referral bonus status
+        // Reference related direct referrals with payout
         foreach ($directReferrals as $id)
         {
             $referral = $this->getObject('com:nucleonplus.model.referralbonuses')->id($id)->fetch();
@@ -209,7 +209,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             $referral->save();
         }
 
-        // Update indirect referral bonus status
+        // Reference related indirect referrals with payout
         foreach ($indirectReferrals as $id)
         {
             $referral = $this->getObject('com:nucleonplus.model.referralbonuses')->id($id)->fetch();

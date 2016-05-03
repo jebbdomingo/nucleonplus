@@ -30,31 +30,31 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                             <td class="text-right">P<?= number_format($package->delivery_charge) ?></td>
                         </tr>
                         <tr>
-                            <th>Referral Fee</th>
-                            <th class="text-right">
+                            <td>Referral Fee</td>
+                            <td class="text-right">
                                 <?
                                 $dr_fee = ($package->_rewardpackage_drpv * $package->_rewardpackage_slots);
-                                echo number_format($dr_fee);
+                                echo $dr_fee;
                                 ?>
-                            </th>
+                            </td>
                         </tr>
                         <tr>
-                            <th>Indirect Referral Fee</th>
-                            <th class="text-right">
+                            <td>Indirect Referral Fee</td>
+                            <td class="text-right">
                                 <?
                                 $ir_fee = ($package->_rewardpackage_irpv * $package->_rewardpackage_slots);
-                                echo number_format($ir_fee);
+                                echo $ir_fee;
                                 ?>
-                            </th>
+                            </td>
                         </tr>
                         <tr class="success">
-                            <th>Commission</th>
-                            <th class="text-right">
+                            <td>Commission</td>
+                            <td class="text-right">
                                 <?
                                 $rebates = ($package->_rewardpackage_prpv * $package->_rewardpackage_slots) * 2;
-                                echo number_format($rebates);
+                                echo $rebates;
                                 ?>
-                            </th>
+                            </td>
                         </tr>
                         <tr>
                             <td colspan="2">
@@ -84,12 +84,12 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                         <? if ($isAuthenticated): ?>
                             <a href="<?= route('view=order&package_id=' . $package->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
                                 <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                                Order Now
+                                Buy Now
                             </a>
                         <? else: ?>
                             <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
                                 <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
-                                Log-in to Purchase
+                                Buy Now
                             </a>
                         <? endif; ?>
                     </p>

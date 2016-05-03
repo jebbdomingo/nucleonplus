@@ -18,10 +18,10 @@ defined('KOOWA') or die; ?>
 
         <table class="table table-striped footable">
             <thead>
-                <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Commission #')); ?></th>
+                <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Claim #')); ?></th>
                 <th>Status</th>
                 <th>Date</th>
-                <th>Amount</th>
+                <th><div class="pull-right">Amount</div></th>
             </thead>
             <tbody>
                 <? if (count($payouts) > 0): ?>
@@ -32,13 +32,13 @@ defined('KOOWA') or die; ?>
                                 <span class="label <?= ($payout->status == 'pending') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($payout->status)) ?></span>
                             </td>
                             <td><?= helper('date.humanize', array('date' => $payout->created_on)) ?></td>
-                            <td><?= $payout->amount ?></td>
+                            <td><div class="pull-right">P<?= number_format($payout->amount) ?></div></td>
                         </tr>
                     <? endforeach ?>
                 <? else: ?>
                     <tr>
                         <td colspan="4">
-                            <p class="text-center">No Purchase(s) Yet</p>
+                            <p class="text-center">No Claims Yet</p>
                         </td>
                     </tr>
                 <? endif ?>

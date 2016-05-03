@@ -73,7 +73,6 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             $member->merge([
                 'password'     => JUserHelper::genRandomPassword(),
                 'requireReset' => 1,
-                'sendEmail'    => 1,
             ]);
 
             $data = $member->toArray();

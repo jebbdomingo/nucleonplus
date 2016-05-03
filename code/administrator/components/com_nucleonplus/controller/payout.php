@@ -14,6 +14,85 @@
 class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 {
     /**
+     * Constructor.
+     *
+     * @param KObjectConfig $config Configuration options.
+     */
+    public function __construct(KObjectConfig $config)
+    {
+        parent::__construct($config);
+
+        $this->addCommandCallback('before.generatecheck', '_validateCheckGenerated');
+        $this->addCommandCallback('before.disburse', '_validateDisburse');
+    }
+
+    /**
+     * Validate check generated action
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validateCheckGenerated(KControllerContextInterface $context)
+    {
+        if (!$context->result instanceof KModelEntityInterface) {
+            $payouts = $this->getModel()->fetch();
+        } else {
+            $payouts = $context->result;
+        }
+
+        try
+        {
+            $translator = $this->getObject('translator');
+
+            foreach ($payouts as $payout)
+            {
+                if ($payout->status <> 'pending') {
+                    throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Payout Status: Payout # {$payout->id} is pending"));
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+        }
+    }
+
+    /**
+     * Validate disbursed action
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validateDisburse(KControllerContextInterface $context)
+    {
+        if (!$context->result instanceof KModelEntityInterface) {
+            $payouts = $this->getModel()->fetch();
+        } else {
+            $payouts = $context->result;
+        }
+
+        try
+        {
+            $translator = $this->getObject('translator');
+
+            foreach ($payouts as $payout)
+            {
+                if ($payout->status <> 'checkgenerated') {
+                    throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Payout Status: Payout # {$payout->id} is not yet claimed"));
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+        }
+    }
+
+    /**
      * Generate check
      *
      * @param KControllerContextInterface $context
@@ -22,9 +101,28 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
      */
     protected function _actionGeneratecheck(KControllerContextInterface $context)
     {
-        $context->getRequest()->setData(['status' => 'checkgenerated']);
+        $context->getRequest()->setData(array('status' => 'checkgenerated'));
 
-        return parent::_actionEdit($context);
+        $payout = parent::_actionEdit($context);
+
+        // Send email notification
+        $config = JFactory::getConfig();
+
+        $emailSubject = "A check has been generated for your Claim # {$payout->id}";
+        $emailBody    = JText::sprintf(
+            'COM_NUCLEONPLUS_PAYOUT_EMAIL_CHECK_GENERATED_BODY',
+            $payout->name,
+            $payout->id,
+            JUri::root()
+        );
+
+        $mail = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $payout->email, $emailSubject, $emailBody);
+        // Check for an error.
+        if ($mail !== true) {
+            $context->response->addMessage(JText::_('COM_NUCLEONPLUS_PAYOUT_EMAIL_SEND_MAIL_FAILED'), 'error');
+        }
+
+        return $payout;
     }
 
     /**
@@ -44,7 +142,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         {
             $reward = $this->getObject('com:nucleonplus.model.rewards')
                 ->payout_id($payout->id)
-                ->status('ready')
+                ->status('processing')
                 ->fetch()
             ;
 
