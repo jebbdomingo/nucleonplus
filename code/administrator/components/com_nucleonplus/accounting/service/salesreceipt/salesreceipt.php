@@ -156,6 +156,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         {
             $salesReceiptData['DepartmentRef']       = $this->_department_ref; // Angono EC Valle store
             $salesReceiptData['DepositToAccountRef'] = $this->_bank_account_ref; // Bank Account
+            $salesReceiptData['transaction_type']    = 'online'; // Customer ordered thru website
         }
         else
         {
@@ -164,6 +165,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             
             $salesReceiptData['DepartmentRef']       = $employee->DepartmentRef; // Store branch
             $salesReceiptData['DepositToAccountRef'] = $this->_undeposited_account_ref; // Undeposited Funds Account
+            $salesReceiptData['transaction_type']    = 'offline'; // Order placed via onsite POS
         }
 
         $salesReceipt = $this->_salesreceipt->add($salesReceiptData);
