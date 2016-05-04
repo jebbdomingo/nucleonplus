@@ -463,8 +463,25 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $orders = parent::_actionEdit($context);
 
-        // Automatically activate reward
-        $this->activatereward($context);
+        try
+        {
+            foreach ($orders as $order)
+            {
+                // Fetch the newly created Order from the data store to get the joined columns
+                $order = $this->getModel()->id($order->id)->fetch();        
+                $this->_salesreceipt_service->recordSale($order);     
+                $context->response->addMessage("Payment for Order #{$order->id} has been verified");
+
+                // Automatically activate reward
+                $this->_activateReward($order);
+                $context->response->addMessage("Reward #{$reward->id} has been activated");
+            }
+
+        }
+        catch (Exception $e)
+        {
+            $context->response->addMessage($e->getMessage(), 'exception');
+        }
 
         return $orders;
     }
