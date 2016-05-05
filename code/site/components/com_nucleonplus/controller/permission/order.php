@@ -29,7 +29,7 @@ class ComNucleonplusControllerPermissionOrder extends ComKoowaControllerPermissi
         {
             return false;
         }
-        else return parent:canSave();
+        else return parent::canSave();
     }
 
     /**
