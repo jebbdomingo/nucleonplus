@@ -28,7 +28,7 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
 
         return $template;
     }
-    
+
     /**
      * Display payment instruction alert
      *
@@ -49,7 +49,7 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
     }
 
     /**
-     * Display payment instruction plain text
+     * Display payment instruction text
      *
      * @param array $config
      *
@@ -76,5 +76,64 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
         $message .= '</p>';
 
         return $message;
+    }
+
+    /**
+     * Display store info text
+     *
+     * @param array $config
+     *
+     * @return KObjectConfig
+     */
+    public function storeInfo(array $config = array())
+    {
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'address' => 'EC Valle Complex, Angono Rizal',
+            'phone'   => '010080055524',
+            'mobile'  => 'SA',
+            'email'   => 'NUCLEON + CO.',
+            'website' => 'SM Angono',
+        ));
+
+        return $config;
+    }
+
+    /**
+     * Display store info panel
+     *
+     * @param array $config
+     *
+     * @return string
+     */
+    public function storeInfoPanel(array $config = array())
+    {
+        $config = $this->storeInfo();
+
+        $template = '<div class="panel panel-info">';
+        $template .= '<div class="panel-heading"><strong>Visit our store</strong></div>';
+        $template .= "<div class=\"panel-body\">Come visit our store at {$config->address}</div>";
+        $template .= '</div>';
+
+        return $template;
+    }
+
+    /**
+     * Display store callout
+     *
+     * @param array $config
+     *
+     * @return string
+     */
+    public function storeCallout(array $config = array())
+    {
+        $config = $this->storeInfo();
+
+        $template = '<div class="jumbotron">';
+        $template .= '<h1><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Visit our store</h1>';
+        $template .= "<p>Come visit our store at {$config->address}</p>";
+        $template .= '</div>';
+
+        return $template;
     }
 }

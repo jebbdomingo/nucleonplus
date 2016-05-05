@@ -7,7 +7,7 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusViewOrderHtml extends KViewHtml
+class ComNucleonplusViewOrderHtml extends ComNucleonplusViewHtml
 {
     /**
      * Initializes the config for the object
