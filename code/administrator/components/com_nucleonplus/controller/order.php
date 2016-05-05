@@ -501,7 +501,25 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'tracking_reference' => $context->request->data->tracking_reference,
         ]);
 
-        return parent::_actionEdit($context);
+        $order = parent::_actionEdit($context);
+
+        // Send email notification
+        $config       = JFactory::getConfig();
+        $emailSubject = JText::sprintf('COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_SUBJECT', $order->id);
+        $emailBody    = JText::sprintf(
+            'COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_BODY',
+            $order->name,
+            $order->id,
+            JUri::root()
+        );
+
+        $mail = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $order->_user_email, $emailSubject, $emailBody);
+        // Check for an error.
+        if ($mail !== true) {
+            $context->response->addMessage(JText::_('COM_NUCLEONPLUS_PAYOUT_EMAIL_SEND_MAIL_FAILED'), 'error');
+        }
+
+        return $order;
     }
 
     /**

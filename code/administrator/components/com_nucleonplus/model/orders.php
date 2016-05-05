@@ -41,6 +41,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
             ->columns('_account.status')
             ->columns(array('_account_customer_ref' => '_account.CustomerRef'))
             ->columns('u.name')
+            ->columns(array('_user_email' => 'u.email'))
         ;
     }
 
