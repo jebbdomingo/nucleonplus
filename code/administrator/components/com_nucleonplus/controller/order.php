@@ -510,6 +510,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_BODY',
             $order->name,
             $order->id,
+            $order->tracking_reference,
             JUri::root()
         );
 
