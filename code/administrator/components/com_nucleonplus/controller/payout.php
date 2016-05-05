@@ -101,28 +101,30 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
      */
     protected function _actionGeneratecheck(KControllerContextInterface $context)
     {
+        $config = JFactory::getConfig();
         $context->getRequest()->setData(array('status' => 'checkgenerated'));
 
-        $payout = parent::_actionEdit($context);
+        $payouts = parent::_actionEdit($context);
 
-        // Send email notification
-        $config = JFactory::getConfig();
+        foreach ($payouts as $payout)
+        {
+            // Send email notification
+            $emailSubject = "A check has been generated for your Claim # {$payout->id}";
+            $emailBody    = JText::sprintf(
+                'COM_NUCLEONPLUS_PAYOUT_EMAIL_CHECK_GENERATED_BODY',
+                $payout->name,
+                $payout->id,
+                JUri::root()
+            );
 
-        $emailSubject = "A check has been generated for your Claim # {$payout->id}";
-        $emailBody    = JText::sprintf(
-            'COM_NUCLEONPLUS_PAYOUT_EMAIL_CHECK_GENERATED_BODY',
-            $payout->name,
-            $payout->id,
-            JUri::root()
-        );
-
-        $mail = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $payout->email, $emailSubject, $emailBody);
-        // Check for an error.
-        if ($mail !== true) {
-            $context->response->addMessage(JText::_('COM_NUCLEONPLUS_PAYOUT_EMAIL_SEND_MAIL_FAILED'), 'error');
+            $mail = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $payout->email, $emailSubject, $emailBody);
+            // Check for an error.
+            if ($mail !== true) {
+                $context->response->addMessage(JText::_('COM_NUCLEONPLUS_PAYOUT_EMAIL_SEND_MAIL_FAILED'), 'error');
+            }
         }
 
-        return $payout;
+        return $payouts;
     }
 
     /**

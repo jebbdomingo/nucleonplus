@@ -14,6 +14,14 @@ defined('KOOWA') or die; ?>
 <?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.koowa'); ?>
 
+<div class="jumbotron">
+    <h1>
+        <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> 
+        Visit our store
+    </h1>
+    <p>Come visit our store at EC Valle Complex, Angono Rizal</p>
+</div>
+
 <div class="row">
 
     <div class="col-md-12">

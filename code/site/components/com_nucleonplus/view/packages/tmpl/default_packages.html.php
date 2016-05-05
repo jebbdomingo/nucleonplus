@@ -10,7 +10,6 @@
 
 defined('KOOWA') or die;
 
-$isAuthenticated = object('user')->isAuthentic();
 $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
 ?>
 
@@ -80,19 +79,21 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                         </tr>
                     </table>
 
-                    <p>
-                        <? if ($isAuthenticated): ?>
-                            <a href="<?= route('view=order&package_id=' . $package->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
-                                <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                                Buy Now
-                            </a>
-                        <? else: ?>
-                            <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
-                                <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
-                                Buy Now
-                            </a>
-                        <? endif; ?>
-                    </p>
+                    <? if ($onlinePurchaseEnabled): ?>
+                        <p>
+                            <? if ($isAuthenticated): ?>
+                                <a href="<?= route('view=order&package_id=' . $package->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
+                                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                                    Buy Now
+                                </a>
+                            <? else: ?>
+                                <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
+                                    <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
+                                    Buy Now
+                                </a>
+                            <? endif; ?>
+                        </p>
+                    <? endif; ?>
                 </div>
             </div>
         </div>
