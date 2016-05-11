@@ -321,7 +321,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         foreach ($payouts as $payout)
         {
             // Send email notification
-            $emailSubject = "A check has been generated for your Claim # {$payout->id}";
+            $emailSubject = "A check has been generated for your Claim #{$payout->id}";
             $emailBody    = JText::sprintf(
                 'COM_NUCLEONPLUS_PAYOUT_EMAIL_CHECK_GENERATED_BODY',
                 $payout->name,
