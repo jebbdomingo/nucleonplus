@@ -89,11 +89,11 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
     {
         $config = new KObjectConfig($config);
         $config->append(array(
-            'address' => 'EC Valle Complex, Angono Rizal',
-            'phone'   => '010080055524',
-            'mobile'  => 'SA',
-            'email'   => 'NUCLEON + CO.',
-            'website' => 'SM Angono',
+            'address' => '2nd Floor E.C. Valle Commercial Center, Angono Rizal',
+            'phone'   => '(02) 775-9047',
+            'mobile'  => '0932 691 7537',
+            'email'   => 'nucleon.plus@gmail.com',
+            'website' => 'www.nucleonplus.com',
         ));
 
         return $config;

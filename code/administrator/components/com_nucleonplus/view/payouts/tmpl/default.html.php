@@ -58,6 +58,9 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'amount', 'title' => 'Amount')); ?>
                             </th>
                             <th>
+                                <?= helper('grid.sort', array('column' => 'payout_method', 'title' => 'Encashment Method')); ?>
+                            </th>
+                            <th>
                                 <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
                             </th>
                         </tr>
@@ -67,7 +70,7 @@ defined('KOOWA') or die; ?>
                             <?= import('default_payouts.html', ['payouts' => $payouts]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" align="center" style="text-align: center;">
+                                <td colspan="8" align="center" style="text-align: center;">
                                     <?= translate('No payout request') ?>
                                 </td>
                             </tr>
@@ -75,8 +78,8 @@ defined('KOOWA') or die; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="7">
-                                <?= helper('paginator.pagination') ?>
+                            <td colspan="8">
+                                <?= helper('paginator.pagination', array('limit' => 10)) ?>
                             </td>
                         </tr>
                     </tfoot>

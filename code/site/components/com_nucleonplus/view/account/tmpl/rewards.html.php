@@ -36,6 +36,24 @@ defined('KOOWA') or die; ?>
 
             </div>
 
+            <div class="span12">
+
+                <fieldset>
+
+                    <legend><?= translate('Encashment Method') ?></legend>
+
+                    <?= helper('listbox.radiolist', array(
+                        'name'    => 'payout_method',
+                        'options' => array(
+                            array('label' => 'Pick-up', 'value' => 'pickup'),
+                            array('label' => 'Deposit', 'value' => 'deposit')
+                        )
+                    )) ?>
+
+                </fieldset>
+
+            </div>
+
         </div>
         
     </form>

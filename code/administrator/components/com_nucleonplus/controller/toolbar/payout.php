@@ -12,6 +12,45 @@
 class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarActionbar
 {
     /**
+     * Toggle claim request Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandToggleclaimrequest(KControllerToolbarCommand $command)
+    {
+        //$command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action'     => 'toggleclaimrequest',
+                'data-novalidate' => 'novalidate'
+            )
+        ));
+    }
+
+    /**
+     * Processing Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandProcessing(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'processing'
+            )
+        ));
+
+        $command->label = 'Processing';
+    }
+
+    /**
      * Generate check Command
      *
      * @param KControllerToolbarCommand $command
@@ -65,6 +104,13 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
         if ($canSave && ($context->result->status == 'pending'))
         {
+            $this->addCommand('processing', [
+                'allowed' => $allowed
+            ]);
+        }
+
+        if ($canSave && ($context->result->status == 'processing'))
+        {
             $this->addCommand('generatecheck', [
                 'allowed' => $allowed
             ]);
@@ -96,7 +142,12 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
         if ($canSave)
         {
-            // Batch check
+            // Batch processing
+            $this->addCommand('processing', [
+                'allowed' => $allowed
+            ]);
+
+            // Batch generate check
             $this->addCommand('generatecheck', [
                 'allowed' => $allowed
             ]);
@@ -104,6 +155,15 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
             // Batch disburse
             $this->addCommand('disburse', [
                 'allowed' => $allowed
+            ]);
+
+            // Toggle claim request command
+            $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item('claim_request')->fetch();
+
+            $this->addCommand('toggleclaimrequest', [
+                'allowed' => $allowed,
+                'label'   => ($claimRequest->value == 'yes') ? 'Turn-off Claim Request' : 'Turn-on Claim Request',
+                'icon'    => ($claimRequest->value == 'yes') ? 'icon-32-stop' : 'icon-32-save'
             ]);
         }
     }

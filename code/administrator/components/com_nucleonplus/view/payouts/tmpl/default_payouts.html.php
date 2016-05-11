@@ -36,6 +36,9 @@
             <?= number_format($payout->amount, 2) ?>
         </td>
         <td>
+            <?= $payout->payout_method ?>
+        </td>
+        <td>
             <?= helper('date.format', array('date' => $payout->created_on)) ?>
         </td>
     </tr>

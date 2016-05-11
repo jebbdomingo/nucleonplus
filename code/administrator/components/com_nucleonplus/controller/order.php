@@ -467,8 +467,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         {
             foreach ($orders as $order)
             {
-                // Fetch the newly created Order from the data store to get the joined columns
-                $order = $this->getModel()->id($order->id)->fetch();        
                 $this->_salesreceipt_service->recordSale($order);     
                 $context->response->addMessage("Payment for Order #{$order->id} has been verified");
 

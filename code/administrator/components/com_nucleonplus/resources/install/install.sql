@@ -274,6 +274,7 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_rebates` (
   `reward_id_to` int(11) NOT NULL COMMENT 'The reward that is paid by the reward_id_from',
   `points` decimal(10,2) NOT NULL,
   `void` smallint(1) NOT NULL DEFAULT '0',
+  `payout_id` int(11) NOT NULL,
   `created_by` int(11) NOT NULL,
   `created_on` datetime NOT NULL,
   `modified_by` int(11) NOT NULL,
@@ -382,3 +383,23 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_slots` (
   `modified_on` datetime NOT NULL,
   PRIMARY KEY (`nucleonplus_slot_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `#__nucleonplus_configs`
+--
+
+CREATE TABLE IF NOT EXISTS `#__nucleonplus_configs` (
+  `nucleonplus_config_id` int(11) NOT NULL AUTO_INCREMENT,
+  `item` varchar(255) NOT NULL COMMENT 'Configuration item',
+  `value` varchar(255) NOT NULL COMMENT 'Configuration item value',
+  PRIMARY KEY (`nucleonplus_config_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `#__nucleonplus_configs`
+--
+
+INSERT INTO `#__nucleonplus_configs` (`nucleonplus_config_id`, `item`, `value`) VALUES
+(1, 'claim_request', 'yes');

@@ -20,6 +20,7 @@ defined('KOOWA') or die; ?>
             <thead>
                 <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Claim #')); ?></th>
                 <th>Status</th>
+                <th>Encashment Method</th>
                 <th>Date</th>
                 <th><div class="pull-right">Amount</div></th>
             </thead>
@@ -31,13 +32,14 @@ defined('KOOWA') or die; ?>
                             <td>
                                 <span class="label <?= ($payout->status == 'pending') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($payout->status)) ?></span>
                             </td>
+                            <td><?= $payout->payout_method ?></td>
                             <td><?= helper('date.humanize', array('date' => $payout->created_on)) ?></td>
                             <td><div class="pull-right">P<?= number_format($payout->amount) ?></div></td>
                         </tr>
                     <? endforeach ?>
                 <? else: ?>
                     <tr>
-                        <td colspan="4">
+                        <td colspan="5">
                             <p class="text-center">No Claims Yet</p>
                         </td>
                     </tr>
@@ -45,7 +47,7 @@ defined('KOOWA') or die; ?>
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                         <?= helper('paginator.pagination') ?>
                     </td>
                 </tr>
