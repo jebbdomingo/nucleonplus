@@ -76,6 +76,20 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     }
 
     /**
+     * Set default sorting
+     *
+     * @param KModelContextInterface $context A model context object
+     *
+     * @return void
+     */
+    protected function _beforeFetch(KModelContextInterface $context)
+    {
+        if (is_null($context->state->sort)) {
+            $context->query->order('tbl.nucleonplus_account_id', 'desc');
+        }
+    }
+
+    /**
      * Get total available referral bonus per account
      * i.e. dr and ir bonuses
      *
