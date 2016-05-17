@@ -67,6 +67,12 @@ class PlgUserNucleonplus extends JPlugin
         // New user (Registration)
         if ($isNew)
         {
+            // Validate TOS
+            if ($newUser['profile']['tos'] <> '1') {
+                throw new Exception('You must agree to the Terms and Conditions');
+                return false;
+            }
+
             // Validate Sponsor ID field
             return $this->_validateSponsorId($newUser);
         }
@@ -109,7 +115,7 @@ class PlgUserNucleonplus extends JPlugin
             $sponsor = KObjectManager::getInstance()->getObject('com://admin/nucleonplus.model.accounts')->account_number($user['sponsor_id'])->fetch();
 
             if (count($sponsor) == 0) {
-                throw new Exception(JText::sprintf('PLG_NUCLEONPLUS_REGISTRATION_SAVE_FAILED', 'Invalid Sponsor ID'));
+                throw new Exception('Invalid Sponsor ID');
                 return false;
             }
         }
