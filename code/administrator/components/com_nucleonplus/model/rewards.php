@@ -40,7 +40,7 @@ class ComNucleonplusModelRewards extends KModelDatabase
         $state = $this->getState();
 
         if ($state->status) {
-            $query->where('tbl.status = :status')->bind(['status' => $state->status]);
+            $query->where('tbl.status IN :status')->bind(['status' => (array) $state->status]);
         }
 
         if ($state->product_id) {
