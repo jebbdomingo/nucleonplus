@@ -104,7 +104,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
                 $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
                     ->id($rebate->reward_id_from)
-                    ->status('ready')
+                    ->status(array('active', 'ready'))
                     ->fetch()
                 ;
 
