@@ -77,7 +77,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $config->append(array(
             'salesreceipt_service' => 'com:nucleonplus.accounting.service.salesreceipt',
             'inventory_service'    => 'com:nucleonplus.accounting.service.inventory',
-            'reward'               => 'com:nucleonplus.rebate.packagereward',
+            'reward'               => 'com:nucleonplus.mlm.packagereward',
         ));
 
         parent::_initialize($config);

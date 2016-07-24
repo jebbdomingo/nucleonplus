@@ -56,7 +56,7 @@
             <folder>dispatcher</folder>
             <folder>language</folder>
             <folder>model</folder>
-            <folder>rebate</folder>
+            <folder>mlm</folder>
             <folder>resources</folder>
             <folder>template</folder>
             <folder>view</folder>

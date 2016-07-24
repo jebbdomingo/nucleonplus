@@ -13,7 +13,7 @@
  *
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
  */
-class ComNucleonplusRebatePackagerebate extends KObject
+class ComNucleonplusMlmPackagepatronage extends KObject
 {
     /**
      * Slot controller identifier.
@@ -92,7 +92,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
      *
      * @return void
      */
-    public function create(KModelEntityInterface $reward)
+    /*public function create(KModelEntityInterface $reward)
     {
         // Create the slots only if the reward is not yet activated
         if ($reward->status <> $this->_reward_active_status)
@@ -101,14 +101,45 @@ class ComNucleonplusRebatePackagerebate extends KObject
             $reward->save();
 
             // Create and organize member's own set of slots
-            $slot = $this->createOwnSlots($reward);
+            $slot = $this->_createOwnSlots($reward);
 
-            // Connect the member's primary slot to an available slot of other members in the rewards sytem
-            $this->connectToOtherSlot($slot);
+            // Pay direct referral bonus or patronage commission
+            $account = $reward->getAccount();
+            if ((count($account->getLatestPurchases()) == 0) && $account->sponsor_id)
+            {
+                // Direct referrral bonus
+                $this->_connectToSponsor($account->getSponsor(), $slot);
+            }
+            else $this->_connectToOtherSlot($slot); // Connect the member's primary slot to an available slot of other members in the rewards sytem (patronage commission/auto-spill)
 
             return true;
         }
-        else throw new KControllerExceptionRequestInvalid('Rebate Package: Invalid Request');
+        else throw new KControllerExceptionRequestInvalid('Patronage Package: Invalid Request');
+
+        return false;
+    }*/
+
+    /**
+     * Create corresponding slots in the Rewards system
+     *
+     * @param KModelEntityInterface $reward
+     *
+     * @return void
+     */
+    public function createSlots(KModelEntityInterface $reward)
+    {
+        // Create the slots only if the reward is not yet activated
+        if ($reward->status <> $this->_reward_active_status)
+        {
+            $reward->status = $this->_reward_active_status;
+            $reward->save();
+
+            // Create and organize member's own set of slots
+            $slot = $this->_createOwnSlots($reward);
+
+            return $slot;
+        }
+        else throw new KControllerExceptionRequestInvalid('Patronage Package: Invalid Request');
 
         return false;
     }
@@ -120,13 +151,13 @@ class ComNucleonplusRebatePackagerebate extends KObject
      *
      * @return KModelEntityInterface Primary Slot
      */
-    private function createOwnSlots(KModelEntityInterface $reward)
+    private function _createOwnSlots(KModelEntityInterface $reward)
     {
         $slots = array();
 
         for ($i=0; $i < $reward->slots; $i++)
         {
-            $slot             = $this->createSlot($reward);
+            $slot             = $this->_createSlot($reward);
             $slots[$i]        = $slot;
             $unpaidParentSlot = $this->getOwnUnpaidSlot($slots);
 
@@ -149,7 +180,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
      *
      * @return KModelEntityInterface
      */
-    private function createSlot(KModelEntityInterface $reward)
+    protected function _createSlot(KModelEntityInterface $reward)
     {
         $controller = $this->getObject($this->_controller);
 
@@ -205,7 +236,7 @@ class ComNucleonplusRebatePackagerebate extends KObject
      *
      * @return null|void
      */
-    private function connectToOtherSlot(KModelEntityRow $slot)
+    public function connectToOtherSlot(KModelEntityRow $slot)
     {
         // Fetch an active reward which is next in line for payout
         $reward = $this->getObject($this->_reward_model)->getNextActiveReward($slot->reward_id);
@@ -239,9 +270,9 @@ class ComNucleonplusRebatePackagerebate extends KObject
                     $pendingSlot->save();
                     $slot->consume();
 
-                    // Process member rebates
+                    // Process member patronage
                     $reward = $this->getObject($this->_reward_model)->id($pendingSlot->reward_id)->fetch();
-                    $reward->processRebate();
+                    $reward->processPatronage();
 
                     break;
                 }

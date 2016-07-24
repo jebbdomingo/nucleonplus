@@ -16,7 +16,7 @@ $ir_bonus_points = 0;
 
 <fieldset>
 
-    <legend><?= translate('My Referral Fees') ?></legend>
+    <legend><?= translate('Unilevel Bonus') ?></legend>
 
     <? foreach ($dr_bonuses as $dr_bonus): ?>
         <? $dr_bonus_points += $dr_bonus->points ?>

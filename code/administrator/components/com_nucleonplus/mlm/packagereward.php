@@ -12,7 +12,7 @@
 /**
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
  *
- * The Package Rebate package requires the following data structure/model
+ * The Package MLM package requires the following data structure/model
  *
  * The Product or Item Entity should be Rewardable
  * should have a reference to an existing Reward
@@ -22,7 +22,7 @@
  * contains a reference to a Rewardable Product or Item
  * contains a reference to a Customer
  */
-class ComNucleonplusRebatePackagereward extends KObject
+class ComNucleonplusMlmPackagereward extends KObject
 {
     /**
      * The name of the column to use as the product column in the Reward entity.
@@ -102,13 +102,13 @@ class ComNucleonplusRebatePackagereward extends KObject
     {
         $config->append([
             'controller'          => 'com:nucleonplus.controller.reward',
-            'default_status'      => 'pending', // Default rebate status
+            'default_status'      => 'pending', // Default status
             'product_id_column'   => ['id', 'product_id'], // ID of the Product or Item that is rewardable
             'product_name_column' => ['package_name', 'name'], // Name of the Product or Item that is rewardable
             'account_id_column'   => ['account_id', 'account_number'], // ID of the customer in the order
             'item_model'          => 'com:nucleonplus.model.packages', // Rewardable Product or Item object's identifier
             'item_fk_column'      => 'package_id', // Product or Item's foreign key in the Order table
-            'item_status'         => 'paid', // The payment status of the Order to activate this rebate with
+            'item_status'         => 'paid', // The payment status of the Order to activate this reward with
         ]);
 
         parent::_initialize($config);

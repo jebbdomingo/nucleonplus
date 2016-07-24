@@ -50,8 +50,8 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                             <td>Commission</td>
                             <td class="text-right">
                                 <?
-                                $rebates = ($package->_rewardpackage_prpv * $package->_rewardpackage_slots) * 2;
-                                echo $rebates;
+                                $patronages = ($package->_rewardpackage_prpv * $package->_rewardpackage_slots) * 2;
+                                echo $patronages;
                                 ?>
                             </td>
                         </tr>

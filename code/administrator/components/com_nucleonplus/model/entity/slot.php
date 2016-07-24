@@ -73,7 +73,7 @@ class ComNucleonplusModelEntitySlot extends KModelEntityRow
         if ($this->save())
         {
             $reward = $this->getReward();
-            $this->_accounting_service->allocateRebates($reward->product_id, $reward->prpv);
+            $this->_accounting_service->allocatePatronage($reward->product_id, $reward->prpv);
         }
     }
 
@@ -86,7 +86,7 @@ class ComNucleonplusModelEntitySlot extends KModelEntityRow
     public function flushOut()
     {
         $reward = $this->getReward();
-        $this->_accounting_service->allocateSurplusRebates($reward->product_id, $reward->prpv);
+        $this->_accounting_service->allocateSurplusPatronage($reward->product_id, $reward->prpv);
     }
 
     /**

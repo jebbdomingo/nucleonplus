@@ -218,7 +218,7 @@ INSERT INTO `#__nucleonplus_packages` (`nucleonplus_package_id`, `rewardpackage_
 CREATE TABLE IF NOT EXISTS `#__nucleonplus_payouts` (
   `nucleonplus_payout_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NOT NULL,
-  `amount` decimal(10,2) NOT NULL COMMENT 'Total amount of referral bonus and rebates',
+  `amount` decimal(10,2) NOT NULL COMMENT 'Total amount of MLM bonuses',
   `status` varchar(50) DEFAULT NULL,
   `void` smallint(1) NOT NULL DEFAULT '0',
   `created_by` int(11) NOT NULL,
@@ -265,11 +265,11 @@ INSERT INTO `#__nucleonplus_qbopackages` (`nucleonplus_qbopackage_id`, `package_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__nucleonplus_rebates`
+-- Table structure for table `#__nucleonplus_patronagebonus`
 --
 
-CREATE TABLE IF NOT EXISTS `#__nucleonplus_rebates` (
-  `nucleonplus_rebate_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `#__nucleonplus_patronagebonus` (
+  `nucleonplus_patronagebonus_id` int(11) NOT NULL AUTO_INCREMENT,
   `reward_id_from` int(11) NOT NULL COMMENT 'The Order''s Reward of other Member that pays the reward_id_to',
   `reward_id_to` int(11) NOT NULL COMMENT 'The reward that is paid by the reward_id_from',
   `points` decimal(10,2) NOT NULL,
@@ -279,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_rebates` (
   `created_on` datetime NOT NULL,
   `modified_by` int(11) NOT NULL,
   `modified_on` datetime NOT NULL,
-  PRIMARY KEY (`nucleonplus_rebate_id`)
+  PRIMARY KEY (`nucleonplus_patronagebonus_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_rewardpackages` (
   `name` varchar(50) NOT NULL,
   `description` text NOT NULL,
   `slots` smallint(2) NOT NULL COMMENT 'Number of slots in the rewards sytem',
-  `prpv` smallint(6) NOT NULL COMMENT 'Product Rebate Point Value',
+  `prpv` smallint(6) NOT NULL COMMENT 'Product Patronage Bonus Point Value',
   `drpv` smallint(6) NOT NULL COMMENT 'Direct Referral Point Value',
   `irpv` smallint(6) NOT NULL COMMENT 'Indirect Referral Point Value',
   PRIMARY KEY (`nucleonplus_rewardpackage_id`)
@@ -355,7 +355,7 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_rewards` (
   `status` varchar(50) NOT NULL DEFAULT 'pending',
   `payout_id` int(11) NOT NULL,
   `slots` int(11) NOT NULL COMMENT 'Number of Slots',
-  `prpv` smallint(6) NOT NULL COMMENT 'Product Rebate Point Value',
+  `prpv` smallint(6) NOT NULL COMMENT 'Product Patronage Bonus Point Value',
   `drpv` smallint(6) NOT NULL COMMENT 'Direct Referral Point Value',
   `irpv` smallint(6) NOT NULL COMMENT 'Indirect Referral Point Value',
   `void` smallint(1) NOT NULL,

@@ -10,7 +10,7 @@
  */
 
 /**
- * Member's Rebate Entity.
+ * Member's Patronage Bonus Entity.
  *
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
  * @package Component\Nucelonplus
@@ -18,11 +18,11 @@
 class ComNucleonplusModelEntityReward extends KModelEntityRow
 {
     /**
-     * Process member's rebates
+     * Process member's patronage bonus
      *
      * @return boolean|void
      */
-    public function processRebate()
+    public function processPatronage()
     {
         if ($this->status <> 'active') {
             return;
@@ -64,10 +64,10 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
             }
         }
 
-        // Ensure payout matches the expected amount of reward's product rebate pv x the binary of number of slots
+        // Ensure payout matches the expected amount of reward's product patronage bonus pv x the binary of number of slots
         if ($requiredSlots == $payoutSlots)
         {
-            $controller = $this->getObject('com:nucleonplus.controller.rebate');
+            $controller = $this->getObject('com:nucleonplus.controller.patronagebonus');
 
             foreach ($data as $datum) {
                 $controller->add($datum);
@@ -87,5 +87,10 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
     public function delete()
     {
         return false;
+    }
+
+    public function getAccount()
+    {
+        return $this->getObject('com:nucleonplus.model.accounts')->id($this->customer_id)->fetch();
     }
 }

@@ -85,11 +85,11 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
     protected $_operating_expense_rate;
 
     /**
-     * Rebates account
+     * Patronage account
      *
      * @var integer
      */
-    protected $_rebates_account;
+    protected $_patronage_account;
 
     /**
      * Referral bonus account
@@ -129,7 +129,7 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
         $this->_system_fee_rate                  = $config->system_fee_rate;
         $this->_contingency_fund_rate            = $config->contingency_fund_rate;
         $this->_operating_expense_rate           = $config->operating_expense_rate;
-        $this->_rebates_account                  = $config->rebates_account;
+        $this->_patronage_account                = $config->patronage_account;
         $this->_referral_bonus_account           = $config->referral_bonus_account;
     }
 
@@ -154,7 +154,7 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
             'system_fee_rate'                  => 10.00;
             'contingency_fund_rate'            => 50.00;
             'operating_expense_rate'           => 60.00;
-            'rebates_account'                  => 141;
+            'patronage_account'                => 141;
             'referral_bonus_account'           => 142;
         ));
 
@@ -196,25 +196,25 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
     }
 
     /**
-     * Record rebates allocation
+     * Record patronage allocation
      *
      * @param KModelEntityInterface $slot
      *
      * @return void
      */
-    public function recordRebatesAllocation(KModelEntityInterface $slot)
+    public function recordPatronageAllocation(KModelEntityInterface $slot)
     {
         $this->_createJournalEntry($slot->product_id);
 
         $this->_createDebitLine(array(
-            'account'     => $this->_rebates_account,
-            'description' => 'Rebates for Members',
+            'account'     => $this->_patronage_account,
+            'description' => 'Patronage for Members',
             'amount'      => $slot->prpv,
         ));
 
         $this->_createCreditLine(array(
             'account'     => $this->_sales_account,
-            'description' => 'Rebates for Members',
+            'description' => 'Patronage for Members',
             'amount'      => $slot->prpv,
         ));
 
@@ -233,14 +233,14 @@ class ComNucleonplusAccountingServiceJournal extends ComNucleonplusAccountingSer
         $this->_createJournalEntry($order->id);
 
         $this->_createDebitLine(array(
-            'account'     => $this->_rebates_account,
-            'description' => 'Rebates for Members',
+            'account'     => $this->_patronage_account,
+            'description' => 'Patronage for Members',
             'amount'      => ($order->_reward_drpv * $order->_reward_slots),
         ));
 
         $this->_createCreditLine(array(
             'account'     => $this->_sales_account,
-            'description' => 'Rebates for Members',
+            'description' => 'Patronage for Members',
             'amount'      => ($order->_reward_drpv * $order->_reward_slots),
         ));
 

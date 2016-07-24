@@ -46,6 +46,16 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
     }
 
     /**
+     * Get sponsor's account
+     *
+     * @return KModelEntityInterface
+     */
+    public function getSponsor()
+    {
+        return $this->getObject('com:nucleonplus.model.accounts')->account_number($this->sponsor_id)->fetch();
+    }
+
+    /**
      * Save
      *
      * @return string
@@ -131,7 +141,9 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      * Activate
      * Encapsulate activation business logic
      *
-     * @return [type] [description]
+     * @throws Exception
+     *
+     * @return void
      */
     public function activate()
     {

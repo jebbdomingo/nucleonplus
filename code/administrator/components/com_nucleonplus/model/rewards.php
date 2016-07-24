@@ -58,7 +58,7 @@ class ComNucleonplusModelRewards extends KModelDatabase
 
     /**
      * Fetch the next active reward
-     * This is used in packagerebate for determining which reward is next in line for payout
+     * This is used in packagepatronage for determining which reward is next in line for payout
      *
      * @param integer $reward_id
      *

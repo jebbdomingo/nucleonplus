@@ -54,7 +54,7 @@ DROP TABLE IF EXISTS `#__nucleonplus_payouts`;
 
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `#__nucleonplus_rebates`;
+DROP TABLE IF EXISTS `#__nucleonplus_patronagebonus`;
 
 -- --------------------------------------------------------
 

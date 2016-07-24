@@ -8,7 +8,7 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusModelRebates extends KModelDatabase
+class ComNucleonplusModelPatronagebonus extends KModelDatabase
 {
     public function __construct(KObjectConfig $config)
     {

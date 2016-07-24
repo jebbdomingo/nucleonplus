@@ -12,13 +12,13 @@ defined('KOOWA') or die; ?>
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title"><?= translate('My Commission') ?></h3>
+        <h3 class="panel-title"><?= translate('My Payout(s)') ?></h3>
     </div>
     <div class="panel-body" style="padding: 0px">
 
         <table class="table table-striped footable">
             <thead>
-                <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Claim #')); ?></th>
+                <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Payout #')); ?></th>
                 <th>Status</th>
                 <th>Encashment Method</th>
                 <th>Date</th>
@@ -40,7 +40,7 @@ defined('KOOWA') or die; ?>
                 <? else: ?>
                     <tr>
                         <td colspan="5">
-                            <p class="text-center">No Claims Yet</p>
+                            <p class="text-center">No Payout Request Yet</p>
                         </td>
                     </tr>
                 <? endif ?>

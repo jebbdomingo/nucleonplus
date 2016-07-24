@@ -22,22 +22,26 @@ defined('KOOWA') or die; ?>
             </thead>
             <tbody>
                 <tr>
-                    <td>Commission</td>
-                    <td class="text-right"><?= number_format($total_rebates, 2) ?></td>
+                    <td>Direct Referral Bonus</td>
+                    <td class="text-right"><?= number_format($total_direct_referrals, 2) ?></td>
                 </tr>
                 <tr>
-                    <td>Referral Fees</td>
+                    <td>Patronage Bonus</td>
+                    <td class="text-right"><?= number_format($total_patronages, 2) ?></td>
+                </tr>
+                <tr>
+                    <td>Unilevel Bonus</td>
                     <td class="text-right"><?= number_format($total_referral_bonus, 2) ?></td>
                 </tr>
                 <tr class="info">
-                    <td>Total Commission</td>
+                    <td>Total Available Points</td>
                     <th class="text-right"><?= number_format($total_bonus, 2) ?></th>
                 </tr>
             </tbody>
         </table>
 
         <? if ($total_bonus): ?>
-            <p class="pull-right"><a class="btn btn-primary btn-md" href="<?= route('view=account&layout=rewards&tmpl=koowa') ?>" role="button"><?= translate('Claim') ?></a></p>
+            <p class="pull-right"><a class="btn btn-primary btn-md" href="<?= route('view=account&layout=rewards&tmpl=koowa') ?>" role="button"><?= translate('Encash') ?></a></p>
         <? endif ?>
     </div>
 </div>

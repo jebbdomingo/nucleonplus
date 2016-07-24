@@ -18,7 +18,7 @@ $button_size = 'btn-small';
         <? if ($total_bonus && $show_save): ?>
             <div class="btn-group" id="toolbar-save">
                 <a class="toolbar btn <?= $button_size ?> btn-success" data-action="save" href="#">
-                    <?= translate('Encash'); ?>
+                    <?= translate('Submit'); ?>
                 </a>
             </div>
         <? endif; ?>

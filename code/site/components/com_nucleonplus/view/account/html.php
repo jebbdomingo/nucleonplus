@@ -15,9 +15,10 @@ class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
         $account = $model->fetch();
 
         // Rewards summary
-        $context->data->total_referral_bonus = $model->getTotalAvailableReferralBonus()->total;
-        $context->data->total_rebates        = $model->getTotalAvailableRebates()->total;
-        $context->data->total_bonus          = ($context->data->total_referral_bonus + $context->data->total_rebates);
+        $context->data->total_referral_bonus   = $model->getTotalAvailableReferralBonus()->total;
+        $context->data->total_patronages       = $model->getTotalAvailablePatronages()->total;
+        $context->data->total_direct_referrals = $model->getTotalAvailableDirectReferrals()->total;
+        $context->data->total_bonus            = ($context->data->total_referral_bonus + $context->data->total_patronages + $context->data->total_direct_referrals);
 
         // Rewards payout details
         $context->data->dr_bonuses = $this->getObject('com://admin/nucleonplus.model.referralbonuses')
@@ -34,8 +35,14 @@ class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
             ->fetch()
         ;
 
-        $context->data->rebates = $this->getObject('com://admin/nucleonplus.model.rebates')
+        $context->data->patronages = $this->getObject('com://admin/nucleonplus.model.patronagebonus')
             ->customer_id($account->id)
+            ->payout_id(0)
+            ->fetch()
+        ;
+
+        $context->data->direct_referrals = $this->getObject('com://admin/nucleonplus.model.directreferrals')
+            ->account_id($account->id)
             ->payout_id(0)
             ->fetch()
         ;

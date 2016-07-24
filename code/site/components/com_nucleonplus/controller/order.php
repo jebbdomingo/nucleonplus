@@ -21,7 +21,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     /**
      * Reward
      *
-     * @var ComNucleonplusRebatePackagereward
+     * @var ComNucleonplusMlmPackagereward
      */
     protected $_reward;
 
@@ -63,7 +63,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'reward'          => 'com://admin/nucleonplus.rebate.packagereward',
+            'reward'          => 'com://admin/nucleonplus.mlm.packagereward',
             'item_controller' => 'com:qbsync.controller.item',
         ));
 
@@ -125,7 +125,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             {
                 if (!$item->hasAvailableStock())
                 {
-                    throw new KControllerExceptionRequestNotAllowed($translator->translate("Insufficient stock of {$item->_item_name}"));
+                    throw new KControllerExceptionActionFailed($translator->translate("Insufficient stock of {$item->_item_name}"));
                     $result = false;
                 }
             }

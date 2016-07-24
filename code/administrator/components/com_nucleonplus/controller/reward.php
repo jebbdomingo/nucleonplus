@@ -11,7 +11,7 @@
 
 
 /**
- * Rebate Controller
+ * Reward Controller
  *
  * @author  Jebb Domingo <http://github.com/jebbdomingo>
  * @package Nucleon Plus
@@ -19,18 +19,10 @@
 class ComNucleonplusControllerReward extends ComKoowaControllerModel
 {
     /**
-     * Rebate Package.
      *
-     * @var ComNucleonplusRebatePackagerebate
+     * @var ComNucleonplusMlmCompensation
      */
-    private $_rebate_package;
-
-    /**
-     * Referral Package.
-     *
-     * @var ComNucleonplusRebatePackagereferral
-     */
-    private $_referral_package;
+    private $_compensation_package;
 
     /**
      * Constructor.
@@ -41,8 +33,7 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
     {
         parent::__construct($config);
 
-        $this->_rebate_package   = $config->rebate_package;
-        $this->_referral_package = $config->referral_package;
+        $this->_compensation_package = $this->getObject($config->compensation_package);
     }
 
     /**
@@ -55,8 +46,7 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'rebate_package'   => 'com:nucleonplus.rebate.packagerebate',
-            'referral_package' => 'com:nucleonplus.rebate.packagereferral',
+            'compensation_package' => 'com:nucleonplus.mlm.compensation',
         ));
 
         parent::_initialize($config);
@@ -80,9 +70,7 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
 
         if (count($rewards))
         {
-            $translator      = $this->getObject('translator');
-            $rebatePackage   = $this->getObject($this->_rebate_package);
-            $referralPackage = $this->getObject($this->_referral_package);
+            $translator = $this->getObject('translator');
 
             foreach ($rewards as $reward)
             {
@@ -103,11 +91,8 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
                         break;
                 }
 
-                // Create corresponding slots for this reward
-                $rebatePackage->create($reward);
-
-                // Create referral bonus payouts
-                $referralPackage->create($reward);
+                // Create compensations
+                $this->_compensation_package->create($reward);
             }
         }
         else throw new KControllerExceptionResourceNotFound('Resource could not be found');

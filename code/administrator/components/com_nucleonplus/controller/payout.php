@@ -87,7 +87,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             foreach ($payouts as $payout)
             {
                 if ($payout->status <> 'pending') {
-                    throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Claim Status: Only pending claims can be processed"));
+                    throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Payout Status: Only pending payouts can be processed"));
                 }
             }
         }
@@ -120,7 +120,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             foreach ($payouts as $payout)
             {
                 if ($payout->status <> 'processing') {
-                    throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Claim Status: Claim # {$payout->id} is not in processing"));
+                    throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Payout Status: Payout # {$payout->id} is not in processing"));
                 }
             }
         }
@@ -152,8 +152,18 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
             foreach ($payouts as $payout)
             {
+                // Direct referral bonus amount
+                $drBonuses = $this->getObject('com:nucleonplus.model.directreferrals')
+                    ->payout_id($payout->id)
+                    ->fetch()
+                ;
+                $drBonusAmount = 0;
+                foreach ($drBonuses as $drBonus) {
+                    $drBonusAmount += $drBonus->points;
+                }
+
                 // Commission amount
-                $commission = $this->getObject('com:nucleonplus.model.rebates')
+                $commission = $this->getObject('com:nucleonplus.model.patronagebonus')
                     ->payout_id($payout->id)
                     ->fetch()
                 ;
@@ -185,10 +195,10 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                 }
 
                 // Validate commissions/referral payout computation
-                $total = ($commAmount + $drAmount + $irAmount);
+                $total = ($drBonusAmount + $commAmount + $drAmount + $irAmount);
 
                 if ($total != $payout->amount) {
-                    throw new Exception("There is a discrepancy in the Claim Request. Claim #{$payout->id}");
+                    throw new Exception("There is a discrepancy in the Payout Request. Payout #{$payout->id}");
                 }
             }
         }
@@ -221,7 +231,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             foreach ($payouts as $payout)
             {
                 if ($payout->status <> 'checkgenerated') {
-                    throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Payout Status: Cheque for Claim # {$payout->id} is not yet generated"));
+                    throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Payout Status: Check for Payout # {$payout->id} is not yet generated"));
                 }
             }
         }
@@ -250,8 +260,13 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
             foreach ($payouts as $payout)
             {
-                // Transfer commission/dr/ir allocations to checking account for payout of claim
-                $commission = $this->getObject('com:nucleonplus.model.rebates')
+                // Transfer bonus allocations to checking account for payout
+                $drBonuses = $this->getObject('com:nucleonplus.model.directreferrals')
+                    ->payout_id($payout->id)
+                    ->fetch()
+                ;
+
+                $commission = $this->getObject('com:nucleonplus.model.patronagebonus')
                     ->payout_id($payout->id)
                     ->fetch()
                 ;
@@ -267,6 +282,15 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                     ->referral_type('ir')
                     ->fetch()
                 ;
+
+                if (count($drBonuses) > 0)
+                {
+                    $amount = 0;
+                    foreach ($drBonuses as $drBonus) {
+                        $amount += $drBonus->points;
+                    }
+                    $this->_accounting_service->directReferralBonusCheck($payout->id, $amount);
+                }
 
                 if (count($commission) > 0)
                 {

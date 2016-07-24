@@ -21,7 +21,7 @@ interface ComNucleonplusAccountingServiceTransferInterface
      *
      * @return mixed
      */
-    public function allocateRebates($orderId, $amount);
+    public function allocatePatronage($orderId, $amount);
 
     /**
      * @param integer $orderId
@@ -29,7 +29,7 @@ interface ComNucleonplusAccountingServiceTransferInterface
      *
      * @return mixed
      */
-    public function allocateSurplusRebates($orderId, $amount);
+    public function allocateSurplusPatronage($orderId, $amount);
 
     /**
      * @param integer $orderId
