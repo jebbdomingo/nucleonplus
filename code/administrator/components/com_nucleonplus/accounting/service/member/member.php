@@ -11,6 +11,8 @@
 
 class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleonplusAccountingServiceMemberInterface
 {
+    protected $_disabled = true;
+
     /**
      *
      * @var ComKoowaControllerModel
@@ -55,6 +57,10 @@ class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleo
      */
     public function pushMember(KModelEntityInterface $account, $action = 'add')
     {
+        if ($this->_disabled) {
+            return false;
+        }
+        
         $data = array(
             'PrintOnCheckName' => $account->PrintOnCheckName,
             'CustomerRef'      => $account->CustomerRef,

@@ -30,6 +30,8 @@ defined('KOOWA') or die; ?>
 
             <div class="span12">
 
+                <?= import('com://site/nucleonplus.account.rebates.html', ['rebates' => $rebates]) ?>
+
                 <?= import('com://site/nucleonplus.account.direct_referrals.html', ['direct_referrals' => $direct_referrals]) ?>
 
                 <?= import('com://site/nucleonplus.account.referral_bonuses.html') ?>

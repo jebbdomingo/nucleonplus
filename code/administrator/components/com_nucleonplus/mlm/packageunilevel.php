@@ -9,7 +9,7 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusMlmPackagereferral extends KObject
+class ComNucleonplusMlmPackageunilevel extends KObject
 {
     /**
      * Referral bonus controller.

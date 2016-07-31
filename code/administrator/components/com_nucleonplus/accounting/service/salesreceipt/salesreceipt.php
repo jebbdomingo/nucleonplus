@@ -14,6 +14,8 @@
  */
 class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements ComNucleonplusAccountingServiceSalesreceiptInterface
 {
+    protected $_disabled = true;
+    
     /**
      *
      * @var ComKoowaControllerModel
@@ -144,6 +146,10 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
      */
     public function recordSale(KModelEntityInterface $order)
     {
+        if ($this->_disabled) {
+            return false;
+        }
+
         // Create sales receipt sync queue
         $salesReceiptData = array(
             'DocNumber'    => $order->id,

@@ -14,6 +14,8 @@
  */
 class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucleonplusAccountingServiceTransferInterface
 {
+    protected $_disabled = true;
+
     /**
      *
      * @var ComKoowaControllerModel
@@ -343,6 +345,10 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      */
     protected function _transfer($entity, $entityId, $fromAccount, $toAccount, $amount, $note = null)
     {
+        if ($this->_disabled) {
+            return false;
+        }
+        
         return $this->_transfer_controller->add(array(
              'entity'         => $entity,
              'entity_id'      => $entityId,

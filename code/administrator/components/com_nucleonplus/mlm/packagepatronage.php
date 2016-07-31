@@ -246,6 +246,7 @@ class ComNucleonplusMlmPackagepatronage extends KObject
         {
             // If no reward which is next in line, flushout the slot and terminate the processing
             $slot->flushOut();
+            $slot->consume();
 
             return null;
         }

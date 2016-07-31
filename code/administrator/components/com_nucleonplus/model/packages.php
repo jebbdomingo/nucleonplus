@@ -40,6 +40,7 @@ class ComNucleonplusModelPackages extends KModelDatabase
             ->columns(array('_rewardpackage_prpv' => '_rewardpackages.prpv'))
             ->columns(array('_rewardpackage_drpv' => '_rewardpackages.drpv'))
             ->columns(array('_rewardpackage_irpv' => '_rewardpackages.irpv'))
+            ->columns(array('_rewardpackage_rebates' => '_rewardpackages.rebates'))
             ->columns(array('_qbopackage_itemref' => '_qbopackages.ItemRef'))
             ->columns(array('_qbopackage_unitprice' => '_qbopackages.UnitPrice'))
             ->columns(array('_qbopackage_itemref2' => '_qbopackages.ItemRef2'))

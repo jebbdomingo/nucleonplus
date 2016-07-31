@@ -81,12 +81,46 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         $user    = $this->getObject('user');
         $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
         
+        $rebateBonus         = 0;
         $directReferralBonus = 0;
         $patronageBonus      = 0;
         $unilevelDRBonus     = 0;
         $unilevelIRBonus     = 0;
 
         $contextData  = $context->request->data;
+
+        // Ensure there is no discrepancy in member's rebates payout request
+        if ($contextData->rebates)
+        {
+            foreach ($contextData->rebates as $id)
+            {
+                $rebate = $this->getObject('com://admin/nucleonplus.model.rebates')
+                    ->account_id($account->id)
+                    ->id($id)
+                    ->fetch()
+                ;
+
+                if (is_null($rebate->id)) {
+                    throw new Exception("There is a discrepancy in your rebates payout request. ref# {$id}");
+                }
+
+                $reward = $this->getObject('com://admin/nucleonplus.model.rewards')
+                    ->id($rebate->reward_id)
+                    ->payout_id(0)
+                    ->fetch()
+                ;
+
+                // Ensure patronage are paid based on the matched reward/slots
+                if ($reward->rebates <> $rebate->points) {
+                    throw new Exception("There is a discrepancy in your rebates payout. ref# {$reward->id}-{$rebate->id}");
+                }
+                else
+                {
+                    $rebateBonus           += $rebate->points;
+                    $redeemedRebateBonus[] = $rebate->id;
+                }
+            }
+        }
 
         // Ensure there is no discrepancy in member's direct referral bonus payout
         if ($contextData->direct_referrals)
@@ -126,7 +160,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         {
             foreach ($contextData->patronages as $id)
             {
-                $patronage = $this->getObject('com://admin/nucleonplus.model.patronagebonus')
+                $patronage = $this->getObject('com://admin/nucleonplus.model.patronagebonuses')
                     ->customer_id($account->id)
                     ->id($id)
                     ->fetch()
@@ -223,17 +257,18 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             }
         }
 
-        $total = ($unilevelDRBonus + $unilevelIRBonus + $patronageBonus + $directReferralBonus);
+        $total = ($rebateBonus + $unilevelDRBonus + $unilevelIRBonus + $patronageBonus + $directReferralBonus);
 
         $data = new KObjectConfig([
-            'account_id'       => $account->id,
-            'amount'           => $total,
-            'status'           => 'pending',
-            'payout_method'    => $contextData->payout_method,
-            'redeemed_drbonus' => $redeemedDRBonus,
-            'redeemed_pr'      => $redeemedPatronageBonus,
-            'redeemed_dr'      => $redeemedUnilevelDRBonus,
-            'redeemed_ir'      => $redeemedUnilevelIRBonus,
+            'account_id'            => $account->id,
+            'amount'                => $total,
+            'status'                => 'pending',
+            'payout_method'         => $contextData->payout_method,
+            'redeemed_rebate_bonus' => $redeemedRebateBonus,
+            'redeemed_dr_bonus'     => $redeemedDRBonus,
+            'redeemed_pr'           => $redeemedPatronageBonus,
+            'redeemed_dr'           => $redeemedUnilevelDRBonus,
+            'redeemed_ir'           => $redeemedUnilevelIRBonus,
         ]);
 
         $context->getRequest()->setData($data->toArray());
@@ -249,27 +284,36 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
      */
     protected function _actionAdd(KControllerContextInterface $context)
     {
-        $commission = parent::_actionAdd($context);
+        $payout = parent::_actionAdd($context);
 
-        $directReferralBonus = $context->request->data->redeemed_drbonus;
-        $patronages             = $context->request->data->redeemed_pr;
+        $rebateBonus         = $context->request->data->redeemed_rebate_bonus;
+        $directReferralBonus = $context->request->data->redeemed_dr_bonus;
+        $patronages          = $context->request->data->redeemed_pr;
         $directReferrals     = $context->request->data->redeemed_dr;
         $indirectReferrals   = $context->request->data->redeemed_ir;
         $rewards             = array();
 
-        // Patronage payout request processing
+        // Rebates payout request processing
+        foreach ($rebateBonus as $id)
+        {
+            $rebate            = $this->getObject('com:nucleonplus.model.rebates')->id($id)->fetch();
+            $rebate->payout_id = $payout->id;
+            $rebate->save();
+        }
+
+        // Direct referral payout request processing
         foreach ($directReferralBonus as $id)
         {
             $referral            = $this->getObject('com:nucleonplus.model.directreferrals')->id($id)->fetch();
-            $referral->payout_id = $commission->id;
+            $referral->payout_id = $payout->id;
             $referral->save();
         }
 
         // Patronage payout request processing
         foreach ($patronages as $id)
         {
-            $patronage = $this->getObject('com:nucleonplus.model.patronagebonus')->id($id)->fetch();
-            $patronage->payout_id = $commission->id;
+            $patronage = $this->getObject('com:nucleonplus.model.patronagebonuses')->id($id)->fetch();
+            $patronage->payout_id = $payout->id;
             $patronage->save();
 
             $rewards[] = $patronage->reward_id_to;
@@ -281,7 +325,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         foreach ($rewards as $id)
         {
             $reward            = $this->getObject('com:nucleonplus.model.rewards')->id($id)->fetch();
-            $reward->payout_id = $commission->id;
+            $reward->payout_id = $payout->id;
             $reward->status    = 'processing';
             $reward->save();
         }
@@ -290,7 +334,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         foreach ($directReferrals as $id)
         {
             $referral            = $this->getObject('com:nucleonplus.model.referralbonuses')->id($id)->fetch();
-            $referral->payout_id = $commission->id;
+            $referral->payout_id = $payout->id;
             $referral->save();
         }
 
@@ -298,10 +342,10 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         foreach ($indirectReferrals as $id)
         {
             $referral            = $this->getObject('com:nucleonplus.model.referralbonuses')->id($id)->fetch();
-            $referral->payout_id = $commission->id;
+            $referral->payout_id = $payout->id;
             $referral->save();
         }
 
-        return $commission;
+        return $payout;
     }
 }

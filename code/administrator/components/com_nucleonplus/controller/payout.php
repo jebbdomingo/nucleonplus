@@ -152,6 +152,16 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
             foreach ($payouts as $payout)
             {
+                // Rebates amount
+                $rebates = $this->getObject('com:nucleonplus.model.rebates')
+                    ->payout_id($payout->id)
+                    ->fetch()
+                ;
+                $rebatesAmount = 0;
+                foreach ($rebates as $rebate) {
+                    $rebatesAmount += $rebate->points;
+                }
+
                 // Direct referral bonus amount
                 $drBonuses = $this->getObject('com:nucleonplus.model.directreferrals')
                     ->payout_id($payout->id)
@@ -163,7 +173,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                 }
 
                 // Commission amount
-                $commission = $this->getObject('com:nucleonplus.model.patronagebonus')
+                $commission = $this->getObject('com:nucleonplus.model.patronagebonuses')
                     ->payout_id($payout->id)
                     ->fetch()
                 ;
@@ -172,7 +182,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                     $commAmount += $comm->points;
                 }
 
-                // Direct referral amount
+                // Unilevel direct referral amount
                 $directReferral = $this->getObject('com:nucleonplus.model.referralbonuses')
                     ->payout_id($payout->id)
                     ->referral_type('dr')
@@ -183,7 +193,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                     $drAmount += $dr->points;
                 }
 
-                // Indirect referral amount
+                // Unilevel indirect referral amount
                 $indirectReferral = $this->getObject('com:nucleonplus.model.referralbonuses')
                     ->payout_id($payout->id)
                     ->referral_type('ir')
@@ -195,7 +205,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                 }
 
                 // Validate commissions/referral payout computation
-                $total = ($drBonusAmount + $commAmount + $drAmount + $irAmount);
+                $total = ($rebatesAmount + $drBonusAmount + $commAmount + $drAmount + $irAmount);
 
                 if ($total != $payout->amount) {
                     throw new Exception("There is a discrepancy in the Payout Request. Payout #{$payout->id}");
@@ -266,7 +276,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                     ->fetch()
                 ;
 
-                $commission = $this->getObject('com:nucleonplus.model.patronagebonus')
+                $commission = $this->getObject('com:nucleonplus.model.patronagebonuses')
                     ->payout_id($payout->id)
                     ->fetch()
                 ;

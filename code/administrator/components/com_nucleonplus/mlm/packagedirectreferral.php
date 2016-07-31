@@ -8,11 +8,6 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-/**
- * Used by the order controller to create entries in the rewards system upon payment of order
- *
- * @author  Jebb Domingo <https://github.com/jebbdomingo>
- */
 class ComNucleonplusMlmPackagedirectreferral extends KObject
 {
     /**

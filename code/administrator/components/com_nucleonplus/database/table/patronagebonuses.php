@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Nucleon Plus
  *
@@ -7,8 +8,7 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-
-class ComNucleonplusDatabaseTableRebates extends KDatabaseTableAbstract
+class ComNucleonplusDatabaseTablePatronagebonuses extends KDatabaseTableAbstract
 {
     protected function _initialize(KObjectConfig $config)
     {
@@ -16,6 +16,8 @@ class ComNucleonplusDatabaseTableRebates extends KDatabaseTableAbstract
             'behaviors' => array(
                 'modifiable',
                 'creatable'
+            ),
+            'filters' => array(
             )
         ));
         

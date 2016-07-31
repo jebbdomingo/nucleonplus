@@ -265,10 +265,10 @@ INSERT INTO `#__nucleonplus_qbopackages` (`nucleonplus_qbopackage_id`, `package_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__nucleonplus_patronagebonus`
+-- Table structure for table `#__nucleonplus_patronagebonuses`
 --
 
-CREATE TABLE IF NOT EXISTS `#__nucleonplus_patronagebonus` (
+CREATE TABLE IF NOT EXISTS `#__nucleonplus_patronagebonuses` (
   `nucleonplus_patronagebonus_id` int(11) NOT NULL AUTO_INCREMENT,
   `reward_id_from` int(11) NOT NULL COMMENT 'The Order''s Reward of other Member that pays the reward_id_to',
   `reward_id_to` int(11) NOT NULL COMMENT 'The reward that is paid by the reward_id_from',

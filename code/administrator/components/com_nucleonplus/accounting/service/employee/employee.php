@@ -11,6 +11,8 @@
 
 class ComNucleonplusAccountingServiceEmployee extends KObject implements ComNucleonplusAccountingServiceEmployeeInterface
 {
+    protected $_disabled = true;
+    
     /**
      *
      * @var ComKoowaControllerModel
@@ -55,6 +57,10 @@ class ComNucleonplusAccountingServiceEmployee extends KObject implements ComNucl
      */
     public function pushEmployee(KModelEntityInterface $employee, $action = 'add')
     {
+        if ($this->_disabled) {
+            return false;
+        }
+
         $data = array(
             'EmployeeRef'      => $employee->EmployeeRef,
             'employee_id'      => $employee->id,
