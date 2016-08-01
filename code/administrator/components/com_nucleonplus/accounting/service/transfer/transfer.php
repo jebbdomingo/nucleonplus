@@ -14,7 +14,7 @@
  */
 class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucleonplusAccountingServiceTransferInterface
 {
-    protected $_disabled = true;
+    protected $_disabled = false;
 
     /**
      *
@@ -36,9 +36,8 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         // Accounts
         $this->_savings_account                   = $config->savings_account;
         $this->_checking_account                  = $config->checking_account;
-        $this->_system_fee_account                = $config->system_fee_account;
-        $this->_contingency_fund_account          = $config->contingency_fund_account;
-        $this->_operating_expense_budget_account  = $config->operating_expense_budget_account;
+        $this->_charges_account                   = $config->charges_account;
+        $this->_rebates_account                   = $config->rebates_account;
         $this->_dr_bonus_account                  = $config->dr_bonus_account;
         $this->_patronage_account                 = $config->patronage_account;
         $this->_unilevel_dr_bonus_account         = $config->unilevel_dr_bonus_account;
@@ -66,9 +65,8 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
             'transfer_controller'               => 'com:qbsync.controller.transfer',
             'savings_account'                   => $data->ACCOUNT_BANK_REF,
             'checking_account'                  => $data->ACCOUNT_CHECKING_REF,
-            'system_fee_account'                => $data->ACCOUNT_SYSTEM_FEE,
-            'contingency_fund_account'          => $data->ACCOUNT_CONTINGENCY_FUND,
-            'operating_expense_budget_account'  => $data->ACCOUNT_EXPENSE_OPERATING,
+            'charges_account'                   => $data->ACCOUNT_CHARGES,
+            'rebates_account'                   => $data->ACCOUNT_REBATES,
             'dr_bonus_account'                  => $data->ACCOUNT_DIRECT_REFERRAL_BONUS,
             'patronage_account'                 => $data->ACCOUNT_PATRONAGE,
             'unilevel_dr_bonus_account'         => $data->ACCOUNT_REFERRAL_DIRECT,
@@ -93,7 +91,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_patronage_account;
-        $note          = 'Commission';
+        $note          = 'Patronage';
 
         return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -108,7 +106,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_surplus_patronage_account;
-        $note          = 'Flushout Commission i.e. a slot that doesn\'t have available slot to connect with';
+        $note          = 'Flushout Patronage i.e. a slot that doesn\'t have available slot to connect with';
 
         return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -179,41 +177,11 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      *
      * @return KModelEntityInterface
      */
-    public function allocateSystemFee($entityId, $amount)
+    public function allocateCharges($entityId, $amount)
     {
         $sourceAccount = $this->_savings_account;
-        $targetAccount = $this->_system_fee_account;
-        $note          = 'System Fee';
-
-        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
-    }
-
-    /**
-     * @param integer $entityId
-     * @param decimal $amount
-     *
-     * @return KModelEntityInterface
-     */
-    public function allocateContingencyFund($entityId, $amount)
-    {
-        $sourceAccount = $this->_savings_account;
-        $targetAccount = $this->_contingency_fund_account;
-        $note          = 'Contingency Fund';
-
-        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
-    }
-
-    /**
-     * @param integer $entityId
-     * @param decimal $amount
-     *
-     * @return KModelEntityInterface
-     */
-    public function allocateOperationsFund($entityId, $amount)
-    {
-        $sourceAccount = $this->_savings_account;
-        $targetAccount = $this->_operating_expense_budget_account;
-        $note          = 'Operating Expense';
+        $targetAccount = $this->_charges_account;
+        $note          = 'Charges';
 
         return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -231,6 +199,30 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         $note          = 'Delivery Expense';
 
         return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+    }
+
+    /**
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function rebatesCheck($entityId, $amount)
+    {
+        $sourceAccount = $this->_rebates_account;
+        $targetAccount = $this->_checking_account;
+        $note          = 'Rebates Check';
+
+        $transfer = $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+
+        // Try to sync
+        if ($transfer->sync() == false)
+        {
+            $error = $transfer->getStatusMessage();
+            throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Transfer #{$transfer->id}");
+        }
+
+        return $transfer;
     }
 
     /**

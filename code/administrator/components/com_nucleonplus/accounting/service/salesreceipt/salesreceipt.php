@@ -14,7 +14,7 @@
  */
 class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements ComNucleonplusAccountingServiceSalesreceiptInterface
 {
-    protected $_disabled = true;
+    protected $_disabled = false;
     
     /**
      *
@@ -42,12 +42,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
 
     /**
      *
-     * @var decimal
-     */
-    protected $_system_fee_rate;
-
-    /**
-     *
      * @var integer
      */
     protected $_department_ref;
@@ -63,18 +57,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
      * @var integer
      */
     protected $_undeposited_account_ref;
-
-    /**
-     *
-     * @var decimal
-     */
-    protected $_contingency_fund_rate;
-
-    /**
-     *
-     * @var decimal
-     */
-    protected $_operating_expense_rate;
 
     /**
      * Constructor.
@@ -103,10 +85,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             );
         }
         else $this->_transfer_service = $service;
-
-        $this->_system_fee_rate        = $config->system_fee_rate;
-        $this->_contingency_fund_rate  = $config->contingency_fund_rate;
-        $this->_operating_expense_rate = $config->operating_expense_rate;
     }
 
     /**
@@ -128,10 +106,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             'transfer_service'             => 'com:nucleonplus.accounting.service.transfer',
             'department_ref'               => $data->store_angono,
             'bank_account_ref'             => $data->account_bank_ref, // Bank Account
-            'undeposited_account_ref'      => $data->account_undeposited_ref, // Undeposited Funds Account
-            'system_fee_rate'              => $data->rate_system_fee,
-            'contingency_fund_rate'        => $data->rate_contingency_fund,
-            'operating_expense_rate'       => $data->rate_operating_expense,
+            'undeposited_account_ref'      => $data->account_undeposited_ref // Undeposited Funds Account
         ));
 
         parent::_initialize($config);
@@ -224,12 +199,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         }
 
         // Allocation parts of sale
-        $systemFee        = ($this->_system_fee_rate * $order->getReward()->slots);
-        $contingencyFund  = ($this->_contingency_fund_rate * $order->getReward()->slots);
-        $operatingExpense = ($this->_operating_expense_rate * $order->getReward()->slots);
-
-        $this->_transfer_service->allocateSystemFee($order->id, $systemFee);
-        $this->_transfer_service->allocateContingencyFund($order->id, $contingencyFund);
-        $this->_transfer_service->allocateOperationsFund($order->id, $operatingExpense);
+        $charges = ($order->getPackage()->charges * $order->getReward()->slots);
+        $this->_transfer_service->allocateCharges($order->id, $charges);
     }
 }

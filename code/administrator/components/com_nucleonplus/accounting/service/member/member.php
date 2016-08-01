@@ -11,7 +11,7 @@
 
 class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleonplusAccountingServiceMemberInterface
 {
-    protected $_disabled = true;
+    protected $_disabled = false;
 
     /**
      *

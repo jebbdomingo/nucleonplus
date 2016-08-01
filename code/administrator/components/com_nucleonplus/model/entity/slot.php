@@ -85,8 +85,13 @@ class ComNucleonplusModelEntitySlot extends KModelEntityRow
      */
     public function flushOut()
     {
-        $reward = $this->getReward();
-        $this->_accounting_service->allocateSurplusPatronage($reward->product_id, $reward->prpv);
+        $this->consumed = 1;
+        
+        if ($this->save())
+        {
+            $reward = $this->getReward();
+            $this->_accounting_service->allocateSurplusPatronage($reward->product_id, $reward->prpv);
+        }
     }
 
     /**

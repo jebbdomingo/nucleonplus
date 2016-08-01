@@ -69,23 +69,7 @@ interface ComNucleonplusAccountingServiceTransferInterface
      *
      * @return mixed
      */
-    public function allocateSystemFee($orderId, $amount);
-
-    /**
-     * @param integer $orderId
-     * @param decimal $amount
-     *
-     * @return mixed
-     */
-    public function allocateContingencyFund($orderId, $amount);
-
-    /**
-     * @param integer $orderId
-     * @param decimal $amount
-     *
-     * @return mixed
-     */
-    public function allocateOperationsFund($orderId, $amount);
+    public function allocateCharges($orderId, $amount);
 
     /**
      * @param integer $orderId

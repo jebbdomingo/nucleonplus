@@ -271,6 +271,11 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             foreach ($payouts as $payout)
             {
                 // Transfer bonus allocations to checking account for payout
+                $rebates = $this->getObject('com:nucleonplus.model.rebates')
+                    ->payout_id($payout->id)
+                    ->fetch()
+                ;
+
                 $drBonuses = $this->getObject('com:nucleonplus.model.directreferrals')
                     ->payout_id($payout->id)
                     ->fetch()
@@ -292,6 +297,15 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                     ->referral_type('ir')
                     ->fetch()
                 ;
+
+                if (count($rebates) > 0)
+                {
+                    $amount = 0;
+                    foreach ($rebates as $rebate) {
+                        $amount += $rebate->points;
+                    }
+                    $this->_accounting_service->rebatesCheck($payout->id, $amount);
+                }
 
                 if (count($drBonuses) > 0)
                 {

@@ -11,7 +11,7 @@
 
 class ComNucleonplusAccountingServiceEmployee extends KObject implements ComNucleonplusAccountingServiceEmployeeInterface
 {
-    protected $_disabled = true;
+    protected $_disabled = false;
     
     /**
      *
