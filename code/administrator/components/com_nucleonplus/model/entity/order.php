@@ -79,4 +79,13 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     {
         return $this->getObject('com:nucleonplus.model.rewards')->product_id($this->id)->fetch();
     }
+
+    public function getShippingRate()
+    {
+        return $this->getObject('com:nucleonplus.model.shippingrates')
+            ->packaging($this->getPackage()->shipping_packaging)
+            ->name($this->_account_state)
+            ->fetch()
+        ;
+    }
 }

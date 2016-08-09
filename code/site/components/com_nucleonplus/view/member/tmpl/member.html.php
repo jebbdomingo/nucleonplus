@@ -94,7 +94,10 @@
                 <tr>
                     <td><label><strong><?= translate('State/Province') ?></strong></label></td>
                     <td>
-                        <input name="state" id="state" value="<?= $member->_account_state ?>" />
+                        <?= helper('listbox.stateProvince', array(
+                            'name'     => 'state',
+                            'selected' => $member->_account_state
+                        )) ?>
                     </td>
                 </tr>
                 <tr>

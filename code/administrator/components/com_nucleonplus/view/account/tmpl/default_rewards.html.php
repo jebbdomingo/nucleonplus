@@ -22,19 +22,23 @@ defined('KOOWA') or die; ?>
             </thead>
             <tbody>
                 <tr>
-                    <td>Direct Referral Bonus</td>
+                    <td>Rebates</td>
+                    <td><div class="pull-right"><?= number_format($total_rebates, 2) ?></div></td>
+                </tr>
+                <tr>
+                    <td>Direct referral bonus</td>
                     <td><div class="pull-right"><?= number_format($total_direct_referrals, 2) ?></div></td>
                 </tr>
                 <tr>
-                    <td>Unilevel Bonus</td>
-                    <td><div class="pull-right"><?= number_format($total_referral_bonus, 2) ?></div></td>
-                </tr>
-                <tr>
-                    <td>Patronage Bonus</td>
+                    <td>Patronage bonus</td>
                     <td><div class="pull-right"><?= number_format($total_patronages, 2) ?></div></td>
                 </tr>
+                <tr>
+                    <td>Unilevel bonus</td>
+                    <td><div class="pull-right"><?= number_format($total_referral_bonus, 2) ?></div></td>
+                </tr>
                 <tr class="info">
-                    <td>Total points to be redeemed</td>
+                    <td>Total</td>
                     <td><div class="pull-right"><strong><?= number_format($total_bonus, 2) ?></strong></div></td>
                 </tr>
             </tbody>

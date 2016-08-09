@@ -66,6 +66,13 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     protected $_bank_account_types = [];
 
     /**
+     * State province
+     *
+     * @var array
+     */
+    protected $_state_province = [];
+
+    /**
      * Constructor
      *
      * @param KObjectConfig $config [description]
@@ -81,6 +88,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $this->_payoutStatusFilters = $config->payoutStatusFilters;
         $this->_packages            = $config->packages;
         $this->_bank_account_types  = $config->bank_account_types;
+        $this->_state_province      = $config->state_province;
     }
 
     /**
@@ -180,6 +188,14 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
                 array('label' => 'Select', 'value' => null),
                 array('label' => 'Savings', 'value' => 'savings'),
                 array('label' => 'Check', 'value' => 'check'),
+            )
+        ))
+        ->append(array(
+            'state_province' => array(
+                array('label' => 'Metro Manila', 'value' => 'metro_manila'),
+                array('label' => 'Luzon', 'value' => 'luzon'),
+                array('label' => 'Visayas', 'value' => 'visayas'),
+                array('label' => 'Mindanao', 'value' => 'mindanao'),
             )
         ));
 
@@ -502,6 +518,25 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
             'selected' => null,
             'options'  => $this->_bank_account_types,
             'filter'   => array()
+        ));
+
+        return parent::optionlist($config);
+    }
+
+    /**
+     * State province list box
+     * 
+     * @param array $config [optional]
+     * 
+     * @return html
+     */
+    public function stateProvince($config = array())
+    {
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'state',
+            'selected' => null,
+            'options'  => $this->_state_province
         ));
 
         return parent::optionlist($config);

@@ -87,6 +87,22 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      *
      * @return KModelEntityInterface
      */
+    public function allocateRebates($entityId, $amount)
+    {
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_rebates_account;
+        $note          = 'Rebates';
+
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+    }
+
+    /**
+     *
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
     public function allocatePatronage($entityId, $amount)
     {
         $sourceAccount = $this->_savings_account;

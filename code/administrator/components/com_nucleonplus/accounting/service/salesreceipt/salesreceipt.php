@@ -59,6 +59,12 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
     protected $_undeposited_account_ref;
 
     /**
+     *
+     * @var integer
+     */
+    protected $_shipping_account;
+
+    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -73,6 +79,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         $this->_department_ref          = $config->department_ref;
         $this->_bank_account_ref        = $config->bank_account_ref;
         $this->_undeposited_account_ref = $config->undeposited_account_ref;
+        $this->_shipping_account        = $config->shipping_account;
 
         // Transfer service
         $identifier = $this->getIdentifier($config->transfer_service);
@@ -106,7 +113,8 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             'transfer_service'             => 'com:nucleonplus.accounting.service.transfer',
             'department_ref'               => $data->store_angono,
             'bank_account_ref'             => $data->account_bank_ref, // Bank Account
-            'undeposited_account_ref'      => $data->account_undeposited_ref // Undeposited Funds Account
+            'undeposited_account_ref'      => $data->account_undeposited_ref, // Undeposited Funds Account
+            'shipping_account'             => $data->ACCOUNT_INCOME_SHIPPING
         ));
 
         parent::_initialize($config);
@@ -159,7 +167,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
                 'Description'  => $item->_item_name,
                 'ItemRef'      => $item->_syncitem_item_ref,
                 'Qty'          => $item->quantity,
-                'Amount'       => ($item->_syncitem_unit_price * $item->quantity),
+                'Amount'       => ($item->_syncitem_unit_price * $item->quantity)
             ));
 
             // Update item's quantity purchased for real time inventory quantity tracking
@@ -169,33 +177,23 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         }
 
         // Service line items
-        $package = $order->getPackage();
-        if ($order->shipping_method == 'xend')
+        if ($order->shipping_method == 'xend' && $order->payment_method == 'deposit')
         {
-            $this->_salesreceipt_line->add(array(
-                'SalesReceipt' => $salesReceipt->id,
-                'Description'  => "{$order->package_name} + Delivery Charge",
-                'ItemRef'      => $package->_qbopackage_itemref2,
-                'Qty'          => 1,
-                'Amount'       => $package->_qbopackage_unitprice2,
-            ));
-
             // Delivery charge
-            $deliveryExpense = $order->getPackage()->delivery_charge;
+            $shipping = $order->getShippingRate();
 
-            if ($order->payment_method == 'deposit') {
-                $this->_transfer_service->allocateDeliveryExpense($order->id, $deliveryExpense);
+            if ($shipping->id)
+            {
+                $this->_salesreceipt_line->add(array(
+                    'SalesReceipt' => $salesReceipt->id,
+                    'Description'  => "Shipping {$shipping->packaging} to {$shipping->label}",
+                    'ItemRef'      => $this->_shipping_account,
+                    'Amount'       => $shipping->rate
+                ));
+
+                //$rate = $order->getShippingRate()->rate;
+                //$this->_transfer_service->allocateDeliveryExpense($order->id, $rate);
             }
-        }
-        else
-        {
-            $this->_salesreceipt_line->add(array(
-                'SalesReceipt' => $salesReceipt->id,
-                'Description'  => "{$order->package_name} Service",
-                'ItemRef'      => $package->_qbopackage_itemref,
-                'Qty'          => 1,
-                'Amount'       => $package->_qbopackage_unitprice,
-            ));
         }
 
         // Allocation parts of sale
