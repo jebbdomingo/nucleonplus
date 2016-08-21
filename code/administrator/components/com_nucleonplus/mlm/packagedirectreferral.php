@@ -22,7 +22,7 @@ class ComNucleonplusMlmPackagedirectreferral extends KObject
         // Pay direct referral bonus
         $account = $slot->getReward()->getAccount();
 
-        if ((count($account->getLatestPurchases()) == 0) && $account->sponsor_id) {
+        if ((count($account->getLatestPurchases()) == 1) && $account->sponsor_id) {
             // Direct referrral bonus
             return $this->_connectToSponsor($account->getSponsor(), $slot);
         }
@@ -52,7 +52,7 @@ class ComNucleonplusMlmPackagedirectreferral extends KObject
         
         if ($directReferral->save())
         {
-            $slot->consume();
+            $slot->payReferrer();
 
             return true;
         }

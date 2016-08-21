@@ -471,7 +471,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 $context->response->addMessage("Payment for Order #{$order->id} has been verified");
 
                 // Automatically activate reward
-                $this->_activateReward($order);
+                $reward = $this->_activateReward($order);
                 $context->response->addMessage("Reward #{$reward->id} has been activated");
             }
 

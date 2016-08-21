@@ -204,12 +204,12 @@ class ComNucleonplusMlmPackagepatronage extends KObject
             // Place to the left leg of the parent slot
             $unpaidParentSlot->lf_slot_id = $slot->id;
             $unpaidParentSlot->save();
-            $slot->consume();
+            $slot->payOtherSlot();
         } elseif ($unpaidParentSlot && is_null($unpaidParentSlot->rt_slot_id)) {
             // Place to the right leg of the parent slot
             $unpaidParentSlot->rt_slot_id = $slot->id;
             $unpaidParentSlot->save();
-            $slot->consume();
+            $slot->payOtherSlot();
         }
     }
 
@@ -268,7 +268,7 @@ class ComNucleonplusMlmPackagepatronage extends KObject
                     }
 
                     $pendingSlot->save();
-                    $slot->consume();
+                    $slot->payOtherSlot();
 
                     // Process member patronage
                     $reward = $this->getObject($this->_reward_model)->id($pendingSlot->reward_id)->fetch();

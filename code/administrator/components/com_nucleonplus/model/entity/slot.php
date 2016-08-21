@@ -62,11 +62,29 @@ class ComNucleonplusModelEntitySlot extends KModelEntityRow
     }
 
     /**
+     * Pay other slot from this slot
      * Mark this slot as consumed i.e. it is allocated to an upline slot
      *
      * @return boolean|void
      */
-    public function consume()
+    public function payOtherSlot()
+    {
+        $this->consumed = 1;
+        
+        if ($this->save())
+        {
+            $reward = $this->getReward();
+            $this->_accounting_service->allocatePatronage($reward->product_id, $reward->prpv);
+        }
+    }
+
+    /**
+     * Pay the referrer from this slot
+     * Mark this slot as consumed i.e. it is allocated to an upline slot
+     *
+     * @return boolean|void
+     */
+    public function payReferrer()
     {
         $this->consumed = 1;
         
