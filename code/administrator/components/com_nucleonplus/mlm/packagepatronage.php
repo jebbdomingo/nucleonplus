@@ -51,6 +51,13 @@ class ComNucleonplusMlmPackagepatronage extends KObject
     private $slots = array();
 
     /**
+     * Accounting Service
+     *
+     * @var ComNucleonplusAccountingServiceTransferInterface
+     */
+    protected $_accounting_service;
+
+    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -63,6 +70,18 @@ class ComNucleonplusMlmPackagepatronage extends KObject
         $this->_model                = $config->model;
         $this->_reward_model         = $config->reward_model;
         $this->_reward_active_status = $config->reward_active_status;
+
+        // Accounting service
+        $identifier = $this->getIdentifier($config->accounting_service);
+        $service    = $this->getObject($identifier);
+
+        if (!($service instanceof ComNucleonplusAccountingServiceTransferInterface))
+        {
+            throw new UnexpectedValueException(
+                "Service $identifier does not implement ComNucleonplusAccountingServiceTransferInterface"
+            );
+        }
+        else $this->_accounting_service = $service;
     }
 
     /**
@@ -80,44 +99,11 @@ class ComNucleonplusMlmPackagepatronage extends KObject
             'reward_model'         => 'com:nucleonplus.model.rewards',
             'reward_active_status' => 'active', // Reward's active status
             'item_model'           => 'com:nucleonplus.model.packages', // Product or Item object's identifier
+            'accounting_service'   => 'com:nucleonplus.accounting.service.transfer'
         ));
 
         parent::_initialize($config);
     }
-
-    /**
-     * Create corresponding slots in the Rewards system
-     *
-     * @param KModelEntityInterface $reward
-     *
-     * @return void
-     */
-    /*public function create(KModelEntityInterface $reward)
-    {
-        // Create the slots only if the reward is not yet activated
-        if ($reward->status <> $this->_reward_active_status)
-        {
-            $reward->status = $this->_reward_active_status;
-            $reward->save();
-
-            // Create and organize member's own set of slots
-            $slot = $this->_createOwnSlots($reward);
-
-            // Pay direct referral bonus or patronage commission
-            $account = $reward->getAccount();
-            if ((count($account->getLatestPurchases()) == 0) && $account->sponsor_id)
-            {
-                // Direct referrral bonus
-                $this->_connectToSponsor($account->getSponsor(), $slot);
-            }
-            else $this->_connectToOtherSlot($slot); // Connect the member's primary slot to an available slot of other members in the rewards sytem (patronage commission/auto-spill)
-
-            return true;
-        }
-        else throw new KControllerExceptionRequestInvalid('Patronage Package: Invalid Request');
-
-        return false;
-    }*/
 
     /**
      * Create corresponding slots in the Rewards system
@@ -204,12 +190,12 @@ class ComNucleonplusMlmPackagepatronage extends KObject
             // Place to the left leg of the parent slot
             $unpaidParentSlot->lf_slot_id = $slot->id;
             $unpaidParentSlot->save();
-            $slot->payOtherSlot();
+            $this->_payOtherSlot($slot);
         } elseif ($unpaidParentSlot && is_null($unpaidParentSlot->rt_slot_id)) {
             // Place to the right leg of the parent slot
             $unpaidParentSlot->rt_slot_id = $slot->id;
             $unpaidParentSlot->save();
-            $slot->payOtherSlot();
+            $this->_payOtherSlot($slot);
         }
     }
 
@@ -244,8 +230,8 @@ class ComNucleonplusMlmPackagepatronage extends KObject
         // Validate the reward
         if (count($reward) == 0)
         {
-            // If no reward which is next in line, flushout the slot and terminate the processing
-            $slot->flushOut();
+            // If no reward which is next in line, flush-out the slot and terminate the processing
+            $this->_flushOut($slot);
 
             return null;
         }
@@ -268,7 +254,7 @@ class ComNucleonplusMlmPackagepatronage extends KObject
                     }
 
                     $pendingSlot->save();
-                    $slot->payOtherSlot();
+                    $this->_payOtherSlot($slot);
 
                     // Process member patronage
                     $reward = $this->getObject($this->_reward_model)->id($pendingSlot->reward_id)->fetch();
@@ -279,6 +265,36 @@ class ComNucleonplusMlmPackagepatronage extends KObject
             }
         }
         // TODO check if this is still needed since there's no active reward without a slot
-        else $slot->flushOut();
+        else $this->_flushOut($slot);
+    }
+
+    /**
+     * Pay other slot from the slot
+     * Mark the slot as consumed i.e. it is allocated to an upline slot
+     *
+     * @return void
+     */
+    protected function _payOtherSlot($slot)
+    {
+        if ($slot->consume())
+        {
+            $reward = $slot->getReward();
+            $this->_accounting_service->allocatePatronage($reward->product_id, $reward->prpv);
+        }
+    }
+
+    /**
+     * Flush the slot's prpv out
+     * Usually when there's no upline slot available
+     *
+     * @return [type] [description]
+     */
+    protected function _flushOut($slot)
+    {
+        if ($slot->consume())
+        {
+            $reward = $slot->getReward();
+            $this->_accounting_service->allocateSurplusPatronage($reward->product_id, $reward->prpv);
+        }
     }
 }

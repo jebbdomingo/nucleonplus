@@ -69,7 +69,7 @@ class ComNucleonplusMlmPackageunilevel extends KObject
         $config->append(array(
             'controller'         => 'com:nucleonplus.controller.referralbonuses',
             'accounting_service' => 'com:nucleonplus.accounting.service.transfer',
-            'unilevel_count'     => 10
+            'unilevel_count'     => 20
         ));
 
         parent::_initialize($config);
@@ -97,14 +97,14 @@ class ComNucleonplusMlmPackageunilevel extends KObject
      */
     private function _recordReferrals(KModelEntityInterface $account, KModelEntityInterface $reward)
     {
-        $points = ($reward->drpv * $reward->slots);
+        $drPoints = ($reward->drpv * $reward->slots);
 
         if (is_null($account->sponsor_id))
         {
-            $this->_accounting_service->allocateSurplusDRBonus($reward->product_id, $points);
+            $this->_accounting_service->allocateSurplusDRBonus($reward->product_id, $drPoints);
 
-            $points = (($reward->irpv * $this->_unilevel_count) * $reward->slots);
-            $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, $points);
+            $irPoints = (($reward->irpv * $this->_unilevel_count) * $reward->slots);
+            $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, $irPoints);
 
             return true;
         }
@@ -114,13 +114,13 @@ class ComNucleonplusMlmPackageunilevel extends KObject
             'reward_id'     => $reward->id,
             'account_id'    => $account->getIdFromSponsor(),
             'referral_type' => 'dr', // Direct Referral
-            'points'        => $points,
+            'points'        => $drPoints,
         ];
 
         $this->_controller->add($data);
 
         // Post direct referral to accounting system
-        $this->_accounting_service->allocateDRBonus($reward->product_id, $points);
+        $this->_accounting_service->allocateDRBonus($reward->product_id, $drPoints);
 
         // Check if direct referrer has sponsor as well
         $directSponsor = $this->getObject('com:nucleonplus.model.accounts')->id($account->getIdFromSponsor())->fetch();
@@ -132,7 +132,8 @@ class ComNucleonplusMlmPackageunilevel extends KObject
         }
         else
         {
-            $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, ($reward->irpv * $this->_unilevel_count));
+            $irPoints = (($reward->irpv * $this->_unilevel_count) * $reward->slots);
+            $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, $irPoints);
         }
     }
 

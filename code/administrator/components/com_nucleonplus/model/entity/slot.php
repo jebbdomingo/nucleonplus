@@ -18,98 +18,15 @@
 class ComNucleonplusModelEntitySlot extends KModelEntityRow
 {
     /**
-     * Accounting Service
+     * Consume
      *
-     * @var ComNucleonplusAccountingServiceTransferInterface
+     * @return boolean
      */
-    protected $_accounting_service;
-
-    /**
-     * Constructor.
-     *
-     * @param KObjectConfig $config Configuration options.
-     */
-    public function __construct(KObjectConfig $config)
-    {
-        parent::__construct($config);
-
-        $identifier = $this->getIdentifier($config->accounting_service);
-        $service    = $this->getObject($identifier);
-
-        if (!($service instanceof ComNucleonplusAccountingServiceTransferInterface))
-        {
-            throw new UnexpectedValueException(
-                "Service $identifier does not implement ComNucleonplusAccountingServiceTransferInterface"
-            );
-        }
-        else $this->_accounting_service = $service;
-    }
-
-    /**
-     * Initializes the options for the object.
-     *
-     * Called from {@link __construct()} as a first step of object instantiation.
-     *
-     * @param KObjectConfig $config Configuration options.
-     */
-    protected function _initialize(KObjectConfig $config)
-    {
-        $config->append(array(
-            'accounting_service' => 'com:nucleonplus.accounting.service.transfer'
-        ));
-
-        parent::_initialize($config);
-    }
-
-    /**
-     * Pay other slot from this slot
-     * Mark this slot as consumed i.e. it is allocated to an upline slot
-     *
-     * @return boolean|void
-     */
-    public function payOtherSlot()
+    public function consume()
     {
         $this->consumed = 1;
         
-        if ($this->save())
-        {
-            $reward = $this->getReward();
-            $this->_accounting_service->allocatePatronage($reward->product_id, $reward->prpv);
-        }
-    }
-
-    /**
-     * Pay the referrer from this slot
-     * Mark this slot as consumed i.e. it is allocated to an upline slot
-     *
-     * @return boolean|void
-     */
-    public function payReferrer()
-    {
-        $this->consumed = 1;
-        
-        if ($this->save())
-        {
-            $reward = $this->getReward();
-            $this->_accounting_service->allocatePatronage($reward->product_id, $reward->prpv);
-        }
-    }
-
-    /**
-     * Flush the slot's prpv out
-     * Usually when there's no upline slot available
-     *
-     * @return [type] [description]
-     */
-    public function flushOut()
-    {
-        $this->consumed = 1;
-        
-        if ($this->save())
-        {
-            $reward = $this->getReward();
-            $this->_accounting_service->allocateSurplusPatronage($reward->product_id, $reward->prpv);
-        }
+        return $this->save();
     }
 
     /**

@@ -107,7 +107,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_dr_bonus_account;
-        $note          = 'Patronage';
+        $note          = 'Direct Referral Bonus';
 
         return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -153,7 +153,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_unilevel_dr_bonus_account;
-        $note          = 'Direct Referral';
+        $note          = 'Unilevel Direct Referral';
 
         return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -168,7 +168,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_unilevel_ir_bonus_account;
-        $note          = 'Indirect Referral';
+        $note          = 'Unilevel Indirect Referral';
 
         return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -183,7 +183,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_surplus_unilevel_dr_bonus_account;
-        $note          = 'Flushout Direct Referral i.e. an account that doesn\'t have a referrer';
+        $note          = 'Flushout Unilevel Direct Referral i.e. an account that doesn\'t have a referrer';
 
         return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
@@ -198,7 +198,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_surplus_unilevel_ir_bonus_account;
-        $note          = 'Flushout Indirect Referral i.e. an account that doesn\'t have an indirect referrer';
+        $note          = 'Flushout Unilevel Indirect Referral i.e. an account that doesn\'t have an indirect referrer';
 
         return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
