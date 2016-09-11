@@ -33,6 +33,7 @@ class ComNucleonplusDatabaseBehaviorRewardpackagable extends KDatabaseBehaviorAb
             ->columns(array('_rewardpackage_irpv'        => '_rewardpackage.irpv'))
             ->columns(array('_rewardpackage_irpv'        => '_rewardpackage.irpv'))
             ->columns(array('_rewardpackage_rebates'     => '_rewardpackage.rebates'))
+            ->columns(array('_rewardpackage_type'        => '_rewardpackage.type'))
             ->join(array('_rewardpackage' => 'nucleonplus_rewardpackages'), 'tbl.rewardpackage_id = _rewardpackage.nucleonplus_rewardpackage_id')
         ;
     }

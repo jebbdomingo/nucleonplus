@@ -135,7 +135,8 @@ class ComNucleonplusMlmPackagereward extends KObject
             'prpv'             => $item->_rewardpackage_prpv,
             'drpv'             => $item->_rewardpackage_drpv,
             'irpv'             => $item->_rewardpackage_irpv,
-            'rebates'          => $item->_rewardpackage_rebates
+            'rebates'          => $item->_rewardpackage_rebates,
+            'type'             => $item->_rewardpackage_type
         );
 
         return $controller->add($data);

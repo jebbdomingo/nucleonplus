@@ -33,6 +33,7 @@ class ComNucleonplusDatabaseBehaviorRewardable extends KDatabaseBehaviorAbstract
             ->columns(array('_reward_prpv'         => '_reward.prpv'))
             ->columns(array('_reward_drpv'         => '_reward.drpv'))
             ->columns(array('_reward_irpv'         => '_reward.irpv'))
+            ->columns(array('_reward_type'         => '_reward.type'))
             ->join(array('_reward' => 'nucleonplus_rewards'), 'tbl.nucleonplus_order_id = _reward.product_id')
         ;
     }

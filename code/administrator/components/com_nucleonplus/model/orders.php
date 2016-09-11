@@ -113,7 +113,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
         $table = $this->getObject('com://admin/nucleonplus.database.table.orders');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_orders AS tbl')
-            ->columns('COUNT(tbl.account_id) AS count')
+            ->columns('tbl.nucleonplus_order_id, COUNT(tbl.account_id) AS count')
             ->where('tbl.account_id = :account_id')->bind(['account_id' => $accountId])
             ->where('tbl.created_on >= :created_on')->bind(array('created_on' => date('Y-m-d')))
             ->where('tbl.order_status NOT IN :status')->bind(['status' => array('cancelled', 'void')])

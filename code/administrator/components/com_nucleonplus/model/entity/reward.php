@@ -17,6 +17,9 @@
  */
 class ComNucleonplusModelEntityReward extends KModelEntityRow
 {
+    const REWARD_PACKAGE = 'package';
+    const REWARD_RETAIL  = 'retail';
+
     /**
      * Process member's patronage bonus
      *

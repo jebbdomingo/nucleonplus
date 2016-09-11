@@ -68,7 +68,7 @@ class PlgUserNucleonplus extends JPlugin
         if ($isNew)
         {
             // Validate TOS
-            if ($newUser['profile']['tos'] <> '1') {
+            if (isset($newUser['profile']['tos']) && $newUser['profile']['tos'] <> '1') {
                 throw new Exception('You must agree to the Terms and Conditions');
                 return false;
             }

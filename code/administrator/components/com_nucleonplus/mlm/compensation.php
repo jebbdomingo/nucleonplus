@@ -82,13 +82,29 @@ class ComNucleonplusMlmCompensation extends KObject
     }
 
     /**
-     * Create corresponding slots in the Rewards system
+     * Create corresponding package or retail reward
      *
      * @param KModelEntityInterface $reward
      *
      * @return void
      */
     public function create(KModelEntityInterface $reward)
+    {
+        if ($reward->type == ComNucleonplusModelEntityReward::REWARD_PACKAGE) {
+            $this->_createPackageCompensation($reward);
+        } else {
+            $this->_createRetailCompensation($reward);
+        }
+    }
+
+    /**
+     * Create package purchase reward, create corresponding slots in the Rewards system
+     *
+     * @param KModelEntityInterface $reward
+     *
+     * @return void
+     */
+    protected function _createPackageCompensation($reward)
     {
         // Create the slots only if the reward is not yet activated
         if ($reward->status <> $this->_reward_active_status)
@@ -108,7 +124,26 @@ class ComNucleonplusMlmCompensation extends KObject
             $this->_rebates->create($reward);
         }
         else throw new KControllerExceptionRequestInvalid('MLM Compensation: Invalid Request');
+    }
 
-        return false;
+    /**
+     * Create retail purchase reward
+     *
+     * @param [type] $reward [description]
+     *
+     * @return [type] [description]
+     */
+    protected function _createRetailCompensation($reward)
+    {
+        // Create the slots only if the reward is not yet activated
+        if ($reward->status <> $this->_reward_active_status)
+        {
+            // Create unilevel bonuses (direct and indirect referrals)
+            $this->_unilevel->create($reward);
+
+            // Create rebates
+            $this->_rebates->create($reward);
+        }
+        else throw new KControllerExceptionRequestInvalid('MLM Compensation: Invalid Request');
     }
 }
