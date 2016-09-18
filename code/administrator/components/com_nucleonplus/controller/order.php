@@ -121,11 +121,11 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 throw new KControllerExceptionRequestInvalid($translator->translate('Please select a Product Pack'));
                 $result = false;
             }
-            elseif ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($account_id))
-            {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Only one product package can be purchased per account per day'));
-                $result = false;
-            }
+            // elseif ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($account_id))
+            // {
+            //     throw new KControllerExceptionRequestInvalid($translator->translate('Only one product package can be purchased per account per day'));
+            //     $result = false;
+            // }
             elseif (count($package) === 0)
             {
                 throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));

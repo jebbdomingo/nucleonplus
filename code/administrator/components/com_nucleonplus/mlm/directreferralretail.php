@@ -13,7 +13,7 @@ class ComNucleonplusMlmDirectreferralretail extends ComNucleonplusMlmDirectrefer
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'type' => 'retail'
+            'type' => ComNucleonplusModelEntityReward::REWARD_RETAIL
         ));
 
         parent::_initialize($config);
@@ -42,7 +42,7 @@ class ComNucleonplusMlmDirectreferralretail extends ComNucleonplusMlmDirectrefer
         
         if ($directReferral->save())
         {
-            $this->_recordAcctgTransaction($slot);
+            $this->_recordAcctgTransaction($reward);
 
             return true;
         }

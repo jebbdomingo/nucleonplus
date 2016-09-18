@@ -20,7 +20,7 @@ class ComNucleonplusMlmDirectreferralpackage extends ComNucleonplusMlmDirectrefe
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'type' => 'package'
+            'type' => ComNucleonplusModelEntityReward::REWARD_PACKAGE
         ));
 
         parent::_initialize($config);
@@ -63,9 +63,9 @@ class ComNucleonplusMlmDirectreferralpackage extends ComNucleonplusMlmDirectrefe
 
         $directReferral = $this->getObject('com:nucleonplus.model.directreferrals')->create($data);
         
-        if ($directReferral->save())
+        if ($directReferral->save() && $slot->consume())
         {
-            $this->_payReferrer($slot);
+            $this->_recordAcctgTransaction($slot);
 
             return true;
         }
@@ -78,12 +78,8 @@ class ComNucleonplusMlmDirectreferralpackage extends ComNucleonplusMlmDirectrefe
      *
      * @return void
      */
-    protected function _payReferrer($slot)
+    protected function _recordAcctgTransaction($reward)
     {
-        if ($slot->consume())
-        {
-            $reward = $slot->getReward();
-            $this->_accounting_service->allocateDirectReferral($reward->product_id, $reward->prpv);
-        }
+        $this->_accounting_service->allocateDirectReferral($reward->product_id, $reward->prpv);
     }
 }

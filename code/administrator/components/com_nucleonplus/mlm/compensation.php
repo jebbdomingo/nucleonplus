@@ -108,7 +108,6 @@ class ComNucleonplusMlmCompensation extends KObject
                 $this->_createRetailCompensation($reward);
             }
         }
-        }
         else throw new KControllerExceptionRequestInvalid('MLM Compensation: Invalid Request');
     }
 
