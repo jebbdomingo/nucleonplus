@@ -35,11 +35,12 @@ class ComNucleonplusModelPackages extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns(array('_rewardpackage_name' => '_rewardpackages.name'))
-            ->columns(array('_rewardpackage_slots' => '_rewardpackages.slots'))
-            ->columns(array('_rewardpackage_prpv' => '_rewardpackages.prpv'))
-            ->columns(array('_rewardpackage_drpv' => '_rewardpackages.drpv'))
-            ->columns(array('_rewardpackage_irpv' => '_rewardpackages.irpv'))
+            ->columns(array('_rewardpackage_type'    => '_rewardpackages.type'))
+            ->columns(array('_rewardpackage_name'    => '_rewardpackages.name'))
+            ->columns(array('_rewardpackage_slots'   => '_rewardpackages.slots'))
+            ->columns(array('_rewardpackage_prpv'    => '_rewardpackages.prpv'))
+            ->columns(array('_rewardpackage_drpv'    => '_rewardpackages.drpv'))
+            ->columns(array('_rewardpackage_irpv'    => '_rewardpackages.irpv'))
             ->columns(array('_rewardpackage_rebates' => '_rewardpackages.rebates'))
         ;
     }

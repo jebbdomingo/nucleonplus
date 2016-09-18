@@ -18,11 +18,18 @@ class ComNucleonplusMlmCompensation extends KObject
     protected $_reward_active_status;
 
     /**
-     * Direct Referral
+     * Direct Referral Package
      *
      * @var string
      */
-    protected $_directreferral;
+    protected $_directreferral_package;
+
+    /**
+     * Direct Referral Retail
+     *
+     * @var string
+     */
+    protected $_directreferral_retail;
 
     /**
      * Patronage
@@ -54,11 +61,12 @@ class ComNucleonplusMlmCompensation extends KObject
     {
         parent::__construct($config);
 
-        $this->_reward_active_status = $config->reward_active_status;
-        $this->_directreferral       = $this->getObject($config->directreferral);
-        $this->_patronage            = $this->getObject($config->patronage);
-        $this->_unilevel             = $this->getObject($config->unilevel);
-        $this->_rebates              = $this->getObject($config->rebates);
+        $this->_reward_active_status   = $config->reward_active_status;
+        $this->_directreferral_package = $this->getObject($config->directreferral_package);
+        $this->_directreferral_retail  = $this->getObject($config->directreferral_retail);
+        $this->_patronage              = $this->getObject($config->patronage);
+        $this->_unilevel               = $this->getObject($config->unilevel);
+        $this->_rebates                = $this->getObject($config->rebates);
     }
 
     /**
@@ -71,11 +79,12 @@ class ComNucleonplusMlmCompensation extends KObject
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'directreferral'       => 'com:nucleonplus.mlm.packagedirectreferral',
-            'patronage'            => 'com:nucleonplus.mlm.packagepatronage',
-            'unilevel'             => 'com:nucleonplus.mlm.packageunilevel',
-            'rebates'              => 'com:nucleonplus.mlm.packagerebates',
-            'reward_active_status' => 'active', // Reward's active status
+            'directreferral_package' => 'com:nucleonplus.mlm.directreferralpackage',
+            'directreferral_retail'  => 'com:nucleonplus.mlm.directreferralretail',
+            'patronage'              => 'com:nucleonplus.mlm.packagepatronage',
+            'unilevel'               => 'com:nucleonplus.mlm.packageunilevel',
+            'rebates'                => 'com:nucleonplus.mlm.packagerebates',
+            'reward_active_status'   => 'active', // Reward's active status
         ));
 
         parent::_initialize($config);
@@ -90,11 +99,17 @@ class ComNucleonplusMlmCompensation extends KObject
      */
     public function create(KModelEntityInterface $reward)
     {
-        if ($reward->type == ComNucleonplusModelEntityReward::REWARD_PACKAGE) {
-            $this->_createPackageCompensation($reward);
-        } else {
-            $this->_createRetailCompensation($reward);
+        // Create the commission only if the reward is not yet activated
+        if ($reward->status <> $this->_reward_active_status)
+            {
+            if ($reward->type == ComNucleonplusModelEntityReward::REWARD_PACKAGE) {
+                $this->_createPackageCompensation($reward);
+            } else {
+                $this->_createRetailCompensation($reward);
+            }
         }
+        }
+        else throw new KControllerExceptionRequestInvalid('MLM Compensation: Invalid Request');
     }
 
     /**
@@ -106,24 +121,20 @@ class ComNucleonplusMlmCompensation extends KObject
      */
     protected function _createPackageCompensation($reward)
     {
-        // Create the slots only if the reward is not yet activated
-        if ($reward->status <> $this->_reward_active_status)
-        {
-            // Create corresponding slots for this order/reward
-            $slot = $this->_patronage->createSlots($reward);
+        // Create corresponding slots for this order/reward
+        $slot = $this->_patronage->createSlots($reward);
 
-            if ($this->_directreferral->create($slot) === false) {
-                // Connect to other slot
-                $this->_patronage->connectToOtherSlot($slot);
-            }
-
-            // Create unilevel bonuses (direct and indirect referrals)
-            $this->_unilevel->create($reward);
-
-            // Create rebates
-            $this->_rebates->create($reward);
+        // Package direct referral bonus
+        if ($this->_directreferral_package->create($slot) === false) {
+            // Connect to other slot
+            $this->_patronage->connectToOtherSlot($slot);
         }
-        else throw new KControllerExceptionRequestInvalid('MLM Compensation: Invalid Request');
+
+        // Create unilevel bonuses (direct and indirect referrals)
+        $this->_unilevel->create($reward);
+
+        // Create rebates
+        $this->_rebates->create($reward);
     }
 
     /**
@@ -135,15 +146,13 @@ class ComNucleonplusMlmCompensation extends KObject
      */
     protected function _createRetailCompensation($reward)
     {
-        // Create the slots only if the reward is not yet activated
-        if ($reward->status <> $this->_reward_active_status)
-        {
-            // Create unilevel bonuses (direct and indirect referrals)
-            $this->_unilevel->create($reward);
+        // Retail direct referral bonus
+        $this->_directreferral_retail->create($reward);
 
-            // Create rebates
-            $this->_rebates->create($reward);
-        }
-        else throw new KControllerExceptionRequestInvalid('MLM Compensation: Invalid Request');
+        // Create unilevel bonuses (direct and indirect referrals)
+        $this->_unilevel->create($reward);
+
+        // Create rebates
+        $this->_rebates->create($reward);
     }
 }
