@@ -22,13 +22,13 @@ class ComNucleonplusMlmDirectreferralretail extends ComNucleonplusMlmDirectrefer
     /**
      * Create direct referral bonus
      *
-     * @param KModelContext $slot
+     * @param KModelEntityInterface $reward
      *
-     * @return void
+     * @return KModelEntityInterface|boolean
      */
-    public function _actionCreate(KModelContext $context)
+    public function _actionCreate(KModelEntityInterface $reward)
     {
-        $reward  = $context->entity;
+        $result  = false;
         $account = $reward->getAccount();
 
         $data = array(
@@ -44,9 +44,11 @@ class ComNucleonplusMlmDirectreferralretail extends ComNucleonplusMlmDirectrefer
         {
             $this->_recordAcctgTransaction($reward);
 
-            return true;
+            $result = $directReferral;
         }
-        else return false;
+        else $result = false;
+
+        return $result;
     }
 
     /**

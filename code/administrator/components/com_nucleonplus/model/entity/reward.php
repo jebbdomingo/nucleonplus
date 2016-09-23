@@ -19,6 +19,9 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
 {
     const REWARD_PACKAGE = 'package';
     const REWARD_RETAIL  = 'retail';
+    const STATUS_ACTIVE  = 'active';
+    const STATUS_READY   = 'ready';
+    const STATUS_CLAIMED = 'claimed';
 
     /**
      * Process member's patronage bonus
@@ -27,7 +30,7 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
      */
     public function processPatronage()
     {
-        if ($this->status <> 'active') {
+        if ($this->status <> self::ACTIVE_STATUS) {
             return;
         }
 
@@ -68,15 +71,17 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
         }
 
         // Ensure payout matches the expected amount of reward's product patronage bonus pv x the binary of number of slots
-        if ($requiredSlots == $payoutSlots)
+        if ($requiredSlots === $payoutSlots)
         {
-            $controller = $this->getObject('com:nucleonplus.controller.patronagebonus');
+            $model = $this->getObject('com:nucleonplus.model.patronagebonuses');
 
-            foreach ($data as $datum) {
-                $controller->add($datum);
+            foreach ($data as $datum)
+            {
+                $entity = $model->create($datum);
+                $entity->save();
             }
 
-            $this->status = 'ready';
+            $this->status = self::ACTIVE_READY;
             $this->save();
         }
     }

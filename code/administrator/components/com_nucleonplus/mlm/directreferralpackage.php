@@ -10,13 +10,6 @@
 
 class ComNucleonplusMlmDirectreferralpackage extends ComNucleonplusMlmDirectreferral
 {
-    public function __construct(KObjectConfig $config)
-    {
-        parent::__construct($config);
-
-        $this->addCommandCallback('before.create', '_validate');
-    }
-
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
@@ -26,55 +19,68 @@ class ComNucleonplusMlmDirectreferralpackage extends ComNucleonplusMlmDirectrefe
         parent::_initialize($config);
     }
 
-    public function _validate(KModelContext $context)
+    protected function _validate(KModelEntityInterface $slot)
     {
+        $result = false;
+
         // Purchaser (new member)
-        $account = $context->entity->getReward()->getAccount();
+        $account = $slot->getReward()->getAccount();
+
+        $orders = $this->getObject('com:nucleonplus.model.orders')
+            ->account_id($account->id)
+            ->reward_type(ComNucleonplusModelEntityReward::REWARD_PACKAGE)
+            ->count()
+        ;
 
         // Check if the new member/purchaser has referrer
         // and this is his first purchase
-        if ($account->sponsor_id && (count($account->getLatestPurchases()) == 1)) {
+        if ($account->sponsor_id && $orders == 1) {
             // Pay referrer a direct referrral bonus
-            return true;
+            $result = true;
         }
-
-        return false;
+        
+        return $result;
     }
 
     /**
      * Create direct referral bonus
      *
-     * @param KModelContext $slot
+     * @param KModelEntityInterface $slot
      *
-     * @return void
+     * @return KModelEntityInterface|boolean
      */
-    public function _actionCreate(KModelContext $context)
+    public function _actionCreate(KModelEntityInterface $slot)
     {
-        $slot    = $context->entity;
-        $reward  = $slot->getReward();
-        $account = $slot->getReward()->getAccount();
+        $result = false;
 
-        $data = array(
-            'type'       => $this->_type,
-            'reward_id'  => $reward->id,
-            'account_id' => $account->getSponsor()->id,
-            'points'     => $reward->prpv
-        );
-
-        $directReferral = $this->getObject('com:nucleonplus.model.directreferrals')->create($data);
-        
-        if ($directReferral->save() && $slot->consume())
+        if ($this->_validate($slot))
         {
-            $this->_recordAcctgTransaction($slot);
+            $reward  = $slot->getReward();
+            $account = $slot->getReward()->getAccount();
 
-            return true;
+            $data = array(
+                'type'       => $this->_type,
+                'reward_id'  => $reward->id,
+                'account_id' => $account->getSponsor()->id,
+                'points'     => $reward->prpv
+            );
+
+            $directReferral = $this->getObject('com:nucleonplus.model.directreferrals')->create($data);
+            
+            if ($directReferral->save() && $slot->consume())
+            {
+                $this->_recordAcctgTransaction($reward);
+
+                $result = $directReferral;
+            }
+            else $result = false;
         }
-        else return false;
+
+        return $result;
     }
 
     /**
-     * Pay the referrer from slot
-     * Mark the slot as consumed i.e. it is allocated to an upline slot
+     * Allocate retail direct referral in the accounting book
      *
      * @return void
      */

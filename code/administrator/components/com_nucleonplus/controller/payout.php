@@ -410,7 +410,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
             if ($reward->id)
             {
-                $reward->status = 'claimed';
+                $reward->status = ComNucleonplusModelEntityReward::ACTIVE_CLAIMED;
                 $reward->save();
             }
         }

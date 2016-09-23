@@ -33,12 +33,6 @@ class ComNucleonplusMlmDirectreferral extends KObject
     {
         parent::__construct($config);
 
-        // Mixin the behavior interface
-        $this->mixin('lib:behavior.mixin', $config);
-
-        // Mixin the event interface
-        $this->mixin('lib:event.mixin', $config);
-
         $this->_type = $config->type;
 
         $identifier = $this->getIdentifier($config->accounting_service);
@@ -65,8 +59,6 @@ class ComNucleonplusMlmDirectreferral extends KObject
         $config->append(array(
             'accounting_service' => 'com:nucleonplus.accounting.service.transfer',
             'type'               => null,
-            'command_chain'      => 'lib:command.chain',
-            'command_handlers'   => array('lib:command.handler.event'),
         ));
 
         parent::_initialize($config);
@@ -81,26 +73,6 @@ class ComNucleonplusMlmDirectreferral extends KObject
      */
     final public function create(KModelEntityInterface $entity)
     {
-        $context = $this->getContext();
-        $context->entity = $entity;
-
-        if ($this->invokeCommand('before.create', $context) !== false)
-        {
-            $this->_actionCreate($context);
-            $this->invokeCommand('after.create', $context);
-        }
-    }
-
-    /**
-     * Get the model context
-     *
-     * @return  KModelContext
-     */
-    public function getContext()
-    {
-        $context = new KModelContext();
-        $context->setSubject($this);
-
-        return $context;
+        return $this->_actionCreate($entity);
     }
 }

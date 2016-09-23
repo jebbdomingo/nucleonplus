@@ -97,7 +97,7 @@ class ComNucleonplusMlmPackagepatronage extends KObject
             'controller'           => 'com:nucleonplus.controller.slot',
             'model'                => 'com:nucleonplus.model.slots',
             'reward_model'         => 'com:nucleonplus.model.rewards',
-            'reward_active_status' => 'active', // Reward's active status
+            'reward_active_status' => ComNucleonplusModelEntityReward::STATUS_ACTIVE, // Reward's active status
             'item_model'           => 'com:nucleonplus.model.packages', // Product or Item object's identifier
             'accounting_service'   => 'com:nucleonplus.accounting.service.transfer'
         ));
@@ -117,9 +117,6 @@ class ComNucleonplusMlmPackagepatronage extends KObject
         // Create the slots only if the reward is not yet activated
         if ($reward->status <> $this->_reward_active_status)
         {
-            $reward->status = $this->_reward_active_status;
-            $reward->save();
-
             // Create and organize member's own set of slots
             $slot = $this->_createOwnSlots($reward);
 

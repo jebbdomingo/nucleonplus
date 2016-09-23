@@ -197,7 +197,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         }
 
         // Allocation parts of sale
-        $charges = ($order->getPackage()->charges * $order->getReward()->slots);
+        $charges = $order->getReward()->type == ComNucleonplusModelEntityReward::REWARD_PACKAGE ? ($order->getPackage()->charges * $order->getReward()->slots) : $order->getPackage()->charges;
         $this->_transfer_service->allocateCharges($order->id, $charges);
     }
 }

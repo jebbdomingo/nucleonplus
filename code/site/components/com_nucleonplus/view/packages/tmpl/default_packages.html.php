@@ -25,58 +25,70 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                             <th class="text-right">P<?= number_format($package->price) ?></th>
                         </tr>
                         <tr>
-                            <td>Shipping</td>
-                            <td class="text-right">P<?= number_format($package->delivery_charge) ?></td>
-                        </tr>
-                        <tr>
-                            <td>Referral Fee</td>
+                            <td>Unilevel Direct Referral Bonus</td>
                             <td class="text-right">
                                 <?
                                 $dr_fee = ($package->_rewardpackage_drpv * $package->_rewardpackage_slots);
-                                echo $dr_fee;
+                                echo number_format($dr_fee, 2);
                                 ?>
                             </td>
                         </tr>
                         <tr>
-                            <td>Indirect Referral Fee</td>
+                            <td>
+                                Unilevel Indirect Referral Bonus<br />
+                                <small>(Up to 20th Level)</small>
+                            </td>
                             <td class="text-right">
                                 <?
                                 $ir_fee = ($package->_rewardpackage_irpv * $package->_rewardpackage_slots);
-                                echo $ir_fee;
-                                ?>
-                            </td>
-                        </tr>
-                        <tr class="success">
-                            <td>Commission</td>
-                            <td class="text-right">
-                                <?
-                                $patronages = ($package->_rewardpackage_prpv * $package->_rewardpackage_slots) * 2;
-                                echo $patronages;
+                                echo number_format($ir_fee, 2);
                                 ?>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2">
-                                <div class="well">
-                                    <table class="table">
-                                        <thead>
-                                            <thead>
-                                                <th>Product</th>
-                                                <th class="text-right">Quantity</th>
-                                            </thead>
-                                        </thead>
-                                        <tbody>
-                                            <? foreach ($package->getItems() as $item): ?>
-                                                <tr>
-                                                    <td><?= $item->_item_name ?></td>
-                                                    <td class="text-right"><?= $item->quantity ?></td>
-                                                </tr>
-                                            <? endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <td>Direct Referral Bonus</td>
+                            <td class="text-right">
+                                <?
+                                $directReferral = $package->_rewardpackage_prpv * $package->_rewardpackage_slots;
+                                echo number_format($directReferral, 2);
+                                ?>
                             </td>
                         </tr>
+                        <? if ($package->_rewardpackage_type == 'package'): ?>
+                            <tr class="success">
+                                <td>Commission <span class="label label-primary">New</span></td>
+                                <td class="text-right">
+                                    <?
+                                    $patronages = ($package->_rewardpackage_prpv * $package->_rewardpackage_slots) * 2;
+                                    echo number_format($patronages, 2);
+                                    ?>
+                                </td>
+                            </tr>
+                        <? endif ?>
+                        <? if ($package->_rewardpackage_type == 'package'): ?>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="well">
+                                        <table class="table">
+                                            <thead>
+                                                <thead>
+                                                    <th>Product</th>
+                                                    <th class="text-right">Quantity</th>
+                                                </thead>
+                                            </thead>
+                                            <tbody>
+                                                <? foreach ($package->getItems() as $item): ?>
+                                                    <tr>
+                                                        <td><?= $item->_item_name ?></td>
+                                                        <td class="text-right"><?= $item->quantity ?></td>
+                                                    </tr>
+                                                <? endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        <? endif ?>
                     </table>
 
                     <? if ($onlinePurchaseEnabled): ?>
