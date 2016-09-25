@@ -94,10 +94,15 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                     <? if ($onlinePurchaseEnabled): ?>
                         <p>
                             <? if ($isAuthenticated): ?>
-                                <a href="<?= route('view=order&package_id=' . $package->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
-                                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                                    Buy Now
-                                </a>
+                                <form action="<?= route('view=cart') ?>" method="post">
+                                    <input type="hidden" name="_action" value="add" />
+                                    <input type="hidden" name="package_id" value="<?= $package->id ?>" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
+                                        <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                                        Add to cart
+                                    </button>
+                                </form>
                             <? else: ?>
                                 <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
                                     <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>

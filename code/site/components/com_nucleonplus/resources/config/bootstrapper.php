@@ -9,6 +9,7 @@ return array(
         'com://site/nucleonplus.model.payouts'                  => 'com://admin/nucleonplus.model.payouts',
         'com://site/nucleonplus.model.orders'                   => 'com://admin/nucleonplus.model.orders',
         'com://site/nucleonplus.model.packages'                 => 'com://admin/nucleonplus.model.packages',
+        'com://site/nucleonplus.model.carts'                    => 'com://admin/nucleonplus.model.carts',
         'com://site/nucleonplus.model.entity.payout'            => 'com://admin/nucleonplus.model.entity.payout',
         'com://site/nucleonplus.database.table.orders'          => 'com://admin/nucleonplus.database.table.orders',
         'com://site/nucleonplus.database.table.payouts'         => 'com://admin/nucleonplus.database.table.payouts',

@@ -20,15 +20,7 @@ defined('KOOWA') or die; ?>
 
     <div class="col-md-12">
 
-        <fieldset class="form-vertical">
-
-            <form method="post" class="-koowa-grid">
-
-                <?= import('com://site/nucleonplus.packages.default_packages.html', ['packages' => $packages]) ?>
-
-            </form>
-
-        </fieldset>
+        <?= import('com://site/nucleonplus.packages.default_packages.html', ['packages' => $packages]) ?>
 
     </div>
 
