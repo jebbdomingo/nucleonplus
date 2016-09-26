@@ -77,81 +77,116 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      * 
      * @return KModelEntityInterface
      */
+    // protected function _validate(KControllerContextInterface $context)
+    // {
+    //     if(!$context->result instanceof KModelEntityInterface) {
+    //         $entity = $this->getModel()->create($context->request->data->toArray());
+    //     } else {
+    //         $entity = $context->result;
+    //     }
+
+    //     $result = true;
+
+    //     try
+    //     {
+    //         $user       = $this->getObject('user');
+    //         $translator = $this->getObject('translator');
+    //         $package_id = (int) trim($entity->package_id);
+    //         $package    = $this->getObject('com:nucleonplus.model.packages')->id($package_id)->fetch();
+            
+    //         // Validate account
+    //         $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+
+    //         if (count($account) === 0)
+    //         {
+    //             throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Account'));
+    //             $result = false;
+    //         }
+            
+    //         if (empty(trim($entity->package_id)))
+    //         {
+    //             throw new KControllerExceptionRequestInvalid($translator->translate('Please select a Product Pack'));
+    //             $result = false;
+    //         }
+    //         elseif (count($package) === 0)
+    //         {
+    //             throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
+    //             $result = false;
+    //         }
+
+    //         // Check inventory for available stock
+    //         foreach ($package->getItems() as $item)
+    //         {
+    //             if (!$item->hasAvailableStock())
+    //             {
+    //                 throw new KControllerExceptionActionFailed($translator->translate("Insufficient stock of {$item->_item_name}"));
+    //                 $result = false;
+    //             }
+    //         }
+    //     }
+    //     catch(Exception $e)
+    //     {
+    //         $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+    //         $context->getResponse()->send();
+
+    //         $result = false;
+    //     }
+
+    //     $data = new KObjectConfig([
+    //         'account_id'      => $account->id,
+    //         'package_id'      => $package->id,
+    //         'package_name'    => $package->name,
+    //         'package_price'   => $package->price,
+    //         'order_status'    => 'awaiting_payment',
+    //         'invoice_status'  => 'sent',
+    //         'payment_method'  => 'deposit',
+    //         'shipping_method' => 'xend',
+    //     ]);
+
+    //     $context->getRequest()->setData($data->toArray());
+
+    //     return $result;
+    // }
+
     protected function _validate(KControllerContextInterface $context)
     {
-        if(!$context->result instanceof KModelEntityInterface) {
-            $entity = $this->getModel()->create($context->request->data->toArray());
-        } else {
-            $entity = $context->result;
-        }
+        $user       = $this->getObject('user');
+        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $translator = $this->getObject('translator');
+        $data       = $context->request->data;
+        $error      = false;
 
-        $result = true;
-
-        try
+        // Validate account
+        if (count($account) === 0)
         {
-            $user       = $this->getObject('user');
-            $translator = $this->getObject('translator');
-            $package_id = (int) trim($entity->package_id);
-            $package    = $this->getObject('com:nucleonplus.model.packages')->id($package_id)->fetch();
-            
-            // Validate account
-            $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+            $error = 'Invalid Account';
+        }
+        else
+        {
+            foreach ($data->quantity as $id => $qty)
+            {
+                $cartItem = $this->getObject('com://admin/nucleonplus.model.carts')->id($id)->fetch();
+                $package  = $this->getObject('com:nucleonplus.model.packages')->id($cartItem->package_id)->fetch();
 
-            if (count($account) === 0)
-            {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Account'));
-                $result = false;
-            }
-            
-            // Validate package id and if the member has current order
-            if (empty(trim($entity->package_id)))
-            {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Please select a Product Pack'));
-                $result = false;
-            }
-            elseif ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($user->getId()))
-            {
-                throw new KControllerExceptionRequestInvalid($translator->translate('You can only purchase one product package per day'));
-                $result = false;
-            }
-            elseif (count($package) === 0)
-            {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
-                $result = false;
-            }
+                if (count($package) === 0) {
+                    $error = 'Invalid Product Pack';
+                }
 
-            // Check inventory for available stock
-            foreach ($package->getItems() as $item)
-            {
-                if (!$item->hasAvailableStock())
+                // Check inventory for available stock
+                foreach ($package->getItems() as $item)
                 {
-                    throw new KControllerExceptionActionFailed($translator->translate("Insufficient stock of {$item->_item_name}"));
-                    $result = false;
+                    if (!$item->hasAvailableStock()) {
+                        $error = "Insufficient stock of {$item->_item_name}";
+                    }
                 }
             }
         }
-        catch(Exception $e)
+
+        if ($error)
         {
-            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $translator->translate($error), 'error');
             $context->getResponse()->send();
-
-            $result = false;
         }
-
-        $data = new KObjectConfig([
-            'account_id'      => $account->id,
-            'package_id'      => $package->id,
-            'package_name'    => $package->name,
-            'package_price'   => $package->price,
-            'order_status'    => 'awaiting_payment',
-            'invoice_status'  => 'sent',
-            'payment_method'  => 'deposit',
-            'shipping_method' => 'xend',
-        ]);
-
-        $context->getRequest()->setData($data->toArray());
-
-        return $result;
     }
 
     /**
@@ -192,20 +227,91 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      *
      * @return entity
      */
+    // protected function _actionAdd(KControllerContextInterface $context)
+    // {
+    //     try
+    //     {
+    //         $order    = parent::_actionAdd($context);
+    //         $response = $context->getResponse();
+
+    //         $response->addMessage("Thank you for your business, we will process your order once you confirm your payment. Please see the instruction below.");
+
+    //         $paymentInstruction = $context->getSubject()->getView()->getTemplate()->invoke('alerts.paymentInstructionMessage');
+    //         $response->addMessage($paymentInstruction, 'info');
+
+    //         // Create reward
+    //         $this->_reward->create($order);
+
+    //         $identifier = $context->getSubject()->getIdentifier();
+    //         $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
+    //         $response->setRedirect(JRoute::_($url, false));
+    //     }
+    //     catch(Exception $e)
+    //     {
+    //         $context->response->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+
+    //         if (!$context->result instanceof KModelEntityInterface) {
+    //             $order = $this->getModel()->fetch();
+    //         } else {
+    //             $order = $context->result;
+    //         }
+    //     }
+
+    //     return $order;
+    // }
+
+    /**
+     * Create Order
+     *
+     * @param KControllerContextInterface $context
+     *
+     * @return entity
+     */
     protected function _actionAdd(KControllerContextInterface $context)
     {
+        $user       = $this->getObject('user');
+        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $translator = $this->getObject('translator');
+        $response   = $context->getResponse();
+        $data       = $context->request->data;
+
+        $order = $this->getModel()->create(array(
+            'account_id'      => $account->id,
+            'order_status'    => 'awaiting_payment',
+            'invoice_status'  => 'sent',
+            'payment_method'  => 'deposit',
+            'shipping_method' => 'xend',
+        ));
+
         try
         {
-            $order    = parent::_actionAdd($context);
-            $response = $context->getResponse();
+            $order->save();
 
-            $response->addMessage("Thank you for your business, we will process your order once you confirm your payment. Please see the instruction below.");
+            foreach ($data->quantity as $id => $qty)
+            {
+                $cartItem = $this->getObject('com://admin/nucleonplus.model.carts')->id($id)->fetch();
+                $package  = $this->getObject('com:nucleonplus.model.packages')->id($cartItem->package_id)->fetch();
+
+                $orderItem = $this->getObject('com://admin/nucleonplus.model.orderitems')->create(array(
+                    'order_id'      => $order->id,
+                    'package_id'    => $package->id,
+                    'package_name'  => $package->name,
+                    'package_price' => $package->price,
+                    'quantity'      => $qty,
+                ));
+                $orderItem->save();
+
+                // Create reward
+                $this->_reward->create($orderItem);
+
+                // Delete the item in the cart
+                $cartItem->delete();
+            }
+
+            $response->addMessage("Thank you for your business, we will process your order once your payment has been confirmed.");
 
             $paymentInstruction = $context->getSubject()->getView()->getTemplate()->invoke('alerts.paymentInstructionMessage');
             $response->addMessage($paymentInstruction, 'info');
-
-            // Create reward
-            $this->_reward->create($order);
 
             $identifier = $context->getSubject()->getIdentifier();
             $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);

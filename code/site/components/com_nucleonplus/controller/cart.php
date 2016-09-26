@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Nucleon Plus
  *
@@ -73,10 +72,19 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
 
         $response = $context->getResponse();
         $response->addMessage('You shopping cart has been updated');
+    }
 
-        // $identifier = $context->getSubject()->getIdentifier();
-        // $url        = sprintf('index.php?option=com_%s&view=cart', $identifier->package);
+    protected function _actionDeleteitem(KControllerContextInterface $context)
+    {
+        $user    = $this->getObject('user');
+        $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $data    = $context->request->data;
+        $id      = $data->item_id;
 
-        // $response->setRedirect(JRoute::_($url, false));
+        $item = $this->getModel()->id($id)->fetch();
+        $item->delete();
+
+        $response = $context->getResponse();
+        $response->addMessage('Item has deleted from your shopping cart', 'warning');
     }
 }

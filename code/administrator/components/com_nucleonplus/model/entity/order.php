@@ -88,4 +88,12 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
             ->fetch()
         ;
     }
+
+    public function getAmount()
+    {
+        return $this->getObject('com://admin/nucleonplus.model.orders')
+            ->id($this->id)
+            ->getAmount()
+        ;
+    }
 }

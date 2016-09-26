@@ -103,8 +103,8 @@ class ComNucleonplusMlmPackagereward extends KObject
         $config->append([
             'controller'          => 'com:nucleonplus.controller.reward',
             'default_status'      => 'pending', // Default status
-            'product_id_column'   => ['id', 'product_id'], // ID of the Product or Item that is rewardable
-            'product_name_column' => ['package_name', 'name'], // Name of the Product or Item that is rewardable
+            'product_id_column'   => ['id'], // ID of the Product or Item that is rewardable
+            'product_name_column' => ['package_name'], // Name of the Product or Item that is rewardable
             'account_id_column'   => ['account_id', 'account_number'], // ID of the customer in the order
             'item_model'          => 'com:nucleonplus.model.packages', // Rewardable Product or Item object's identifier
             'item_fk_column'      => 'package_id', // Product or Item's foreign key in the Order table
@@ -125,9 +125,8 @@ class ComNucleonplusMlmPackagereward extends KObject
         $item       = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
 
         $data = array(
-            'id'               => $this->_getProductId($object), // Item or Product ID
             'customer_id'      => $this->_getAccountData($object), // Member's Account ID
-            'product_id'       => $this->_getProductId($object), // Item or Product ID
+            'product_id'       => $this->_getProductId($object),   // Item or Product ID (order item id)
             'product_name'     => $this->_getProductName($object), // Item or Product Name
             'status'           => $this->_default_status,
             'rewardpackage_id' => $item->_rewardpackage_id,

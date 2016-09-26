@@ -18,27 +18,21 @@ defined('KOOWA') or die; ?>
         <table class="table table-striped footable">
             <thead>
                 <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Order #')); ?></th>
-                <th>Product Package</th>
-                <th>Price</th>
-                <th><?= helper('grid.sort', array('column' => 'order_status', 'title' => 'Status')); ?></th>
                 <th><?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?></th>
+                <th><?= helper('grid.sort', array('column' => 'order_status', 'title' => 'Status')); ?></th>
+                <th>Amount</th>
                 <th>Action</th>
             </thead>
             <tbody>
                 <? if (count($orders) > 0): ?>
                     <? foreach ($orders as $order): ?>
                         <tr>
-                            <td>
-                                <a href="<?= route('view=order&id='.$order->id.'&layout=form&tmpl=koowa') ?>"><?= $order->id ?></a>
-                            </td>
-                            <td><?= $order->package_name ?></td>
-                            <td><?= $order->package_price ?></td>
+                            <td><a href="<?= route('view=order&id='.$order->id.'&layout=form&tmpl=koowa') ?>"><?= $order->id ?></a></td>
+                            <td><?= helper('date.humanize', array('date' => $order->created_on)) ?></td>
                             <td>
                                 <span class="label label-<?= ($order->order_status == 'cancelled') ? 'default' : 'info' ?>"><?= ucwords(escape($order->order_status)) ?></span>
                             </td>
-                            <td>
-                                <?= helper('date.humanize', array('date' => $order->created_on)) ?>
-                            </td>
+                            <td>&#8369;<?= number_format($order->getAmount(), 2) ?></td>
                             <td>
                                 <? if ($order->order_status == 'shipped'): ?>
                                     <a href="<?= route('view=order&id=' . $order->id . '&layout=form&tmpl=koowa') ?>" class="btn btn-primary btn-xs" role="button"><?= translate('Confirm Receipt of Order') ?></a>
@@ -50,7 +44,7 @@ defined('KOOWA') or die; ?>
                     <? endforeach ?>
                 <? else: ?>
                     <tr>
-                        <td colspan="6">
+                        <td colspan="5">
                             <p class="text-center">No Purchase(s) Yet</p>
                         </td>
                     </tr>
@@ -58,7 +52,7 @@ defined('KOOWA') or die; ?>
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6">
+                    <td colspan="5">
                         <?= helper('paginator.pagination') ?>
                     </td>
                 </tr>
