@@ -61,6 +61,16 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     }
 
     /**
+     * Get order items
+     *
+     * @return array
+     */
+    public function getOrderItems()
+    {
+        return $this->getObject('com://admin/nucleonplus.model.orderitems')->order_id($this->id)->fetch();
+    }
+
+    /**
      * Get the package details
      *
      * @return array
@@ -94,6 +104,11 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
             ->id($this->id)
             ->getAmount()
         ;
+    }
+
+    public function getSubTotal()
+    {
+        return (float) $this->getAmount() + (float) $this->getShippingCost();
     }
 
     public function getWeight()

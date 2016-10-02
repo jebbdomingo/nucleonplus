@@ -180,19 +180,14 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         if ($order->shipping_method == 'xend' && $order->payment_method == 'deposit')
         {
             // Delivery charge
-            $shipping = $order->getShippingRate();
-
-            if ($shipping->id)
+            if ($shippingCost = $order->getShippingCost())
             {
                 $this->_salesreceipt_line->add(array(
                     'SalesReceipt' => $salesReceipt->id,
-                    'Description'  => "Shipping {$shipping->packaging} to {$shipping->label}",
+                    'Description'  => "Shipping",
                     'ItemRef'      => $this->_shipping_account,
-                    'Amount'       => $shipping->rate
+                    'Amount'       => $shippingCost
                 ));
-
-                //$rate = $order->getShippingRate()->rate;
-                //$this->_transfer_service->allocateDeliveryExpense($order->id, $rate);
             }
         }
 

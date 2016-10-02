@@ -40,7 +40,6 @@ defined('KOOWA') or die; ?>
                 </div>
                 <div class="panel-body">
                     <? foreach ($cart as $item): ?>
-                        <input type="hidden" name="item_id">
                         <div class="row">
                             <div class="col-sm-2"><img class="img-responsive" src="http://placehold.it/100x70">
                             </div>
