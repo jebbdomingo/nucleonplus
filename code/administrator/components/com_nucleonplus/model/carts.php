@@ -25,11 +25,10 @@ class ComNucleonplusModelCarts extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns(array('_package_name'               => '_package.name'))
-            ->columns(array('_package_price'              => '_package.price'))
-            ->columns(array('_package_rewardpackage_id'   => '_package.rewardpackage_id'))
-            ->columns(array('_package_charges'            => '_package.charges'))
-            ->columns(array('_package_shipping_packaging' => '_package.shipping_packaging'))
+            ->columns(array('_package_name'             => '_package.name'))
+            ->columns(array('_package_price'            => '_package.price'))
+            ->columns(array('_package_rewardpackage_id' => '_package.rewardpackage_id'))
+            ->columns(array('_package_charges'          => '_package.charges'))
         ;
     }
 

@@ -163,6 +163,22 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else
         {
+            if (empty(trim($data->address))) {
+                $error = 'Invalid address';
+            }
+
+            if (empty(trim($data->city))) {
+                $error = 'Invalid city';
+            }
+
+            if (empty(trim($data->state_province))) {
+                $error = 'Invalid state/province';
+            }
+
+            if (!in_array($data->region, array('metro_manila', 'luzon', 'visayas', 'mindanao'))) {
+                $error = 'Invalid region';
+            }
+
             foreach ($data->quantity as $id => $qty)
             {
                 $cartItem = $this->getObject('com://admin/nucleonplus.model.carts')->id($id)->fetch();
@@ -281,6 +297,10 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'invoice_status'  => 'sent',
             'payment_method'  => 'deposit',
             'shipping_method' => 'xend',
+            'address'         => $data->address,
+            'city'            => $data->city,
+            'state_province'  => $data->state_province,
+            'region'          => $data->region,
         ));
 
         try

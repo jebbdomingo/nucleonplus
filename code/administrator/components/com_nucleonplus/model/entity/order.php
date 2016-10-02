@@ -80,20 +80,34 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
         return $this->getObject('com:nucleonplus.model.rewards')->product_id($this->id)->fetch();
     }
 
-    public function getShippingRate()
-    {
-        return $this->getObject('com:nucleonplus.model.shippingrates')
-            ->packaging($this->getPackage()->shipping_packaging)
-            ->name($this->_account_state)
-            ->fetch()
-        ;
-    }
+    // public function getShippingRate()
+    // {
+    //     return $this->getObject('com://admin/nucleonplus.model.shippingrates')
+    //         ->destination($this->_account_state)
+    //         ->fetch()
+    //     ;
+    // }
 
     public function getAmount()
     {
         return $this->getObject('com://admin/nucleonplus.model.orders')
             ->id($this->id)
             ->getAmount()
+        ;
+    }
+
+    public function getWeight()
+    {
+        return $this->getObject('com://admin/nucleonplus.model.orders')
+            ->id($this->id)
+            ->getWeight()
+        ;
+    }
+
+    public function getShippingCost()
+    {
+        return $this->getObject('com://admin/nucleonplus.model.shippingrates')
+            ->getRate($this->region, $this->getWeight())
         ;
     }
 }

@@ -147,4 +147,29 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         return $entities->total;
     }
+
+    /**
+     * Get the total weight of this order
+     *
+     * @return integer
+     */
+    public function getWeight()
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.orderitems');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_orderitems AS tbl')
+            ->columns('tbl.nucleonplus_orderitem_id, SUM(_items.weight * _package_items.quantity * tbl.quantity) AS total')
+            ->join(array('_package' => 'nucleonplus_packages'), 'tbl.package_id = _package.nucleonplus_package_id')
+            ->join(array('_package_items' => 'nucleonplus_packageitems'), '_package.nucleonplus_package_id = _package_items.package_id')
+            ->join(array('_items' => 'nucleonplus_items'), '_package_items.item_id = _items.nucleonplus_item_id')
+            ->where('tbl.order_id = :order_id')->bind(['order_id' => $state->id])
+            ->group('tbl.order_id')
+        ;
+
+        $entities = $table->select($query);
+
+        return $entities->total;
+    }
 }
