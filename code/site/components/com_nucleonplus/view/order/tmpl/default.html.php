@@ -11,6 +11,14 @@
 defined('KOOWA') or die; ?>
 
 <?= helper('behavior.koowa'); ?>
+<?= helper('behavior.orderCancellable'); ?>
+
+<?
+if($order->order_status == 'awaiting_payment') {
+    $footerAmountSize = 'col-xs-9';
+}
+else $footerAmountSize = 'col-xs-12';
+?>
 
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
 
@@ -20,7 +28,8 @@ defined('KOOWA') or die; ?>
 
         <fieldset class="form-vertical">
 
-            <form method="post" class="-koowa-grid">
+            <form name="orderForm" method="post" class="-koowa-grid">
+                <input type="hidden" name="_action" />
 
                 <div class="panel panel-info">
                     <div class="panel-heading">
@@ -31,7 +40,7 @@ defined('KOOWA') or die; ?>
                                 </div>
                                 <div class="col-xs-6">
                                     <div class="text-right">
-                                        <span class="label label-success"><?= $order->status ?></span>
+                                        <?= helper('labels.orderStatus', array('value' => $order->order_status)) ?>
                                     </div>
                                 </div>
                             </div>
@@ -56,14 +65,16 @@ defined('KOOWA') or die; ?>
 
                     <div class="panel-footer">
                         <div class="row text-center">
-                            <div class="col-xs-9">
+                            <div class="<?= $footerAmountSize ?>">
                                 <h4 class="text-right">Total <strong>&#8369;<?= number_format($order->getSubTotal(), 2) ?></strong></h4>
                             </div>
+                            <? if ($order->order_status == 'awaiting_payment'): ?>
                             <div class="col-xs-3">
-                                <button type="button" class="btn btn-danger btn-block">
+                                <button type="button" class="orderCancelAction btn btn-danger btn-block">
                                     Cancel
                                 </button>
                             </div>
+                            <? endif ?>
                         </div>
                     </div>
                 </div>

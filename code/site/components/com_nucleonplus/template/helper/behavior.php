@@ -21,7 +21,7 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
     {
         $config = new KObjectConfigJson($config);
         $config->append(array(
-            'selector' => '.deleteAction',
+            'selector' => '.cartItemDeleteAction',
         ));
 
         $html = $this->koowa();
@@ -61,7 +61,7 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
     {
         $config = new KObjectConfigJson($config);
         $config->append(array(
-            'selector' => '.updateCartAction',
+            'selector' => '.cartUpdateAction',
         ));
 
         $html = $this->koowa();
@@ -98,7 +98,7 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
     {
         $config = new KObjectConfigJson($config);
         $config->append(array(
-            'selector' => '.checkoutAction',
+            'selector' => '.cartCheckoutAction',
         ));
 
         $html = $this->koowa();
@@ -113,6 +113,45 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
 
                     $('input[name=\"_action\"]').val('add')
                     $('form[name=\"cartForm\"]').attr('action', '{$config->route}').submit();
+                });
+            });
+            </script>
+            ";
+
+            self::$_loaded[$signature] = true;
+        }
+
+        return $html;
+    }
+
+    /**
+     * Cancel order
+     *
+     * @param array $config
+     * 
+     * @return string
+     */
+    public function orderCancellable($config = array())
+    {
+        $config = new KObjectConfigJson($config);
+        $config->append(array(
+            'form'     => 'orderForm',
+            'selector' => '.orderCancelAction',
+            'action'   => 'cancelorder',
+        ));
+
+        $html = $this->koowa();
+
+        $signature = md5(serialize(array($config->selector,$config->confirm_message)));
+        if (!isset(self::$_loaded[$signature])) {
+            $html .= "
+            <script>
+            kQuery(function($) {
+                $('{$config->selector}').on('click', function(event){
+                    event.preventDefault();
+
+                    $('input[name=\"_action\"]').val('{$config->action}');
+                    $('form[name=\"{$config->form}\"]').submit();
                 });
             });
             </script>

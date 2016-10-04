@@ -22,6 +22,7 @@ defined('KOOWA') or die; ?>
     <div class="col-sm-12">
         <form name="cartForm" method="post" action="<?= route('view=cart') ?>" class="form-horizontal">
             <input type="hidden" name="_action" value="updatecart" />
+            <input type="hidden" name="item_id" />
 
             <div class="panel panel-info">
                 <div class="panel-heading">
@@ -54,7 +55,7 @@ defined('KOOWA') or die; ?>
                                     <input type="text" class="form-control input-sm" size="10" name="quantity[<?= $item->id ?>]" value="<?= $item->quantity ?>">
                                 </div>
                                 <div class="col-sm-2">
-                                    <button type="button" class="deleteAction btn btn-link btn-xs" data-id="<?= $item->id ?>">
+                                    <button type="button" class="cartItemDeleteAction btn btn-link btn-xs" data-id="<?= $item->id ?>">
                                         <span class="glyphicon glyphicon-trash"> </span>
                                     </button>
                                 </div>
@@ -97,7 +98,7 @@ defined('KOOWA') or die; ?>
                                 <h6 class="text-right">Added items?</h6>
                             </div>
                             <div class="col-sm-3">
-                                <button type="submit" class="updateCartAction btn btn-default btn-sm btn-block">
+                                <button type="submit" class="cartUpdateAction btn btn-default btn-sm btn-block">
                                     Update cart
                                 </button>
                             </div>
@@ -111,7 +112,7 @@ defined('KOOWA') or die; ?>
                             <h4 class="text-right">Total <strong>&#8369;<?= number_format($total, 2) ?></strong></h4>
                         </div>
                         <div class="col-xs-3">
-                            <button type="button" class="checkoutAction btn btn-success btn-block">
+                            <button type="button" class="cartCheckoutAction btn btn-success btn-block">
                                 Checkout
                             </button>
                         </div>
