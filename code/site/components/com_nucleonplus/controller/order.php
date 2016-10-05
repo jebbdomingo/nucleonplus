@@ -65,6 +65,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $config->append(array(
             'reward'          => 'com://admin/nucleonplus.mlm.packagereward',
             'item_controller' => 'com:qbsync.controller.item',
+            'behaviors' => array(
+                'onlinepayable'
+            ),
         ));
 
         parent::_initialize($config);
@@ -328,14 +331,40 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 $cartItem->delete();
             }
 
-            $response->addMessage("Thank you for your business, we will process your order once your payment has been confirmed.");
+            // $response->addMessage("Thank you for your business, we will process your order once your payment has been confirmed.");
 
-            $paymentInstruction = $context->getSubject()->getView()->getTemplate()->invoke('alerts.paymentInstructionMessage');
-            $response->addMessage($paymentInstruction, 'info');
+            // $paymentInstruction = $context->getSubject()->getView()->getTemplate()->invoke('alerts.paymentInstructionMessage');
+            // $response->addMessage($paymentInstruction, 'info');
 
-            $identifier = $context->getSubject()->getIdentifier();
-            $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
-            $response->setRedirect(JRoute::_($url, false));
+            // $identifier = $context->getSubject()->getIdentifier();
+            // $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
+            // $response->setRedirect(JRoute::_($url, false));
+
+
+
+
+            // $merchant = 'NUCLEON';
+            // $passwd   = 'eRGTsJ73DcjkL2J';
+
+            // $parameters = array(
+            //     'merchantid'  => $merchant,
+            //     'txnid'       => $order->id,
+            //     'amount'      => number_format($order->getSubTotal(), 2, '.', ''),
+            //     'ccy'         => 'PHP',
+            //     'description' => 'Order description.',
+            //     'email'       => $user->getEmail(),
+            // );
+
+            // $parameters['key'] = $passwd;
+            // $digest_string = implode(':', $parameters);
+            // unset($parameters['key']);
+
+            // $parameters['digest'] = sha1($digest_string);
+
+            // $url = 'http://test.dragonpay.ph/Pay.aspx?';
+            // $url .= http_build_query($parameters, '', '&');
+
+            // $response->setRedirect(JRoute::_($url, false));
         }
         catch(Exception $e)
         {

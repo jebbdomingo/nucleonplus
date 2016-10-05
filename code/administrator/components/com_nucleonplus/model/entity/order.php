@@ -50,6 +50,11 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
         }
     }
 
+    public function getPropertySubtotal()
+    {
+        return $this->getSubTotal();
+    }
+
     /**
      * Get the package items of this order
      *
