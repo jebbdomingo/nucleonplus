@@ -65,7 +65,9 @@ class ComNucleonplusControllerBehaviorOnlinepayable extends KControllerBehaviorA
 
         if (in_array($action, $this->_actions))
         {
-            $objects = $this->getEntityObject($command);
+            $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+            $dragonpay = $config->getJsonValue();
+            $objects   = $this->getEntityObject($command);
 
             foreach ($objects as $object)
             {
@@ -73,11 +75,8 @@ class ComNucleonplusControllerBehaviorOnlinepayable extends KControllerBehaviorA
                 {
                     $data = $this->getData($object);
 
-                    $merchant = 'NUCLEON';
-                    $password = 'eRGTsJ73DcjkL2J';
-
                     $parameters = array(
-                        'merchantid'  => $merchant,
+                        'merchantid'  => $dragonpay->merchant_id,
                         'txnid'       => $data['id'],
                         'amount'      => number_format($data['subtotal'], 2, '.', ''),
                         'ccy'         => 'PHP',
@@ -85,14 +84,14 @@ class ComNucleonplusControllerBehaviorOnlinepayable extends KControllerBehaviorA
                         'email'       => $this->getObject('user')->getEmail(),
                     );
 
-                    $parameters['key'] = $password;
+                    $parameters['key'] = $dragonpay->password;
                     $digest_string     = implode(':', $parameters);
 
                     unset($parameters['key']);
 
                     $parameters['digest'] = sha1($digest_string);
 
-                    $url = 'http://test.dragonpay.ph/Pay.aspx?';
+                    $url = "{$dragonpay->url_test}?";
                     $url .= http_build_query($parameters, '', '&');
 
                     $this->getResponse()->setRedirect(JRoute::_($url, false));
