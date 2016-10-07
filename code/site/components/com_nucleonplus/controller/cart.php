@@ -28,25 +28,49 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
 
         if (count($cart))
         {
-            foreach ($cart as $item)
+            // Add item(s) to the cart
+            if ($items = $cart->getItems())
             {
-                if ($item->package_id == $data->package_id)
+                foreach ($items as $item)
                 {
-                    $item->quantity += $data->quantity;
-                    $item->save();
+                    // Existing item, update quantity instead
+                    if ($item->package_id == $data->package_id)
+                    {
+                        $item->quantity += $data->quantity;
+                        $item->save();
 
-                    $itemExists = true;
+                        $itemExists = true;
+                    }
+                    else
+                    {
+                        // New item
+                        $cartItemData = array(
+                            'cart_id'    => $cart->id,
+                            'package_id' => $data->package_id,
+                            'quantity'   => $data->quantity,
+                        );
+
+                        $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);
+                        $item->save();
+                    }
                 }
             }
         }
-
-        if (!$itemExists)
+        else
         {
+            // New cart
             $data->account_id = $account->id;
+            $cart = parent::_actionAdd($context);
 
-            parent::_actionAdd($context);
+            // New item
+            $cartItemData = array(
+                'cart_id'    => $cart->id,
+                'package_id' => $data->package_id,
+                'quantity'   => $data->quantity,
+            );
+            $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);
+            $item->save();
         }
-
 
         $response = $context->getResponse();
         $response->addMessage('Item added to your shopping cart');
@@ -59,14 +83,18 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
 
     protected function _actionUpdatecart(KControllerContextInterface $context)
     {
-        $user    = $this->getObject('user');
-        $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
-        $data    = $context->request->data;
+        $data = $context->request->data;
 
-        foreach ($data->quantity as $id => $qty)
+        $cart = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
+        $cart->address        = $data->address;
+        $cart->city           = $data->city;
+        $cart->state_province = $data->state_province;
+        $cart->region         = $data->region;
+        $cart->save();
+
+        foreach ($cart->getItems() as $item)
         {
-            $item = $this->getModel()->id($id)->fetch();
-            $item->quantity = (int) $qty;
+            $item->quantity = (int) $data->quantity[$item->id];
             $item->save();
         }
 
@@ -81,7 +109,7 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
         $data    = $context->request->data;
         $id      = $data->item_id;
 
-        $item = $this->getModel()->id($id)->fetch();
+        $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->id($id)->fetch();
         $item->delete();
 
         $response = $context->getResponse();

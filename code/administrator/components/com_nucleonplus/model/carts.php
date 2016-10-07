@@ -16,28 +16,59 @@ class ComNucleonplusModelCarts extends KModelDatabase
 
         $this->getState()
             ->insert('account_id', 'int')
+            ->insert('cart_id', 'int')
             ->insert('package_id', 'int')
         ;
     }
 
-    protected function _buildQueryColumns(KDatabaseQueryInterface $query)
+    /**
+     * Get the total amount of this cart
+     *
+     * @return decimal
+     */
+    public function getAmount()
     {
-        parent::_buildQueryColumns($query);
+        $state = $this->getState();
 
-        $query
-            ->columns(array('_package_name'             => '_package.name'))
-            ->columns(array('_package_price'            => '_package.price'))
-            ->columns(array('_package_rewardpackage_id' => '_package.rewardpackage_id'))
-            ->columns(array('_package_charges'          => '_package.charges'))
+        $table = $this->getObject('com://admin/nucleonplus.database.table.carts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_carts AS tbl')
+            ->columns('tbl.nucleonplus_cart_id, SUM(_items.price * _package_items.quantity * _cart_items.quantity) AS total')
+            ->join(array('_cart_items' => 'nucleonplus_cartitems'), '_cart_items.cart_id = tbl.nucleonplus_cart_id', 'INNER')
+            ->join(array('_packages' => 'nucleonplus_packages'), '_cart_items.package_id = _packages.nucleonplus_package_id', 'INNER')
+            ->join(array('_package_items' => 'nucleonplus_packageitems'), '_package_items.package_id = _packages.nucleonplus_package_id', 'INNER')
+            ->join(array('_items' => 'nucleonplus_items'), '_items.nucleonplus_item_id = _package_items.item_id', 'INNER')
+            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id])
+            ->group('tbl.account_id')
         ;
+
+        $row = $table->select($query);
+
+        return $row->total;
     }
 
-    protected function _buildQueryJoins(KDatabaseQueryInterface $query)
+    /**
+     * Get the total weight of this order
+     *
+     * @return integer
+     */
+    public function getWeight()
     {
-        $query
-            ->join(array('_package' => 'nucleonplus_packages'), 'tbl.package_id = _package.nucleonplus_package_id', 'INNER')
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.cartitems');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_cartitems AS tbl')
+            ->columns('tbl.nucleonplus_cartitem_id, SUM(_items.weight * _package_items.quantity * tbl.quantity) AS total')
+            ->join(array('_packages' => 'nucleonplus_packages'), 'tbl.package_id = _packages.nucleonplus_package_id', 'INNER')
+            ->join(array('_package_items' => 'nucleonplus_packageitems'), '_package_items.package_id = _packages.nucleonplus_package_id', 'INNER')
+            ->join(array('_items' => 'nucleonplus_items'), '_items.nucleonplus_item_id = _package_items.item_id', 'INNER')
+            ->where('tbl.cart_id = :cart_id')->bind(['cart_id' => $state->cart_id])
+            ->group('tbl.cart_id')
         ;
 
-        parent::_buildQueryJoins($query);
+        $entities = $table->select($query);
+
+        return $entities->total;
     }
 }

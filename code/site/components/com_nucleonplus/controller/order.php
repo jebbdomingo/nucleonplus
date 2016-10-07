@@ -73,84 +73,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         parent::_initialize($config);
     }
 
-    /**
-     * Validate add
-     *
-     * @param KControllerContextInterface $context
-     * 
-     * @return KModelEntityInterface
-     */
-    // protected function _validate(KControllerContextInterface $context)
-    // {
-    //     if(!$context->result instanceof KModelEntityInterface) {
-    //         $entity = $this->getModel()->create($context->request->data->toArray());
-    //     } else {
-    //         $entity = $context->result;
-    //     }
-
-    //     $result = true;
-
-    //     try
-    //     {
-    //         $user       = $this->getObject('user');
-    //         $translator = $this->getObject('translator');
-    //         $package_id = (int) trim($entity->package_id);
-    //         $package    = $this->getObject('com:nucleonplus.model.packages')->id($package_id)->fetch();
-            
-    //         // Validate account
-    //         $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
-
-    //         if (count($account) === 0)
-    //         {
-    //             throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Account'));
-    //             $result = false;
-    //         }
-            
-    //         if (empty(trim($entity->package_id)))
-    //         {
-    //             throw new KControllerExceptionRequestInvalid($translator->translate('Please select a Product Pack'));
-    //             $result = false;
-    //         }
-    //         elseif (count($package) === 0)
-    //         {
-    //             throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
-    //             $result = false;
-    //         }
-
-    //         // Check inventory for available stock
-    //         foreach ($package->getItems() as $item)
-    //         {
-    //             if (!$item->hasAvailableStock())
-    //             {
-    //                 throw new KControllerExceptionActionFailed($translator->translate("Insufficient stock of {$item->_item_name}"));
-    //                 $result = false;
-    //             }
-    //         }
-    //     }
-    //     catch(Exception $e)
-    //     {
-    //         $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
-    //         $context->getResponse()->send();
-
-    //         $result = false;
-    //     }
-
-    //     $data = new KObjectConfig([
-    //         'account_id'      => $account->id,
-    //         'package_id'      => $package->id,
-    //         'package_name'    => $package->name,
-    //         'package_price'   => $package->price,
-    //         'order_status'    => 'awaiting_payment',
-    //         'invoice_status'  => 'sent',
-    //         'payment_method'  => 'deposit',
-    //         'shipping_method' => 'xend',
-    //     ]);
-
-    //     $context->getRequest()->setData($data->toArray());
-
-    //     return $result;
-    // }
-
     protected function _validate(KControllerContextInterface $context)
     {
         $user       = $this->getObject('user');
@@ -238,46 +160,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         return $result;
     }
-
-    /**
-     * Create Order
-     *
-     * @param KControllerContextInterface $context
-     *
-     * @return entity
-     */
-    // protected function _actionAdd(KControllerContextInterface $context)
-    // {
-    //     try
-    //     {
-    //         $order    = parent::_actionAdd($context);
-    //         $response = $context->getResponse();
-
-    //         $response->addMessage("Thank you for your business, we will process your order once you confirm your payment. Please see the instruction below.");
-
-    //         $paymentInstruction = $context->getSubject()->getView()->getTemplate()->invoke('alerts.paymentInstructionMessage');
-    //         $response->addMessage($paymentInstruction, 'info');
-
-    //         // Create reward
-    //         $this->_reward->create($order);
-
-    //         $identifier = $context->getSubject()->getIdentifier();
-    //         $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
-    //         $response->setRedirect(JRoute::_($url, false));
-    //     }
-    //     catch(Exception $e)
-    //     {
-    //         $context->response->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
-
-    //         if (!$context->result instanceof KModelEntityInterface) {
-    //             $order = $this->getModel()->fetch();
-    //         } else {
-    //             $order = $context->result;
-    //         }
-    //     }
-
-    //     return $order;
-    // }
 
     /**
      * Create Order

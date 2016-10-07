@@ -16,12 +16,13 @@ defined('KOOWA') or die; ?>
 <?= helper('behavior.validator'); ?>
 <?= helper('behavior.deletable'); ?>
 <?= helper('behavior.updatable'); ?>
-<?= helper('behavior.checkout', array('route' => (string) route('view=order'))); ?>
+<?= helper('behavior.confirmCheckout', array('route' => (string) route('view=cart'))); ?>
 
 <div class="row">
     <div class="col-sm-12">
         <form name="cartForm" method="post" action="<?= route('view=cart') ?>" class="form-horizontal">
             <input type="hidden" name="_action" value="updatecart" />
+            <input type="hidden" name="cart_id" value="<?= $cart->id ?>" />
             <input type="hidden" name="item_id" />
 
             <div class="panel panel-info">
@@ -40,7 +41,7 @@ defined('KOOWA') or die; ?>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <? foreach ($cart as $item): ?>
+                    <? foreach ($items as $item): ?>
                         <div class="row">
                             <div class="col-sm-2"><img class="img-responsive" src="http://placehold.it/100x70">
                             </div>
@@ -69,33 +70,60 @@ defined('KOOWA') or die; ?>
                     <div class="form-group">
                         <label for="address" class="col-sm-2 control-label">Address</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="address" name="address" placeholder="e.g. Block 1 Lot 2 Nuvali Park ..." size="100%" />
+                            <input type="text" class="form-control" id="address" name="address" placeholder="e.g. Block 1 Lot 2 Nuvali Park ..." size="100%" value="<?= $address ?>" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="city" class="col-sm-2 control-label">City</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="city" name="city" placeholder="e.g. Angono" size="100%" />
+                            <input type="text" class="form-control" id="city" name="city" placeholder="e.g. Angono" size="100%" value="<?= $city ?>" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="city" class="col-sm-2 control-label">State/Province</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="state_province" name="state_province" placeholder="e.g. Rizal" size="100%" />
+                            <input type="text" class="form-control" id="state_province" name="state_province" placeholder="e.g. Rizal" size="100%" value="<?= $state_province ?>" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="region" class="col-sm-2 control-label">Region</label>
                         <div class="col-sm-10">
                             <?= helper('listbox.stateProvince', array(
-                                'name' => 'region'
+                                'name'     => 'region',
+                                'selected' => $region,
                             )) ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="text-center">
                             <div class="col-sm-9">
-                                <h6 class="text-right">Added items?</h6>
+                                <h6 class="text-right">Amount</h6>
+                            </div>
+                            <div class="col-sm-3 text-right">&#8369;<?= $amount ?></div>
+                        </div>
+                    </div>
+                    <? if ($show_charges): ?>
+                        <div class="row">
+                            <div class="text-center">
+                                <div class="col-sm-9">
+                                    <h6 class="text-right">Shipping</h6>
+                                </div>
+                                <div class="col-sm-3 text-right">&#8369;<?= $shipping_cost ?></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center">
+                                <div class="col-sm-9">
+                                    <h6 class="text-right">Payment Charge</h6>
+                                </div>
+                                <div class="col-sm-3 text-right">&#8369;<?= $payment_fee ?></div>
+                            </div>
+                        </div>
+                    <? endif ?>
+                    <div class="row">
+                        <div class="text-center">
+                            <div class="col-sm-9">
+                                <h6 class="text-right">Added items, calculate total?</h6>
                             </div>
                             <div class="col-sm-3">
                                 <button type="submit" class="cartUpdateAction btn btn-default btn-sm btn-block">
@@ -109,10 +137,10 @@ defined('KOOWA') or die; ?>
                 <div class="panel-footer">
                     <div class="row text-center">
                         <div class="col-xs-9">
-                            <h4 class="text-right">Total <strong>&#8369;<?= number_format($total, 2) ?></strong></h4>
+                            <h4 class="text-right">Total <strong>&#8369;<?= $total ?></strong></h4>
                         </div>
                         <div class="col-xs-3">
-                            <button type="button" class="cartCheckoutAction btn btn-success btn-block">
+                            <button type="button" class="cartConfirmCheckoutAction btn btn-success btn-block">
                                 Checkout
                             </button>
                         </div>

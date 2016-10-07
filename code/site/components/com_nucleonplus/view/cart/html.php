@@ -11,18 +11,32 @@ class ComNucleonplusViewCartHtml extends ComKoowaViewHtml
 {
     protected function _fetchData(KViewContext $context)
     {
-        $user  = $this->getObject('user');
-        $model = $this->getModel();
-        $cart  = $model->account_id($user->getId())->fetch();
-        $total = 0;
+        $user          = $this->getObject('user');
+        $cart          = $this->getModel()->account_id($user->getId())->fetch();
+        $amount        = $cart->getAmount();
+        $shippingCost  = $cart->getShippingCost();
+        $paymentCharge = 20;
+        $total         = ($amount + $shippingCost + $paymentCharge);
 
-        $context->data->cart = $cart;
+        $context->data->cart           = $cart;
+        $context->data->address        = $cart->address;
+        $context->data->city           = $cart->city;
+        $context->data->state_province = $cart->state_province;
+        $context->data->region         = $cart->region;
+        $context->data->items          = $cart->getItems() ? $cart->getItems() : array();
 
-        foreach ($cart as $item) {
-            $total += $item->_package_price * $item->quantity;
+        $context->data->amount        = number_format($amount, 2);
+        $context->data->show_charges  = false;
+        $context->data->shipping_cost = null;
+
+        if ($cart->region)
+        {
+            $context->data->show_charges  = true;
+            $context->data->shipping_cost = number_format($shippingCost, 2);
+            $context->data->payment_fee   = number_format($paymentCharge, 2);
         }
 
-        $context->data->total = $total;
+        $context->data->total = number_format($total, 2);
 
         parent::_fetchData($context);
     }
