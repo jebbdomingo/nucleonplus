@@ -96,36 +96,49 @@ defined('KOOWA') or die; ?>
                     </div>
                     <div class="row">
                         <div class="text-center">
-                            <div class="col-sm-9">
+                            <div class="col-sm-8">
                                 <h6 class="text-right">Amount</h6>
                             </div>
-                            <div class="col-sm-3 text-right">&#8369;<?= $amount ?></div>
+                            <div class="col-sm-4 text-right">&#8369;<?= $amount ?></div>
                         </div>
                     </div>
                     <? if ($show_charges): ?>
                         <div class="row">
                             <div class="text-center">
-                                <div class="col-sm-9">
+                                <div class="col-sm-8">
                                     <h6 class="text-right">Shipping</h6>
                                 </div>
-                                <div class="col-sm-3 text-right">&#8369;<?= $shipping_cost ?></div>
+                                <div class="col-sm-4 text-right">&#8369;<?= $shipping_cost ?></div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="text-center">
-                                <div class="col-sm-9">
+                                <div class="col-sm-8">
                                     <h6 class="text-right">Payment Charge</h6>
                                 </div>
-                                <div class="col-sm-3 text-right">&#8369;<?= $payment_fee ?></div>
+                                <div class="col-sm-4 text-right">&#8369;<?= $cart->getPaymentCharge() ?></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center">
+                                <div class="col-sm-8">
+                                    <h6 class="text-right">Payment Method</h6>
+                                </div>
+                                <div class="col-sm-4 text-right">
+                                    <?= helper('dragonpay.paymentChannels', array(
+                                        'selected' => $cart->payment_channel,
+                                        'amount'   => $total
+                                    )) ?>
+                                </div>
                             </div>
                         </div>
                     <? endif ?>
                     <div class="row">
                         <div class="text-center">
-                            <div class="col-sm-9">
+                            <div class="col-sm-8">
                                 <h6 class="text-right">Added items, calculate total?</h6>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-4">
                                 <button type="submit" class="cartUpdateAction btn btn-default btn-sm btn-block">
                                     Update cart
                                 </button>

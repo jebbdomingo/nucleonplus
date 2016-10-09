@@ -85,11 +85,14 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
     {
         $data = $context->request->data;
 
+        var_dump($data->payment_channel);die;
+
         $cart = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
-        $cart->address        = $data->address;
-        $cart->city           = $data->city;
-        $cart->state_province = $data->state_province;
-        $cart->region         = $data->region;
+        $cart->address         = $data->address;
+        $cart->city            = $data->city;
+        $cart->state_province  = $data->state_province;
+        $cart->region          = $data->region;
+        $cart->payment_channel = $data->payment_channel;
         $cart->save();
 
         foreach ($cart->getItems() as $item)
