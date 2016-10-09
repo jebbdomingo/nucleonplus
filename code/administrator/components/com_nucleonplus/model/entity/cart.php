@@ -62,7 +62,7 @@ class ComNucleonplusModelEntityCart extends KModelEntityRow
 
     public function getPaymentCharge()
     {
-        $entity =  $this->getObject('com://admin/nucleonplus.model.paymentchannels')
+        $entity =  $this->getObject('com://admin/nucleonplus.model.paymentrates')
             ->mode($this->payment_type)
             ->fetch()
         ;

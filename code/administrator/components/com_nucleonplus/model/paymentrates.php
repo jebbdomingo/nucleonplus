@@ -8,7 +8,7 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusModelPaymentchannels extends KModelDatabase
+class ComNucleonplusModelPaymentrates extends KModelDatabase
 {
     public function __construct(KObjectConfig $config)
     {
