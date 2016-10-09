@@ -39,7 +39,7 @@ class ComNucleonplusTemplateHelperDragonpay extends ComKoowaTemplateHelperListbo
             $allowed = $this->_isProcessorActive($processor) && $this->_isAmountAllowed($processor, $config->amount);
 
             if ($allowed) {
-                $options[] = array('label' => $processor->longName, 'value' => $processor->procId);
+                $options[] = array('label' => $processor->longName, 'value' => "{$processor->procId}|{$processor->type}");
             }
         }
 

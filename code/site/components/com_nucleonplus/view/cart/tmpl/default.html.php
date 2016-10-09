@@ -126,7 +126,7 @@ defined('KOOWA') or die; ?>
                                 </div>
                                 <div class="col-sm-4 text-right">
                                     <?= helper('dragonpay.paymentChannels', array(
-                                        'selected' => $cart->payment_channel,
+                                        'selected' => "{$cart->payment_channel}|{$cart->payment_type}",
                                         'amount'   => $total
                                     )) ?>
                                 </div>
