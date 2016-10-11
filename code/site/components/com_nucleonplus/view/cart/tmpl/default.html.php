@@ -16,7 +16,7 @@ defined('KOOWA') or die; ?>
 <?= helper('behavior.validator'); ?>
 <?= helper('behavior.deletable'); ?>
 <?= helper('behavior.updatable'); ?>
-<?= helper('behavior.confirmCheckout', array('route' => (string) route('view=cart'))); ?>
+<?= helper('behavior.confirmable', array('route' => (string) route('view=cart'))); ?>
 
 <div class="row">
     <div class="col-sm-12">
@@ -97,46 +97,20 @@ defined('KOOWA') or die; ?>
                     <div class="row">
                         <div class="text-center">
                             <div class="col-sm-8">
-                                <h6 class="text-right">Amount</h6>
+                                <h6 class="text-right">Payment Method</h6>
                             </div>
-                            <div class="col-sm-4 text-right">&#8369;<?= $amount ?></div>
+                            <div class="col-sm-4 text-right">
+                                <?= helper('dragonpay.paymentChannels', array(
+                                    'selected' => $cart->payment_channel,
+                                    'amount'   => $total
+                                )) ?>
+                            </div>
                         </div>
                     </div>
-                    <? if ($show_charges): ?>
-                        <div class="row">
-                            <div class="text-center">
-                                <div class="col-sm-8">
-                                    <h6 class="text-right">Shipping</h6>
-                                </div>
-                                <div class="col-sm-4 text-right">&#8369;<?= $shipping_cost ?></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="text-center">
-                                <div class="col-sm-8">
-                                    <h6 class="text-right">Payment Charge</h6>
-                                </div>
-                                <div class="col-sm-4 text-right">&#8369;<?= $cart->getPaymentCharge() ?></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="text-center">
-                                <div class="col-sm-8">
-                                    <h6 class="text-right">Payment Method</h6>
-                                </div>
-                                <div class="col-sm-4 text-right">
-                                    <?= helper('dragonpay.paymentChannels', array(
-                                        'selected' => "{$cart->payment_channel}|{$cart->payment_type}",
-                                        'amount'   => $total
-                                    )) ?>
-                                </div>
-                            </div>
-                        </div>
-                    <? endif ?>
                     <div class="row">
                         <div class="text-center">
                             <div class="col-sm-8">
-                                <h6 class="text-right">Added items, calculate total?</h6>
+                                <h6 class="text-right">Added items, calculate sub-total?</h6>
                             </div>
                             <div class="col-sm-4">
                                 <button type="submit" class="cartUpdateAction btn btn-default btn-sm btn-block">
@@ -150,11 +124,11 @@ defined('KOOWA') or die; ?>
                 <div class="panel-footer">
                     <div class="row text-center">
                         <div class="col-xs-9">
-                            <h4 class="text-right">Total <strong>&#8369;<?= $total ?></strong></h4>
+                            <h4 class="text-right">Sub-total <strong>&#8369;<?= $cart->getAmount() ?></strong></h4>
                         </div>
                         <div class="col-xs-3">
                             <button type="button" class="cartConfirmCheckoutAction btn btn-success btn-block">
-                                Checkout
+                                Confirm
                             </button>
                         </div>
                     </div>

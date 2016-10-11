@@ -66,7 +66,7 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
 
         $html = $this->koowa();
 
-        $signature = md5(serialize(array($config->selector,$config->confirm_message)));
+        $signature = md5(serialize(array($config->selector)));
         if (!isset(self::$_loaded[$signature])) {
             $html .= "
             <script>
@@ -75,6 +75,43 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
                     event.preventDefault();
 
                     $('input[name=\"_action\"]').val('updatecart');
+                    $('form[name=\"cartForm\"]').submit();
+                });
+            });
+            </script>
+            ";
+
+            self::$_loaded[$signature] = true;
+        }
+
+        return $html;
+    }
+
+    /**
+     * Confirm cart
+     *
+     * @param array $config
+     * 
+     * @return string
+     */
+    public function confirmable($config = array())
+    {
+        $config = new KObjectConfigJson($config);
+        $config->append(array(
+            'selector' => '.cartConfirmCheckoutAction',
+        ));
+
+        $html = $this->koowa();
+
+        $signature = md5(serialize(array($config->selector)));
+        if (!isset(self::$_loaded[$signature])) {
+            $html .= "
+            <script>
+            kQuery(function($) {
+                $('{$config->selector}').on('click', function(event){
+                    event.preventDefault();
+
+                    $('input[name=\"_action\"]').val('confirm');
                     $('form[name=\"cartForm\"]').submit();
                 });
             });

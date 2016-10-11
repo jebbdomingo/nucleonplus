@@ -12,26 +12,25 @@ class ComNucleonplusViewCartHtml extends ComKoowaViewHtml
     protected function _fetchData(KViewContext $context)
     {
         $user          = $this->getObject('user');
+        $account       = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
         $cart          = $this->getModel()->account_id($user->getId())->fetch();
         $amount        = $cart->getAmount();
         $shippingCost  = $cart->getShippingCost();
-        $paymentCharge = 20;
+        $paymentCharge = $cart->getPaymentCharge();
         $total         = ($amount + $shippingCost + $paymentCharge);
 
         $context->data->cart           = $cart;
-        $context->data->address        = $cart->address;
-        $context->data->city           = $cart->city;
-        $context->data->state_province = $cart->state_province;
+        $context->data->address        = $cart->address ? $cart->address : $account->street;
+        $context->data->city           = $cart->city ? $cart->city : $account->city;
+        $context->data->state_province = $cart->state_province ? $cart->state_province : $account->state;
         $context->data->region         = $cart->region;
         $context->data->items          = $cart->getItems() ? $cart->getItems() : array();
 
         $context->data->amount        = number_format($amount, 2);
-        $context->data->show_charges  = false;
         $context->data->shipping_cost = null;
 
         if ($cart->region)
         {
-            $context->data->show_charges  = true;
             $context->data->shipping_cost = number_format($shippingCost, 2);
             $context->data->payment_fee   = number_format($paymentCharge, 2);
         }

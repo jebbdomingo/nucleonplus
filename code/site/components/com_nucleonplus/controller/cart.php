@@ -19,12 +19,12 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
 {
     protected function _actionAdd(KControllerContextInterface $context)
     {
-        $user       = $this->getObject('user');
-        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
-        $data       = $context->request->data;
-        $itemExists = false;
+        $user    = $this->getObject('user');
+        $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $data    = $context->request->data;
 
-        $cart = $this->getModel()->account_id($account->id)->fetch();
+        $cart      = $this->getModel()->account_id($account->id)->fetch();
+        $cartItems = array();
 
         if (count($cart))
         {
@@ -33,27 +33,28 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
             {
                 foreach ($items as $item)
                 {
+                    $cartItems[] = $item->package_id;
+
                     // Existing item, update quantity instead
                     if ($item->package_id == $data->package_id)
                     {
                         $item->quantity += $data->quantity;
                         $item->save();
-
-                        $itemExists = true;
-                    }
-                    else
-                    {
-                        // New item
-                        $cartItemData = array(
-                            'cart_id'    => $cart->id,
-                            'package_id' => $data->package_id,
-                            'quantity'   => $data->quantity,
-                        );
-
-                        $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);
-                        $item->save();
                     }
                 }
+            }
+
+            if (!in_array($data->package_id, $cartItems))
+            {
+                // New item
+                $cartItemData = array(
+                    'cart_id'    => $cart->id,
+                    'package_id' => $data->package_id,
+                    'quantity'   => $data->quantity,
+                );
+
+                $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);
+                $item->save();
             }
         }
         else
@@ -83,27 +84,59 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
 
     protected function _actionUpdatecart(KControllerContextInterface $context)
     {
-        $data = $context->request->data;
+        $response = $context->getResponse();
+        $data     = $context->request->data;
 
         $cart = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
         $cart->address         = $data->address;
         $cart->city            = $data->city;
         $cart->state_province  = $data->state_province;
         $cart->region          = $data->region;
-
-        $paymentChannel        = explode('|', $data->payment_channel);
-        $cart->payment_channel = $paymentChannel[0];
-        $cart->payment_type    = $paymentChannel[1];
+        $cart->payment_channel = $data->payment_channel;
         $cart->save();
 
-        foreach ($cart->getItems() as $item)
+        if ($cart->save())
         {
-            $item->quantity = (int) $data->quantity[$item->id];
-            $item->save();
+            foreach ($cart->getItems() as $item)
+            {
+                $item->quantity = (int) $data->quantity[$item->id];
+                $item->save();
+            }
+
+            $response->addMessage('You shopping cart has been updated');
+        }
+        else $response->addMessage($cart->getStatusMessage(), 'error');
+    }
+
+    protected function _actionConfirm(KControllerContextInterface $context)
+    {
+        $response = $context->getResponse();
+        $data     = $context->request->data;
+
+        $cart = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
+        $cart->address         = $data->address;
+        $cart->city            = $data->city;
+        $cart->state_province  = $data->state_province;
+        $cart->region          = $data->region;
+        $cart->payment_channel = $data->payment_channel;
+
+        if (!$cart->save() && $cart->getStatus() == KDatabase::STATUS_FAILED)
+        {
+            $response->addMessage($cart->getStatusMessage(), 'error');
+            $url = 'index.php?option=com_nucleonplus&view=cart';
+        }
+        else
+        {
+            foreach ($cart->getItems() as $item)
+            {
+                $item->quantity = (int) $data->quantity[$item->id];
+                $item->save();
+            }
+
+            $url = 'index.php?option=com_nucleonplus&view=cart&layout=confirm';
         }
 
-        $response = $context->getResponse();
-        $response->addMessage('You shopping cart has been updated');
+        $response->setRedirect(JRoute::_($url, false));
     }
 
     protected function _actionDeleteitem(KControllerContextInterface $context)
