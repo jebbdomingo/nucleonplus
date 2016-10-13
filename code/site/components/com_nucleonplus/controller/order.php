@@ -180,7 +180,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'account_id'      => $account->id,
             'order_status'    => 'awaiting_payment',
             'invoice_status'  => 'sent',
-            'payment_method'  => 'deposit',
+            'payment_method'  => ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY,
             'shipping_method' => 'xend',
             'address'         => $cart->address,
             'city'            => $cart->city,
@@ -208,13 +208,13 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                         'quantity'      => $item->quantity,
                     ));
                     $orderItem->save();
-
-                    // Create reward
-                    $this->_reward->create($orderItem);
                 }
 
+                // Create reward
+                $this->_reward->create($order);
+
                 // Delete the cart
-                //$cart->delete();
+                $cart->delete();
             }
         }
         catch(Exception $e)

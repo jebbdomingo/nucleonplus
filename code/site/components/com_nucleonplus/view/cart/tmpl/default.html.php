@@ -50,7 +50,7 @@ defined('KOOWA') or die; ?>
                             </div>
                             <div class="col-sm-6">
                                 <div class="col-sm-6 text-right">
-                                    <h6><strong>&#8369;<?= $item->_package_price ?> <span class="text-muted">x</span></strong></h6>
+                                    <h6><strong>&#8369;<?= number_format($item->_package_price, 2) ?> <span class="text-muted">x</span></strong></h6>
                                 </div>
                                 <div class="col-sm-4">
                                     <input type="text" class="form-control input-sm" size="10" name="quantity[<?= $item->id ?>]" value="<?= $item->quantity ?>">
@@ -123,7 +123,7 @@ defined('KOOWA') or die; ?>
                 <div class="panel-footer">
                     <div class="row text-center">
                         <div class="col-xs-9">
-                            <h4 class="text-right">Sub-total <strong>&#8369;<?= $cart->getAmount() ?></strong></h4>
+                            <h4 class="text-right">Sub-total <strong>&#8369;<?= number_format($cart->getAmount(), 2) ?></strong></h4>
                         </div>
                         <div class="col-xs-3">
                             <?= helper('dragonpay.confirm', array(

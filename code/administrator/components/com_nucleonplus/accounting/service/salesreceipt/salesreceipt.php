@@ -141,14 +141,16 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             'CustomerMemo' => 'Thank you for your business and have a great day!',
         );
 
-        if ($order->payment_method == 'deposit')
+        if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY)
         {
+            // Online payment
             $salesReceiptData['DepartmentRef']       = $this->_department_ref; // Angono EC Valle store
             $salesReceiptData['DepositToAccountRef'] = $this->_bank_account_ref; // Bank Account
             $salesReceiptData['transaction_type']    = 'online'; // Customer ordered thru website
         }
         else
         {
+            // Cash
             $user     = $this->getObject('user');
             $employee = $this->getObject('com:nucleonplus.model.employeeaccounts')->user_id($user->getId())->fetch();
             
@@ -160,27 +162,34 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         $salesReceipt = $this->_salesreceipt->add($salesReceiptData);
 
         // Product line items
-        foreach ($order->getItems() as $item)
+        foreach ($order->getOrderItems() as $orderItem)
         {
-            $this->_salesreceipt_line->add(array(
-                'SalesReceipt' => $salesReceipt->id,
-                'Description'  => $item->_item_name,
-                'ItemRef'      => $item->_syncitem_item_ref,
-                'Qty'          => $item->quantity,
-                'Amount'       => ($item->_syncitem_unit_price * $item->quantity)
-            ));
+            $packageItems = $this->getObject('com:nucleonplus.model.packageitems')->package_id($orderItem->package_id)->fetch();
+            
+            foreach ($packageItems as $item)
+            {
+                $quantity = ((int) $orderItem->quantity * (int) $item->quantity);
 
-            // Update item's quantity purchased for real time inventory quantity tracking
-            $syncItem = $this->getObject('com:qbsync.model.items')->item_id($item->item_id)->fetch();
-            $syncItem->updateQuantityPurchased($item->quantity);
-            $syncItem->save();
+                $this->_salesreceipt_line->add(array(
+                    'SalesReceipt' => $salesReceipt->id,
+                    'Description'  => $item->_item_name,
+                    'ItemRef'      => $item->_syncitem_item_ref,
+                    'Qty'          => $quantity,
+                    'Amount'       => ($item->_syncitem_unit_price * $quantity)
+                ));
+
+                // Update item's quantity purchased for real time inventory quantity tracking
+                $syncItem = $this->getObject('com:qbsync.model.items')->item_id($item->_item_id)->fetch();
+                $syncItem->updateQuantityPurchased($item->quantity);
+                $syncItem->save();
+            }
         }
 
         // Service line items
-        if ($order->shipping_method == 'xend' && $order->payment_method == 'deposit')
+        if ($order->shipping_method == 'xend' && $order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY)
         {
             // Delivery charge
-            if ($shippingCost = $order->getShippingCost())
+            if ($shippingCost = $order->shipping_cost)
             {
                 $this->_salesreceipt_line->add(array(
                     'SalesReceipt' => $salesReceipt->id,

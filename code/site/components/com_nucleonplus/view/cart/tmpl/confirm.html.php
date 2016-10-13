@@ -47,7 +47,7 @@ defined('KOOWA') or die; ?>
                             </div>
                             <div class="col-sm-6">
                                 <div class="col-sm-6 text-right">
-                                    <h6><strong>&#8369;<?= $item->_package_price ?> <span class="text-muted">x</span> <?= $item->quantity ?></strong></h6>
+                                    <h6><strong>&#8369;<?= number_format($item->_package_price, 2) ?> <span class="text-muted">x</span> <?= $item->quantity ?></strong></h6>
                                 </div>
                             </div>
                         </div>
@@ -75,7 +75,7 @@ defined('KOOWA') or die; ?>
                             <div class="col-sm-10">
                                 <h6 class="text-right"><?= $cart->getPaymentMode() ?></h6>
                             </div>
-                            <div class="col-sm-2 text-right">&#8369;<?= $cart->getPaymentCharge() ?></div>
+                            <div class="col-sm-2 text-right">&#8369;<?= number_format($cart->getPaymentCharge(), 2) ?></div>
                         </div>
                     </div>
 

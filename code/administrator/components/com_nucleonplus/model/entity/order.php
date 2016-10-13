@@ -11,6 +11,8 @@
 
 class ComNucleonplusModelEntityOrder extends KModelEntityRow
 {
+    const PAYMENT_METHOD_DRAGONPAY = 'dragonpay';
+    
     /**
      * Prevent deletion of order
      * An order can only be void but not deleted
@@ -55,15 +57,15 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
         return $this->getTotal();
     }
 
-    /**
-     * Get the package items of this order
-     *
-     * @return array
-     */
-    public function getItems()
-    {
-        return $this->getObject('com:nucleonplus.model.packageitems')->package_id($this->package_id)->fetch();
-    }
+    // /**
+    //  * Get the package items of this order
+    //  *
+    //  * @return array
+    //  */
+    // public function getItems()
+    // {
+    //     return $this->getObject('com:nucleonplus.model.packageitems')->package_id($this->package_id)->fetch();
+    // }
 
     /**
      * Get order items
@@ -72,6 +74,7 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
      */
     public function getOrderItems()
     {
+        //var_dump($this->getObject('com://admin/nucleonplus.model.orderitems')->order_id($this->id)->fetch);
         return $this->getObject('com://admin/nucleonplus.model.orderitems')->order_id($this->id)->fetch();
     }
 

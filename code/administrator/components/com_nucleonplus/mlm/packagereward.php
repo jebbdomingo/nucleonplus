@@ -122,21 +122,25 @@ class ComNucleonplusMlmPackagereward extends KObject
     public function create(KModelEntityInterface $object)
     {
         $controller = $this->getObject($this->_controller);
-        $item       = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
 
-        $data = array(
-            'customer_id'      => $this->_getAccountData($object), // Member's Account ID
-            'product_id'       => $this->_getProductId($object),   // Item or Product ID (order item id)
-            'product_name'     => $this->_getProductName($object), // Item or Product Name
-            'status'           => $this->_default_status,
-            'rewardpackage_id' => $item->_rewardpackage_id,
-            'slots'            => $item->_rewardpackage_slots,
-            'prpv'             => $item->_rewardpackage_prpv,
-            'drpv'             => $item->_rewardpackage_drpv,
-            'irpv'             => $item->_rewardpackage_irpv,
-            'rebates'          => $item->_rewardpackage_rebates,
-            'type'             => $item->_rewardpackage_type
-        );
+        foreach ($object->getOrderItems() as $item)
+        {
+            $item = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
+
+            $data = array(
+                'customer_id'      => $this->_getAccountData($object), // Member's Account ID
+                'product_id'       => $this->_getProductId($object),   // Item or Product ID
+                'status'           => $this->_default_status,
+                'rewardpackage_id' => $item->_rewardpackage_id,
+                'slots'            => $item->_rewardpackage_slots,
+                'prpv'             => $item->_rewardpackage_prpv,
+                'drpv'             => $item->_rewardpackage_drpv,
+                'irpv'             => $item->_rewardpackage_irpv,
+                'rebates'          => $item->_rewardpackage_rebates,
+                'type'             => $item->_rewardpackage_type
+            );
+        }
+
 
         return $controller->add($data);
     }

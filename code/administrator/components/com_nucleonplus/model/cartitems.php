@@ -25,7 +25,7 @@ class ComNucleonplusModelCartitems extends KModelDatabase
 
         $query
             ->columns(array('_package_name' => '_package.name'))
-            ->columns(array('_package_price' => '(_item.price * _package_item.quantity)'))
+            ->columns(array('_package_price' => 'SUM(_item.price * _package_item.quantity)'))
         ;
     }
 
@@ -49,5 +49,12 @@ class ComNucleonplusModelCartitems extends KModelDatabase
         if ($state->cart_id) {
             $query->where('tbl.cart_id = :cart_id')->bind(['cart_id' => $state->cart_id]);
         }
+    }
+
+    protected function _buildQueryGroup(KDatabaseQueryInterface $query)
+    {
+        parent::_buildQueryGroup($query);
+
+        $query->group('tbl.package_id');
     }
 }

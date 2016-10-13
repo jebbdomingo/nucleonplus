@@ -30,7 +30,7 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
      */
     public function processPatronage()
     {
-        if ($this->status <> self::ACTIVE_STATUS) {
+        if ($this->status <> self::STATUS_ACTIVE) {
             return;
         }
 
@@ -81,7 +81,7 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
                 $entity->save();
             }
 
-            $this->status = self::ACTIVE_READY;
+            $this->status = self::STATUS_READY;
             $this->save();
         }
     }

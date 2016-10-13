@@ -215,14 +215,24 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 }
 
                 // Check inventory for available stock
-                $package_id = (int) trim($entity->package_id);
-                $package    = $this->getObject('com:nucleonplus.model.packages')->id($package_id)->fetch();
-                foreach ($package->getItems() as $item)
+                foreach ($entity->getOrderItems() as $item)
                 {
-                    if (!$item->hasAvailableStock())
+                    $package  = $this->getObject('com:nucleonplus.model.packages')->id($item->package_id)->fetch();
+
+                    if (count($package) === 0)
                     {
-                        throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
+                        throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
                         $result = false;
+                    }
+
+                    // Check inventory for available stock
+                    foreach ($package->getItems() as $item)
+                    {
+                        if (!$item->hasAvailableStock())
+                        {
+                            throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
+                            $result = false;
+                        }
                     }
                 }
             }
