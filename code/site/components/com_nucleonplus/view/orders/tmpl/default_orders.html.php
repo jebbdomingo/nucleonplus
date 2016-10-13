@@ -30,21 +30,21 @@ defined('KOOWA') or die; ?>
                             <td><?= helper('date.humanize', array('date' => $order->created_on)) ?></td>
                             <td><?= helper('labels.orderStatus', array('value' => $order->order_status)) ?></td>
                             <td>
-                                <div class="text-right">&#8369;<?= number_format($order->getSubTotal(), 2) ?></div>
+                                <div class="text-right">&#8369;<?= number_format($order->total, 2) ?></div>
                             </td>
                         </tr>
                     <? endforeach ?>
                 <? else: ?>
                     <tr>
-                        <td colspan="6">
-                            <p class="text-center">No Purchase(s) Yet</p>
+                        <td colspan="4">
+                            <p class="text-center">No Purchases Yet</p>
                         </td>
                     </tr>
                 <? endif ?>
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6">
+                    <td colspan="4">
                         <?= helper('paginator.pagination') ?>
                     </td>
                 </tr>

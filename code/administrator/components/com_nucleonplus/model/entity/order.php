@@ -50,9 +50,9 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
         }
     }
 
-    public function getPropertySubtotal()
+    public function getPropertyTotal()
     {
-        return $this->getSubTotal();
+        return $this->getTotal();
     }
 
     /**
@@ -105,29 +105,40 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
 
     public function getAmount()
     {
-        return $this->getObject('com://admin/nucleonplus.model.orders')
+        return (float) $this->getObject('com://admin/nucleonplus.model.orders')
             ->id($this->id)
             ->getAmount()
         ;
     }
 
-    public function getSubTotal()
+    public function getTotal()
     {
-        return (float) $this->getAmount() + (float) $this->getShippingCost();
+        return $this->getAmount() + (float) $this->shipping_cost + (float) $this->payment_charge;
     }
 
-    public function getWeight()
+    public function getPaymentMode()
     {
-        return $this->getObject('com://admin/nucleonplus.model.orders')
-            ->id($this->id)
-            ->getWeight()
-        ;
+        $description = null;
+
+        if ($this->payment_mode)
+        {
+            $entity =  $this->getObject('com://admin/nucleonplus.model.paymentrates')
+                ->mode($this->payment_mode)
+                ->fetch()
+            ;
+
+            $description = $entity->description;
+        }
+
+
+        return $description;
     }
 
-    public function getShippingCost()
-    {
-        return $this->getObject('com://admin/nucleonplus.model.shippingrates')
-            ->getRate($this->region, $this->getWeight())
-        ;
-    }
+    // public function getWeight()
+    // {
+    //     return $this->getObject('com://admin/nucleonplus.model.orders')
+    //         ->id($this->id)
+    //         ->getWeight()
+    //     ;
+    // }
 }

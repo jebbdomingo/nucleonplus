@@ -61,12 +61,44 @@ else $footerAmountSize = 'col-xs-12';
                             </div>
                             <hr />
                         <? endforeach ?>
+
+                        <div class="row">
+                            <div class="text-center">
+                                <div class="col-sm-10">
+                                    <h6 class="text-right">Sub-total</h6>
+                                </div>
+                                <div class="col-sm-2 text-right">&#8369;<?= $order->getAmount() ?></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center">
+                                <div class="col-sm-10">
+                                    <h6 class="text-right">Shipping</h6>
+                                </div>
+                                <div class="col-sm-2 text-right">&#8369;<?= $order->shipping_cost ?></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-center">
+                                <div class="col-sm-10">
+                                    <h6 class="text-right"><?= $order->getPaymentMode() ?></h6>
+                                </div>
+                                <div class="col-sm-2 text-right">&#8369;<?= $order->payment_charge ?></div>
+                            </div>
+                        </div>
+
+                        <div class="well">
+                            <h3>Ship To:</h3>
+                            <?= $order->address ?>, 
+                            <?= $order->city ?>,
+                            <?= $order->state_province ?>
+                        </div>
                     </div>
 
                     <div class="panel-footer">
                         <div class="row text-center">
                             <div class="<?= $footerAmountSize ?>">
-                                <h4 class="text-right">Total <strong>&#8369;<?= number_format($order->getSubTotal(), 2) ?></strong></h4>
+                                <h4 class="text-right">Total <strong>&#8369;<?= number_format($order->total, 2) ?></strong></h4>
                             </div>
                             <? if ($order->order_status == 'awaiting_payment'): ?>
                             <div class="col-xs-3">

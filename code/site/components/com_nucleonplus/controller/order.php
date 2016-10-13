@@ -79,6 +79,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
         $translator = $this->getObject('translator');
         $data       = $context->request->data;
+        $cart       = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
         $error      = false;
 
         // Validate account
@@ -88,26 +89,25 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else
         {
-            if (empty(trim($data->address))) {
+            if (empty(trim($cart->address))) {
                 $error = 'Invalid address';
             }
 
-            if (empty(trim($data->city))) {
+            if (empty(trim($cart->city))) {
                 $error = 'Invalid city';
             }
 
-            if (empty(trim($data->state_province))) {
+            if (empty(trim($cart->state_province))) {
                 $error = 'Invalid state/province';
             }
 
-            if (!in_array($data->region, array('metro_manila', 'luzon', 'visayas', 'mindanao'))) {
+            if (!in_array($cart->region, array('metro_manila', 'luzon', 'visayas', 'mindanao'))) {
                 $error = 'Invalid region';
             }
 
-            foreach ($data->quantity as $id => $qty)
+            foreach ($cart->getItems() as $item)
             {
-                $cartItem = $this->getObject('com://admin/nucleonplus.model.carts')->id($id)->fetch();
-                $package  = $this->getObject('com:nucleonplus.model.packages')->id($cartItem->package_id)->fetch();
+                $package  = $this->getObject('com:nucleonplus.model.packages')->id($item->package_id)->fetch();
 
                 if (count($package) === 0) {
                     $error = 'Invalid Product Pack';
@@ -173,8 +173,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $user       = $this->getObject('user');
         $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
         $translator = $this->getObject('translator');
-        $response   = $context->getResponse();
         $data       = $context->request->data;
+        $cart       = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
 
         $order = $this->getModel()->create(array(
             'account_id'      => $account->id,
@@ -182,71 +182,40 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'invoice_status'  => 'sent',
             'payment_method'  => 'deposit',
             'shipping_method' => 'xend',
-            'address'         => $data->address,
-            'city'            => $data->city,
-            'state_province'  => $data->state_province,
-            'region'          => $data->region,
+            'address'         => $cart->address,
+            'city'            => $cart->city,
+            'state_province'  => $cart->state_province,
+            'region'          => $cart->region,
+            'postal_code'     => $cart->postal_code,
+            'shipping_cost'   => $cart->getShippingCost(),
+            'payment_charge'  => $cart->getPaymentCharge(),
+            'payment_mode'    => $cart->payment_mode,
         ));
 
         try
         {
-            $order->save();
-
-            foreach ($data->quantity as $id => $qty)
+            if ($order->save())
             {
-                $cartItem = $this->getObject('com://admin/nucleonplus.model.carts')->id($id)->fetch();
-                $package  = $this->getObject('com:nucleonplus.model.packages')->id($cartItem->package_id)->fetch();
+                foreach ($cart->getItems() as $item)
+                {
+                    $package  = $this->getObject('com:nucleonplus.model.packages')->id($item->package_id)->fetch();
 
-                $orderItem = $this->getObject('com://admin/nucleonplus.model.orderitems')->create(array(
-                    'order_id'      => $order->id,
-                    'package_id'    => $package->id,
-                    'package_name'  => $package->name,
-                    'package_price' => $package->price,
-                    'quantity'      => $qty,
-                ));
-                $orderItem->save();
+                    $orderItem = $this->getObject('com://admin/nucleonplus.model.orderitems')->create(array(
+                        'order_id'      => $order->id,
+                        'package_id'    => $package->id,
+                        'package_name'  => $package->name,
+                        'package_price' => $package->price,
+                        'quantity'      => $item->quantity,
+                    ));
+                    $orderItem->save();
 
-                // Create reward
-                $this->_reward->create($orderItem);
+                    // Create reward
+                    $this->_reward->create($orderItem);
+                }
 
-                // Delete the item in the cart
-                $cartItem->delete();
+                // Delete the cart
+                //$cart->delete();
             }
-
-            // $response->addMessage("Thank you for your business, we will process your order once your payment has been confirmed.");
-
-            // $paymentInstruction = $context->getSubject()->getView()->getTemplate()->invoke('alerts.paymentInstructionMessage');
-            // $response->addMessage($paymentInstruction, 'info');
-
-            // $identifier = $context->getSubject()->getIdentifier();
-            // $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
-            // $response->setRedirect(JRoute::_($url, false));
-
-
-
-
-            // $merchant = 'NUCLEON';
-            // $passwd   = 'eRGTsJ73DcjkL2J';
-
-            // $parameters = array(
-            //     'merchantid'  => $merchant,
-            //     'txnid'       => $order->id,
-            //     'amount'      => number_format($order->getSubTotal(), 2, '.', ''),
-            //     'ccy'         => 'PHP',
-            //     'description' => 'Order description.',
-            //     'email'       => $user->getEmail(),
-            // );
-
-            // $parameters['key'] = $passwd;
-            // $digest_string = implode(':', $parameters);
-            // unset($parameters['key']);
-
-            // $parameters['digest'] = sha1($digest_string);
-
-            // $url = 'http://test.dragonpay.ph/Pay.aspx?';
-            // $url .= http_build_query($parameters, '', '&');
-
-            // $response->setRedirect(JRoute::_($url, false));
         }
         catch(Exception $e)
         {

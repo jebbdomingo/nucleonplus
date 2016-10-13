@@ -11,15 +11,17 @@ class ComNucleonplusViewCartHtml extends ComKoowaViewHtml
 {
     protected function _fetchData(KViewContext $context)
     {
+        parent::_fetchData($context);
+
         $user          = $this->getObject('user');
         $account       = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
-        $cart          = $this->getModel()->account_id($user->getId())->fetch();
+        $cart          = $context->data->cart;
         $amount        = $cart->getAmount();
         $shippingCost  = $cart->getShippingCost();
         $paymentCharge = $cart->getPaymentCharge();
         $total         = ($amount + $shippingCost + $paymentCharge);
 
-        $context->data->cart           = $cart;
+        //$context->data->cart           = $cart;
         $context->data->address        = $cart->address ? $cart->address : $account->street;
         $context->data->city           = $cart->city ? $cart->city : $account->city;
         $context->data->state_province = $cart->state_province ? $cart->state_province : $account->state;
@@ -35,8 +37,7 @@ class ComNucleonplusViewCartHtml extends ComKoowaViewHtml
             $context->data->payment_fee   = number_format($paymentCharge, 2);
         }
 
-        $context->data->total = number_format($total, 2);
+        $context->data->total = $total;
 
-        parent::_fetchData($context);
     }
 }

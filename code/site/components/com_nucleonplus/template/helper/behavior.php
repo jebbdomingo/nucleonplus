@@ -125,43 +125,6 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
     }
 
     /**
-     * Confirm checkout
-     *
-     * @param array $config
-     * 
-     * @return string
-     */
-    public function confirmCheckout($config = array())
-    {
-        $config = new KObjectConfigJson($config);
-        $config->append(array(
-            'selector' => '.cartConfirmCheckoutAction',
-        ));
-
-        $html = $this->koowa();
-
-        $signature = md5(serialize(array($config->selector,$config->confirm_message)));
-        if (!isset(self::$_loaded[$signature])) {
-            $html .= "
-            <script>
-            kQuery(function($) {
-                $('{$config->selector}').on('click', function(event){
-                    event.preventDefault();
-
-                    $('input[name=\"_action\"]').val('confirmcheckout')
-                    $('form[name=\"cartForm\"]').attr('action', '{$config->route}').submit();
-                });
-            });
-            </script>
-            ";
-
-            self::$_loaded[$signature] = true;
-        }
-
-        return $html;
-    }
-
-    /**
      * Checkout
      *
      * @param array $config

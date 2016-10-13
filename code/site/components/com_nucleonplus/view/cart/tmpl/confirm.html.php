@@ -14,6 +14,7 @@ defined('KOOWA') or die; ?>
 <?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.keepalive'); ?>
 <?= helper('behavior.validator'); ?>
+<?= helper('behavior.checkout', array('route' => (string) route('view=order'))); ?>
 
 <div class="row">
     <div class="col-sm-12">
@@ -55,36 +56,26 @@ defined('KOOWA') or die; ?>
 
                     <div class="row">
                         <div class="text-center">
-                            <div class="col-sm-8">
+                            <div class="col-sm-10">
                                 <h6 class="text-right">Sub-total</h6>
                             </div>
-                            <div class="col-sm-4 text-right">&#8369;<?= $amount ?></div>
+                            <div class="col-sm-2 text-right">&#8369;<?= $amount ?></div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="text-center">
-                            <div class="col-sm-8">
+                            <div class="col-sm-10">
                                 <h6 class="text-right">Shipping</h6>
                             </div>
-                            <div class="col-sm-4 text-right">&#8369;<?= $shipping_cost ?></div>
+                            <div class="col-sm-2 text-right">&#8369;<?= $shipping_cost ?></div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="text-center">
-                            <div class="col-sm-8">
-                                <h6 class="text-right">Dragonpay Charge</h6>
+                            <div class="col-sm-10">
+                                <h6 class="text-right"><?= $cart->getPaymentMode() ?></h6>
                             </div>
-                            <div class="col-sm-4 text-right">&#8369;<?= $cart->getPaymentCharge() ?></div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="text-center">
-                            <div class="col-sm-8">
-                                <h6 class="text-right">Payment Method</h6>
-                            </div>
-                            <div class="col-sm-4 text-right">
-                                <?= $cart->getPaymentChannel() ?>
-                            </div>
+                            <div class="col-sm-2 text-right">&#8369;<?= $cart->getPaymentCharge() ?></div>
                         </div>
                     </div>
 
@@ -100,10 +91,10 @@ defined('KOOWA') or die; ?>
                 <div class="panel-footer">
                     <div class="row text-center">
                         <div class="col-xs-9">
-                            <h4 class="text-right">Total <strong>&#8369;<?= $total ?></strong></h4>
+                            <h4 class="text-right">Total <strong>&#8369;<?= number_format($total, 2) ?></strong></h4>
                         </div>
                         <div class="col-xs-3">
-                            <button type="button" class="checkoutAction btn btn-success btn-block">
+                            <button type="button" class="cartCheckoutAction btn btn-success btn-block">
                                 Checkout
                             </button>
                         </div>

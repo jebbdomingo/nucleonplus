@@ -100,9 +100,8 @@ defined('KOOWA') or die; ?>
                                 <h6 class="text-right">Payment Method</h6>
                             </div>
                             <div class="col-sm-4 text-right">
-                                <?= helper('dragonpay.paymentChannels', array(
-                                    'selected' => $cart->payment_channel,
-                                    'amount'   => $total
+                                <?= helper('dragonpay.paymentModes', array(
+                                    'selected' => $cart->payment_mode,
                                 )) ?>
                             </div>
                         </div>
@@ -127,9 +126,9 @@ defined('KOOWA') or die; ?>
                             <h4 class="text-right">Sub-total <strong>&#8369;<?= $cart->getAmount() ?></strong></h4>
                         </div>
                         <div class="col-xs-3">
-                            <button type="button" class="cartConfirmCheckoutAction btn btn-success btn-block">
-                                Confirm
-                            </button>
+                            <?= helper('dragonpay.confirm', array(
+                                'entity' => $cart
+                            )) ?>
                         </div>
                     </div>
                 </div>

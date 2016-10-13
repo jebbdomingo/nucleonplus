@@ -41,7 +41,7 @@ class ComNucleonplusModelShippingrates extends KModelDatabase
      * @param string  $destination
      * @param integer $weight
      *
-     * @return bool|decimal
+     * @return bool|float
      */
     public function getRate($destination, $weight)
     {

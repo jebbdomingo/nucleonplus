@@ -48,6 +48,12 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             $query->id = (int) $user->getId();
         }
 
+        if ($query->view == 'cart')
+        {
+            $cart      = $this->getObject('com://admin/nucleonplus.model.carts')->account_id($user->getId())->fetch();
+            $query->id = (int) $cart->id;
+        }
+
         return $request;
     }
 }

@@ -10,170 +10,32 @@
 
 class ComNucleonplusControllerBehaviorOnlinepayable extends KControllerBehaviorAbstract
 {
-    /**
-     *
-     * @var array
-     */
-    protected $_reference_column;
-
-    /**
-     *
-     * @var array
-     */
-    protected $_actions;
-
-    /**
-     * Constructor.
-     *
-     * @param KObjectConfig $config Configuration options.
-     */
-    public function __construct(KObjectConfig $config)
+    protected function _afterAdd(KControllerContextInterface $context)
     {
-        parent::__construct($config);
+        $entity    = $context->result;
+        $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+        $dragonpay = $config->getJsonValue();
 
-        $this->_reference_column = KObjectConfig::unbox($config->reference_column);
-        $this->_actions          = KObjectConfig::unbox($config->actions);
-    }
+        $parameters = array(
+            'merchantid'  => $dragonpay->merchant_id,
+            'txnid'       => $entity->id,
+            'amount'      => number_format($entity->total, 2, '.', ''),
+            'ccy'         => 'PHP',
+            'description' => 'Order description.',
+            'email'       => $this->getObject('user')->getEmail(),
+        );
 
-    /**
-     * Initializes the options for the object.
-     *
-     * Called from {@link __construct()} as a first step of object instantiation.
-     *
-     * @param KObjectConfig $config Configuration options.
-     */
-    protected function _initialize(KObjectConfig $config)
-    {
-        $config->append(array(
-            'actions'          => array('after.add'),
-            'reference_column' => array('id', 'subtotal'),
-        ));
+        $parameters['key'] = $dragonpay->password;
+        $digest_string     = implode(':', $parameters);
 
-        parent::_initialize($config);
-    }
+        unset($parameters['key']);
 
-    /**
-     * Command handler.
-     *
-     * @param KCommandInterface      $command The command.
-     * @param KCommandChainInterface $chain   The chain executing the command.
-     * @return mixed If a handler breaks, returns the break condition. Returns the result of the handler otherwise.
-     */
-    final public function execute(KCommandInterface $command, KCommandChainInterface $chain)
-    {
-        $action = $command->getName();
+        $parameters['digest'] = sha1($digest_string);
+        $parameters['mode']   = $entity->payment_mode;
 
-        if (in_array($action, $this->_actions))
-        {
-            $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
-            $dragonpay = $config->getJsonValue();
-            $objects   = $this->getEntityObject($command);
+        $url = "{$dragonpay->url_test}?";
+        $url .= http_build_query($parameters, '', '&');
 
-            foreach ($objects as $object)
-            {
-                if ($object instanceof KModelEntityInterface)
-                {
-                    $data = $this->getData($object);
-
-                    $parameters = array(
-                        'merchantid'  => $dragonpay->merchant_id,
-                        'txnid'       => $data['id'],
-                        'amount'      => number_format($data['subtotal'], 2, '.', ''),
-                        'ccy'         => 'PHP',
-                        'description' => 'Order description.',
-                        'email'       => $this->getObject('user')->getEmail(),
-                    );
-
-                    $parameters['key'] = $dragonpay->password;
-                    $digest_string     = implode(':', $parameters);
-
-                    unset($parameters['key']);
-
-                    $parameters['digest'] = sha1($digest_string);
-
-                    $url = "{$dragonpay->url_test}?";
-                    $url .= http_build_query($parameters, '', '&');
-
-                    $this->getResponse()->setRedirect(JRoute::_($url, false));
-                }
-            }
-        }
-    }
-
-    /**
-     * Get relevant data out of an entity from the accounting system
-     *
-     * @param KModelEntityInterface $entity
-     *
-     * @return array
-     */
-    public function getData(KModelEntityInterface $entity)
-    {
-        $data = array();
-
-        if (is_array($this->_reference_column))
-        {
-            foreach ($this->_reference_column as $column)
-            {
-                if ($entity->{$column}) {
-                    $data[$column] = $entity->{$column};
-                }
-            }
-        }
-        elseif ($entity->{$this->_reference_column}) {
-            die('test');
-            $data[$this->_reference_column] = $entity->{$this->_reference_column};
-        }
-
-        return $data;
-    }
-
-    /**
-     * Get the Entity object
-     *
-     * The Entity object is the entity on which the action is executed
-     *
-     * @param KCommandInterface $command
-     *
-     * @return KModelEntityInterface
-     */
-    public function getEntityObject(KCommandInterface $command)
-    {
-        $parts = explode('.', $command->getName());
-
-        // Properly fetch data for the event.
-        if ($parts[0] == 'before') {
-            $object = $command->getSubject()->getModel()->fetch();
-        } else {
-            $object = $command->result;
-        }
-
-        return $object;
-    }
-
-    /**
-     * Get the behavior name
-     *
-     * Hardcode the name
-     *
-     * @return string
-     */
-    final public function getName()
-    {
-        return 'onlinepayable';
-    }
-
-    /**
-     * Get an object handle
-     *
-     * Force the object to be enqueued in the command chain
-     *
-     * @see execute()
-     *
-     * @return string A string that is unique, or NULL
-     */
-    final public function getHandle()
-    {
-        return KObjectMixinAbstract::getHandle();
+        $context->response->setRedirect(JRoute::_($url, false));
     }
 }

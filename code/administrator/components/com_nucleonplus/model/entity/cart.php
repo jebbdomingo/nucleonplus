@@ -15,10 +15,14 @@ class ComNucleonplusModelEntityCart extends KModelEntityRow
     {
         $result = false;
 
-        if (empty($this->address) || empty($this->city) || empty($this->state_province) || empty($this->region))
+        if (!$this->isNew())
         {
-            $this->setStatus(KDatabase::STATUS_FAILED);
-            $this->setStatusMessage('Shipping address is required');
+            if (empty($this->address) || empty($this->city) || empty($this->state_province) || empty($this->region))
+            {
+                $this->setStatus(KDatabase::STATUS_FAILED);
+                $this->setStatusMessage('Shipping address is required');
+            }
+            else $result = parent::save();
         }
         else $result = parent::save();
 
@@ -74,31 +78,38 @@ class ComNucleonplusModelEntityCart extends KModelEntityRow
         ;
     }
 
-    public function getPaymentChannel()
-    {
-        $channel = explode('|', $this->payment_channel);
-        $procId  = isset($channel[2]) ? $channel[2] : null;
-
-        return $procId;
-    }
-
     public function getPaymentCharge()
     {
-        $amount  = 0;
-        $channel = explode('|', $this->payment_channel);
-        
-        if (isset($channel[1])) {
-            $mode = $channel[1];
+        $amount = 0;
 
+        if ($this->payment_mode)
+        {
+            $rate = $this->getObject('com://admin/nucleonplus.model.paymentrates')
+                ->mode($this->payment_mode)
+                ->fetch()
+            ;
+            
+            $amount = $rate->amount;
+        }
+
+        return (float) $amount;
+    }
+
+    public function getPaymentMode()
+    {
+        $description = null;
+
+        if ($this->payment_mode)
+        {
             $entity =  $this->getObject('com://admin/nucleonplus.model.paymentrates')
-                ->mode($mode)
+                ->mode($this->payment_mode)
                 ->fetch()
             ;
 
-            $amount = $entity->amount;
+            $description = $entity->description;
         }
 
 
-        return $amount;
+        return $description;
     }
 }

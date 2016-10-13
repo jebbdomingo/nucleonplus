@@ -84,60 +84,79 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
 
     protected function _actionUpdatecart(KControllerContextInterface $context)
     {
-        $response = $context->getResponse();
-        $data     = $context->request->data;
-
-        $cart = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
-        $cart->address         = $data->address;
-        $cart->city            = $data->city;
-        $cart->state_province  = $data->state_province;
-        $cart->region          = $data->region;
-        $cart->payment_channel = $data->payment_channel;
-        $cart->save();
-
-        if ($cart->save())
-        {
-            foreach ($cart->getItems() as $item)
-            {
-                $item->quantity = (int) $data->quantity[$item->id];
-                $item->save();
-            }
-
-            $response->addMessage('You shopping cart has been updated');
+        if (!$context->result instanceof KModelEntityInterface) {
+            $cart = $this->getModel()->fetch();
+        } else {
+            $cart = $context->result;
         }
-        else $response->addMessage($cart->getStatusMessage(), 'error');
+
+        if (count($cart))
+        {
+            $cart->setProperties($context->request->data->toArray());
+            $cart->save();
+
+            if (in_array($cart->getStatus(), array(KDatabase::STATUS_FETCHED, KDatabase::STATUS_UPDATED)))
+            {
+                foreach ($cart->getItems() as $item)
+                {
+                    $item->quantity = (int) $context->request->data->quantity[$item->id];
+                    $item->save();
+                }
+
+                $context->response->addMessage('You shopping cart has been updated');
+            }
+            else $context->response->addMessage($cart->getStatusMessage(), 'error');
+        }
     }
 
     protected function _actionConfirm(KControllerContextInterface $context)
     {
-        $response = $context->getResponse();
-        $data     = $context->request->data;
-
-        $cart = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
-        $cart->address         = $data->address;
-        $cart->city            = $data->city;
-        $cart->state_province  = $data->state_province;
-        $cart->region          = $data->region;
-        $cart->payment_channel = $data->payment_channel;
-
-        if (!$cart->save() && $cart->getStatus() == KDatabase::STATUS_FAILED)
-        {
-            $response->addMessage($cart->getStatusMessage(), 'error');
-            $url = 'index.php?option=com_nucleonplus&view=cart';
+        if (!$context->result instanceof KModelEntityInterface) {
+            $cart = $this->getModel()->fetch();
+        } else {
+            $cart = $context->result;
         }
-        else
+
+        if (count($cart))
         {
-            foreach ($cart->getItems() as $item)
+            $cart->setProperties($context->request->data->toArray());
+            $cart->save();
+
+            if (in_array($cart->getStatus(), array(KDatabase::STATUS_FETCHED, KDatabase::STATUS_UPDATED)))
             {
-                $item->quantity = (int) $data->quantity[$item->id];
-                $item->save();
-            }
+                foreach ($cart->getItems() as $item)
+                {
+                    $item->quantity = (int) $context->request->data->quantity[$item->id];
+                    $item->save();
+                }
 
-            $url = 'index.php?option=com_nucleonplus&view=cart&layout=confirm';
+                $url = 'index.php?option=com_nucleonplus&view=cart&layout=confirm';
+                
+            }
+            else 
+            {
+                $context->response->addMessage($cart->getStatusMessage(), 'error');
+                $url = 'index.php?option=com_nucleonplus&view=cart';
+            }
         }
 
-        $response->setRedirect(JRoute::_($url, false));
+        $context->response->setRedirect(JRoute::_($url, false));
     }
+
+    // protected function _actionCheckout(KControllerContextInterface $context)
+    // {
+    //     if (!$context->result instanceof KModelEntityInterface) {
+    //         $cart = $this->getModel()->fetch();
+    //     } else {
+    //         $cart = $context->result;
+    //     }
+
+    //     if (count($cart))
+    //     {
+    //         return $this->getObject('com://site/nucleonplus.controller.order')->add($cart->getProperties());
+    //     }
+    //     else throw new KControllerExceptionResourceNotFound('Resource could not be found');
+    // }
 
     protected function _actionDeleteitem(KControllerContextInterface $context)
     {
