@@ -208,10 +208,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                         'quantity'      => $item->quantity,
                     ));
                     $orderItem->save();
-                }
 
-                // Create reward
-                $this->_reward->create($order);
+                    // Create reward
+                    for ($i=0; $i < $orderItem->quantity; $i++) { 
+                        $this->_reward->create($orderItem);
+                    }
+                }
 
                 // Delete the cart
                 $cart->delete();

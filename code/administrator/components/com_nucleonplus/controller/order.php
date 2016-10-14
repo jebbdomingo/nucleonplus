@@ -431,8 +431,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 $context->response->addMessage("Order #{$order->id} has been created and paid");
 
                 // Automatically activate reward
-                $reward = $this->_activateReward($order);
-                $context->response->addMessage("Reward #{$reward->id} has been activated");
+                $this->_activateReward($order);
             }
             catch (Exception $e)
             {
@@ -481,8 +480,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 $context->response->addMessage("Payment for Order #{$order->id} has been verified");
 
                 // Automatically activate reward
-                $reward = $this->_activateReward($order);
-                $context->response->addMessage("Reward #{$reward->id} has been activated");
+                $this->_activateReward($order);
             }
 
         }
@@ -605,8 +603,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             try
             {
                 foreach ($orders as $order) {
-                    $reward = $this->_activateReward($order);
-                    $context->response->addMessage("Reward #{$reward->id} has been activated");
+                    $this->_activateReward($order);
                 }
             }
             catch (Exception $e)
@@ -628,7 +625,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      * @throws  KControllerExceptionRequestInvalid
      * @throws  KControllerExceptionResourceNotFound
      * 
-     * @return  KModelEntityInterface
+     * @return  void
      */
     protected function _activateReward(KModelEntityInterface $order)
     {
@@ -640,9 +637,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
 
         // Try to activate reward
-        $reward = $this->getObject('com:nucleonplus.model.rewards')->product_id($order->id)->fetch();
-        $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
+        $rewards = $this->getObject('com:nucleonplus.model.rewards')->product_id($order->id)->fetch();
 
-        return $reward;
+        foreach ($rewards as $reward)
+        {
+            $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
+            $this->getResponse()->addMessage("Reward #{$reward->id} has been activated");
+        }
     }
 }

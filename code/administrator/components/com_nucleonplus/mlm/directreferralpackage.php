@@ -28,17 +28,22 @@ class ComNucleonplusMlmDirectreferralpackage extends ComNucleonplusMlmDirectrefe
 
         $orders = $this->getObject('com:nucleonplus.model.orders')
             ->account_id($account->id)
-            ->reward_type(ComNucleonplusModelEntityReward::REWARD_PACKAGE)
-            ->count()
+            ->order_status(ComNucleonplusModelEntityOrder::STATUS_PROCESSING)
+            ->fetch()
         ;
+        $numOrders = count($orders);
+
+        var_dump($numOrders)
 
         // Check if the new member/purchaser has referrer
         // and this is his first purchase
-        if ($account->sponsor_id && $orders == 1) {
+        if ($account->sponsor_id && $numOrders == 1) {
             // Pay referrer a direct referrral bonus
             $result = true;
         }
-        
+
+        var_dump($result);
+
         return $result;
     }
 

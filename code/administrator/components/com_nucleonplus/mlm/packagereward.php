@@ -103,7 +103,7 @@ class ComNucleonplusMlmPackagereward extends KObject
         $config->append([
             'controller'          => 'com:nucleonplus.controller.reward',
             'default_status'      => 'pending', // Default status
-            'product_id_column'   => ['id'], // ID of the Product or Item that is rewardable
+            'product_id_column'   => ['order_id'], // ID of the Product or Item that is rewardable
             'product_name_column' => ['package_name'], // Name of the Product or Item that is rewardable
             'account_id_column'   => ['account_id', 'account_number'], // ID of the customer in the order
             'item_model'          => 'com:nucleonplus.model.packages', // Rewardable Product or Item object's identifier
@@ -122,25 +122,20 @@ class ComNucleonplusMlmPackagereward extends KObject
     public function create(KModelEntityInterface $object)
     {
         $controller = $this->getObject($this->_controller);
+        $item       = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
 
-        foreach ($object->getOrderItems() as $item)
-        {
-            $item = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
-
-            $data = array(
-                'customer_id'      => $this->_getAccountData($object), // Member's Account ID
-                'product_id'       => $this->_getProductId($object),   // Item or Product ID
-                'status'           => $this->_default_status,
-                'rewardpackage_id' => $item->_rewardpackage_id,
-                'slots'            => $item->_rewardpackage_slots,
-                'prpv'             => $item->_rewardpackage_prpv,
-                'drpv'             => $item->_rewardpackage_drpv,
-                'irpv'             => $item->_rewardpackage_irpv,
-                'rebates'          => $item->_rewardpackage_rebates,
-                'type'             => $item->_rewardpackage_type
-            );
-        }
-
+        $data = array(
+            'customer_id'      => $this->_getAccountData($object), // Member's Account ID
+            'product_id'       => $this->_getProductId($object),   // Item or Product ID
+            'status'           => $this->_default_status,
+            'rewardpackage_id' => $item->_rewardpackage_id,
+            'slots'            => $item->_rewardpackage_slots,
+            'prpv'             => $item->_rewardpackage_prpv,
+            'drpv'             => $item->_rewardpackage_drpv,
+            'irpv'             => $item->_rewardpackage_irpv,
+            'rebates'          => $item->_rewardpackage_rebates,
+            'type'             => $item->_rewardpackage_type
+        );
 
         return $controller->add($data);
     }

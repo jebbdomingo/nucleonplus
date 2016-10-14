@@ -159,6 +159,8 @@ class ComNucleonplusMlmCompensation extends KObject
             $reward->save();
         }
 
+        die('debug');
+
         return $result;
     }
 
