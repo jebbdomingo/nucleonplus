@@ -62,6 +62,8 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
      */
     protected function _actionActivate(KControllerContextInterface $context)
     {
+        @ini_set('max_execution_time', 300);
+
         if (!$context->result instanceof KModelEntityInterface) {
             $rewards = $this->getModel()->fetch();
         } else {

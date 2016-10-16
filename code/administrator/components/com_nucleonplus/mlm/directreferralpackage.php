@@ -33,16 +33,12 @@ class ComNucleonplusMlmDirectreferralpackage extends ComNucleonplusMlmDirectrefe
         ;
         $numOrders = count($orders);
 
-        var_dump($numOrders)
-
         // Check if the new member/purchaser has referrer
         // and this is his first purchase
         if ($account->sponsor_id && $numOrders == 1) {
             // Pay referrer a direct referrral bonus
             $result = true;
         }
-
-        var_dump($result);
 
         return $result;
     }
