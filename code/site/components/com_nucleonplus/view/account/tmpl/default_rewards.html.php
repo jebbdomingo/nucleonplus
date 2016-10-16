@@ -23,23 +23,23 @@ defined('KOOWA') or die; ?>
             <tbody>
                 <tr>
                     <td>Rebates</td>
-                    <td class="text-right"><?= number_format($total_rebates, 4) ?></td>
+                    <td class="text-right"><?= number_format($total_rebates, 2) ?></td>
                 </tr>
                 <tr>
                     <td>Direct referral bonus</td>
-                    <td class="text-right"><?= number_format($total_direct_referrals, 4) ?></td>
+                    <td class="text-right"><?= number_format($total_direct_referrals, 2) ?></td>
                 </tr>
                 <tr>
                     <td>Patronage bonus</td>
-                    <td class="text-right"><?= number_format($total_patronages, 4) ?></td>
+                    <td class="text-right"><?= number_format($total_patronages, 2) ?></td>
                 </tr>
                 <tr>
                     <td>Unilevel bonus</td>
-                    <td class="text-right"><?= number_format($total_referral_bonus, 4) ?></td>
+                    <td class="text-right"><?= number_format($total_referral_bonus, 2) ?></td>
                 </tr>
                 <tr class="info">
                     <td>Total</td>
-                    <th class="text-right"><?= number_format($total_bonus, 4) ?></th>
+                    <th class="text-right"><?= number_format($total_bonus, 2) ?></th>
                 </tr>
             </tbody>
         </table>
