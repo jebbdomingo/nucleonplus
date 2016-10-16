@@ -77,7 +77,8 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
         $response->addMessage('Item added to your shopping cart');
 
         $identifier = $context->getSubject()->getIdentifier();
-        $url        = sprintf('index.php?option=com_%s&view=cart', $identifier->package);
+        $itemid     = 119;
+        $url        = sprintf('index.php?option=com_%s&view=cart&Itemid=%s', $identifier->package, $itemid);
 
         $response->setRedirect(JRoute::_($url, false));
     }
@@ -135,28 +136,14 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
             }
             else 
             {
+                $itemid = 119;
                 $context->response->addMessage($cart->getStatusMessage(), 'error');
-                $url = 'index.php?option=com_nucleonplus&view=cart';
+                $url = 'index.php?option=com_nucleonplus&view=cart&Itemid=' . $itemid;
             }
         }
 
         $context->response->setRedirect(JRoute::_($url, false));
     }
-
-    // protected function _actionCheckout(KControllerContextInterface $context)
-    // {
-    //     if (!$context->result instanceof KModelEntityInterface) {
-    //         $cart = $this->getModel()->fetch();
-    //     } else {
-    //         $cart = $context->result;
-    //     }
-
-    //     if (count($cart))
-    //     {
-    //         return $this->getObject('com://site/nucleonplus.controller.order')->add($cart->getProperties());
-    //     }
-    //     else throw new KControllerExceptionResourceNotFound('Resource could not be found');
-    // }
 
     protected function _actionDeleteitem(KControllerContextInterface $context)
     {

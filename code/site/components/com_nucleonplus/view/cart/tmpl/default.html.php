@@ -41,6 +41,7 @@ defined('KOOWA') or die; ?>
                     </div>
                 </div>
                 <div class="panel-body">
+                    <? if (count($items) > 0): ?>
                     <? foreach ($items as $item): ?>
                         <div class="row">
                             <div class="col-sm-2"><img class="img-responsive" src="http://placehold.it/100x70">
@@ -64,6 +65,13 @@ defined('KOOWA') or die; ?>
                         </div>
                         <hr />
                     <? endforeach ?>
+                    <? else: ?>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <p class="text-center bg-warning">Your shopping cart is empty</p>
+                        </div>
+                    </div>
+                    <? endif ?>
 
                     <h3>Shipping Address</h3>
 

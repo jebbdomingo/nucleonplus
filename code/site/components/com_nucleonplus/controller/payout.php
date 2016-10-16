@@ -87,6 +87,12 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         $unilevelDRBonus     = 0;
         $unilevelIRBonus     = 0;
 
+        $redeemedRebateBonus     = array();
+        $redeemedDRBonus         = array();
+        $redeemedPatronageBonus  = array();
+        $redeemedUnilevelDRBonus = array();
+        $redeemedUnilevelIRBonus = array();
+
         $contextData  = $context->request->data;
 
         // Ensure there is no discrepancy in member's rebates payout request
