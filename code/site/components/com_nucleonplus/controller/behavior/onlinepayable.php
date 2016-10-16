@@ -12,6 +12,7 @@ class ComNucleonplusControllerBehaviorOnlinepayable extends KControllerBehaviorA
 {
     protected function _afterAdd(KControllerContextInterface $context)
     {
+        $env       = getenv('APP_ENV');
         $entity    = $context->result;
         $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
         $dragonpay = $config->getJsonValue();
@@ -33,7 +34,7 @@ class ComNucleonplusControllerBehaviorOnlinepayable extends KControllerBehaviorA
         $parameters['digest'] = sha1($digest_string);
         $parameters['mode']   = $entity->payment_mode;
 
-        $url = "{$dragonpay->url_test}?";
+        $url = $env == 'production' ? "{$dragonpay->url_prod}?" : "{$dragonpay->url_test}?";
         $url .= http_build_query($parameters, '', '&');
 
         $context->response->setRedirect(JRoute::_($url, false));

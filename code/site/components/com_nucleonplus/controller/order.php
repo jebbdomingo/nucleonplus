@@ -65,7 +65,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $config->append(array(
             'reward'          => 'com://admin/nucleonplus.mlm.packagereward',
             'item_controller' => 'com:qbsync.controller.item',
-            'behaviors' => array(
+            'behaviors'       => array(
                 'onlinepayable'
             ),
         ));
