@@ -15,7 +15,7 @@ class ComNucleonplusMlmPackagerebates extends KObject
      *
      * @param KObjectIdentifierInterface
      */
-    protected $_controller;
+    protected $_model;
 
     /**
      * Accounting Service
@@ -33,7 +33,7 @@ class ComNucleonplusMlmPackagerebates extends KObject
     {
         parent::__construct($config);
 
-        $this->_controller = $this->getObject($config->controller);
+        $this->_model = $this->getObject($config->model);
 
         // Accounting service
         $identifier = $this->getIdentifier($config->accounting_service);
@@ -58,7 +58,7 @@ class ComNucleonplusMlmPackagerebates extends KObject
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'controller'         => 'com:nucleonplus.model.rebates',
+            'model'              => 'com:nucleonplus.model.rebates',
             'accounting_service' => 'com:nucleonplus.accounting.service.transfer'
         ));
 
@@ -88,7 +88,7 @@ class ComNucleonplusMlmPackagerebates extends KObject
     private function _createRebates(KModelEntityInterface $reward)
     {
         $points  = $reward->type == ComNucleonplusModelEntityReward::REWARD_PACKAGE ? ($reward->rebates * $reward->slots) : $reward->rebates;
-        $rebates = $this->_controller->create(array(
+        $rebates = $this->_model->create(array(
             'reward_id'  => $reward->id,
             'account_id' => $reward->getAccount()->id,
             'points'     => $points

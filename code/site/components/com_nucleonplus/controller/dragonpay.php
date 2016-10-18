@@ -33,9 +33,6 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
             );
         }
         else $this->_salesreceipt_service = $service;
-
-        // Reward service
-        $this->_reward = $config->reward;
     }
 
     /**
@@ -49,8 +46,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'salesreceipt_service' => 'com://admin/nucleonplus.accounting.service.salesreceipt',
-            'reward'               => 'com://admin/nucleonplus.mlm.packagereward'
+            'salesreceipt_service' => 'com://admin/nucleonplus.accounting.service.salesreceipt'
         ));
 
         parent::_initialize($config);
@@ -68,7 +64,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
     protected function _validateVerify(KControllerContextInterface $context)
     {
         if (!$context->result instanceof KModelEntityInterface) {
-            $orders = $this->getModel()->fetch();
+            $orders = $this->getObject('com://admin/nucleonplus.model.orders')->fetch();
         } else {
             $orders = $context->result;
         }
@@ -79,7 +75,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         {
             // Check order status if it can be verified
             if ($order->order_status <> 'awaiting_verification') {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified'));
+                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified.' . ' Order #' . $order->id));
             }
 
             // Check inventory for available stock
@@ -144,26 +140,33 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
     protected function _actionVerifyonlinepayment(KControllerContextInterface $context)
     {
         $data = $context->request->data;
-        
-        // Mark as Paid
-        $data->invoice_status = 'paid';
-        $data->order_status   = 'processing';
 
-        $order = parent::_actionEdit($context);
-
-        try
+        if ($this->_login())
         {
-            $this->_salesreceipt_service->recordSale($order);
+            // Mark as Paid
+            $data->invoice_status = 'paid';
+            $data->order_status   = 'processing';
 
-            // Automatically activate reward
-            $this->_activateReward($order);
-        }
-        catch (Exception $e)
-        {
-            die('result=FAIL_INTERNAL_ERROR');
-        }
+            $order = parent::_actionEdit($context);
 
-        die('result=OK');
+            try
+            {
+                $order = $this->getObject('com://admin/nucleonplus.model.orders')->fetch();
+                $this->_salesreceipt_service->recordSale($order);
+
+                // Automatically activate reward
+                $this->_activateReward($order);
+                $this->_logout();
+
+            }
+            catch (Exception $e)
+            {
+                var_dump($e->getMessage());
+                die('result=FAIL_INTERNAL_ERROR');
+            }
+            
+            die('result=OK');
+        } die('result=FAIL_AUTHENTICATION_ERROR');
     }
 
     protected function _actionShowstatus(KControllerContextInterface $context)
@@ -185,7 +188,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
      * @throws  KControllerExceptionRequestInvalid
      * @throws  KControllerExceptionResourceNotFound
      * 
-     * @return  void
+     * @return  boolean
      */
     protected function _activateReward(KModelEntityInterface $order)
     {
@@ -199,10 +202,31 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         // Try to activate reward
         $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')->product_id($order->id)->fetch();
 
-        foreach ($rewards as $reward)
-        {
-            $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
-            $this->getResponse()->addMessage("Reward #{$reward->id} has been activated");
+        foreach ($rewards as $reward) {
+            $oReward = $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
         }
+    }
+
+    protected function _login()
+    {
+        $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+        $dragonpay = $config->getJsonValue();
+
+        $app = JFactory::getApplication('site');
+        jimport('joomla.plugin.helper');
+
+        $credentials = array(
+            'username' => $dragonpay->nuc_user,
+            'password' => $dragonpay->nuc_password
+        );
+
+        return $app->login($credentials);
+    }
+
+    protected function _logout()
+    {
+        jimport('joomla.plugin.helper');
+        $app = JFactory::getApplication('site');
+        $app->logout();
     }
 }

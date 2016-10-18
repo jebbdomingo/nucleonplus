@@ -178,10 +178,10 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $order = $this->getModel()->create(array(
             'account_id'      => $account->id,
-            'order_status'    => 'awaiting_payment',
-            'invoice_status'  => 'sent',
+            'order_status'    => ComNucleonplusModelEntityOrder::STATUS_VERIFICATION,
+            'invoice_status'  => ComNucleonplusModelEntityOrder::INVOICE_STATUS_SENT,
             'payment_method'  => ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY,
-            'shipping_method' => 'xend',
+            'shipping_method' => ComNucleonplusModelEntityOrder::SHIPPING_METHOD_XEND,
             'address'         => $cart->address,
             'city'            => $cart->city,
             'state_province'  => $cart->state_province,

@@ -2,6 +2,9 @@
 
 return array(
     'aliases' => array(
+        // 'com:qbsync.controller.salesreceiptline'                => 'com://admin/qbsync.controller.salesreceiptline',
+        // 'com:qbsync.controller.salesreceipt'                    => 'com://admin/qbsync.controller.salesreceipt',
+        // 'com:nucleonplus.accounting.service.salesreceipt'       => 'com://admin/nucleonplus.accounting.service.salesreceipt',
         'com:nucleonplus.model.packages'                        => 'com://admin/nucleonplus.model.packages',
         'com:nucleonplus.model.packageitems'                    => 'com://admin/nucleonplus.model.packageitems',
         'com://site/nucleonplus.model.members'                  => 'com://admin/nucleonplus.model.members',
