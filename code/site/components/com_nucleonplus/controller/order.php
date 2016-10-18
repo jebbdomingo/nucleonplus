@@ -26,13 +26,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected $_reward;
 
     /**
-     * Inventory Service
-     *
-     * @var ComQbsyncControllerItem
-     */
-    protected $_item_controller;
-
-    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -43,9 +36,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         // Reward service
         $this->_reward = $this->getObject($config->reward);
-
-        // Inventory service
-        $this->_item_controller = $this->getObject($config->item_controller);
 
         // Validation
         $this->addCommandCallback('before.add', '_validate');

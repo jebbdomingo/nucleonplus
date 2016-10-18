@@ -38,6 +38,13 @@ defined('KOOWA') or die; ?>
                     </div>
                 </div>
                 <div class="panel-body">
+                    <div class="well">
+                        <h3>Ship To:</h3>
+                        <?= $address ?>, 
+                        <?= $city ?>,
+                        <?= $state_province ?>
+                    </div>
+                    
                     <? foreach ($items as $item): ?>
                         <div class="row">
                             <div class="col-sm-2"><img class="img-responsive" src="http://placehold.it/100x70">
@@ -77,13 +84,6 @@ defined('KOOWA') or die; ?>
                             </div>
                             <div class="col-sm-2 text-right">&#8369;<?= number_format($cart->getPaymentCharge(), 2) ?></div>
                         </div>
-                    </div>
-
-                    <div class="well">
-                        <h3>Ship To:</h3>
-                        <?= $address ?>, 
-                        <?= $city ?>,
-                        <?= $state_province ?>
                     </div>
                 </div>
 

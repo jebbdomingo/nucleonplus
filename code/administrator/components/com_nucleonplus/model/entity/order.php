@@ -88,23 +88,13 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     }
 
     /**
-     * Get the package details
+     * Get the rewards details
      *
      * @return array
      */
-    public function getPackage()
+    public function getRewards()
     {
-        return $this->getObject('com:nucleonplus.model.packages')->id($this->package_id)->fetch();
-    }
-
-    /**
-     * Get the reward details
-     *
-     * @return array
-     */
-    public function getReward()
-    {
-        return $this->getObject('com:nucleonplus.model.rewards')->product_id($this->id)->fetch();
+        return $this->getObject('com://admin/nucleonplus.model.rewards')->product_id($this->id)->fetch();
     }
 
     // public function getShippingRate()

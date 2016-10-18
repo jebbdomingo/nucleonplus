@@ -24,8 +24,9 @@ class ComNucleonplusModelCartitems extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns(array('_package_name' => '_package.name'))
-            ->columns(array('_package_price' => 'SUM(_item.price * _package_item.quantity)'))
+            ->columns(array('_package_name'  => '_package.name'))
+            ->columns(array('_package_price' => '_package.price'))
+            // ->columns(array('_package_price' => 'SUM(_item.price * _package_item.quantity)'))
         ;
     }
 
@@ -33,8 +34,8 @@ class ComNucleonplusModelCartitems extends KModelDatabase
     {
         $query
             ->join(array('_package' => 'nucleonplus_packages'), 'tbl.package_id = _package.nucleonplus_package_id')
-            ->join(array('_package_item' => 'nucleonplus_packageitems'), '_package.nucleonplus_package_id = _package_item.package_id')
-            ->join(array('_item' => 'nucleonplus_items'), '_package_item.item_id = _item.nucleonplus_item_id')
+            // ->join(array('_package_item' => 'nucleonplus_packageitems'), '_package.nucleonplus_package_id = _package_item.package_id')
+            // ->join(array('_item' => 'nucleonplus_items'), '_package_item.item_id = _item.nucleonplus_item_id')
         ;
 
         parent::_buildQueryJoins($query);
@@ -51,10 +52,10 @@ class ComNucleonplusModelCartitems extends KModelDatabase
         }
     }
 
-    protected function _buildQueryGroup(KDatabaseQueryInterface $query)
-    {
-        parent::_buildQueryGroup($query);
+    // protected function _buildQueryGroup(KDatabaseQueryInterface $query)
+    // {
+    //     parent::_buildQueryGroup($query);
 
-        $query->group('tbl.package_id');
-    }
+    //     $query->group('tbl.package_id');
+    // }
 }

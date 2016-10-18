@@ -63,8 +63,10 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
      */
     protected function _validateVerify(KControllerContextInterface $context)
     {
+        $data = $context->request->data;
+
         if (!$context->result instanceof KModelEntityInterface) {
-            $orders = $this->getObject('com://admin/nucleonplus.model.orders')->fetch();
+            $orders = $this->getObject('com://admin/nucleonplus.model.orders')->id($data->txnid)->fetch();
         } else {
             $orders = $context->result;
         }
@@ -97,7 +99,6 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
             }
 
             // Validate digest from dragonpay
-            $data       = $context->request->data;
             $config     = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
             $dragonpay  = $config->getJsonValue();
             $parameters = array(
@@ -139,7 +140,8 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
 
     protected function _actionVerifyonlinepayment(KControllerContextInterface $context)
     {
-        $data = $context->request->data;
+        $data     = $context->request->data;
+        $data->id = $data->txnid;
 
         if ($this->_login())
         {
@@ -200,8 +202,8 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         }
 
         // Try to activate reward
-        $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')->product_id($order->id)->fetch();
-
+        // $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')->product_id($order->id)->fetch();
+        $rewards = $order->getRewards();
         foreach ($rewards as $reward) {
             $oReward = $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
         }
