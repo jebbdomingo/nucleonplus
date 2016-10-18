@@ -117,7 +117,7 @@ defined('KOOWA') or die; ?>
                     <div class="row">
                         <div class="text-center">
                             <div class="col-sm-8">
-                                <h6 class="text-right">Added items, calculate sub-total?</h6>
+                                <h6 class="text-right">Added items?</h6>
                             </div>
                             <div class="col-sm-4">
                                 <button type="submit" class="cartUpdateAction btn btn-default btn-sm btn-block">

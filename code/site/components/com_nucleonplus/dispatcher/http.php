@@ -22,7 +22,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
     protected function _actionDispatch(KDispatcherContextInterface $context)
     {
         $view        = $this->getRequest()->query->view;
-        $excemptions = array('packages');
+        $excemptions = array('packages', 'dragonpay');
 
         if ($view && (!in_array($view, $excemptions) && !$this->getUser()->isAuthentic()))
         {
@@ -68,6 +68,20 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             }
 
             $query->id = (int) $id;
+        }
+
+        if ($query->view == 'dragonpay' && $request->getMethod() == 'POST')
+        {
+            $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
+            $controller->id($request->data->txnid);
+            $controller->verifyonlinepayment($request->data->toArray());
+        }
+
+        if ($query->view == 'dragonpay' && $request->getMethod() == 'GET')
+        {
+            $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
+            $controller->id($query->txnid);
+            $controller->showstatus($query->toArray());
         }
 
         return $request;
