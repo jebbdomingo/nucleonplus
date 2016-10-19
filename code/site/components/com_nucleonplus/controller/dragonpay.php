@@ -63,14 +63,8 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
      */
     protected function _validateVerify(KControllerContextInterface $context)
     {
-        $data = $context->request->data;
-
-        if (!$context->result instanceof KModelEntityInterface) {
-            $orders = $this->getObject('com://admin/nucleonplus.model.orders')->id($data->txnid)->fetch();
-        } else {
-            $orders = $context->result;
-        }
-
+        $data       = $context->request->data;
+        $orders     = $this->getObject('com://admin/nucleonplus.model.orders')->id($data->txnid)->fetch();
         $translator = $this->getObject('translator');
 
         foreach ($orders as $order)
@@ -142,33 +136,44 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
     {
         $data     = $context->request->data;
         $data->id = $data->txnid;
+        $result   = 'result=OK';
 
-        if ($this->_login())
+        if ($data->status == 'P')
         {
-            // Mark as Paid
-            $data->invoice_status = 'paid';
-            $data->order_status   = 'processing';
-
-            $order = parent::_actionEdit($context);
-
-            try
+            $data->payment_status = $data->status;
+            parent::_actionEdit($context);
+        }
+        elseif ($data->status == 'S')
+        {
+            if ($this->_login())
             {
-                $order = $this->getObject('com://admin/nucleonplus.model.orders')->fetch();
-                $this->_salesreceipt_service->recordSale($order);
+                // Mark as Paid
+                $data->invoice_status = 'paid';
+                $data->order_status   = 'processing';
+                $data->payment_status = $data->status;
 
-                // Automatically activate reward
-                $this->_activateReward($order);
+                try
+                {
+                    $order = parent::_actionEdit($context);
+                    $order = $this->getObject('com://admin/nucleonplus.model.orders')->id($order->id)->fetch();
+                    $this->_salesreceipt_service->recordSale($order);
+
+                    // Automatically activate reward
+                    $this->_activateReward($order);
+                }
+                catch (Exception $e)
+                {
+                    // Transform error message to THIS_FORMAT
+                    $result = 'result=' . str_replace(' ', '_', strtoupper($e->getMessage()));
+                }
+                
                 $this->_logout();
+            }
+            else $result = 'result=FAIL_AUTHENTICATION_ERROR';
+        }
+        else $result = 'result=FAIL_INVALID_STATUS';
 
-            }
-            catch (Exception $e)
-            {
-                var_dump($e->getMessage());
-                die('result=FAIL_INTERNAL_ERROR');
-            }
-            
-            die('result=OK');
-        } die('result=FAIL_AUTHENTICATION_ERROR');
+        exit("{$result}");
     }
 
     protected function _actionShowstatus(KControllerContextInterface $context)
@@ -202,10 +207,9 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         }
 
         // Try to activate reward
-        // $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')->product_id($order->id)->fetch();
         $rewards = $order->getRewards();
         foreach ($rewards as $reward) {
-            $oReward = $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
+            $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
         }
     }
 
