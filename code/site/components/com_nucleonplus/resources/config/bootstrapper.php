@@ -6,6 +6,7 @@ return array(
         // 'com:qbsync.controller.salesreceipt'                    => 'com://admin/qbsync.controller.salesreceipt',
         // 'com:nucleonplus.accounting.service.salesreceipt'       => 'com://admin/nucleonplus.accounting.service.salesreceipt',
         'com://site/nucleonplus.model.products'                 => 'com://admin/qbsync.model.items',
+        'com://site/nucleonplus.model.cities'                   => 'com://admin/nucleonplus.model.cities',
         'com:nucleonplus.model.packages'                        => 'com://admin/nucleonplus.model.packages',
         'com:nucleonplus.model.packageitems'                    => 'com://admin/nucleonplus.model.packageitems',
         'com://site/nucleonplus.model.members'                  => 'com://admin/nucleonplus.model.members',

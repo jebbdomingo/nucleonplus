@@ -10,6 +10,8 @@
 
 defined('KOOWA') or die; ?>
 
+<ktml:style src="media://koowa/com_koowa/css/koowa.css" />
+
 <?= helper('behavior.koowa'); ?>
 <?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.keepalive'); ?>
@@ -84,7 +86,10 @@ defined('KOOWA') or die; ?>
                     <div class="form-group">
                         <label for="city" class="col-sm-2 control-label">City</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="city" name="city" placeholder="e.g. Angono" size="100%" value="<?= $city ?>" />
+                            <?= helper('listbox.cities', array(
+                                'name'     => 'city_id',
+                                'selected' => $city,
+                            )) ?>
                         </div>
                     </div>
                     <div class="form-group">

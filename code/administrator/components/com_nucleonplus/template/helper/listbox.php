@@ -503,4 +503,25 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
 
         return parent::optionlist($config);
     }
+
+    /**
+     * Provides cities select box.
+     *
+     * @param  array|KObjectConfig $config An optional configuration array.
+     * 
+     * @return string The autocomplete select box.
+     */
+    public function cities($config = array())
+    {
+        $config = new KObjectConfigJson($config);
+        $config->append(array(
+            'model'    => 'cities',
+            'value'    => 'id',
+            'label'    => '_name',
+            'sort'     => '_name',
+            'validate' => false,
+        ));
+
+        return $this->_autocomplete($config);
+    }
 }
