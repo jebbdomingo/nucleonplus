@@ -164,24 +164,49 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         // Product line items
         foreach ($order->getOrderItems() as $orderItem)
         {
-            $packageItems = $this->getObject('com:nucleonplus.model.packageitems')->package_id($orderItem->package_id)->fetch();
+            $items = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
             
-            foreach ($packageItems as $item)
+            foreach ($items as $item)
             {
-                $quantity = ((int) $orderItem->quantity * (int) $item->quantity);
+                if ($item->Type == 'Group')
+                {
+                    // Business Package/Bundle
+                    $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($item->ItemRef)->fetch();
 
-                $this->_salesreceipt_line->add(array(
-                    'SalesReceipt' => $salesReceipt->id,
-                    'Description'  => $item->_item_name,
-                    'ItemRef'      => $item->_syncitem_item_ref,
-                    'Qty'          => $quantity,
-                    'Amount'       => ($item->_syncitem_unit_price * $quantity)
-                ));
+                    foreach ($groupedItems as $groupedItem)
+                    {
+                        if ($groupedItem->_item_type == 'Inventory')
+                        {
+                            $quantity = ((int) $orderItem->quantity * (int) $groupedItem->quantity);
 
-                // Update item's quantity purchased for real time inventory quantity tracking
-                $syncItem = $this->getObject('com:qbsync.model.items')->item_id($item->_item_id)->fetch();
-                $syncItem->updateQuantityPurchased($item->quantity);
-                $syncItem->save();
+                            $this->_addSalesReceiptLine(
+                                $salesReceipt->id,
+                                $groupedItem->_item_name,
+                                $groupedItem->_item_ref,
+                                $quantity,
+                                ($groupedItem->_item_price * $quantity)
+                            );
+
+                            $oItem = $this->getObject('com://admin/qbsync.model.items')->ItemRef($groupedItem->ItemRef)->fetch();
+                            $this->_updateQuantity($oItem, $quantity);
+                        }
+                    }
+                }
+                else
+                {
+                    // Retail Item
+                    $quantity = (int) $orderItem->quantity;
+
+                    $this->_addSalesReceiptLine(
+                        $salesReceipt->id,
+                        $item->Name,
+                        $item->ItemRef,
+                        $quantity,
+                        ($item->UnitPrice * $quantity)
+                    );
+
+                    $this->_updateQuantity($item, $quantity);
+                }
             }
         }
 
@@ -210,5 +235,32 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
 
             $this->_transfer_service->allocateCharges($order->id, $charges);
         }
+    }
+
+    protected function _addSalesReceiptLine($salesReceiptId, $description, $ItemRef, $quantity, $amount)
+    {
+        $this->_salesreceipt_line->add(array(
+            'SalesReceipt' => $salesReceiptId,
+            'Description'  => $description,
+            'ItemRef'      => $ItemRef,
+            'Qty'          => $quantity,
+            'Amount'       => $amount
+        ));
+    }
+
+    /**
+     * Update item's quantity purchased for real time inventory quantity tracking
+     *
+     * @param KModelEntityInterface $entity
+     * @param integer               $quantity
+     *
+     * @return KModelEntityInterface
+     */
+    protected function _updateQuantity($entity, $quantity)
+    {
+        $entity->updateQuantityPurchased($quantity);
+        $entity->save();
+
+        return $entity;
     }
 }

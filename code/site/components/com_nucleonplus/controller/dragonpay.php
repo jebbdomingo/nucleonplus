@@ -74,21 +74,18 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
                 throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified.' . ' Order #' . $order->id));
             }
 
-            // Check inventory for available stock
-            foreach ($order->getOrderItems() as $item)
+            $inventory = $this->getObject('com://admin/nucleonplus.accounting.service.inventory');
+            foreach ($order->getOrderItems() as $orderItem)
             {
-                $package  = $this->getObject('com:nucleonplus.model.packages')->id($item->package_id)->fetch();
+                $item  = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
 
-                if (count($package) === 0) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
+                if (count($item) === 0) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Item'));
                 }
 
                 // Check inventory for available stock
-                foreach ($package->getItems() as $item)
-                {
-                    if (!$item->hasAvailableStock()) {
-                        throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
-                    }
+                if (!$inventory->hasAvailableStock($item->ItemRef, $item->quantity)) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->item_name}"));
                 }
             }
 
@@ -104,6 +101,8 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
             );
             $digestStr = implode(':', $parameters);
             $digest    = sha1($digestStr);
+
+            var_dump($digest);
 
             if ($data->digest !== $digest) {
                 die('result=FAIL_DIGEST_MISMATCH');
@@ -209,7 +208,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         // Try to activate reward
         $rewards = $order->getRewards();
         foreach ($rewards as $reward) {
-            $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
+            $this->getObject('com://admin/nucleonplus.controller.reward')->id($reward->id)->activate();
         }
     }
 

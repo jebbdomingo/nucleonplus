@@ -8,6 +8,6 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusViewPackagesHtml extends ComNucleonplusViewHtml
+class ComNucleonplusViewProductsHtml extends ComNucleonplusViewHtml
 {
 }

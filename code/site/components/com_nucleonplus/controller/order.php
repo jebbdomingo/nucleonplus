@@ -97,18 +97,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
             foreach ($cart->getItems() as $item)
             {
-                $package  = $this->getObject('com:nucleonplus.model.packages')->id($item->package_id)->fetch();
-
-                if (count($package) === 0) {
-                    $error = 'Invalid Product Pack';
-                }
-
                 // Check inventory for available stock
-                foreach ($package->getItems() as $item)
-                {
-                    if (!$item->hasAvailableStock()) {
-                        $error = "Insufficient stock of {$item->_item_name}";
-                    }
+                if (!$item->hasAvailableStock()) {
+                    $error = "Insufficient stock of {$item->_item_name}";
                 }
             }
         }
@@ -188,14 +179,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             {
                 foreach ($cart->getItems() as $item)
                 {
-                    $package  = $this->getObject('com:nucleonplus.model.packages')->id($item->package_id)->fetch();
-
                     $orderItem = $this->getObject('com://admin/nucleonplus.model.orderitems')->create(array(
-                        'order_id'      => $order->id,
-                        'package_id'    => $package->id,
-                        'package_name'  => $package->name,
-                        'package_price' => $package->price,
-                        'quantity'      => $item->quantity,
+                        'order_id'   => $order->id,
+                        'ItemRef'    => $item->ItemRef,
+                        'item_name'  => $item->_item_name,
+                        'item_price' => $item->_item_price,
+                        'quantity'   => $item->quantity,
                     ));
                     $orderItem->save();
 

@@ -117,7 +117,7 @@ class ComNucleonplusMlmCompensation extends KObject
         {
             if ($reward->type == ComNucleonplusModelEntityReward::REWARD_PACKAGE) {
                 $result = $this->_createPackageCompensation($reward);
-            } else {
+            } elseif ($reward->type == ComNucleonplusModelEntityReward::REWARD_RETAIL) {
                 $result = $this->_createRetailCompensation($reward);
             }
         }

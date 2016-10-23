@@ -24,18 +24,20 @@ class ComNucleonplusModelCartitems extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns(array('_package_name'  => '_package.name'))
-            ->columns(array('_package_price' => '_package.price'))
-            // ->columns(array('_package_price' => 'SUM(_item.price * _package_item.quantity)'))
+            ->columns(array('_item_ref'           => '_item.ItemRef'))
+            ->columns(array('_item_type'          => '_item.Type'))
+            ->columns(array('_item_name'          => '_item.Name'))
+            ->columns(array('_item_price'         => '_item.UnitPrice'))
+            ->columns(array('_item_description'   => '_item.Description'))
+            ->columns(array('_item_qty_onhand'    => '_item.QtyOnHand'))
+            ->columns(array('_item_qty_purchased' => '_item.quantity_purchased'))
         ;
     }
 
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('_package' => 'nucleonplus_packages'), 'tbl.package_id = _package.nucleonplus_package_id')
-            // ->join(array('_package_item' => 'nucleonplus_packageitems'), '_package.nucleonplus_package_id = _package_item.package_id')
-            // ->join(array('_item' => 'nucleonplus_items'), '_package_item.item_id = _item.nucleonplus_item_id')
+            ->join(array('_item' => 'qbsync_items'), 'tbl.ItemRef = _item.ItemRef')
         ;
 
         parent::_buildQueryJoins($query);
@@ -51,11 +53,4 @@ class ComNucleonplusModelCartitems extends KModelDatabase
             $query->where('tbl.cart_id = :cart_id')->bind(['cart_id' => $state->cart_id]);
         }
     }
-
-    // protected function _buildQueryGroup(KDatabaseQueryInterface $query)
-    // {
-    //     parent::_buildQueryGroup($query);
-
-    //     $query->group('tbl.package_id');
-    // }
 }

@@ -9,71 +9,44 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-/**
- * @todo Implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
- */
-class ComNucleonplusAccountingServiceInventory extends ComNucleonplusAccountingServiceObject implements ComNucleonplusAccountingServiceInventoryInterface
+class ComNucleonplusAccountingServiceInventory extends KObject
 {
     /**
-     * Decrease item quantity
+     * Check available stock
      *
-     * @param KModelEntityInterface $order
+     * @param integer $itemRef
+     * @param integer $quantity
      *
-     * @return resource
+     * @return boolean
      */
-    /*public function decreaseQuantity(KModelEntityInterface $order)
+    public function hasAvailableStock($itemRef, $quantity)
     {
-        foreach ($order->getItems() as $item)
+        $result = false;
+        $item   = $this->getObject('com://admin/qbsync.model.items')->ItemRef($itemRef)->fetch();
+
+        if ($item->Type == 'Group')
         {
-            $inventoryItem = $this->find($item->inventory_item_id);
+            // Query grouped items
+            $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($itemRef)->fetch();
 
-            $oldQty = $inventoryItem->getQtyOnHand();
-            $newQty = ($inventoryItem->getQtyOnHand() - $item->quantity);
+            foreach ($groupedItems as $groupedItem)
+            {
+                $inventoryQty = ((int) $groupedItem->_item_qty_onhand - (int) $groupedItem->_item_qty_purchased);
 
-            // Update the item's quantity
-            $inventoryItem->setQtyOnHand($newQty);
+                if ($quantity < $inventoryQty) {
+                    $result = true;
+                }
+            }
+        }
+        else
+        {
+            $inventoryQty = ((int) $item->QtyOnHand - (int) $item->quantity_purchased);
+
+            if ($quantity < $inventoryQty) {
+                $result = true;
+            }
         }
 
-        return $this->update($inventoryItem);
-    }*/
-
-    /**
-     * Get an item
-     *
-     * @param integer $id
-     * 
-     * @return object
-     */
-    public function find($id)
-    {
-        // Item
-        $itemService = new QuickBooks_IPP_Service_Term();
-
-        $items = $itemService->query($this->Context, $this->realm, "SELECT * FROM Item WHERE Id = '{$id}' ");
-
-        if (count($items) == 0) {
-            return null;
-        }
-
-        return $items[0];
+        return $result;
     }
-
-    /**
-     * Update item inventory quantity
-     *
-     * @param array $data
-     *
-     * @throws Exception
-     * 
-     * @return  void
-     */
-    /*public function update($item)
-    {
-        $itemService = new QuickBooks_IPP_Service_Item();
-
-        if ($res = $itemService->update($this->Context, $this->realm, $item->getId(), $item)) {
-            return $res;
-        }
-        else throw new Exception($itemService->lastError($this->Context));
-    }*/
 }

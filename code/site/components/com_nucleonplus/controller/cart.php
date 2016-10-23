@@ -33,10 +33,10 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
             {
                 foreach ($items as $item)
                 {
-                    $cartItems[] = $item->package_id;
+                    $cartItems[] = $item->ItemRef;
 
                     // Existing item, update quantity instead
-                    if ($item->package_id == $data->package_id)
+                    if ($item->ItemRef == $data->ItemRef)
                     {
                         $item->quantity += $data->quantity;
                         $item->save();
@@ -44,12 +44,12 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
                 }
             }
 
-            if (!in_array($data->package_id, $cartItems))
+            if (!in_array($data->ItemRef, $cartItems))
             {
                 // New item
                 $cartItemData = array(
                     'cart_id'    => $cart->id,
-                    'package_id' => $data->package_id,
+                    'ItemRef' => $data->ItemRef,
                     'quantity'   => $data->quantity,
                 );
 
@@ -66,7 +66,7 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
             // New item
             $cartItemData = array(
                 'cart_id'    => $cart->id,
-                'package_id' => $data->package_id,
+                'ItemRef' => $data->ItemRef,
                 'quantity'   => $data->quantity,
             );
             $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);

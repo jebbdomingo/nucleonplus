@@ -14,21 +14,26 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
 ?>
 
 <div class="row">
-    <? foreach ($packages as $package): ?>
+    <? foreach ($products as $product): ?>
+        <?
+        if (!in_array($product->Type, ComQbsyncModelEntityItem::$item_types)) {
+            continue;
+        }
+        ?>
         <div class="col-sm-6 col-md-4">
             <div class="thumbnail">
                 <div class="caption">
-                    <h3><?= $package->name ?></h3>
+                    <h3><?= $product->Name ?></h3>
                     <table class="table">
                         <tr class="info">
                             <th>Price</th>
-                            <th class="text-right">P<?= number_format($package->price) ?></th>
+                            <th class="text-right">&#8369;<?= number_format($product->UnitPrice) ?></th>
                         </tr>
                         <tr>
                             <td>Unilevel Direct Referral Bonus</td>
                             <td class="text-right">
                                 <?
-                                $dr_fee = ($package->_rewardpackage_drpv * $package->_rewardpackage_slots);
+                                $dr_fee = ($product->drpv * $product->slots);
                                 echo number_format($dr_fee, 2);
                                 ?>
                             </td>
@@ -40,7 +45,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                             </td>
                             <td class="text-right">
                                 <?
-                                $ir_fee = ($package->_rewardpackage_irpv * $package->_rewardpackage_slots);
+                                $ir_fee = ($product->irpv * $product->slots);
                                 echo number_format($ir_fee, 2);
                                 ?>
                             </td>
@@ -49,43 +54,19 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                             <td>Direct Referral Bonus</td>
                             <td class="text-right">
                                 <?
-                                $directReferral = $package->_rewardpackage_prpv * $package->_rewardpackage_slots;
+                                $directReferral = $product->prpv * $product->slots;
                                 echo number_format($directReferral, 2);
                                 ?>
                             </td>
                         </tr>
-                        <? if ($package->_rewardpackage_type == 'package'): ?>
+                        <? if ($product->Type == 'Group'): ?>
                             <tr class="success">
                                 <td>Commission <span class="label label-primary">New</span></td>
                                 <td class="text-right">
                                     <?
-                                    $patronages = ($package->_rewardpackage_prpv * $package->_rewardpackage_slots) * 2;
+                                    $patronages = ($product->prpv * $product->slots) * 2;
                                     echo number_format($patronages, 2);
                                     ?>
-                                </td>
-                            </tr>
-                        <? endif ?>
-                        <? if ($package->_rewardpackage_type == 'package'): ?>
-                            <tr>
-                                <td colspan="2">
-                                    <div class="well">
-                                        <table class="table">
-                                            <thead>
-                                                <thead>
-                                                    <th>Product</th>
-                                                    <th class="text-right">Quantity</th>
-                                                </thead>
-                                            </thead>
-                                            <tbody>
-                                                <? foreach ($package->getItems() as $item): ?>
-                                                    <tr>
-                                                        <td><?= $item->_item_name ?></td>
-                                                        <td class="text-right"><?= $item->quantity ?></td>
-                                                    </tr>
-                                                <? endforeach; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 </td>
                             </tr>
                         <? endif ?>
@@ -96,7 +77,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                             <? if ($isAuthenticated): ?>
                                 <form action="<?= route('view=cart') ?>" method="post">
                                     <input type="hidden" name="_action" value="add" />
-                                    <input type="hidden" name="package_id" value="<?= $package->id ?>" />
+                                    <input type="hidden" name="ItemRef" value="<?= $product->ItemRef ?>" />
                                     <input type="hidden" name="quantity" value="1" />
                                     <button class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
                                         <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>

@@ -52,13 +52,6 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     protected $_payoutStatusFilters = [];
 
     /**
-     * Packages
-     *
-     * @var array
-     */
-    protected $_packages = [];
-
-    /**
      * Savings types
      *
      * @var array
@@ -86,7 +79,6 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $this->_shippingMethods     = $config->shippingMethods;
         $this->_payoutStatus        = $config->payoutStatus;
         $this->_payoutStatusFilters = $config->payoutStatusFilters;
-        $this->_packages            = $config->packages;
         $this->_bank_account_types  = $config->bank_account_types;
         $this->_state_province      = $config->state_province;
     }
@@ -198,16 +190,6 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
                 array('label' => 'Mindanao', 'value' => 'mindanao'),
             )
         ));
-
-        // Product packages
-        $packages = [];
-        foreach ($this->getObject('com:nucleonplus.model.packages')->fetch() as $package) {
-            $packages[] = [
-                'label' => "{$package->name} P{$package->price} + P{$package->delivery_charge} delivery fee",
-                'value' => $package->id
-            ];
-        }
-        $config->append(['packages' => $packages]);
 
         parent::_initialize($config);
     }
@@ -372,26 +354,6 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
             'value'    => 'id',
             'label'    => 'account_number',
             'sort'     => 'id',
-            'validate' => false
-        ));
-
-        return $this->_autocomplete($config);
-    }
-
-    /**
-     * Provides a product packages autocomplete select box.
-     *
-     * @param  array|KObjectConfig $config An optional configuration array.
-     * @return string The autocomplete users select box.
-     */
-    public function packages($config = array())
-    {
-        $config = new KObjectConfigJson($config);
-        $config->append(array(
-            'model'    => 'packages',
-            'value'    => 'id',
-            'label'    => 'name',
-            'sort'     => 'name',
             'validate' => false
         ));
 

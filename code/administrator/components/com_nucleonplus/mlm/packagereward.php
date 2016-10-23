@@ -106,8 +106,8 @@ class ComNucleonplusMlmPackagereward extends KObject
             'product_id_column'   => ['order_id'], // ID of the Product or Item that is rewardable
             'product_name_column' => ['package_name'], // Name of the Product or Item that is rewardable
             'account_id_column'   => ['account_id', 'account_number'], // ID of the customer in the order
-            'item_model'          => 'com:nucleonplus.model.packages', // Rewardable Product or Item object's identifier
-            'item_fk_column'      => 'package_id', // Product or Item's foreign key in the Order table
+            'item_model'          => 'com://admin/qbsync.model.items', // Rewardable Product or Item object's identifier
+            'item_fk_column'      => 'ItemRef', // Product or Item's foreign key in the Order table
             'item_status'         => 'paid', // The payment status of the Order to activate this reward with
         ]);
 
@@ -121,22 +121,55 @@ class ComNucleonplusMlmPackagereward extends KObject
      */
     public function create(KModelEntityInterface $object)
     {
-        $controller = $this->getObject($this->_controller);
-        $item       = $this->getObject($this->_item_model)->id($object->{$this->_item_fk_column})->fetch();
+        $item = $this->getObject($this->_item_model)->ItemRef($object->{$this->_item_fk_column})->fetch();
+        
+        // if ($item->Type == ComQbsyncModelEntityItem::TYPE_GROUP)
+        // {
+        //     // // Query grouped items
+        //     // $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($item->ItemRef)->fetch();
 
+        //     // foreach ($groupedItems as $groupedItem)
+        //     // {
+        //     //     if ($groupedItem->_item_type != ComQbsyncModelEntityItem::TYPE_INVENTORY_ITEM) {
+        //     //         continue;
+        //     //     }
+
+        //     //     $data = array(
+        //     //         'customer_id' => $this->_getAccountData($object), // Member's Account ID
+        //     //         'product_id'  => $this->_getProductId($object),   // Item or Product ID
+        //     //         'status'      => $this->_default_status,
+        //     //         'slots'       => $groupedItem->_item_slots,
+        //     //         'prpv'        => $groupedItem->_item_prpv,
+        //     //         'drpv'        => $groupedItem->_item_drpv,
+        //     //         'irpv'        => $groupedItem->_item_irpv,
+        //     //         'rebates'     => $groupedItem->_item_rebates,
+        //     //         'charges'     => $groupedItem->_item_charges,
+        //     //         'type'        => $groupedItem->_item_type
+        //     //     );
+        //     //     $this->_actionCreate($data);
+        //     // }
+        // }
+        // else
+        // {
         $data = array(
-            'customer_id'      => $this->_getAccountData($object), // Member's Account ID
-            'product_id'       => $this->_getProductId($object),   // Item or Product ID
-            'status'           => $this->_default_status,
-            'rewardpackage_id' => $item->_rewardpackage_id,
-            'slots'            => $item->_rewardpackage_slots,
-            'prpv'             => $item->_rewardpackage_prpv,
-            'drpv'             => $item->_rewardpackage_drpv,
-            'irpv'             => $item->_rewardpackage_irpv,
-            'rebates'          => $item->_rewardpackage_rebates,
-            'charges'          => $item->charges,
-            'type'             => $item->_rewardpackage_type
+            'customer_id' => $this->_getAccountData($object), // Member's Account ID
+            'product_id'  => $this->_getProductId($object),   // Item or Product ID
+            'status'      => $this->_default_status,
+            'slots'       => $item->slots,
+            'prpv'        => $item->prpv,
+            'drpv'        => $item->drpv,
+            'irpv'        => $item->irpv,
+            'rebates'     => $item->rebates,
+            'charges'     => $item->charges,
+            'type'        => $item->Type
         );
+        $this->_actionCreate($data);
+        // }
+    }
+
+    protected function _actionCreate($data)
+    {
+        $controller = $this->getObject($this->_controller);
 
         return $controller->add($data);
     }

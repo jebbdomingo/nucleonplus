@@ -33,7 +33,7 @@ defined('KOOWA') or die; ?>
                                 <h5><span class="glyphicon glyphicon-shopping-cart"></span> Shopping Cart</h5>
                             </div>
                             <div class="col-sm-6">
-                                <a class="btn btn-primary btn-sm btn-block" href="<?= route('view=packages') ?>" role="button">
+                                <a class="btn btn-primary btn-sm btn-block" href="<?= route('view=products') ?>" role="button">
                                     <span class="glyphicon glyphicon-share-alt"></span> Continue shopping
                                 </a>
                             </div>
@@ -47,11 +47,11 @@ defined('KOOWA') or die; ?>
                             <div class="col-sm-2"><img class="img-responsive" src="http://placehold.it/100x70">
                             </div>
                             <div class="col-sm-4">
-                                <h4 class="product-name"><strong><?= $item->_package_name ?></strong></h4><h4><small>Product description</small></h4>
+                                <h4 class="product-name"><strong><?= $item->_item_name ?></strong></h4><h4><small><?= $item->_item_description ?></small></h4>
                             </div>
                             <div class="col-sm-6">
                                 <div class="col-sm-6 text-right">
-                                    <h6><strong>&#8369;<?= number_format($item->_package_price, 2) ?> <span class="text-muted">x</span></strong></h6>
+                                    <h6><strong>&#8369;<?= number_format($item->_item_price, 2) ?> <span class="text-muted">x</span></strong></h6>
                                 </div>
                                 <div class="col-sm-4">
                                     <input type="text" class="form-control input-sm" size="10" name="quantity[<?= $item->id ?>]" value="<?= $item->quantity ?>">

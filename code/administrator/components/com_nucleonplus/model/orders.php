@@ -95,36 +95,36 @@ class ComNucleonplusModelOrders extends KModelDatabase
         }
     }
 
-    /**
-     * Check if the member has existing order at this moment
-     *
-     * conditions: orders
-     * - owned by the $accountId
-     * - created today
-     * - excluding cancelled and void orders
-     *
-     * @param [type] $accountId [description]
-     *
-     * @return boolean [description]
-     */
-    public function hasCurrentOrder($accountId)
-    {
-        $state = $this->getState();
+    // /**
+    //  * Check if the member has existing order at this moment
+    //  *
+    //  * conditions: orders
+    //  * - owned by the $accountId
+    //  * - created today
+    //  * - excluding cancelled and void orders
+    //  *
+    //  * @param [type] $accountId [description]
+    //  *
+    //  * @return boolean [description]
+    //  */
+    // public function hasCurrentOrder($accountId)
+    // {
+    //     $state = $this->getState();
 
-        $table = $this->getObject('com://admin/nucleonplus.database.table.orders');
-        $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_orders AS tbl')
-            ->columns('tbl.nucleonplus_order_id, COUNT(tbl.account_id) AS count')
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $accountId])
-            ->where('tbl.created_on >= :created_on')->bind(array('created_on' => date('Y-m-d')))
-            ->where('tbl.order_status NOT IN :status')->bind(['status' => array('cancelled', 'void')])
-            ->group('tbl.account_id')
-        ;
+    //     $table = $this->getObject('com://admin/nucleonplus.database.table.orders');
+    //     $query = $this->getObject('database.query.select')
+    //         ->table('nucleonplus_orders AS tbl')
+    //         ->columns('tbl.nucleonplus_order_id, COUNT(tbl.account_id) AS count')
+    //         ->where('tbl.account_id = :account_id')->bind(['account_id' => $accountId])
+    //         ->where('tbl.created_on >= :created_on')->bind(array('created_on' => date('Y-m-d')))
+    //         ->where('tbl.order_status NOT IN :status')->bind(['status' => array('cancelled', 'void')])
+    //         ->group('tbl.account_id')
+    //     ;
 
-        $entities = $table->select($query);
+    //     $entities = $table->select($query);
 
-        return (intval($entities->count) > 0) ? true : false;
-    }
+    //     return (intval($entities->count) > 0) ? true : false;
+    // }
 
     /**
      * Get the total amount of this order
@@ -138,14 +138,14 @@ class ComNucleonplusModelOrders extends KModelDatabase
         $table = $this->getObject('com://admin/nucleonplus.database.table.orderitems');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_orderitems AS tbl')
-            ->columns('tbl.nucleonplus_orderitem_id, SUM(tbl.package_price * tbl.quantity) AS total')
+            ->columns('tbl.nucleonplus_orderitem_id, SUM(tbl.item_price * tbl.quantity) AS total')
             ->where('tbl.order_id = :order_id')->bind(['order_id' => $state->id])
             ->group('tbl.order_id')
         ;
 
         $entities = $table->select($query);
 
-        return $entities->total;
+        return (float) $entities->total;
     }
 
     // /**

@@ -50,11 +50,11 @@ defined('KOOWA') or die; ?>
                             <div class="col-sm-2"><img class="img-responsive" src="http://placehold.it/100x70">
                             </div>
                             <div class="col-sm-4">
-                                <h4 class="product-name"><strong><?= $item->_package_name ?></strong></h4><h4><small>Product description</small></h4>
+                                <h4 class="product-name"><strong><?= $item->_item_name ?></strong></h4><h4><small><?= $item->_item_description ?></small></h4>
                             </div>
                             <div class="col-sm-6">
                                 <div class="col-sm-6 text-right">
-                                    <h6><strong>&#8369;<?= number_format($item->_package_price, 2) ?> <span class="text-muted">x</span> <?= $item->quantity ?></strong></h6>
+                                    <h6><strong>&#8369;<?= number_format($item->_item_price, 2) ?> <span class="text-muted">x</span> <?= $item->quantity ?></strong></h6>
                                 </div>
                             </div>
                         </div>
@@ -77,6 +77,16 @@ defined('KOOWA') or die; ?>
                             <div class="col-sm-2 text-right">&#8369;<?= $shipping_cost ?></div>
                         </div>
                     </div>
+                    <? if (JFactory::getApplication()->getCfg('debug')): ?>
+                        <div class="row">
+                            <div class="text-center">
+                                <div class="col-sm-10">
+                                    <h6 class="text-right">Weight</h6>
+                                </div>
+                                <div class="col-sm-2 text-right"><?= $cart->getWeight() ?></div>
+                            </div>
+                        </div>
+                    <? endif; ?>
                     <div class="row">
                         <div class="text-center">
                             <div class="col-sm-10">

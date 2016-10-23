@@ -1,5 +1,4 @@
 <?
-
 /**
  * Nucleon Plus
  *
@@ -18,9 +17,9 @@ defined('KOOWA') or die; ?>
 
 <div class="row">
 
-    <div class="col-md-12">
+    <div class="col-sm-12">
 
-        <?= import('com://site/nucleonplus.packages.default_packages.html', ['packages' => $packages]) ?>
+        <?= import('com://site/nucleonplus.products.default_products.html', ['products' => $products]) ?>
 
     </div>
 

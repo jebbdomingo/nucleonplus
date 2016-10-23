@@ -17,8 +17,8 @@
  */
 class ComNucleonplusModelEntityReward extends KModelEntityRow
 {
-    const REWARD_PACKAGE = 'package';
-    const REWARD_RETAIL  = 'retail';
+    const REWARD_PACKAGE = 'Group';
+    const REWARD_RETAIL  = 'Inventory';
     const STATUS_ACTIVE  = 'active';
     const STATUS_READY   = 'ready';
     const STATUS_CLAIMED = 'claimed';

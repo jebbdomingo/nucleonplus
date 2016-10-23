@@ -48,15 +48,22 @@ else $footerAmountSize = 'col-xs-12';
                     </div>
 
                     <div class="panel-body">
+                        <div class="well">
+                            <h3>Ship To:</h3>
+                            <?= $order->address ?>, 
+                            <?= $order->city ?>,
+                            <?= $order->state_province ?>
+                        </div>
+                        
                         <? foreach ($order->getOrderItems() as $item): ?>
                             <div class="row">
                                 <div class="col-xs-2"><img class="img-responsive" src="http://placehold.it/100x70">
                                 </div>
                                 <div class="col-xs-4">
-                                    <h4 class="product-name"><strong><?= $item->package_name ?></strong></h4><h4><small>Product description</small></h4>
+                                    <h4 class="product-name"><strong><?= $item->item_name ?></strong></h4><h4><small>Item description</small></h4>
                                 </div>
                                 <div class="col-xs-6 text-right">
-                                    <h6><strong>&#8369;<?= number_format($item->package_price, 2) ?> <span class="text-muted">x</span> <?= $item->quantity ?></strong></h6>
+                                    <h6><strong>&#8369;<?= number_format($item->item_price, 2) ?> <span class="text-muted">x</span> <?= $item->quantity ?></strong></h6>
                                 </div>
                             </div>
                             <hr />
@@ -85,13 +92,6 @@ else $footerAmountSize = 'col-xs-12';
                                 </div>
                                 <div class="col-sm-2 text-right">&#8369;<?= $order->payment_charge ?></div>
                             </div>
-                        </div>
-
-                        <div class="well">
-                            <h3>Ship To:</h3>
-                            <?= $order->address ?>, 
-                            <?= $order->city ?>,
-                            <?= $order->state_province ?>
                         </div>
                     </div>
 
