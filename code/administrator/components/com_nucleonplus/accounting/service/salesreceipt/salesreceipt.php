@@ -164,49 +164,46 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         // Product line items
         foreach ($order->getOrderItems() as $orderItem)
         {
-            $items = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
+            $item = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
             
-            foreach ($items as $item)
+            if ($item->Type == 'Group')
             {
-                if ($item->Type == 'Group')
+                // Business Package/Bundle
+                $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($item->ItemRef)->fetch();
+                $quantity     = 0;
+
+                foreach ($groupedItems as $groupedItem)
                 {
-                    // Business Package/Bundle
-                    $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($item->ItemRef)->fetch();
-
-                    foreach ($groupedItems as $groupedItem)
+                    if ($groupedItem->_item_type == 'Inventory')
                     {
-                        if ($groupedItem->_item_type == 'Inventory')
-                        {
-                            $quantity = ((int) $orderItem->quantity * (int) $groupedItem->quantity);
-
-                            $this->_addSalesReceiptLine(
-                                $salesReceipt->id,
-                                $groupedItem->_item_name,
-                                $groupedItem->_item_ref,
-                                $quantity,
-                                ($groupedItem->_item_price * $quantity)
-                            );
-
-                            $oItem = $this->getObject('com://admin/qbsync.model.items')->ItemRef($groupedItem->ItemRef)->fetch();
-                            $this->_updateQuantity($oItem, $quantity);
-                        }
+                        $quantity += ((int) $orderItem->quantity * (int) $groupedItem->quantity);
+                        $oItem    = $this->getObject('com://admin/qbsync.model.items')->ItemRef($groupedItem->ItemRef)->fetch();
+                        $this->_updateQuantity($oItem, $quantity);
                     }
                 }
-                else
-                {
-                    // Retail Item
-                    $quantity = (int) $orderItem->quantity;
 
-                    $this->_addSalesReceiptLine(
-                        $salesReceipt->id,
-                        $item->Name,
-                        $item->ItemRef,
-                        $quantity,
-                        ($item->UnitPrice * $quantity)
-                    );
+                $quantity = (int) $orderItem->quantity;
+                $this->_addSalesReceiptLine(
+                    $salesReceipt->id,
+                    $item->Name,
+                    $item->ItemRef,
+                    $quantity,
+                    ($item->UnitPrice * $quantity)
+                );
+            }
+            else
+            {
+                // Retail Item
+                $quantity = (int) $orderItem->quantity;
+                $this->_addSalesReceiptLine(
+                    $salesReceipt->id,
+                    $item->Name,
+                    $item->ItemRef,
+                    $quantity,
+                    ($item->UnitPrice * $quantity)
+                );
 
-                    $this->_updateQuantity($item, $quantity);
-                }
+                $this->_updateQuantity($item, $quantity);
             }
         }
 
