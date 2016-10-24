@@ -17,7 +17,6 @@ class ComNucleonplusModelCarts extends KModelDatabase
         $this->getState()
             ->insert('account_id', 'int')
             ->insert('cart_id', 'int')
-            ->insert('product_id', 'int')
         ;
     }
 
