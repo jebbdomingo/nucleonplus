@@ -11,6 +11,8 @@
 
 class ComNucleonplusModelEntityCity extends KModelEntityRow
 {
+    const DESTINATION_METRO_MANILA = 47;
+
     public function getPropertyCity()
     {
         return $this->_name;

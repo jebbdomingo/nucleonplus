@@ -83,16 +83,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 $error = 'Invalid address';
             }
 
-            if (empty(trim($cart->city))) {
+            if (empty(trim($cart->city_id))) {
                 $error = 'Invalid city';
-            }
-
-            if (empty(trim($cart->state_province))) {
-                $error = 'Invalid state/province';
-            }
-
-            if (!in_array($cart->region, array('metro_manila', 'luzon', 'visayas', 'mindanao'))) {
-                $error = 'Invalid region';
             }
 
             foreach ($cart->getItems() as $item)
@@ -164,9 +156,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'payment_method'  => ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY,
             'shipping_method' => ComNucleonplusModelEntityOrder::SHIPPING_METHOD_XEND,
             'address'         => $cart->address,
-            'city'            => $cart->city,
-            'state_province'  => $cart->state_province,
-            'region'          => $cart->region,
+            'city_id'         => $cart->city_id,
             'postal_code'     => $cart->postal_code,
             'shipping_cost'   => $cart->getShippingCost(),
             'payment_charge'  => $cart->getPaymentCharge(),

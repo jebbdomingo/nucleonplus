@@ -17,7 +17,7 @@ class ComNucleonplusModelEntityCart extends KModelEntityRow
 
         if (!$this->isNew())
         {
-            if (empty($this->address) || empty($this->city) || empty($this->state_province) || empty($this->region))
+            if (empty($this->address) || empty($this->city_id))
             {
                 $this->setStatus(KDatabase::STATUS_FAILED);
                 $this->setStatusMessage('Shipping address is required');
@@ -60,8 +60,10 @@ class ComNucleonplusModelEntityCart extends KModelEntityRow
 
     public function getShippingCost()
     {
+        $city = $this->getObject('com://admin/nucleonplus.model.cities')->id($this->city_id)->fetch();
+
         return $this->getObject('com://admin/nucleonplus.model.shippingrates')
-            ->getRate($this->region, $this->getWeight())
+            ->getRate($city->_province_id, $this->getWeight())
         ;
     }
 

@@ -66,16 +66,6 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
         return $this->getTotal();
     }
 
-    // /**
-    //  * Get the package items of this order
-    //  *
-    //  * @return array
-    //  */
-    // public function getItems()
-    // {
-    //     return $this->getObject('com:nucleonplus.model.packageitems')->package_id($this->package_id)->fetch();
-    // }
-
     /**
      * Get order items
      *
@@ -83,7 +73,6 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
      */
     public function getOrderItems()
     {
-        //var_dump($this->getObject('com://admin/nucleonplus.model.orderitems')->order_id($this->id)->fetch);
         return $this->getObject('com://admin/nucleonplus.model.orderitems')->order_id($this->id)->fetch();
     }
 
@@ -96,14 +85,6 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     {
         return $this->getObject('com://admin/nucleonplus.model.rewards')->product_id($this->id)->fetch();
     }
-
-    // public function getShippingRate()
-    // {
-    //     return $this->getObject('com://admin/nucleonplus.model.shippingrates')
-    //         ->destination($this->_account_state)
-    //         ->fetch()
-    //     ;
-    // }
 
     public function getAmount()
     {
@@ -135,12 +116,4 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
 
         return $description;
     }
-
-    // public function getWeight()
-    // {
-    //     return $this->getObject('com://admin/nucleonplus.model.orders')
-    //         ->id($this->id)
-    //         ->getWeight()
-    //     ;
-    // }
 }

@@ -50,10 +50,12 @@ class ComNucleonplusModelShippingrates extends KModelDatabase
         $maxWeight    = 3000; // 3kg
         $additionalKg = 1000;
 
+        $destination = $destination == ComNucleonplusModelEntityCity::DESTINATION_METRO_MANILA ? 'manila' : 'provincial';
+
         if ($weight > $maxWeight)
         {
             // Get rate for additional kg
-            $identifier = $destination == 'metro_manila' ? 'metro_manila_kg' : 'provincial_kg';
+            $identifier = $destination == 'manila' ? 'manila_kg' : 'provincial_kg';
             $ratePerKg  = $this->_getRate($identifier, $additionalKg);
 
             // Compute additional rate

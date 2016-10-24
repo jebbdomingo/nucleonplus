@@ -21,21 +21,13 @@ class ComNucleonplusViewCartHtml extends ComKoowaViewHtml
         $paymentCharge = $cart->getPaymentCharge();
         $total         = ($amount + $shippingCost + $paymentCharge);
 
-        //$context->data->cart           = $cart;
-        $context->data->address        = $cart->address ? $cart->address : $account->street;
-        $context->data->city           = $cart->city ? $cart->city : $account->city;
-        $context->data->state_province = $cart->state_province ? $cart->state_province : $account->state;
-        $context->data->region         = $cart->region;
-        $context->data->items          = $cart->getItems() ? $cart->getItems() : array();
-
+        // $context->data->cart           = $cart;
+        $context->data->address       = $cart->address ? $cart->address : $account->street;
+        $context->data->city          = $cart->city ? $cart->city : $account->city;
+        $context->data->items         = $cart->getItems() ? $cart->getItems() : array();
         $context->data->amount        = number_format($amount, 2);
-        $context->data->shipping_cost = null;
-
-        if ($cart->region)
-        {
-            $context->data->shipping_cost = number_format($shippingCost, 2);
-            $context->data->payment_fee   = number_format($paymentCharge, 2);
-        }
+        $context->data->shipping_cost = number_format($shippingCost, 2);
+        $context->data->payment_fee   = number_format($paymentCharge, 2);
 
         $context->data->total = $total;
 

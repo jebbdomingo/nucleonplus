@@ -51,8 +51,7 @@ else $footerAmountSize = 'col-xs-12';
                         <div class="well">
                             <h3>Ship To:</h3>
                             <?= $order->address ?>, 
-                            <?= $order->city ?>,
-                            <?= $order->state_province ?>
+                            <?= $order->city ?>
                         </div>
                         
                         <? foreach ($order->getOrderItems() as $item): ?>

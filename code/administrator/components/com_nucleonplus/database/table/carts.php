@@ -14,7 +14,8 @@ class ComNucleonplusDatabaseTableCarts extends KDatabaseTableAbstract
     {
         $config->append(array(
             'behaviors' => array(
-                'modifiable'
+                'modifiable',
+                'shippable'
             )
         ));
         

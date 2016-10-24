@@ -84,26 +84,11 @@ defined('KOOWA') or die; ?>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="city" class="col-sm-2 control-label">City</label>
+                        <label for="city_id" class="col-sm-2 control-label">City</label>
                         <div class="col-sm-10">
                             <?= helper('listbox.cities', array(
                                 'name'     => 'city_id',
-                                'selected' => $city,
-                            )) ?>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="city" class="col-sm-2 control-label">State/Province</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="state_province" name="state_province" placeholder="e.g. Rizal" size="100%" value="<?= $state_province ?>" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="region" class="col-sm-2 control-label">Region</label>
-                        <div class="col-sm-10">
-                            <?= helper('listbox.stateProvince', array(
-                                'name'     => 'region',
-                                'selected' => $region,
+                                'selected' => $cart->city_id,
                             )) ?>
                         </div>
                     </div>

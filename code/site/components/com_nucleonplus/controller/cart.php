@@ -48,9 +48,9 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
             {
                 // New item
                 $cartItemData = array(
-                    'cart_id'    => $cart->id,
-                    'ItemRef' => $data->ItemRef,
-                    'quantity'   => $data->quantity,
+                    'cart_id'  => $cart->id,
+                    'ItemRef'  => $data->ItemRef,
+                    'quantity' => $data->quantity,
                 );
 
                 $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);
@@ -65,9 +65,9 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
 
             // New item
             $cartItemData = array(
-                'cart_id'    => $cart->id,
-                'ItemRef' => $data->ItemRef,
-                'quantity'   => $data->quantity,
+                'cart_id'  => $cart->id,
+                'ItemRef'  => $data->ItemRef,
+                'quantity' => $data->quantity,
             );
             $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);
             $item->save();

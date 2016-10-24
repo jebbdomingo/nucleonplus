@@ -41,8 +41,7 @@ defined('KOOWA') or die; ?>
                     <div class="well">
                         <h3>Ship To:</h3>
                         <?= $address ?>, 
-                        <?= $city ?>,
-                        <?= $state_province ?>
+                        <?= $city ?>
                     </div>
                     
                     <? foreach ($items as $item): ?>

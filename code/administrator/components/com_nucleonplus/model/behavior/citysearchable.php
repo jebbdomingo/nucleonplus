@@ -10,24 +10,6 @@
 
 class ComNucleonplusModelBehaviorCitysearchable extends KModelBehaviorSearchable
 {
-    protected function _beforeFetch(KModelContextInterface $context)
-    {
-        $model    = $context->getSubject();
-        $state    = $context->state;
-        $query    = $context->query;
-        $category = null;
-
-        $query
-            ->columns(array('_name' => "CONCAT(tbl.name, ', ', _province.name)"))
-            ->join(array('_province' => 'nucleonplus_provinces'), 'tbl.province_id = _province.nucleonplus_province_id', 'INNER')
-        ;
-    }
-
-    protected function _beforeCount(KModelContextInterface $context)
-    {
-        $this->_beforeFetch($context);
-    }
-
     /**
      * Add search query
      *
