@@ -166,9 +166,10 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         {
             $item = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
             
-            if ($item->Type == 'Group')
+            // Business Package/Bundle
+            if ($item->Type == ComQbsyncModelEntityItem::TYPE_GROUP)
             {
-                // Business Package/Bundle
+                // Update item quantity
                 $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($item->ItemRef)->fetch();
                 $quantity     = 0;
 
@@ -182,25 +183,29 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
                     }
                 }
 
+                // Add salesreceipt line
                 $quantity = (int) $orderItem->quantity;
                 $this->_addSalesReceiptLine(
                     $salesReceipt->id,
                     $item->Name,
                     $item->ItemRef,
                     $quantity,
-                    ($item->UnitPrice * $quantity)
+                    0,
+                    $item->Type
                 );
             }
+            // Retail Item
             else
             {
-                // Retail Item
+                // Add salesreceipt line
                 $quantity = (int) $orderItem->quantity;
                 $this->_addSalesReceiptLine(
                     $salesReceipt->id,
                     $item->Name,
                     $item->ItemRef,
                     $quantity,
-                    ($item->UnitPrice * $quantity)
+                    ($item->UnitPrice * $quantity),
+                    $item->Type
                 );
 
                 $this->_updateQuantity($item, $quantity);
@@ -234,14 +239,15 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         }
     }
 
-    protected function _addSalesReceiptLine($salesReceiptId, $description, $ItemRef, $quantity, $amount)
+    protected function _addSalesReceiptLine($salesReceiptId, $description, $ItemRef, $quantity, $amount, $type = ComQbsyncModelEntityItem::TYPE_INVENTORY_ITEM)
     {
         $this->_salesreceipt_line->add(array(
             'SalesReceipt' => $salesReceiptId,
             'Description'  => $description,
             'ItemRef'      => $ItemRef,
             'Qty'          => $quantity,
-            'Amount'       => $amount
+            'Amount'       => $amount,
+            'Type'         => $type
         ));
     }
 

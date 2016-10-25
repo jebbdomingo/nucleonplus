@@ -123,34 +123,6 @@ class ComNucleonplusMlmPackagereward extends KObject
     {
         $item = $this->getObject($this->_item_model)->ItemRef($object->{$this->_item_fk_column})->fetch();
         
-        // if ($item->Type == ComQbsyncModelEntityItem::TYPE_GROUP)
-        // {
-        //     // // Query grouped items
-        //     // $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($item->ItemRef)->fetch();
-
-        //     // foreach ($groupedItems as $groupedItem)
-        //     // {
-        //     //     if ($groupedItem->_item_type != ComQbsyncModelEntityItem::TYPE_INVENTORY_ITEM) {
-        //     //         continue;
-        //     //     }
-
-        //     //     $data = array(
-        //     //         'customer_id' => $this->_getAccountData($object), // Member's Account ID
-        //     //         'product_id'  => $this->_getProductId($object),   // Item or Product ID
-        //     //         'status'      => $this->_default_status,
-        //     //         'slots'       => $groupedItem->_item_slots,
-        //     //         'prpv'        => $groupedItem->_item_prpv,
-        //     //         'drpv'        => $groupedItem->_item_drpv,
-        //     //         'irpv'        => $groupedItem->_item_irpv,
-        //     //         'rebates'     => $groupedItem->_item_rebates,
-        //     //         'charges'     => $groupedItem->_item_charges,
-        //     //         'type'        => $groupedItem->_item_type
-        //     //     );
-        //     //     $this->_actionCreate($data);
-        //     // }
-        // }
-        // else
-        // {
         $data = array(
             'customer_id' => $this->_getAccountData($object), // Member's Account ID
             'product_id'  => $this->_getProductId($object),   // Item or Product ID
@@ -163,8 +135,8 @@ class ComNucleonplusMlmPackagereward extends KObject
             'charges'     => $item->charges,
             'type'        => $item->Type
         );
+        
         $this->_actionCreate($data);
-        // }
     }
 
     protected function _actionCreate($data)
