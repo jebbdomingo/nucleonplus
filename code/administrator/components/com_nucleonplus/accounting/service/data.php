@@ -16,7 +16,7 @@ class ComNucleonplusAccountingServiceData extends KObject
      *
      * @var array
      */
-    protected $_data;
+    protected $_config;
 
     /**
      * Constructor.
@@ -25,10 +25,24 @@ class ComNucleonplusAccountingServiceData extends KObject
      */
     public function __construct(KObjectConfig $config)
     {
-        $env  = getenv('APP_ENV');
-        $data = parse_ini_file('data.ini', true);
+        parent::__construct($config);
 
-        $this->_data = $data[$env];
+        $env   = getenv('APP_ENV');
+        $model = $this->getObject('com://admin/nucleonplus.model.configs');
+
+        switch ($env) {
+            case 'staging':
+                $this->_config = $model->item('qbo_staging')->fetch();
+                break;
+            
+            case 'production':
+                $this->_config = $model->item('qbo_production')->fetch();
+                break;
+            
+            default:
+                $this->_config = $model->item('qbo_local')->fetch();
+                break;
+        }
     }
 
     /**
@@ -40,20 +54,25 @@ class ComNucleonplusAccountingServiceData extends KObject
      */
     public function __get($name)
     {
-        $name = strtoupper($name);
 
-        if (array_key_exists($name, $this->_data)) {
-            return $this->_data[$name];
+        $name   = strtoupper($name);
+        $data   = $this->_config->getJsonValue();
+        $result = false;
+
+        if (isset($data->$name))
+        {
+            $result = $data->$name;
+        }
+        else
+        {
+            trigger_error(
+                'Undefined property via __get(): ' . $name .
+                ' in ' . $trace[0]['file'] .
+                ' on line ' . $trace[0]['line'],
+                E_USER_NOTICE
+            );
         }
 
-        $trace = debug_backtrace();
-        
-        trigger_error(
-            'Undefined property via __get(): ' . $name .
-            ' in ' . $trace[0]['file'] .
-            ' on line ' . $trace[0]['line'],
-            E_USER_NOTICE);
-
-        return null;
+        return $result;
     }
 }

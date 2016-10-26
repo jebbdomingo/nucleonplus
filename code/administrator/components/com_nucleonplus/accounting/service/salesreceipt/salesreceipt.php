@@ -160,6 +160,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
         }
 
         $salesReceipt = $this->_salesreceipt->add($salesReceiptData);
+        $itemsQty     = array();
 
         // Product line items
         foreach ($order->getOrderItems() as $orderItem)
@@ -179,7 +180,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
                     {
                         $quantity += ((int) $orderItem->quantity * (int) $groupedItem->quantity);
                         $oItem    = $this->getObject('com://admin/qbsync.model.items')->ItemRef($groupedItem->ItemRef)->fetch();
-                        $this->_updateQuantity($oItem, $quantity);
+                        $itemsQty[$oItem->ItemRef] = $quantity;
                     }
                 }
 
@@ -208,9 +209,11 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
                     $item->Type
                 );
 
-                $this->_updateQuantity($item, $quantity);
+                $itemsQty[$item->ItemRef] += $quantity;
             }
         }
+
+        $this->_updateQuantity($itemsQty);
 
         // Service line items
         if ($order->shipping_method == 'xend' && $order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY)
@@ -254,15 +257,22 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
     /**
      * Update item's quantity purchased for real time inventory quantity tracking
      *
-     * @param KModelEntityInterface $entity
-     * @param integer               $quantity
+     * @param array $itemsQty
      *
      * @return KModelEntityInterface
      */
-    protected function _updateQuantity($entity, $quantity)
+    protected function _updateQuantity($itemsQty)
     {
-        $entity->updateQuantityPurchased($quantity);
-        $entity->save();
+        foreach ($itemsQty as $ItemRef => $quantity)
+        {
+            $entity = $this->getObject('com://admin/qbsync.model.items')->ItemRef($ItemRef)->fetch();
+
+            if (count($entity))
+            {
+                $entity->updateQuantityPurchased($quantity);
+                $entity->save();
+            }
+        }
 
         return $entity;
     }
