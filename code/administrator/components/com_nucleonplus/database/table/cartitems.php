@@ -8,16 +8,6 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
-class ComNucleonplusDatabaseTableCarts extends ComCartDatabaseTableCarts
+class ComNucleonplusDatabaseTableCartitems extends ComCartDatabaseTableItems
 {
-    protected function _initialize(KObjectConfig $config)
-    {
-        $config->append(array(
-            'behaviors' => array(
-                'shippable'
-            )
-        ));
-        
-        parent::_initialize($config);
-    }
 }

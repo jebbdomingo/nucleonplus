@@ -92,97 +92,52 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     protected function _validate(KControllerContextInterface $context)
     {
-        if(!$context->result instanceof KModelEntityInterface) {
-            $entity = $this->getModel()->create($context->request->data->toArray());
-        } else {
-            $entity = $context->result;
-        }
+        $translator = $this->getObject('translator');
+        $data       = $context->request->data;
+        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($data->account_id)->fetch();
+        $cart       = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
+        $error      = false;
 
-        $result = true;
-
-        try
+        // Validate account
+        if (count($account) === 0)
         {
-            $translator = $this->getObject('translator');
-            $account_id = (int) trim($entity->account_id);
-            $package_id = (int) trim($entity->package_id);
-            $package    = $this->getObject('com:nucleonplus.model.packages')->id($package_id)->fetch();
-            
-            // Validate account
-            $account = $this->getObject('com:nucleonplus.model.accounts')->id($account_id)->fetch();
-            if (count($account) === 0)
-            {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Account'));
-                $result = false;
-            }
-
-            // Validate package id and if the member has current order
-            if (empty(trim($entity->package_id)))
-            {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Please select a Product Pack'));
-                $result = false;
-            }
-            // elseif ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($account_id))
-            // {
-            //     throw new KControllerExceptionRequestInvalid($translator->translate('Only one product package can be purchased per account per day'));
-            //     $result = false;
-            // }
-            elseif (count($package) === 0)
-            {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
-                $result = false;
-            }
-
-            // Check inventory
-            foreach ($package->getItems() as $item)
-            {
-                if (!$item->hasAvailableStock())
-                {
-                    throw new KControllerExceptionActionFailed($translator->translate("Insufficient stock of {$item->_item_name}"));
-                    $result = false;
-                }
-            }
-        }
-        catch(Exception $e)
-        {
-            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
-            $context->getResponse()->send();
-
-            $result = false;
-        }
-
-        if ($entity->form_type == 'pos')
-        {
-            $order_status    = 'completed';
-            $invoice_status  = 'paid';
-            $payment_method  = 'cash';
-            $shipping_method = 'na';
+            $error = 'Invalid Account';
         }
         else
         {
-            $order_status    = 'awaiting_payment';
-            $invoice_status  = 'sent';
-            $payment_method  = 'deposit';
-            $shipping_method = 'xend';
+            if (count($cart->getItems()))
+            {
+                foreach ($cart->getItems() as $item)
+                {
+                    // Check inventory for available stock
+                    if (!$item->hasAvailableStock()) {
+                        $error = "Insufficient stock of {$item->_item_name}";
+                    }
+                }
+            }
+            else throw new Exception('Shopping cart is empty');
         }
 
+        if ($error)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $translator->translate($error), 'error');
+            $context->getResponse()->send();
+        }
+
+        $order_status    = 'completed';
+        $invoice_status  = 'paid';
+        $payment_method  = 'cash';
+        $shipping_method = 'na';
+
         $data = new KObjectConfig([
-            'account_id'         => $account->id,
-            'package_id'         => $package->id,
-            'package_name'       => $package->name,
-            'package_price'      => $package->price,
-            'order_status'       => $order_status,
-            'invoice_status'     => $invoice_status,
-            'payment_method'     => $payment_method,
-            'shipping_method'    => $shipping_method,
-            'form_type'          => $entity->form_type,
-            'tracking_reference' => $entity->tracking_reference,
-            'payment_reference'  => $entity->payment_reference,
-            'note'               => $entity->note,
+            'account_id'      => $account->id,
+            'order_status'    => $order_status,
+            'invoice_status'  => $invoice_status,
+            'payment_method'  => $payment_method,
+            'shipping_method' => $shipping_method
         ]);
 
         $context->getRequest()->setData($data->toArray());
-
-        return $result;
     }
 
     /**
@@ -414,31 +369,86 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      *
      * @return entity
      */
+    // protected function _actionAdd(KControllerContextInterface $context)
+    // {
+    //     $order = parent::_actionAdd($context);
+
+    //     // Create reward
+    //     $this->getObject($this->_reward)->create($order);
+
+    //     if ($order->invoice_status == 'paid')
+    //     {
+    //         try
+    //         {
+    //             // Fetch the newly created Order from the data store to get the joined columns
+    //             $order = $this->getObject('com:nucleonplus.model.orders')->id($order->id)->fetch();
+    //             $this->_salesreceipt_service->recordSale($order);
+    //             $context->response->addMessage("Order #{$order->id} has been created and paid");
+
+    //             // Automatically activate reward
+    //             $this->_activateReward($order);
+    //         }
+    //         catch (Exception $e)
+    //         {
+    //             $context->response->addMessage($e->getMessage(), 'exception');
+    //         }
+    //     }
+        
+    //     return $order;
+    // }
+
     protected function _actionAdd(KControllerContextInterface $context)
     {
-        $order = parent::_actionAdd($context);
+        $user       = $this->getObject('user');
+        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $translator = $this->getObject('translator');
+        $data       = $context->request->data;
+        $cart       = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
 
-        // Create reward
-        $this->getObject($this->_reward)->create($order);
+        $order = $this->getModel()->create(array(
+            'account_id'      => $data->account_id,
+            'order_status'    => $data->order_status,
+            'invoice_status'  => $data->invoice_status,
+            'payment_method'  => $data->payment_method,
+            'shipping_method' => $data->shipping_method,
+            'address'         => $cart->address,
+            'city_id'         => $cart->city_id,
+            'postal_code'     => $cart->postal_code
+        ));
 
-        if ($order->invoice_status == 'paid')
+        @ini_set('max_execution_time', 300);
+
+        if ($order->save())
         {
-            try
-            {
-                // Fetch the newly created Order from the data store to get the joined columns
-                $order = $this->getObject('com:nucleonplus.model.orders')->id($order->id)->fetch();
-                $this->_salesreceipt_service->recordSale($order);
-                $context->response->addMessage("Order #{$order->id} has been created and paid");
+            $rewardPackage = $this->getObject($this->_reward);
 
-                // Automatically activate reward
-                $this->_activateReward($order);
-            }
-            catch (Exception $e)
+            foreach ($cart->getItems() as $item)
             {
-                $context->response->addMessage($e->getMessage(), 'exception');
+                $orderItem = $this->getObject('com://admin/nucleonplus.model.orderitems')->create(array(
+                    'order_id'   => $order->id,
+                    'ItemRef'    => $item->_item_ref,
+                    'item_name'  => $item->_item_name,
+                    'item_price' => $item->_item_price,
+                    'quantity'   => $item->quantity,
+                ));
+                $orderItem->save();
+
+                // Create the reward
+                for ($i=0; $i < $orderItem->quantity; $i++) { 
+                    $rewardPackage->create($orderItem);
+                }
             }
+
+            // Delete the cart
+            $cart->delete();
+
+            // Record sale in accounting
+            $this->_salesreceipt_service->recordSale($order);
+
+            // Automatically activate reward
+            $this->_activateReward($order);
         }
-        
+
         return $order;
     }
 
@@ -637,8 +647,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
 
         // Try to activate reward
-        $rewards = $this->getObject('com:nucleonplus.model.rewards')->product_id($order->id)->fetch();
-
+        $rewards = $order->getRewards();
         foreach ($rewards as $reward)
         {
             $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();

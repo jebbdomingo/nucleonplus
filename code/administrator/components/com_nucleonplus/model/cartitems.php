@@ -8,17 +8,8 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusModelCartitems extends KModelDatabase
+class ComNucleonplusModelCartitems extends ComCartModelItems
 {
-    public function __construct(KObjectConfig $config)
-    {
-        parent::__construct($config);
-
-        $this->getState()
-            ->insert('cart_id', 'int')
-        ;
-    }
-
     protected function _buildQueryColumns(KDatabaseQueryInterface $query)
     {
         parent::_buildQueryColumns($query);
@@ -37,20 +28,9 @@ class ComNucleonplusModelCartitems extends KModelDatabase
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('_item' => 'qbsync_items'), 'tbl.ItemRef = _item.ItemRef')
+            ->join(array('_item' => 'qbsync_items'), 'tbl.row = _item.ItemRef')
         ;
 
         parent::_buildQueryJoins($query);
-    }
-
-    protected function _buildQueryWhere(KDatabaseQueryInterface $query)
-    {
-        parent::_buildQueryWhere($query);
-
-        $state = $this->getState();
-
-        if ($state->cart_id) {
-            $query->where('tbl.cart_id = :cart_id')->bind(['cart_id' => $state->cart_id]);
-        }
     }
 }

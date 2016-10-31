@@ -9,15 +9,15 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusModelEntityCart extends KModelEntityRow
+class ComNucleonplusModelEntityCart extends ComCartModelEntityCart
 {
     public function save()
     {
         $result = false;
 
-        if (!$this->isNew())
+        if (!$this->isNew() && $this->interface == 'site')
         {
-            if (empty($this->address) || empty($this->city_id))
+            if (empty($this->address) || empty($this->city))
             {
                 $this->setStatus(KDatabase::STATUS_FAILED);
                 $this->setStatusMessage('Shipping address is required');
@@ -27,14 +27,6 @@ class ComNucleonplusModelEntityCart extends KModelEntityRow
         else $result = parent::save();
 
         return $result;
-    }
-
-    public function delete()
-    {
-        $cartItems = $this->getObject('com://admin/nucleonplus.model.cartitems')->cart_id($this->id)->fetch();
-        $cartItems->delete();
-
-        parent::delete();
     }
 
     public function getItems()
@@ -53,7 +45,7 @@ class ComNucleonplusModelEntityCart extends KModelEntityRow
     public function getAmount()
     {
         return $this->getObject('com://admin/nucleonplus.model.carts')
-            ->account_id($this->account_id)
+            ->customer($this->customer)
             ->getAmount()
         ;
     }

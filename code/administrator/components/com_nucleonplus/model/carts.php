@@ -8,16 +8,26 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusModelCarts extends KModelDatabase
+class ComNucleonplusModelCarts extends ComCartModelCarts
 {
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
 
         $this->getState()
-            ->insert('account_id', 'int')
-            ->insert('cart_id', 'int')
+            ->insert('interface', 'string')
         ;
+    }
+
+    protected function _buildQueryWhere(KDatabaseQueryInterface $query)
+    {
+        parent::_buildQueryWhere($query);
+
+        $state = $this->getState();
+
+        if ($state->interface) {
+            $query->where('tbl.interface = :interface')->bind(['interface' => $state->interface]);
+        }
     }
 
     /**
@@ -29,14 +39,14 @@ class ComNucleonplusModelCarts extends KModelDatabase
     {
         $state = $this->getState();
 
-        $table = $this->getObject('com://admin/nucleonplus.database.table.carts');
+        $table = $this->getObject('com://admin/cart.database.table.carts');
         $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_carts AS tbl')
-            ->columns('tbl.nucleonplus_cart_id, SUM(_item.UnitPrice * _cart_items.quantity) AS total')
-            ->join(array('_cart_items' => 'nucleonplus_cartitems'), '_cart_items.cart_id = tbl.nucleonplus_cart_id', 'INNER')
-            ->join(array('_item' => 'qbsync_items'), '_cart_items.ItemRef = _item.ItemRef', 'INNER')
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id])
-            ->group('tbl.account_id')
+            ->table('carts AS tbl')
+            ->columns('tbl.cart_id, SUM(_item.UnitPrice * _cart_items.quantity) AS total')
+            ->join(array('_cart_items' => 'cart_items'), '_cart_items.cart_id = tbl.cart_id', 'INNER')
+            ->join(array('_item' => 'qbsync_items'), '_cart_items.row = _item.ItemRef', 'INNER')
+            ->where('tbl.customer = :customer')->bind(['customer' => $state->customer])
+            ->group('tbl.customer')
         ;
 
         $row = $table->select($query);
@@ -53,11 +63,11 @@ class ComNucleonplusModelCarts extends KModelDatabase
     {
         $state = $this->getState();
 
-        $table = $this->getObject('com://admin/nucleonplus.database.table.cartitems');
+        $table = $this->getObject('com://admin/cart.database.table.items');
         $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_cartitems AS tbl')
-            ->columns('tbl.nucleonplus_cartitem_id, SUM(_item.weight * tbl.quantity) AS total')
-            ->join(array('_item' => 'qbsync_items'), 'tbl.ItemRef = _item.ItemRef', 'INNER')
+            ->table('cart_items AS tbl')
+            ->columns('tbl.cart_item_id, SUM(_item.weight * tbl.quantity) AS total')
+            ->join(array('_item' => 'qbsync_items'), 'tbl.row = _item.ItemRef', 'INNER')
             ->where('tbl.cart_id = :cart_id')->bind(['cart_id' => $state->cart_id])
             ->group('tbl.cart_id')
         ;

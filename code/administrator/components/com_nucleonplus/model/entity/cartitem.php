@@ -8,7 +8,7 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusModelEntityCartitem extends KModelEntityRow
+class ComNucleonplusModelEntityCartitem extends ComCartModelEntityItem
 {
     /**
      * Check available stock against this cart item quantity
