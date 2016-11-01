@@ -148,8 +148,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             $result = true;
         }
 
-        die('test');
-
         return $result;
     }
 
