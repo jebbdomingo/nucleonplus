@@ -97,6 +97,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $account    = $this->getObject('com:nucleonplus.model.accounts')->id($data->account_id)->fetch();
         $cart       = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
         $error      = false;
+        $result     = false;
 
         // Validate account
         if (count($account) === 0)
@@ -115,29 +116,41 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                     }
                 }
             }
-            else throw new Exception('Shopping cart is empty');
+            else $error = 'Shopping cart is empty';
         }
 
         if ($error)
         {
-            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $translator->translate($error), 'error');
-            $context->getResponse()->send();
+            $identifier = $context->getSubject()->getIdentifier();
+            $url        = sprintf('index.php?option=com_%s&view=cart&customer=%s', $identifier->package, $account->id);
+
+            $response = $context->getResponse();
+            $response->addMessage($error);
+            $response->setRedirect(JRoute::_($url, false));
+        }
+        else
+        {
+            $order_status    = 'completed';
+            $invoice_status  = 'paid';
+            $payment_method  = 'cash';
+            $shipping_method = 'na';
+
+            $data = new KObjectConfig([
+                'account_id'      => $account->id,
+                'order_status'    => $order_status,
+                'invoice_status'  => $invoice_status,
+                'payment_method'  => $payment_method,
+                'shipping_method' => $shipping_method
+            ]);
+
+            $context->getRequest()->setData($data->toArray());
+
+            $result = true;
         }
 
-        $order_status    = 'completed';
-        $invoice_status  = 'paid';
-        $payment_method  = 'cash';
-        $shipping_method = 'na';
+        die('test');
 
-        $data = new KObjectConfig([
-            'account_id'      => $account->id,
-            'order_status'    => $order_status,
-            'invoice_status'  => $invoice_status,
-            'payment_method'  => $payment_method,
-            'shipping_method' => $shipping_method
-        ]);
-
-        $context->getRequest()->setData($data->toArray());
+        return $result;
     }
 
     /**
@@ -362,41 +375,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         return $result;
     }
 
-    /**
-     * Create Order
-     *
-     * @param KControllerContextInterface $context
-     *
-     * @return entity
-     */
-    // protected function _actionAdd(KControllerContextInterface $context)
-    // {
-    //     $order = parent::_actionAdd($context);
-
-    //     // Create reward
-    //     $this->getObject($this->_reward)->create($order);
-
-    //     if ($order->invoice_status == 'paid')
-    //     {
-    //         try
-    //         {
-    //             // Fetch the newly created Order from the data store to get the joined columns
-    //             $order = $this->getObject('com:nucleonplus.model.orders')->id($order->id)->fetch();
-    //             $this->_salesreceipt_service->recordSale($order);
-    //             $context->response->addMessage("Order #{$order->id} has been created and paid");
-
-    //             // Automatically activate reward
-    //             $this->_activateReward($order);
-    //         }
-    //         catch (Exception $e)
-    //         {
-    //             $context->response->addMessage($e->getMessage(), 'exception');
-    //         }
-    //     }
-        
-    //     return $order;
-    // }
-
     protected function _actionAdd(KControllerContextInterface $context)
     {
         $user       = $this->getObject('user');
@@ -447,6 +425,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
             // Automatically activate reward
             $this->_activateReward($order);
+
+            $context->response->addMessage('Order completed');
         }
 
         return $order;
