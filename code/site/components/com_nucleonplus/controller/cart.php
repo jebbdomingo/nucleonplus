@@ -15,15 +15,31 @@
  * @author  Jebb Domingo <http://github.com/jebbdomingo>
  * @package Nucleon Plus
  */
-class ComNucleonplusControllerCart extends ComKoowaControllerModel
+class ComNucleonplusControllerCart extends ComCartControllerCart
 {
+    public function __construct(KObjectConfig $config)
+    {
+        @ini_set('max_execution_time', 300);
+
+        parent::__construct($config);
+    }
+    
+    protected function _initialize(KObjectConfig $config)
+    {
+        $config->append(array(
+            'model' => 'com:nucleonplus.model.carts'
+        ));
+
+        parent::_initialize($config);
+    }
+
     protected function _actionAdd(KControllerContextInterface $context)
     {
         $user    = $this->getObject('user');
         $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
         $data    = $context->request->data;
 
-        $cart      = $this->getModel()->account_id($account->id)->fetch();
+        $cart      = $this->getModel()->customer($account->id)->fetch();
         $cartItems = array();
 
         if (count($cart))
@@ -33,10 +49,10 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
             {
                 foreach ($items as $item)
                 {
-                    $cartItems[] = $item->ItemRef;
+                    $cartItems[] = $item->row;
 
                     // Existing item, update quantity instead
-                    if ($item->ItemRef == $data->ItemRef)
+                    if ($item->row == $data->ItemRef)
                     {
                         $item->quantity += $data->quantity;
                         $item->save();
@@ -49,7 +65,7 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
                 // New item
                 $cartItemData = array(
                     'cart_id'  => $cart->id,
-                    'ItemRef'  => $data->ItemRef,
+                    'row'      => $data->ItemRef,
                     'quantity' => $data->quantity,
                 );
 
@@ -66,7 +82,7 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
             // New item
             $cartItemData = array(
                 'cart_id'  => $cart->id,
-                'ItemRef'  => $data->ItemRef,
+                'row'      => $data->ItemRef,
                 'quantity' => $data->quantity,
             );
             $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);

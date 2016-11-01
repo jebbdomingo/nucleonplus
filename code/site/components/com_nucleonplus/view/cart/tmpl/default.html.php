@@ -80,14 +80,14 @@ defined('KOOWA') or die; ?>
                     <div class="form-group">
                         <label for="address" class="col-sm-2 control-label">Address</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="address" name="address" placeholder="e.g. Block 1 Lot 2 Nuvali Park ..." size="100%" value="<?= $address ?>" />
+                            <input type="text" class="form-control" id="address" name="address" placeholder="Street, subdivision, baranggay ..." size="100%" value="<?= $address ?>" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="city_id" class="col-sm-2 control-label">City</label>
+                        <label for="city" class="col-sm-2 control-label">City</label>
                         <div class="col-sm-10">
                             <?= helper('listbox.cities', array(
-                                'name'     => 'city_id',
+                                'name'     => 'city',
                                 'selected' => $cart->city_id,
                             )) ?>
                         </div>

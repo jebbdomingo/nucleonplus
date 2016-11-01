@@ -180,7 +180,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
                     {
                         $quantity += ((int) $orderItem->quantity * (int) $groupedItem->quantity);
                         $oItem    = $this->getObject('com://admin/qbsync.model.items')->ItemRef($groupedItem->ItemRef)->fetch();
-                        $itemsQty[$oItem->ItemRef] = $quantity;
+                        @$itemsQty[$oItem->ItemRef] = $quantity;
                     }
                 }
 
@@ -209,7 +209,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
                     $item->Type
                 );
 
-                $itemsQty[$item->ItemRef] += $quantity;
+                @$itemsQty[$item->ItemRef] += $quantity;
             }
         }
 

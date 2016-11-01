@@ -396,6 +396,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         if ($order->save())
         {
+            // Fetch newly created order to get the joined columns
+            $order = $this->getObject('com://admin/nucleonplus.model.orders')->id($order->id)->fetch();
+
             $rewardPackage = $this->getObject($this->_reward);
 
             foreach ($cart->getItems() as $item)

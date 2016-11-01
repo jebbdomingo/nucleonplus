@@ -10,7 +10,7 @@
         </tr>
         <tr>
             <td>Quantity</td>
-            <td><input type="text" name="form_quantity" style="width: 30px" /></td>
+            <td><input type="text" name="form_quantity" style="width: 30px" value="1" /></td>
         </tr>
     </tbody>
 </table>

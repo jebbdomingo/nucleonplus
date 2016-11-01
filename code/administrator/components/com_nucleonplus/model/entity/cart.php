@@ -11,11 +11,14 @@
 
 class ComNucleonplusModelEntityCart extends ComCartModelEntityCart
 {
+    const INTERFACT_SITE = 'site';
+    const INTERFACT_ADMIN = 'admin';
+
     public function save()
     {
         $result = false;
 
-        if (!$this->isNew() && $this->interface == 'site')
+        if (!$this->isNew() && $this->interface == self::INTERFACT_SITE)
         {
             if (empty($this->address) || empty($this->city))
             {

@@ -19,6 +19,7 @@ class ComNucleonplusDatabaseBehaviorShippable extends KDatabaseBehaviorAbstract
     {
         $context->query
             ->columns(array('city' => "CONCAT(_city.name, ', ', _province.name)"))
+            ->columns(array('city_id' => 'tbl.city'))
             ->join(array('_city' => 'nucleonplus_cities'), 'tbl.city = _city.nucleonplus_city_id')
             ->join(array('_province' => 'nucleonplus_provinces'), '_city.province_id = _province.nucleonplus_province_id')
         ;

@@ -31,12 +31,6 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
         $command->label = 'Activate';
     }
 
-    protected function _commandPlaceorder(KControllerToolbarCommand $command)
-    {
-        $command->icon  = 'icon-32-new';
-        $command->label = 'Place an Order';
-    }
-
     protected function _commandPos(KControllerToolbarCommand $command)
     {
         $command->icon  = 'icon-32-new';
@@ -80,16 +74,9 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
         }
 
         if ($controller->isEditable() && $controller->canSave() && !in_array($context->result->status, array('new', 'pending'))) {
-            $this->addCommand('placeorder', [
-                'allowed' => $allowed,
-                'href'    => 'view=order&account_id=' . $context->result->id
-            ]);
-        }
-
-        if ($controller->isEditable() && $controller->canSave() && !in_array($context->result->status, array('new', 'pending'))) {
             $this->addCommand('pos', [
                 'allowed' => $allowed,
-                'href' => 'view=order&account_id=' . $context->result->id . '&layout=pos'
+                'href' => 'view=cart&customer=' . $context->result->id
             ]);
         }
 

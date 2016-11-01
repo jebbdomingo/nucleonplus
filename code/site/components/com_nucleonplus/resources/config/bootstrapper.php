@@ -2,9 +2,6 @@
 
 return array(
     'aliases' => array(
-        // 'com:qbsync.controller.salesreceiptline'                => 'com://admin/qbsync.controller.salesreceiptline',
-        // 'com:qbsync.controller.salesreceipt'                    => 'com://admin/qbsync.controller.salesreceipt',
-        // 'com:nucleonplus.accounting.service.salesreceipt'       => 'com://admin/nucleonplus.accounting.service.salesreceipt',
         'com://site/nucleonplus.model.products'                 => 'com://admin/qbsync.model.items',
         'com://site/nucleonplus.model.cities'                   => 'com://admin/nucleonplus.model.cities',
         'com:nucleonplus.model.packages'                        => 'com://admin/nucleonplus.model.packages',
@@ -23,11 +20,6 @@ return array(
         'com://site/nucleonplus.controller.behavior.referrable' => 'com://admin/nucleonplus.controller.behavior.referrable',
     ),
     'identifiers' => array(
-        /*'com://site/nucleonplus.controller.order' => array(
-            'behaviors' => array(
-                'rewardable'
-            ),
-        ),*/
         'com://site/nucleonplus.database.table.orders' => array(
             'behaviors' => array(
                 'com://site/nucleonplus.database.behavior.permissible'

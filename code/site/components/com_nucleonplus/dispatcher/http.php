@@ -51,7 +51,11 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         if ($query->view == 'cart')
         {
             $model = $this->getObject('com://admin/nucleonplus.model.carts');
-            $cart  = $model->account_id($user->getId())->fetch();
+            $cart  = $model
+                ->customer($user->getId())
+                ->interface(ComNucleonplusModelEntityCart::INTERFACT_SITE)
+                ->fetch()
+            ;
 
             if (count($cart))
             {
@@ -60,7 +64,8 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             else
             {
                 $cart = $model->create(array(
-                    'account_id' => $user->getId()
+                    'customer'  => $user->getId(),
+                    'interface' => 'site'
                 ));
                 $cart->save();
 

@@ -28,7 +28,11 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         if ($query->view == 'cart')
         {
             $model = $this->getObject('com://admin/nucleonplus.model.carts');
-            $cart  = $model->customer($query->customer)->interface('admin')->fetch();
+            $cart  = $model
+                ->customer($query->customer)
+                ->interface(ComNucleonplusModelEntityCart::INTERFACT_ADMIN)
+                ->fetch()
+            ;
 
             if (count($cart))
             {
