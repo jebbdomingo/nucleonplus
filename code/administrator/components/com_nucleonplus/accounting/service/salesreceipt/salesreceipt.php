@@ -259,7 +259,7 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
      *
      * @param array $itemsQty
      *
-     * @return KModelEntityInterface
+     * @return void
      */
     protected function _updateQuantity($itemsQty)
     {
@@ -273,7 +273,5 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
                 $entity->save();
             }
         }
-
-        return $entity;
     }
 }

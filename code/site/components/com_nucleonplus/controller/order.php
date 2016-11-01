@@ -79,21 +79,25 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else
         {
-            if (empty(trim($cart->address))) {
-                $error = 'Invalid address';
-            }
-
-            if (empty(trim($cart->city_id))) {
-                $error = 'Invalid city';
-            }
-
-            foreach ($cart->getItems() as $item)
+            if (count($cart))
             {
-                // Check inventory for available stock
-                if (!$item->hasAvailableStock()) {
-                    $error = "Insufficient stock of {$item->_item_name}";
+                if (empty(trim($cart->address))) {
+                    $error = 'Invalid address';
+                }
+
+                if (empty(trim($cart->city_id))) {
+                    $error = 'Invalid city';
+                }
+
+                foreach ($cart->getItems() as $item)
+                {
+                    // Check inventory for available stock
+                    if (!$item->hasAvailableStock()) {
+                        $error = "Insufficient stock of {$item->_item_name}";
+                    }
                 }
             }
+            else $error = 'Cart System Error';
         }
 
         if ($error)

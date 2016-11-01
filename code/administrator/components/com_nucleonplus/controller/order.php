@@ -106,7 +106,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else
         {
-            if (count($cart->getItems()))
+            if (count($cart) && count($cart->getItems()))
             {
                 foreach ($cart->getItems() as $item)
                 {
@@ -116,17 +116,22 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                     }
                 }
             }
-            else $error = 'Shopping cart is empty';
+            else
+            {
+                $error = 'Cart System Error';
+            }
         }
 
         if ($error)
         {
-            $identifier = $context->getSubject()->getIdentifier();
-            $url        = sprintf('index.php?option=com_%s&view=cart&customer=%s', $identifier->package, $account->id);
+            throw new Exception($error);
+            
+            // $identifier = $context->getSubject()->getIdentifier();
+            // $url        = sprintf('index.php?option=com_%s&view=cart&customer=%s', $identifier->package, $account->id);
 
-            $response = $context->getResponse();
-            $response->addMessage($error);
-            $response->setRedirect(JRoute::_($url, false));
+            // $response = $context->getResponse();
+            // $response->addMessage($error);
+            // $response->setRedirect(JRoute::_($url, false));
         }
         else
         {
@@ -137,6 +142,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
             $data = new KObjectConfig([
                 'account_id'      => $account->id,
+                'cart_id'         => $cart->id,
                 'order_status'    => $order_status,
                 'invoice_status'  => $invoice_status,
                 'payment_method'  => $payment_method,
