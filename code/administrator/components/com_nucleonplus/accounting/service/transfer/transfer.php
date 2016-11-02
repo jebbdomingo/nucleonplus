@@ -379,7 +379,8 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
              'FromAccountRef' => $fromAccount,
              'ToAccountRef'   => $toAccount,
              'Amount'         => $amount,
-             'PrivateNote'    => "{$entityId}_{$note}",
+             'TxnDate'        => date('Y-m-d'),
+             'PrivateNote'    => "{$entityId}_{$note}"
         ));
     }
 }
