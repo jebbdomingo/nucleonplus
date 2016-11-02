@@ -27,7 +27,6 @@ class ComNucleonplusModelDirectreferrals extends KModelDatabase
 
         $query
             ->columns(array('reward_product_id' => '_reward.product_id'))
-            ->columns(array('reward_product_name' => '_reward.product_name'))
         ;
     }
 
