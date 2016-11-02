@@ -21,18 +21,6 @@ class ComNucleonplusModelOrders extends KModelDatabase
         ;
     }
 
-    protected function _initialize(KObjectConfig $config)
-    {
-        $config->append(array(
-            'behaviors' => array(
-                // 'rewardable'
-                // 'searchable' => array('columns' => array('nucleonplus_order_id', 'package_name', 'account_number', 'invoice_status'))
-            )
-        ));
-
-        parent::_initialize($config);
-    }
-
     protected function _buildQueryColumns(KDatabaseQueryInterface $query)
     {
         parent::_buildQueryColumns($query);
@@ -68,7 +56,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
         }
 
         if ($state->order_status && $state->order_status <> 'all') {
-            $query->where('tbl.order_status = :order_status')->bind(['order_status' => $state->order_status]);
+            $query->where('tbl.order_status IN :order_status')->bind(['order_status' => (array) $state->order_status]);
         }
 
         if ($state->search)

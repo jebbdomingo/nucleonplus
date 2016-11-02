@@ -14,6 +14,7 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     const STATUS_PROCESSING   = 'processing';
     const STATUS_PAYMENT      = 'awaiting_payment';
     const STATUS_VERIFICATION = 'awaiting_verification';
+    const STATUS_COMPLETED    = 'completed';
 
     const INVOICE_STATUS_SENT = 'sent';
     const INVOICE_STATUS_PAID = 'paid';

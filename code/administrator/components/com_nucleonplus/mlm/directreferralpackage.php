@@ -28,7 +28,10 @@ class ComNucleonplusMlmDirectreferralpackage extends ComNucleonplusMlmDirectrefe
 
         $orders = $this->getObject('com:nucleonplus.model.orders')
             ->account_id($account->id)
-            ->order_status(ComNucleonplusModelEntityOrder::STATUS_PROCESSING)
+            ->order_status(array(
+                ComNucleonplusModelEntityOrder::STATUS_PROCESSING,
+                ComNucleonplusModelEntityOrder::STATUS_COMPLETED,
+            ))
             ->fetch()
         ;
         $numOrders = count($orders);
