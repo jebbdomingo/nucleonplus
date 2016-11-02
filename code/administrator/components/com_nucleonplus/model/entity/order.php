@@ -21,6 +21,7 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
 
     const SHIPPING_METHOD_XEND = 'xend';
 
+    const PAYMENT_METHOD_CASH      = 'cash';
     const PAYMENT_METHOD_DRAGONPAY = 'dragonpay';
     
     /**

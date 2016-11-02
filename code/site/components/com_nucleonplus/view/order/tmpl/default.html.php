@@ -48,11 +48,13 @@ else $footerAmountSize = 'col-xs-12';
                     </div>
 
                     <div class="panel-body">
-                        <div class="well">
-                            <h3>Ship To:</h3>
-                            <?= $order->address ?>, 
-                            <?= $order->city ?>
-                        </div>
+                        <? if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY): ?>
+                            <div class="well">
+                                <h3>Ship To:</h3>
+                                <?= $order->address ?>, 
+                                <?= $order->city ?>
+                            </div>
+                        <? endif; ?>
                         
                         <? foreach ($order->getOrderItems() as $item): ?>
                             <div class="row">
@@ -76,22 +78,24 @@ else $footerAmountSize = 'col-xs-12';
                                 <div class="col-sm-2 text-right">&#8369;<?= number_format($order->getAmount(), 2) ?></div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="text-center">
-                                <div class="col-sm-10">
-                                    <h6 class="text-right">Shipping</h6>
+                        <? if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY): ?>
+                            <div class="row">
+                                <div class="text-center">
+                                    <div class="col-sm-10">
+                                        <h6 class="text-right">Shipping</h6>
+                                    </div>
+                                    <div class="col-sm-2 text-right">&#8369;<?= $order->shipping_cost ?></div>
                                 </div>
-                                <div class="col-sm-2 text-right">&#8369;<?= $order->shipping_cost ?></div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="text-center">
-                                <div class="col-sm-10">
-                                    <h6 class="text-right"><?= $order->getPaymentMode() ?></h6>
+                            <div class="row">
+                                <div class="text-center">
+                                    <div class="col-sm-10">
+                                        <h6 class="text-right"><?= $order->getPaymentMode() ?></h6>
+                                    </div>
+                                    <div class="col-sm-2 text-right">&#8369;<?= $order->payment_charge ?></div>
                                 </div>
-                                <div class="col-sm-2 text-right">&#8369;<?= $order->payment_charge ?></div>
                             </div>
-                        </div>
+                        <? endif; ?>
                     </div>
 
                     <div class="panel-footer">
