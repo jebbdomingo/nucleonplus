@@ -39,6 +39,11 @@ defined('KOOWA') or die; ?>
                 <table class="table table-striped footable">
                     <thead>
                         <tr>
+                            <th class="alert alert-info" role="alert" colspan="8">
+                                Total: <strong>&#8369;<?= $total ?></strong>
+                            </th>
+                        </tr>
+                        <tr>
                             <th style="text-align: center;" width="1">
                                 <?= helper('grid.checkall')?>
                             </th>

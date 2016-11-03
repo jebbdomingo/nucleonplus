@@ -92,4 +92,23 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             $context->query->order('u.name', 'asc');
         }
     }
+
+    public function getTotal()
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('tbl.nucleonplus_payout_id, SUM(tbl.amount) AS total')
+            // ->where('tbl.payout_method = :payout_method')->bind(['payout_method' => 'cash'])
+            ->group('tbl.payout_method')
+        ;
+
+        $this->_buildQueryWhere($query);
+
+        $entities = $table->select($query);
+
+        return (float) $entities->total;
+    }
 }

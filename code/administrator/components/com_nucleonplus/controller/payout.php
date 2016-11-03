@@ -262,7 +262,10 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
     protected function _actionProcessing(KControllerContextInterface $context)
     {
         $config = JFactory::getConfig();
-        $context->getRequest()->setData(array('status' => 'processing'));
+        $context->getRequest()->setData(array(
+            'status'         => ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING,
+            'date_processed' => gmdate('Y-m-d H:i:s')
+        ));
 
         try
         {
@@ -362,7 +365,10 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
     protected function _actionGeneratecheck(KControllerContextInterface $context)
     {
         $config = JFactory::getConfig();
-        $context->getRequest()->setData(array('status' => 'checkgenerated'));
+        $context->getRequest()->setData(array(
+            'status'               => ComNucleonplusModelEntityPayout::PAYOUT_STATUS_CHECK_GENERATED,
+            'date_check_generated' => gmdate('Y-m-d H:i:s')
+        ));
 
         $payouts = parent::_actionEdit($context);
 
@@ -396,7 +402,10 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
      */
     protected function _actionDisburse(KControllerContextInterface $context)
     {
-        $context->getRequest()->setData(['status' => 'disbursed']);
+        $context->getRequest()->setData(array(
+            'status'         => ComNucleonplusModelEntityPayout::PAYOUT_STATUS_DISBURSED,
+            'date_disbursed' => gmdate('Y-m-d H:i:s')
+        ));
 
         $payouts = parent::_actionEdit($context);
 

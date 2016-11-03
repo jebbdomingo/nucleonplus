@@ -83,37 +83,6 @@ class ComNucleonplusModelOrders extends KModelDatabase
         }
     }
 
-    // /**
-    //  * Check if the member has existing order at this moment
-    //  *
-    //  * conditions: orders
-    //  * - owned by the $accountId
-    //  * - created today
-    //  * - excluding cancelled and void orders
-    //  *
-    //  * @param [type] $accountId [description]
-    //  *
-    //  * @return boolean [description]
-    //  */
-    // public function hasCurrentOrder($accountId)
-    // {
-    //     $state = $this->getState();
-
-    //     $table = $this->getObject('com://admin/nucleonplus.database.table.orders');
-    //     $query = $this->getObject('database.query.select')
-    //         ->table('nucleonplus_orders AS tbl')
-    //         ->columns('tbl.nucleonplus_order_id, COUNT(tbl.account_id) AS count')
-    //         ->where('tbl.account_id = :account_id')->bind(['account_id' => $accountId])
-    //         ->where('tbl.created_on >= :created_on')->bind(array('created_on' => date('Y-m-d')))
-    //         ->where('tbl.order_status NOT IN :status')->bind(['status' => array('cancelled', 'void')])
-    //         ->group('tbl.account_id')
-    //     ;
-
-    //     $entities = $table->select($query);
-
-    //     return (intval($entities->count) > 0) ? true : false;
-    // }
-
     /**
      * Get the total amount of this order
      *
@@ -135,29 +104,4 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         return (float) $entities->total;
     }
-
-    // /**
-    //  * Get the total weight of this order
-    //  *
-    //  * @return integer
-    //  */
-    // public function getWeight()
-    // {
-    //     $state = $this->getState();
-
-    //     $table = $this->getObject('com://admin/nucleonplus.database.table.orderitems');
-    //     $query = $this->getObject('database.query.select')
-    //         ->table('nucleonplus_orderitems AS tbl')
-    //         ->columns('tbl.nucleonplus_orderitem_id, SUM(_items.weight * _package_items.quantity * tbl.quantity) AS total')
-    //         ->join(array('_package' => 'nucleonplus_packages'), 'tbl.package_id = _package.nucleonplus_package_id')
-    //         ->join(array('_package_items' => 'nucleonplus_packageitems'), '_package.nucleonplus_package_id = _package_items.package_id')
-    //         ->join(array('_items' => 'nucleonplus_items'), '_package_items.item_id = _items.nucleonplus_item_id')
-    //         ->where('tbl.order_id = :order_id')->bind(['order_id' => $state->id])
-    //         ->group('tbl.order_id')
-    //     ;
-
-    //     $entities = $table->select($query);
-
-    //     return $entities->total;
-    // }
 }

@@ -525,4 +525,27 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
 
         return $this->_autocomplete($config);
     }
+
+    public function payoutMethods(array $config = array())
+    {
+        $options = array(
+            array('label' => 'Pick-up', 'value' => ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP),
+            array('label' => 'Funds Transfer', 'value' => ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER)
+        )
+
+        // Override options
+        if ($config['payout_methods']) {
+            $options = $config['payout_methods'];
+        }
+
+        $config = new KObjectConfig($config);
+        $config->append(array(
+            'name'     => 'payout_method',
+            'selected' => null,
+            'options'  => $options,
+            'filter'   => array()
+        ));
+
+        return parent::radiolist($config);
+    }
 }
