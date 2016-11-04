@@ -89,6 +89,13 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             $controller->showstatus($query->toArray());
         }
 
+        if ($query->view == 'dragonpaypo' && $request->getMethod() == 'POST')
+        {
+            $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
+            $controller->id($request->data->txnid);
+            $controller->updatepayoutstatus($request->data->toArray());
+        }
+
         return $request;
     }
 }

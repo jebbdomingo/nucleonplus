@@ -9,12 +9,12 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusDatabaseTableDragonpays extends KDatabaseTableAbstract
+class ComNucleonplusDatabaseTablePayoutprocessors extends KDatabaseTableAbstract
 {
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'name' => 'nucleonplus_orders'
+            'name' => 'nucleonplus_payouts'
         ));
         
         parent::_initialize($config);
