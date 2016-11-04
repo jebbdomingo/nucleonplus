@@ -531,10 +531,10 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $options = array(
             array('label' => 'Pick-up', 'value' => ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP),
             array('label' => 'Funds Transfer', 'value' => ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER)
-        )
+        );
 
         // Override options
-        if ($config['payout_methods']) {
+        if (isset($config['payout_methods']) && !empty($config['payout_methods'])) {
             $options = $config['payout_methods'];
         }
 

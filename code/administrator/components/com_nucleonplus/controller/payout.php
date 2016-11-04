@@ -59,7 +59,10 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'accounting_service' => 'com:nucleonplus.accounting.service.transfer'
+            'accounting_service' => 'com:nucleonplus.accounting.service.transfer',
+            'behaviors'          => array(
+                'masspayable'
+            ),
         ));
 
         parent::_initialize($config);
@@ -270,82 +273,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         try
         {
             $payouts = parent::_actionEdit($context);
-
-            foreach ($payouts as $payout)
-            {
-                // Transfer bonus allocations to checking account for payout
-                $rebates = $this->getObject('com:nucleonplus.model.rebates')
-                    ->payout_id($payout->id)
-                    ->fetch()
-                ;
-
-                $drBonuses = $this->getObject('com:nucleonplus.model.directreferrals')
-                    ->payout_id($payout->id)
-                    ->fetch()
-                ;
-
-                $commission = $this->getObject('com:nucleonplus.model.patronagebonuses')
-                    ->payout_id($payout->id)
-                    ->fetch()
-                ;
-
-                $directReferral = $this->getObject('com:nucleonplus.model.referralbonuses')
-                    ->payout_id($payout->id)
-                    ->referral_type('dr')
-                    ->fetch()
-                ;
-
-                $indirectReferral = $this->getObject('com:nucleonplus.model.referralbonuses')
-                    ->payout_id($payout->id)
-                    ->referral_type('ir')
-                    ->fetch()
-                ;
-
-                if (count($rebates) > 0)
-                {
-                    $amount = 0;
-                    foreach ($rebates as $rebate) {
-                        $amount += $rebate->points;
-                    }
-                    $this->_accounting_service->rebatesCheck($payout->id, $amount);
-                }
-
-                if (count($drBonuses) > 0)
-                {
-                    $amount = 0;
-                    foreach ($drBonuses as $drBonus) {
-                        $amount += $drBonus->points;
-                    }
-                    $this->_accounting_service->directReferralBonusCheck($payout->id, $amount);
-                }
-
-                if (count($commission) > 0)
-                {
-                    $amount = 0;
-                    foreach ($commission as $comm) {
-                        $amount += $comm->points;
-                    }
-                    $this->_accounting_service->commissionCheck($payout->id, $amount);
-                }
-
-                if (count($directReferral) > 0)
-                {
-                    $amount = 0;
-                    foreach ($directReferral as $dr) {
-                        $amount += $dr->points;
-                    }
-                    $this->_accounting_service->directReferralCheck($payout->id, $amount);
-                }
-
-                if (count($indirectReferral) > 0)
-                {
-                    $amount = 0;
-                    foreach ($indirectReferral as $ir) {
-                        $amount += $ir->points;
-                    }
-                    $this->_accounting_service->indirectReferralCheck($payout->id, $amount);
-                }
-            }
+            $this->_fundCheck($payouts);
         }
         catch (Exception $e)
         {
@@ -353,6 +281,85 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         }
 
         return $payouts;
+    }
+
+    protected function _fundCheck($payouts)
+    {
+        foreach ($payouts as $payout)
+        {
+            // Transfer bonus allocations to checking account for payout
+            $rebates = $this->getObject('com:nucleonplus.model.rebates')
+                ->payout_id($payout->id)
+                ->fetch()
+            ;
+
+            $drBonuses = $this->getObject('com:nucleonplus.model.directreferrals')
+                ->payout_id($payout->id)
+                ->fetch()
+            ;
+
+            $commission = $this->getObject('com:nucleonplus.model.patronagebonuses')
+                ->payout_id($payout->id)
+                ->fetch()
+            ;
+
+            $directReferral = $this->getObject('com:nucleonplus.model.referralbonuses')
+                ->payout_id($payout->id)
+                ->referral_type('dr')
+                ->fetch()
+            ;
+
+            $indirectReferral = $this->getObject('com:nucleonplus.model.referralbonuses')
+                ->payout_id($payout->id)
+                ->referral_type('ir')
+                ->fetch()
+            ;
+
+            if (count($rebates) > 0)
+            {
+                $amount = 0;
+                foreach ($rebates as $rebate) {
+                    $amount += $rebate->points;
+                }
+                $this->_accounting_service->rebatesCheck($payout->id, $amount);
+            }
+
+            if (count($drBonuses) > 0)
+            {
+                $amount = 0;
+                foreach ($drBonuses as $drBonus) {
+                    $amount += $drBonus->points;
+                }
+                $this->_accounting_service->directReferralBonusCheck($payout->id, $amount);
+            }
+
+            if (count($commission) > 0)
+            {
+                $amount = 0;
+                foreach ($commission as $comm) {
+                    $amount += $comm->points;
+                }
+                $this->_accounting_service->commissionCheck($payout->id, $amount);
+            }
+
+            if (count($directReferral) > 0)
+            {
+                $amount = 0;
+                foreach ($directReferral as $dr) {
+                    $amount += $dr->points;
+                }
+                $this->_accounting_service->directReferralCheck($payout->id, $amount);
+            }
+
+            if (count($indirectReferral) > 0)
+            {
+                $amount = 0;
+                foreach ($indirectReferral as $ir) {
+                    $amount += $ir->points;
+                }
+                $this->_accounting_service->indirectReferralCheck($payout->id, $amount);
+            }
+        }
     }
 
     /**

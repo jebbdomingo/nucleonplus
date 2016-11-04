@@ -37,9 +37,12 @@ class ComNucleonplusModelPayouts extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('a.account_number')
-            ->columns('a.status AS account_status')
-            ->columns('a.created_on AS account_created_on')
+            ->columns(array('_account_bank_account_number' => '_account.bank_account_number'))
+            ->columns(array('_account_bank_account_name'   => '_account.bank_account_name'))
+            ->columns(array('_account_mobile'              => '_account.mobile'))
+            ->columns('_account.account_number')
+            ->columns('_account.status AS account_status')
+            ->columns('_account.created_on AS account_created_on')
             ->columns('u.name')
             ->columns('u.email')
             ;
@@ -48,8 +51,8 @@ class ComNucleonplusModelPayouts extends KModelDatabase
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('a' => 'nucleonplus_accounts'), 'tbl.account_id = a.nucleonplus_account_id')
-            ->join(array('u' => 'users'), 'a.user_id = u.id')
+            ->join(array('_account' => 'nucleonplus_accounts'), 'tbl.account_id = _account.nucleonplus_account_id')
+            ->join(array('u' => 'users'), '_account.user_id = u.id')
         ;
 
         parent::_buildQueryJoins($query);

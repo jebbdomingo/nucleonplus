@@ -14,7 +14,7 @@ class ComNucleonplusViewPayoutsHtml extends ComKoowaViewHtml
         $model = $this->getModel();
 
         // Payouts current total
-        $context->data->total   = $model->getTotal();
+        $context->data->total = $model->getTotal();
 
         parent::_fetchData($context);
     }

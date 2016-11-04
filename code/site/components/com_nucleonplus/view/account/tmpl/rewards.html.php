@@ -91,7 +91,7 @@ defined('KOOWA') or die; ?>
                 <fieldset>
 
                     <legend><?= translate('Encashment Method') ?></legend>
-                    <?= helper('listbox.payoutMethods'))) ?>
+                    <?= helper('listbox.payoutMethods') ?>
 
                 </fieldset>
 

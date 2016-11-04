@@ -20,7 +20,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         parent::__construct($config);
 
         $this->addCommandCallback('before.verifyonlinepayment', '_validateVerify');
-        // $this->addCommandCallback('before.showstatus', '_validateReturnUrl');
+        $this->addCommandCallback('before.showstatus', '_validateReturnUrl');
 
         // Sales Receipt Service
         $identifier = $this->getIdentifier($config->salesreceipt_service);
