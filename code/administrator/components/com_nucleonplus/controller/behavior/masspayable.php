@@ -39,7 +39,7 @@ class ComNucleonplusControllerBehaviorMasspayable extends KControllerBehaviorAbs
 
         var_dump($resource);
 
-        $result   = $resource->RequestPayoutExResponse->RequestPayoutExResult;
+        $result   = $resource->RequestPayoutExResult;
 
         var_dump($result);
 
