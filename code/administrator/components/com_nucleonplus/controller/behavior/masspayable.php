@@ -34,7 +34,7 @@ class ComNucleonplusControllerBehaviorMasspayable extends KControllerBehaviorAbs
         var_dump($dragonpay->payout_url_test);
         var_dump($parameters);
 
-        $client   = new SoapClient($dragonpay->payout_url_test);
+        $client   = new SoapClient("{$dragonpay->payout_url_test}?wsdl");
         $resource = $client->RequestPayoutEx($parameters);
 
         var_dump($resource);
