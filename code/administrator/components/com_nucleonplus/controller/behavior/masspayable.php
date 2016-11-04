@@ -31,19 +31,9 @@ class ComNucleonplusControllerBehaviorMasspayable extends KControllerBehaviorAbs
             'mobileNo'      => $entity->_account_mobile
         );
 
-        var_dump($dragonpay->payout_url_test);
-        var_dump($parameters);
-
         $client   = new SoapClient("{$dragonpay->payout_url_test}?wsdl");
         $resource = $client->RequestPayoutEx($parameters);
-
-        var_dump($resource);
-
         $result   = $resource->RequestPayoutExResult;
-
-        var_dump($result);
-
-        die('testing');
 
         $entity->payout_service_result = $result;
         $entity->save();
