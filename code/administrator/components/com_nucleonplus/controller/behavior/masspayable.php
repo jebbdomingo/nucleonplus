@@ -8,34 +8,22 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusControllerBehaviorMasspayable extends KControllerBehaviorAbstract
+class ComNucleonplusControllerBehaviorMasspayable extends ComDragonpayControllerBehaviorMasspayable
 {
-    protected function _afterProcessing(KControllerContextInterface $context)
+    protected function _initialize(KObjectConfig $config)
     {
-        $env       = getenv('APP_ENV');
-        $entity    = $context->result;
-        $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
-        $dragonpay = $config->getJsonValue();
+        $config->append(array(
+            'actions'    => array('after.processing'),
+            'columns'    => array(
+                'merchantTxnId' => 'id',
+                'userName'      => '_account_bank_account_name',
+                'amount'        => 'amount',
+                'procDetail'    => '_account_bank_account_number',
+                'email'         => 'email',
+                'mobileNo'      => '_account_mobile',
+            )
+        ));
 
-        $parameters = array(
-            'apiKey'        => $dragonpay->payout_api_key,
-            'merchantTxnId' => $entity->id,
-            'userName'      => $entity->_account_bank_account_name,
-            'amount'        => (float) $entity->amount,
-            'currency'      => 'PHP',
-            'description'   => "Payout for {$entity->name} amounting to {$entity->amount}",
-            'procId'        => 'BDO',
-            'procDetail'    => $entity->_account_bank_account_number,
-            'runDate'       => gmdate('Y-m-d'),
-            'email'         => $entity->email,
-            'mobileNo'      => $entity->_account_mobile
-        );
-
-        $client   = new SoapClient("{$dragonpay->payout_url_test}?wsdl");
-        $resource = $client->RequestPayoutEx($parameters);
-        $result   = $resource->RequestPayoutExResult;
-
-        $entity->payout_service_result = $result;
-        $entity->save();
+        parent::_initialize($config);
     }
 }

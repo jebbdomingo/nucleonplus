@@ -22,7 +22,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
     protected function _actionDispatch(KDispatcherContextInterface $context)
     {
         $view        = $this->getRequest()->query->view;
-        $excemptions = array('products', 'dragonpay');
+        $excemptions = array('products', 'dragonpay', 'dragonpaypo');
 
         if ($view && (!in_array($view, $excemptions) && !$this->getUser()->isAuthentic()))
         {
@@ -89,13 +89,41 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             $controller->showstatus($query->toArray());
         }
 
-        if ($query->view == 'dragonpaypo' && $request->getMethod() == 'POST')
+        if ($query->view == 'dragonpaypo' && $request->getMethod() == 'GET')
         {
-            $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
-            $controller->id($request->data->txnid);
-            $controller->updatepayoutstatus($request->data->toArray());
+            $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+            $dragonpay = $config->getJsonValue();
+
+            if ($this->_login($dragonpay->nuc_user, $dragonpay->nuc_password))
+            {
+                $controller = $this->getObject('com://site/nucleonplus.controller.payoutprocessor');
+                $controller->id($request->data->txnid);
+                $controller->updatepayoutstatus($request->data->toArray());
+
+                $this->_logout();
+            }
         }
 
         return $request;
+    }
+
+    protected function _login($user, $password)
+    {
+        $app = JFactory::getApplication('site');
+        jimport('joomla.plugin.helper');
+
+        $credentials = array(
+            'username' => $user,
+            'password' => $password
+        );
+
+        return $app->login($credentials);
+    }
+
+    protected function _logout()
+    {
+        jimport('joomla.plugin.helper');
+        $app = JFactory::getApplication('site');
+        $app->logout();
     }
 }
