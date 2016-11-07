@@ -162,8 +162,6 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
 
             // Automatically activate reward
             $this->_activateReward($order);
-            
-            $this->_logout();
         }
         else throw new Exception('FAIL_INVALID_STATUS');
 
