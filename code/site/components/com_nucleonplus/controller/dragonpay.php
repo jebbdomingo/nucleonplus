@@ -177,13 +177,14 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
 
         if ($dragonpayPayment->isNew())
         {
+            $data->id = $data->txnid;
             $controller->add($data->toArray());
         }
         else
         {
             $controller
                 ->id($data->txnid)
-                ->add($data->toArray())
+                ->edit($data->toArray())
             ;
         }
     }
