@@ -130,8 +130,8 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             ->where('tbl.account_id = :account')->bind(['account' => $accountId])
         ;
 
-        $entities = $table->select($query);
+        $result = $table->select($query);
 
-        return (int) $entities->count;
+        return (int) $result->count;
     }
 }

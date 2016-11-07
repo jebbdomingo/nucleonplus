@@ -62,6 +62,9 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                 }
 
                 $payouts = $this->getModel()->hasOutstandingRequest($account->id)->count;
+                var_dump($account->id);
+                var_dump($payouts);
+                die('test');
                 if ($payouts) {
                     throw new Exception('You have outstanding payout request');
                 }
