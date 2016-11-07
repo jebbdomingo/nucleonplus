@@ -175,7 +175,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 {
                     $orderItem = $this->getObject('com://admin/nucleonplus.model.orderitems')->create(array(
                         'order_id'   => $order->id,
-                        'ItemRef'    => $item->ItemRef,
+                        'ItemRef'    => $item->_item_ref,
                         'item_name'  => $item->_item_name,
                         'item_price' => $item->_item_price,
                         'quantity'   => $item->quantity,
