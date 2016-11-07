@@ -146,8 +146,8 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         elseif ($data->status == 'S')
         {
             // Mark as Paid
-            $data->invoice_status = 'paid';
-            $data->order_status   = 'processing';
+            $data->invoice_status = ComNucleonplusModelEntityOrder::INVOICE_STATUS_PAID;
+            $data->order_status   = ComNucleonplusModelEntityOrder::STATUS_PROCESSING;
             $data->payment_status = $data->status;
 
             // Fetch after edit to get the joined columns
@@ -215,7 +215,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         $translator = $this->getObject('translator');
 
         // Check order status if its reward can be activated
-        if (!in_array($order->order_status, array('processing', 'completed'))) {
+        if (!in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PROCESSING, ComNucleonplusModelEntityOrder::STATUS_COMPLETED))) {
             throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" status"));
         }
 
