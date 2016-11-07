@@ -467,6 +467,34 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     }
 
     /**
+     * Generates payout methods filter buttons
+     *
+     * @param array $config [optional]
+     *
+     * @return  string  html
+     */
+    public function payoutMethodsFilter(array $config = array())
+    {
+        $payoutMethods = array(
+            ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER => 'Funds Transfer',
+            ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP         => 'Pick-up'
+        );
+
+        $result = null;
+
+        foreach ($payoutMethods as $value => $label)
+        {
+            $class = ($config['active'] == $value) ? 'class="active"' : null;
+            $href  = ($config['active'] <> $value) ? 'href="' . $this->getTemplate()->route("payout_method={$value}") . '"' : null;
+            $label = $this->getObject('translator')->translate($label);
+
+            $result .= "<a {$class} {$href}>{$label}</a>";
+        }
+
+        return $result;
+    }
+
+    /**
      * Bank account types list box
      * 
      * @param array $config [optional]

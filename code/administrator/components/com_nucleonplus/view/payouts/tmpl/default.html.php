@@ -35,6 +35,11 @@ defined('KOOWA') or die; ?>
                     <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Account Number or Member\'s Name')) ?>
                 </div>
             </div>
+            <div class="scopebar">
+                <div class="scopebar-group last hidden-tablet hidden-phone">
+                    <?php echo helper('listbox.payoutMethodsFilter', array('active' => parameters()->payout_method)); ?>
+                </div>
+            </div>
             <div class="nucleonplus_table_container">
                 <table class="table table-striped footable">
                     <thead>
