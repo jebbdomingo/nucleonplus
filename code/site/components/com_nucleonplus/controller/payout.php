@@ -45,7 +45,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             $data = $context->request->data;
 
             if (!in_array($data->payout_method, array(ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP, ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER))) {
-                throw new Exception('Please choose how do you want to encash your commission/referral fee');
+                throw new Exception('Please choose how do you want to encash your commissions');
             }
 
             // For funds transfer, ensure customer has bank account details
