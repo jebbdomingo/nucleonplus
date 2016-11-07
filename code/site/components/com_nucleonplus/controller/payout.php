@@ -63,7 +63,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             }
 
             // Ensure member has no outstanding payout request
-            $payouts = $this->getModel()->hasOutstandingRequest($account->id)->count;
+            $payouts = $this->getModel()->hasOutstandingRequest($account->id);
             var_dump($account->id);
             var_dump($payouts);
             die('test');
