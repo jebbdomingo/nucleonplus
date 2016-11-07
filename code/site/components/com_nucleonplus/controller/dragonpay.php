@@ -172,10 +172,10 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
 
     protected function _recordPaymentStatus($data)
     {
-        $controller       = $this->getObject('com:dragonpay.controller.payment');
-        $dragonpayPayment = $this->getObject('com:dragonpay.model.payments')->tnxid($data->txnid)->fetch();
+        $controller = $this->getObject('com:dragonpay.controller.payment');
+        $payment    = $this->getObject('com:dragonpay.model.payments')->id($data->txnid)->fetch();
 
-        if ($dragonpayPayment->isNew())
+        if ($payment->isNew())
         {
             $data->id = $data->txnid;
             $controller->add($data->toArray());

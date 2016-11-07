@@ -33,10 +33,10 @@ class ComNucleonplusControllerPayoutprocessor extends ComKoowaControllerModel
 
     protected function _recordPayoutStatus($data)
     {
-        $controller       = $this->getObject('com:dragonpay.controller.payment');
-        $dragonpayPayment = $this->getObject('com:dragonpay.model.payments')->tnxid($data->txnid)->fetch();
+        $controller = $this->getObject('com:dragonpay.controller.payout');
+        $payout     = $this->getObject('com:dragonpay.model.payouts')->id($data->txnid)->fetch();
 
-        if (count($dragonpayPayment) == 1)
+        if (count($payout) == 1)
         {
             $controller
                 ->id($data->txnid)
