@@ -42,12 +42,12 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
             $data = $context->request->data;
 
-            if (!in_array($data->payout_method, array('pickup', 'deposit'))) {
+            if (!in_array($data->payout_method, array(ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP, ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER))) {
                 throw new Exception('Please choose how do you want to encash your commission/referral fee');
             }
 
-            // For deposit, ensure customer has bank account details
-            if ($data->payout_method == 'deposit')
+            // For funds transfer, ensure customer has bank account details
+            if ($data->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER)
             {
                 $user    = $this->getObject('user');
                 $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
@@ -55,9 +55,10 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                 $acctNumber = trim($account->bank_account_number);
                 $acctName   = trim($account->bank_account_name);
                 $acctType   = trim($account->bank_account_type);
+                $mobile     = trim($account->mobile);
 
-                if (empty($acctNumber) || empty($acctName) || empty($acctType)) {
-                    throw new Exception('Please complete your bank account details in your profile');
+                if (empty($acctNumber) || empty($acctName) || empty($acctType) || empty($mobile)) {
+                    throw new Exception('Please complete your bank account details and mobile # in your profile');
                 }
             }
         }
