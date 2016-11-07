@@ -33,6 +33,8 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         try
         {
             $translator = $this->getObject('translator');
+            $user       = $this->getObject('user');
+            $account    = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
 
             $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item('claim_request')->fetch();
 
@@ -49,9 +51,6 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             // For funds transfer, ensure customer has bank account details
             if ($data->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER)
             {
-                $user    = $this->getObject('user');
-                $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
-
                 $acctNumber = trim($account->bank_account_number);
                 $acctName   = trim($account->bank_account_name);
                 $acctType   = trim($account->bank_account_type);
