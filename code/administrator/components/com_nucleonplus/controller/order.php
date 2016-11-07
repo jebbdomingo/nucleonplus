@@ -181,7 +181,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             foreach ($entities as $entity)
             {
                 // Check order status if it can be verified
-                if ($entity->order_status <> 'awaiting_verification') {
+                if ($entity->order_status <> ComNucleonplusModelEntityOrder::STATUS_VERIFICATION) {
                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified'));
                     $result = false;
                 }
