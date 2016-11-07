@@ -12,25 +12,36 @@ class ComNucleonplusControllerPayoutprocessor extends ComKoowaControllerModel
 {
     protected function _actionUpdatepayoutstatus(KControllerContextInterface $context)
     {
-        $data                        = $context->request->data;
-        $data->id                    = $data->txnid;
-        $data->payout_service_status = $data->status;
-        $data->payout_service_msg    = $data->message;
-        $result                      = 'result=OK';
+        $data     = $context->request->data;
+        $data->id = $data->txnid;
 
         switch ($data->status) {
             case 'S':
                 $data->status = ComNucleonplusModelEntityPayout::PAYOUT_STATUS_DISBURSED;
                 break;
+
+            case 'P':
+                $data->payment_status = $data->status;
+                break;
         }
 
-        if ($data->status == 'P')
+        // Record dragonpay payout status
+        $this->_recordPayoutStatus($data);
+
+        return parent::_actionEdit($context);
+    }
+
+    protected function _recordPayoutStatus($data)
+    {
+        $controller       = $this->getObject('com:dragonpay.controller.payment');
+        $dragonpayPayment = $this->getObject('com:dragonpay.model.payments')->tnxid($data->txnid)->fetch();
+
+        if (count($dragonpayPayment) == 1)
         {
-            $data->payment_status = $data->status;
+            $controller
+                ->id($data->txnid)
+                ->edit($data->toArray())
+            ;
         }
-        
-        parent::_actionEdit($context);
-
-        exit("{$result}");
     }
 }

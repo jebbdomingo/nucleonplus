@@ -48,63 +48,115 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             $query->id = (int) $user->getId();
         }
 
-        if ($query->view == 'cart')
-        {
-            $model = $this->getObject('com://admin/nucleonplus.model.carts');
-            $cart  = $model
-                ->customer($user->getId())
-                ->interface(ComNucleonplusModelEntityCart::INTERFACT_SITE)
-                ->fetch()
-            ;
-
-            if (count($cart))
-            {
-                $id = $cart->id;
-            }
-            else
-            {
-                $cart = $model->create(array(
-                    'customer'  => $user->getId(),
-                    'interface' => 'site'
-                ));
-                $cart->save();
-
-                $id = $cart->id;
-            }
-
-            $query->id = (int) $id;
+        // Manage cart
+        if ($query->view == 'cart') {
+            $query->id = (int) $this->_manageCart();
         }
 
-        if ($query->view == 'dragonpay' && $request->getMethod() == 'POST')
-        {
-            $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
-            $controller->id($request->data->txnid);
-            $controller->verifyonlinepayment($request->data->toArray());
+        // Verify online payment
+        if ($query->view == 'dragonpay' && $query->api == 'payment' &&  $request->getMethod() == 'POST') {
+            $this->_verifyOnlinePayment($request->data);
         }
 
-        if ($query->view == 'dragonpay' && $request->getMethod() == 'GET')
-        {
-            $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
-            $controller->id($query->txnid);
-            $controller->showstatus($query->toArray());
+        // Show online payment status
+        if ($query->view == 'dragonpay' && $query->api == 'payment' &&  $request->getMethod() == 'GET') {
+            $this->_showOnlinePaymentStatus($query);
         }
 
-        if ($query->view == 'dragonpaypo' && $request->getMethod() == 'GET')
-        {
-            $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
-            $dragonpay = $config->getJsonValue();
-
-            if ($this->_login($dragonpay->nuc_user, $dragonpay->nuc_password))
-            {
-                $controller = $this->getObject('com://site/nucleonplus.controller.payoutprocessor');
-                $controller->id($request->data->txnid);
-                $controller->updatepayoutstatus($request->data->toArray());
-
-                $this->_logout();
-            }
+        // Update payout status
+        if ($query->view == 'dragonpay' && $query->api == 'payout' && $request->getMethod() == 'GET') {
+            $this->_updatePayoutStatus($request->data);
         }
 
         return $request;
+    }
+
+    protected function _updatePayoutStatus($data)
+    {
+        $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+        $dragonpay = $config->getJsonValue();
+        $result    = 'result=OK';
+
+        if ($this->_login($dragonpay->nuc_user, $dragonpay->nuc_password))
+        {
+            try
+            {
+                $controller = $this->getObject('com://site/nucleonplus.controller.payoutprocessor');
+                $controller->id($data->txnid);
+                $controller->updatepayoutstatus($data->toArray());
+            }
+            catch (Exception $e)
+            {
+                // Transform error message to THIS_FORMAT
+                $result = 'result=' . str_replace(' ', '_', strtoupper($e->getMessage()));
+            }
+
+            $this->_logout();
+        }
+        else $result = 'result=FAIL_AUTHENTICATION_ERROR';
+
+        exit("{$result}");
+    }
+
+    protected function _verifyOnlinePayment($data)
+    {
+        $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+        $dragonpay = $config->getJsonValue();
+        $result    = 'result=OK';
+
+        if ($this->_login($dragonpay->nuc_user, $dragonpay->nuc_password))
+        {
+            try
+            {
+                $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
+                $controller->id($data->txnid);
+                $controller->verifyonlinepayment($data->toArray());
+            }
+            catch (Exception $e)
+            {
+                // Transform error message to THIS_FORMAT
+                $result = 'result=' . str_replace(' ', '_', strtoupper($e->getMessage()));
+            }
+
+            $this->_logout();
+        }
+        else $result = 'result=FAIL_AUTHENTICATION_ERROR';
+
+        exit("{$result}");
+    }
+
+    protected function _showOnlinePaymentStatus($query)
+    {
+        $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
+        $controller->id($query->txnid);
+        $controller->showstatus($query->toArray());
+    }
+
+    protected function _manageCart()
+    {
+        $model = $this->getObject('com://admin/nucleonplus.model.carts');
+        $cart  = $model
+            ->customer($this->getObject('user')->getId())
+            ->interface(ComNucleonplusModelEntityCart::INTERFACT_SITE)
+            ->fetch()
+        ;
+
+        if (count($cart))
+        {
+            $id = $cart->id;
+        }
+        else
+        {
+            $cart = $model->create(array(
+                'customer'  => $this->getObject('user')->getId(),
+                'interface' => 'site'
+            ));
+            $cart->save();
+
+            $id = $cart->id;
+        }
+
+        return $id;
     }
 
     protected function _login($user, $password)

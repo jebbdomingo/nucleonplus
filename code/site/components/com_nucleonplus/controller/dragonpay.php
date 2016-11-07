@@ -137,44 +137,55 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
     {
         $data     = $context->request->data;
         $data->id = $data->txnid;
-        $result   = 'result=OK';
 
         if ($data->status == 'P')
         {
             $data->payment_status = $data->status;
-            parent::_actionEdit($context);
+            $order = parent::_actionEdit($context);
         }
         elseif ($data->status == 'S')
         {
-            if ($this->_login())
-            {
-                // Mark as Paid
-                $data->invoice_status = 'paid';
-                $data->order_status   = 'processing';
-                $data->payment_status = $data->status;
+            // Mark as Paid
+            $data->invoice_status = 'paid';
+            $data->order_status   = 'processing';
+            $data->payment_status = $data->status;
 
-                try
-                {
-                    $order = parent::_actionEdit($context);
-                    $order = $this->getObject('com://admin/nucleonplus.model.orders')->id($order->id)->fetch();
-                    $this->_salesreceipt_service->recordSale($order);
+            // Fetch after edit to get the joined columns
+            $order = parent::_actionEdit($context);
+            $order = $this->getObject('com://admin/nucleonplus.model.orders')->id($order->id)->fetch();
 
-                    // Automatically activate reward
-                    $this->_activateReward($order);
-                }
-                catch (Exception $e)
-                {
-                    // Transform error message to THIS_FORMAT
-                    $result = 'result=' . str_replace(' ', '_', strtoupper($e->getMessage()));
-                }
-                
-                $this->_logout();
-            }
-            else $result = 'result=FAIL_AUTHENTICATION_ERROR';
+            // Record dragonpay payment transaction
+            $this->_recordPaymentStatus($data);
+
+            // Record transaction to accounting books
+            $this->_salesreceipt_service->recordSale($order);
+
+            // Automatically activate reward
+            $this->_activateReward($order);
+            
+            $this->_logout();
         }
-        else $result = 'result=FAIL_INVALID_STATUS';
+        else throw new Exception('FAIL_INVALID_STATUS');
 
-        exit("{$result}");
+        return $order;
+    }
+
+    protected function _recordPaymentStatus($data)
+    {
+        $controller       = $this->getObject('com:dragonpay.controller.payment');
+        $dragonpayPayment = $this->getObject('com:dragonpay.model.payments')->tnxid($data->txnid)->fetch();
+
+        if ($dragonpayPayment->isNew())
+        {
+            $controller->add($data->toArray());
+        }
+        else
+        {
+            $controller
+                ->id($data->txnid)
+                ->add($data->toArray())
+            ;
+        }
     }
 
     protected function _actionShowstatus(KControllerContextInterface $context)
@@ -212,28 +223,5 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         foreach ($rewards as $reward) {
             $this->getObject('com://admin/nucleonplus.controller.reward')->id($reward->id)->activate();
         }
-    }
-
-    protected function _login()
-    {
-        $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
-        $dragonpay = $config->getJsonValue();
-
-        $app = JFactory::getApplication('site');
-        jimport('joomla.plugin.helper');
-
-        $credentials = array(
-            'username' => $dragonpay->nuc_user,
-            'password' => $dragonpay->nuc_password
-        );
-
-        return $app->login($credentials);
-    }
-
-    protected function _logout()
-    {
-        jimport('joomla.plugin.helper');
-        $app = JFactory::getApplication('site');
-        $app->logout();
     }
 }
