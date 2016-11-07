@@ -60,6 +60,11 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                 if (empty($acctNumber) || empty($acctName) || empty($acctType) || empty($mobile)) {
                     throw new Exception('Please complete your bank account details and mobile # in your profile');
                 }
+
+                $payouts = $this->getModel()->hasOutstandingRequest($account->id)->count;
+                if ($payouts) {
+                    throw new Exception('You have outstanding payout request');
+                }
             }
         }
         catch(Exception $e)

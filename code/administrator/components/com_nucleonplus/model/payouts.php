@@ -18,18 +18,9 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             ->insert('account_id', 'int')
             ->insert('status', 'string')
             ->insert('search', 'string')
+            ->insert('created_on', 'string')
+            ->insert('payout_method', 'string', ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER)
         ;
-    }
-
-    protected function _initialize(KObjectConfig $config)
-    {
-        $config->append(array(
-            'behaviors' => array(
-                // 'searchable' => array('columns' => array('account_number', 'status'))
-            )
-        ));
-
-        parent::_initialize($config);
     }
 
     protected function _buildQueryColumns(KDatabaseQueryInterface $query)
@@ -43,8 +34,8 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             ->columns('_account.account_number')
             ->columns('_account.status AS account_status')
             ->columns('_account.created_on AS account_created_on')
-            ->columns('u.name')
-            ->columns('u.email')
+            ->columns('_user.name')
+            ->columns('_user.email')
             ;
     }
 
@@ -52,7 +43,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
     {
         $query
             ->join(array('_account' => 'nucleonplus_accounts'), 'tbl.account_id = _account.nucleonplus_account_id')
-            ->join(array('u' => 'users'), '_account.user_id = u.id')
+            ->join(array('_user' => 'users'), '_account.user_id = _user.id')
         ;
 
         parent::_buildQueryJoins($query);
@@ -72,11 +63,19 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             $query->where('tbl.status = :status')->bind(['status' => $state->status]);
         }
 
+        if ($state->payout_method) {
+            $query->where('tbl.payout_method = :payout_method')->bind(['payout_method' => $state->payout_method]);
+        }
+
+        if ($state->created_on) {
+            $query->where('DATE_FORMAT(tbl.created_on,"%Y-%m-%d") = :created_on')->bind(['created_on' => $state->created_on]);
+        }
+
         if ($state->search)
         {
             $conditions = array(
-                'a.account_number LIKE :keyword',
-                'u.name LIKE :keyword',
+                '_account.account_number LIKE :keyword',
+                '_user.name LIKE :keyword',
             );
             $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
         }
@@ -92,7 +91,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
     protected function _beforeFetch(KModelContextInterface $context)
     {
         if (is_null($context->state->sort)) {
-            $context->query->order('u.name', 'asc');
+            $context->query->order('_user.name', 'asc');
         }
     }
 
@@ -104,7 +103,6 @@ class ComNucleonplusModelPayouts extends KModelDatabase
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_payouts AS tbl')
             ->columns('tbl.nucleonplus_payout_id, SUM(tbl.amount) AS total')
-            // ->where('tbl.payout_method = :payout_method')->bind(['payout_method' => 'cash'])
             ->group('tbl.payout_method')
         ;
 
@@ -113,5 +111,27 @@ class ComNucleonplusModelPayouts extends KModelDatabase
         $entities = $table->select($query);
 
         return (float) $entities->total;
+    }
+
+    public function hasOutstandingRequest($accountId)
+    {
+        $status = array(
+            ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PENDING,
+            ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING,
+            ComNucleonplusModelEntityPayout::PAYOUT_TRANSFER_STATUS_PENDING,
+            ComNucleonplusModelEntityPayout::PAYOUT_TRANSFER_STATUS_INPROGRESS,
+        );
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('tbl.nucleonplus_payout_id, COUNT(tbl.nucleonplus_payout_id) AS count')
+            ->where('tbl.status IN :status')->bind(['status' => $status]);
+            ->where('tbl.account_id = :account')->bind(['account' => $accountId]);
+        ;
+
+        $entities = $table->select($query);
+
+        return (int) $entities->count;
     }
 }
