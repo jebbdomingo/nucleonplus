@@ -126,8 +126,8 @@ class ComNucleonplusModelPayouts extends KModelDatabase
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_payouts AS tbl')
             ->columns('tbl.nucleonplus_payout_id, COUNT(tbl.nucleonplus_payout_id) AS count')
-            ->where('tbl.status IN :status')->bind(['status' => $status]);
-            ->where('tbl.account_id = :account')->bind(['account' => $accountId]);
+            ->where('tbl.status IN :status')->bind(['status' => $status])
+            ->where('tbl.account_id = :account')->bind(['account' => $accountId])
         ;
 
         $entities = $table->select($query);
