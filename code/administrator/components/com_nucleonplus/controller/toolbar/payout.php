@@ -162,8 +162,8 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
             $this->addCommand('toggleclaimrequest', [
                 'allowed' => $allowed,
-                'label'   => ($claimRequest->value == 'yes') ? 'Turn-off Claim Request' : 'Turn-on Claim Request',
-                'icon'    => ($claimRequest->value == 'yes') ? 'icon-32-stop' : 'icon-32-save'
+                'label'   => ($claimRequest->value == ComNucleonplusModelEntityConfig::CLAIM_REQUEST_ENABLED) ? 'Disable Claim Request' : 'Enable Claim Request',
+                'icon'    => ($claimRequest->value == ComNucleonplusModelEntityConfig::CLAIM_REQUEST_ENABLED) ? 'icon-32-stop' : 'icon-32-save'
             ]);
         }
     }

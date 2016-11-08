@@ -45,7 +45,7 @@ defined('KOOWA') or die; ?>
         </table>
 
         <? if ($total_bonus): ?>
-            <p class="pull-right"><a class="btn btn-primary btn-md" href="<?= route('view=account&layout=rewards&tmpl=koowa') ?>" role="button"><?= translate('Encash') ?></a></p>
+            <p class="pull-right"><a class="btn btn-primary btn-md" href="<?= route('view=payout&layout=form&tmpl=koowa') ?>" role="button"><?= translate('Encash') ?></a></p>
         <? endif ?>
     </div>
 </div>

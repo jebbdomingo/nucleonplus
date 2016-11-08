@@ -446,7 +446,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
     {
         $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item('claim_request')->fetch();
         
-        $claimRequest->value = ($claimRequest->value != 'yes') ? 'yes' : 'no';
+        $claimRequest->value = ($claimRequest->value != ComNucleonplusModelEntityConfig::CLAIM_REQUEST_ENABLED) ? ComNucleonplusModelEntityConfig::CLAIM_REQUEST_ENABLED : ComNucleonplusModelEntityConfig::CLAIM_REQUEST_DISABLED;
         $claimRequest->save();
 
         if (!$context->result instanceof KModelEntityInterface) {

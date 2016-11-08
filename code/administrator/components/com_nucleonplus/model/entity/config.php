@@ -10,6 +10,9 @@
 
 class ComNucleonplusModelEntityConfig extends KModelEntityRow
 {
+    const CLAIM_REQUEST_ENABLED  = 'enabled';
+    const CLAIM_REQUEST_DISABLED = 'disabled';
+
     public function getJsonValue()
     {
         return json_decode($this->value);

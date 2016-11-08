@@ -131,7 +131,8 @@ class ComNucleonplusModelPayouts extends KModelDatabase
         ;
 
         $result = $table->select($query);
+        $count  = (int) $result->count;
 
-        return (int) $result->count;
+        return ($count > 0) ? true : false;
     }
 }

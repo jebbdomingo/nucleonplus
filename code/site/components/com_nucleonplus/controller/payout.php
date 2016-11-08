@@ -33,37 +33,10 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         try
         {
             $translator = $this->getObject('translator');
-            $user       = $this->getObject('user');
-            $account    = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
-
-            $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item('claim_request')->fetch();
-
-            if ($claimRequest->value == 'no') {
-                throw new Exception('Claim request is not available at the moment, please check the cut-off time for claim requests');
-            }
-
-            $data = $context->request->data;
+            $data       = $context->request->data;
 
             if (!in_array($data->payout_method, array(ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP, ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER))) {
                 throw new Exception('Please choose how do you want to encash your commissions');
-            }
-
-            // For funds transfer, ensure customer has bank account details
-            if ($data->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER)
-            {
-                $acctNumber = trim($account->bank_account_number);
-                $acctName   = trim($account->bank_account_name);
-                $acctType   = trim($account->bank_account_type);
-                $mobile     = trim($account->mobile);
-
-                if (empty($acctNumber) || empty($acctName) || empty($acctType) || empty($mobile)) {
-                    throw new Exception('Please complete your bank account details and mobile # in your profile');
-                }
-            }
-
-            // Ensure member has no outstanding payout request
-            if ($this->getModel()->hasOutstandingRequest($account->id)) {
-                throw new Exception('You have outstanding payout request');
             }
         }
         catch(Exception $e)
@@ -74,6 +47,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             $result = false;
         }
     }
+
     /**
      * Validate and construct data
      *
@@ -356,6 +330,12 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             $referral->payout_id = $payout->id;
             $referral->save();
         }
+
+        $response = $context->getResponse();
+        $response->addMessage("Your Payout Request #{$payout->id} has been created successfully");
+        $identifier = $context->getSubject()->getIdentifier();
+        $url        = sprintf('index.php?option=com_%s&view=payouts', $identifier->package);
+        $response->setRedirect(JRoute::_($url, false));
 
         return $payout;
     }
