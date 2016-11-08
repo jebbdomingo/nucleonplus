@@ -14,9 +14,7 @@ class ComNucleonplusDatabaseTableMembers extends KDatabaseTableAbstract
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'name'    => 'users',
-            'filters' => array(
-            )
+            'name' => 'users'
         ));
         
         parent::_initialize($config);
