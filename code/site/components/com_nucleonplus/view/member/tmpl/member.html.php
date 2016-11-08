@@ -9,6 +9,13 @@
         <table class="table">
 
             <tbody>
+                <? // TODO create a sponsor id update request business logic ?>
+                <tr>
+                    <td><label><strong><?= translate('Sponsor ID') ?></strong></label></td>
+                    <td>
+                        <input name="sponsor_id" id="sponsor_id" value="<?= $member->_account_sponsor_id ?>" placeholder="Optional" />
+                    </td>
+                </tr>
                 <tr>
                     <td><label><strong><?= translate('Name') ?></strong></label></td>
                     <td>
@@ -31,13 +38,6 @@
                     <td><label><strong><?= translate('Name in Check') ?></strong></label></td>
                     <td>
                         <input name="PrintOnCheckName" id="PrintOnCheckName" value="<?= $member->_account_check_name ?>" />
-                    </td>
-                </tr>
-                <? // TODO create a sponsor id update request business logic ?>
-                <tr>
-                    <td><label><strong><?= translate('Sponsor ID') ?></strong></label></td>
-                    <td>
-                        <input name="sponsor_id" id="sponsor_id" value="<?= $member->_account_sponsor_id ?>" placeholder="Optional" />
                     </td>
                 </tr>
                 <tr>
@@ -88,15 +88,9 @@
                 <tr>
                     <td><label><strong><?= translate('City') ?></strong></label></td>
                     <td>
-                        <input name="city" id="city" value="<?= $member->_account_city ?>" />
-                    </td>
-                </tr>
-                <tr>
-                    <td><label><strong><?= translate('State/Province') ?></strong></label></td>
-                    <td>
-                        <?= helper('listbox.stateProvince', array(
-                            'name'     => 'state',
-                            'selected' => $member->_account_state
+                        <?= helper('listbox.cities', array(
+                            'name'     => 'city',
+                            'selected' => $member->_account_city,
                         )) ?>
                     </td>
                 </tr>

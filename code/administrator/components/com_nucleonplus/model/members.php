@@ -25,7 +25,6 @@ class ComNucleonplusModelMembers extends KModelDatabase
             ->columns(array('_account_mobile' => '_account.mobile'))
             ->columns(array('_account_street' => '_account.street'))
             ->columns(array('_account_city' => '_account.city'))
-            ->columns(array('_account_state' => '_account.state'))
             ->columns(array('_account_postal_code' => '_account.postal_code'))
         ;
     }
