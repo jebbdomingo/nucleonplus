@@ -117,7 +117,7 @@ defined('KOOWA') or die; ?>
                     </div>
 
                     <div class="koowa_grid__item one-third">
-                        <?= helper('alerts.paymentInstructionPanel') ?>
+                        <?= helper('alerts.payoutNotePanel') ?>
                     </div>
 
                 </div>

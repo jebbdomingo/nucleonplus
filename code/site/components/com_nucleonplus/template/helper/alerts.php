@@ -11,6 +11,29 @@
 class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
 {
     /**
+     * Display payout note panel
+     *
+     * @param array $config
+     *
+     * @return string
+     */
+    public function payoutNotePanel(array $config = array())
+    {
+        $message = '<p>';
+        $message .= '
+            Please note that it will take two (2) banking days after payout request for the payment to reflect on your bank account, considering no error on bank information provided.
+        ';
+        $message .= '</p>';
+
+        $template = '<div class="panel panel-info">';
+        $template .= '<div class="panel-heading"><strong>Note</strong></div>';
+        $template .= "<div class=\"panel-body\">{$message}</div>";
+        $template .= '</div>';
+
+        return $template;
+    }
+
+    /**
      * Display payment instruction panel
      *
      * @param array $config
