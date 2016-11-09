@@ -19,6 +19,13 @@ class ComNucleonplusModelEntityPayout extends KModelEntityRow
     const PAYOUT_STATUS_PROCESSING      = 'processing';
     const PAYOUT_STATUS_CHECK_GENERATED = 'checkgenerated';
     const PAYOUT_STATUS_DISBURSED       = 'disbursed';
+
+    public static $payout_status = array(
+        self::PAYOUT_STATUS_PENDING         => 'Pending',
+        self::PAYOUT_STATUS_PROCESSING      => 'Processing',
+        self::PAYOUT_STATUS_CHECK_GENERATED => 'Check Generated',
+        self::PAYOUT_STATUS_DISBURSED       => 'Disbursed',
+    );
     
     const PAYOUT_TRANSFER_STATUS_SUCCESS    = 'S';
     const PAYOUT_TRANSFER_STATUS_FAILED     = 'F';

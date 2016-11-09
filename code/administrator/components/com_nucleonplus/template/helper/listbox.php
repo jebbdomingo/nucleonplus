@@ -45,13 +45,6 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     protected $_payoutStatus = [];
 
     /**
-     * Payout status filters
-     *
-     * @var array
-     */
-    protected $_payoutStatusFilters = [];
-
-    /**
      * Savings types
      *
      * @var array
@@ -78,7 +71,6 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $this->_paymentMethods      = $config->paymentMethods;
         $this->_shippingMethods     = $config->shippingMethods;
         $this->_payoutStatus        = $config->payoutStatus;
-        $this->_payoutStatusFilters = $config->payoutStatusFilters;
         $this->_bank_account_types  = $config->bank_account_types;
         $this->_state_province      = $config->state_province;
     }
@@ -164,15 +156,6 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
                 array('label' => 'Processing', 'value' => 'processing'),
                 array('label' => 'Check Generated', 'value' => 'checkgenerated'),
                 array('label' => 'Disbursed', 'value' => 'disbursed'),
-            )
-        ))
-        ->append(array(
-            'payoutStatusFilters' => array(
-                'all'            => 'All',
-                'pending'        => 'Pending',
-                'processing'     => 'Processing',
-                'checkgenerated' => 'Check Generated',
-                'disbursed'      => 'Disbursed',
             )
         ))
         ->append(array(
@@ -445,19 +428,12 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
      */
     public function payoutStatusFilter(array $config = array())
     {
-        $status = $this->_payoutStatusFilters;
+        $result = null;
 
-        // Merge with user-defined status
-        if (isset($config['statusFilters']) && $config['statusFilters']) {
-            $status = $status->merge($config['statusFilters']);
-        }
-
-        $result = '';
-
-        foreach ($status as $value => $label)
+        foreach (ComNucleonplusModelEntityPayout::$payout_status as $value => $label)
         {
-            $class = ($config['active_status'] == $value) ? 'class="active"' : null;
-            $href  = ($config['active_status'] <> $value) ? 'href="' . $this->getTemplate()->route("status={$value}") . '"' : null;
+            $class = ($config['active'] == $value) ? 'class="active"' : null;
+            $href  = ($config['active'] <> $value) ? 'href="' . $this->getTemplate()->route("status={$value}") . '"' : null;
             $label = $this->getObject('translator')->translate($label);
 
             $result .= "<a {$class} {$href}>{$label}</a>";

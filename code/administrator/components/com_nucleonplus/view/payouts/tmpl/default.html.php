@@ -29,7 +29,7 @@ defined('KOOWA') or die; ?>
         <form action="" method="get" class="-koowa-grid">
             <div class="scopebar">
                 <div class="scopebar-group last hidden-tablet hidden-phone">
-                    <?php echo helper('listbox.payoutStatusFilter', array('active_status' => parameters()->status)); ?>
+                    <?= helper('listbox.payoutStatusFilter', array('active' => parameters()->status)); ?>
                 </div>
                 <div class="scopebar-search">
                     <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Account Number or Member\'s Name')) ?>
@@ -37,7 +37,7 @@ defined('KOOWA') or die; ?>
             </div>
             <div class="scopebar">
                 <div class="scopebar-group last hidden-tablet hidden-phone">
-                    <?php echo helper('listbox.payoutMethodsFilter', array('active' => parameters()->payout_method)); ?>
+                    <?= helper('listbox.payoutMethodsFilter', array('active' => parameters()->payout_method)); ?>
                 </div>
             </div>
             <div class="nucleonplus_table_container">
@@ -59,6 +59,9 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>
                             </th>
                             <th>
+                                <?= helper('grid.sort', array('column' => 'payout_method', 'title' => 'Encashment Method')); ?>
+                            </th>
+                            <th>
                                 <?= helper('grid.sort', array('column' => 'name', 'title' => 'Member')); ?>
                             </th>
                             <th>
@@ -66,9 +69,6 @@ defined('KOOWA') or die; ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'amount', 'title' => 'Amount')); ?>
-                            </th>
-                            <th>
-                                <?= helper('grid.sort', array('column' => 'payout_method', 'title' => 'Encashment Method')); ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>

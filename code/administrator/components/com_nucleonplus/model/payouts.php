@@ -16,7 +16,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
 
         $this->getState()
             ->insert('account_id', 'int')
-            ->insert('status', 'string')
+            ->insert('status', 'string', ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PENDING)
             ->insert('search', 'string')
             ->insert('created_on', 'string')
             ->insert('payout_method', 'string', ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER)
@@ -59,7 +59,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
         }
 
-        if ($state->status && $state->status <> 'all') {
+        if ($state->status) {
             $query->where('tbl.status = :status')->bind(['status' => $state->status]);
         }
 

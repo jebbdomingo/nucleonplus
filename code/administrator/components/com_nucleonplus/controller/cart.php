@@ -19,6 +19,7 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
     {
         parent::__construct($config);
 
+        $this->addCommandCallback('before.add', '_validateAdd');
         $this->addCommandCallback('before.checkout', '_validateCheckout');
     }
 
@@ -42,6 +43,33 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
 
             if (count($cart->getItems()) == 0) {
                 throw new KControllerExceptionRequestInvalid($translator->translate('Please add an item to checkout'));
+            }
+
+            $result = true;
+        }
+        catch(Exception $e)
+        {
+            $context->response->setRedirect($context->request->getReferrer(), $e->getMessage(), 'error');
+            $context->response->send();
+        }
+
+        return $result;
+    }
+
+    protected function _validateAdd(KControllerContextInterface $context)
+    {
+        $data       = $context->request->data;
+        $translator = $this->getObject('translator');
+        $result     = false;
+
+        try
+        {
+            $cart = $this->getModel()->fetch();
+
+            $quantity = (int) $data->form_quantity;
+
+            if (empty($data->ItemRef) || !$quantity) {
+                throw new KControllerExceptionRequestInvalid($translator->translate('Please select an item and specify quantity'));
             }
 
             $result = true;
