@@ -125,13 +125,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         if ($error)
         {
             throw new Exception($error);
-            
-            // $identifier = $context->getSubject()->getIdentifier();
-            // $url        = sprintf('index.php?option=com_%s&view=cart&customer=%s', $identifier->package, $account->id);
-
-            // $response = $context->getResponse();
-            // $response->addMessage($error);
-            // $response->setRedirect(JRoute::_($url, false));
         }
         else
         {

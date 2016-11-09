@@ -10,6 +10,18 @@
 
 class ComNucleonplusControllerCart extends ComCartControllerCart
 {
+    /**
+     * Constructor.
+     *
+     * @param KObjectConfig $config Configuration options.
+     */
+    public function __construct(KObjectConfig $config)
+    {
+        parent::__construct($config);
+
+        $this->addCommandCallback('before.checkout', '_validateCheckout');
+    }
+
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
@@ -17,6 +29,30 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
         ));
 
         parent::_initialize($config);
+    }
+
+    protected function _validateCheckout(KControllerContextInterface $context)
+    {
+        $translator = $this->getObject('translator');
+        $result     = false;
+
+        try
+        {
+            $cart = $this->getModel()->fetch();
+
+            if (count($cart->getItems()) == 0) {
+                throw new KControllerExceptionRequestInvalid($translator->translate('Please add an item to checkout'));
+            }
+
+            $result = true;
+        }
+        catch(Exception $e)
+        {
+            $context->response->setRedirect($context->request->getReferrer(), $e->getMessage(), 'error');
+            $context->response->send();
+        }
+
+        return $result;
     }
 
     protected function _actionAdd(KControllerContextInterface $context)
