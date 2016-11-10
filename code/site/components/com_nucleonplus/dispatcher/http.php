@@ -55,29 +55,29 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
         // Update payout status
         if ($query->view == 'dragonpay' && $query->api == 'payout' && $request->getMethod() == 'GET') {
-            $this->_updatePayoutStatus($request, $query);
+            $this->_updatePayoutStatus($query);
         }
 
         // Verify online payment
-        if ($query->view == 'dragonpay' && $request->getMethod() == 'POST') {
-            $this->_verifyOnlinePayment($request->data);
+        if ($query->view == 'dragonpay' && $query->api == 'payment' && $query->switch == 'postback') {
+            $this->_verifyOnlinePayment($query);
         }
 
         // Show online payment status
-        if ($query->view == 'dragonpay' && $request->getMethod() == 'GET') {
+        if ($query->view == 'dragonpay' && $query->api == 'payment' && $query->switch == 'returnurl') {
             $this->_showOnlinePaymentStatus($query);
         }
 
         return $request;
     }
 
-    protected function _updatePayoutStatus($request, $query)
+    protected function _updatePayoutStatus($query)
     {
         $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
         $dragonpay = $config->getJsonValue();
         $result    = 'result=OK';
 
-        if ($this->_login($request, $dragonpay->nuc_user, $dragonpay->nuc_password))
+        if ($this->_login($dragonpay->nuc_user, $dragonpay->nuc_password))
         {
             try
             {
@@ -98,7 +98,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         exit("{$result}");
     }
 
-    protected function _verifyOnlinePayment($data)
+    protected function _verifyOnlinePayment($query)
     {
         $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
         $dragonpay = $config->getJsonValue();
@@ -109,8 +109,8 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             try
             {
                 $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
-                $controller->id($data->txnid);
-                $controller->verifyonlinepayment($data->toArray());
+                $controller->id($query->txnid);
+                $controller->verifyonlinepayment($query->toArray());
             }
             catch (Exception $e)
             {
@@ -159,7 +159,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         return $id;
     }
 
-    protected function _login($request, $user, $password)
+    protected function _login($user, $password)
     {
         $loggedIn = (bool) $this->getObject('user')->getId();
 
@@ -175,7 +175,14 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
             $app->login($credentials);
 
-            $url = (string) $request->getUrl();
+            $data  = parent::getRequest()->data->toArray();
+            $query = parent::getRequest()->getUrl()->getQuery(true);
+            $query = array_merge($query, $data);
+
+            parent::getRequest()->getUrl()->setQuery($query);
+
+            $url = (string) parent::getRequest()->getUrl();
+
             JFactory::getApplication()->redirect($url);
         }
 

@@ -299,7 +299,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                     $context->response->setStatus(KHttpResponse::RESET_CONTENT);
                 }
 
-                // $this->_fundCheck($payouts);
+                $this->_fundCheck($payouts);
             }
             else throw new KControllerExceptionResourceNotFound('Resource could not be found');
         }
