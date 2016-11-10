@@ -21,6 +21,7 @@ class ComNucleonplusControllerBehaviorMasspayable extends ComDragonpayController
                 'procDetail'    => '_account_bank_account_number',
                 'email'         => 'email',
                 'mobileNo'      => '_account_mobile',
+                'runDate'       => 'run_date',
             )
         ));
 

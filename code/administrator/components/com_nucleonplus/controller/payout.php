@@ -61,7 +61,8 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         $config->append(array(
             'accounting_service' => 'com:nucleonplus.accounting.service.transfer',
             'behaviors'          => array(
-                'masspayable'
+                'masspayable',
+                'connectable',
             ),
         ));
 
@@ -264,16 +265,43 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
      */
     protected function _actionProcessing(KControllerContextInterface $context)
     {
-        $config = JFactory::getConfig();
-        $context->getRequest()->setData(array(
-            'status'         => ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING,
-            'date_processed' => gmdate('Y-m-d H:i:s')
-        ));
-
         try
         {
-            $payouts = parent::_actionEdit($context);
-            $this->_fundCheck($payouts);
+            if (!$context->result instanceof KModelEntityInterface) {
+                $payouts = $this->getModel()->fetch();
+            } else {
+                $payouts = $context->result;
+            }
+
+            if (count($payouts))
+            {
+                $config = $this->getObject('com://admin/nucleonplus.model.configs')
+                    ->item(ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_NAME)
+                    ->fetch()
+                ;
+
+                $data = array(
+                    'status'         => ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING,
+                    'date_processed' => date('Y-m-d H:i:s'),
+                );
+
+                foreach($payouts as $payout)
+                {
+                    if ($payout->payout_method == ComNucleonplusModelpayoutPayout::PAYOUT_METHOD_FUNDS_TRANSFER) {
+                        $data['run_date'] = date('Y-m-d', strtotime($config->value));
+                    }
+
+                    $payout->setProperties($data);
+                }
+
+                // Only set the reset content status if the action explicitly succeeded
+                if ($payouts->save() === true) {
+                    $context->response->setStatus(KHttpResponse::RESET_CONTENT);
+                }
+
+                // $this->_fundCheck($payouts);
+            }
+            else throw new KControllerExceptionResourceNotFound('Resource could not be found');
         }
         catch (Exception $e)
         {

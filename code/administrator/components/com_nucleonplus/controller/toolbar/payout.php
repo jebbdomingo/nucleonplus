@@ -93,6 +93,9 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
     protected function _afterRead(KControllerContextInterface $context)
     {
         parent::_afterRead($context);
+
+        $this->removeCommand('apply');
+        $this->removeCommand('save');
         
         $controller = $this->getController();
         $canSave    = ($controller->isEditable() && $controller->canSave());
@@ -102,21 +105,36 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
             $allowed = false;
         }
 
-        if ($canSave && ($context->result->status == 'pending'))
+        if ($canSave && ($context->result->status == 'pending') && ($allowed && $controller->canProcessing()))
         {
             $this->addCommand('processing', [
                 'allowed' => $allowed
             ]);
+
+            $config = $this->getObject('com://admin/nucleonplus.model.configs')
+                ->item(ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_NAME)
+                ->fetch()
+            ;
+
+            $date = date('M d, Y', strtotime($config->value));
+            $context->response->addMessage("Payout Processing Run Date: <strong>{$date}</strong>", 'info');
+        }
+        else
+        {
+            $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
+            $link = '<a href="' . $url . '">here</a>';
+
+            $context->response->addMessage("Set payout run date {$link} before processing", 'warning');
         }
 
-        if ($canSave && ($context->result->status == 'processing'))
+        if ($canSave && ($context->result->status == ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING && $context->result->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP))
         {
             $this->addCommand('generatecheck', [
                 'allowed' => $allowed
             ]);
         }
 
-        if ($canSave && ($context->result->status == 'checkgenerated'))
+        if ($canSave && ($context->result->status == ComNucleonplusModelEntityPayout::PAYOUT_STATUS_CHECK_GENERATED && $context->result->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP))
         {
             $this->addCommand('disburse', [
                 'allowed' => $allowed
@@ -143,14 +161,35 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
         if ($canSave)
         {
             // Batch processing
-            $this->addCommand('processing', [
-                'allowed' => $allowed
-            ]);
+            if ($allowed && $controller->canProcessing())
+            {
+                $this->addCommand('processing', [
+                    'allowed' => $allowed && $controller->canProcessing()
+                ]);
+
+                $config = $this->getObject('com://admin/nucleonplus.model.configs')
+                    ->item(ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_NAME)
+                    ->fetch()
+                ;
+                $date = date('M d, Y', strtotime($config->value));
+
+                $context->response->addMessage("Payout Processing Run Date: <strong>{$date}</strong>", 'info');
+            }
+            else
+            {
+                $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
+                $link = '<a href="' . $url . '">here</a>';
+
+                $context->response->addMessage("Set payout run date {$link} before processing", 'warning');
+            }
 
             // Batch generate check
-            $this->addCommand('generatecheck', [
-                'allowed' => $allowed
-            ]);
+            if ($canSave && $context->request->query->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP)
+            {
+                $this->addCommand('generatecheck', [
+                    'allowed' => $allowed
+                ]);
+            }
 
             // Batch disburse
             $this->addCommand('disburse', [

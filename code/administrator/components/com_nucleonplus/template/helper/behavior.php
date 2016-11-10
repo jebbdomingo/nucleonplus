@@ -8,16 +8,15 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusModelEntityConfig extends KModelEntityRow
+class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavior
 {
-    const CLAIM_REQUEST_ENABLED  = 'enabled';
-    const CLAIM_REQUEST_DISABLED = 'disabled';
-
-    const PAYOUT_RUN_DATE_NAME = 'payout_run_date';
-    const PAYOUT_RUN_DATE_ID   = 6;
-
-    public function getJsonValue()
+    public function calendar($config = array())
     {
-        return json_decode($this->value);
+        $config = new KObjectConfigJson($config);
+        $config->append(array(
+            'format' => '%Y-%m-%d'
+        ));
+
+        return parent::calendar($config);
     }
 }

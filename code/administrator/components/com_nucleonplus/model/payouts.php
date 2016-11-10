@@ -16,7 +16,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
 
         $this->getState()
             ->insert('account_id', 'int')
-            ->insert('status', 'string', ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PENDING)
+            ->insert('status', 'string')
             ->insert('search', 'string')
             ->insert('created_on', 'string')
             ->insert('payout_method', 'string', ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER)

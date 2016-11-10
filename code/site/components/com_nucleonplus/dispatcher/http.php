@@ -53,6 +53,11 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             $query->id = (int) $this->_manageCart();
         }
 
+        // Update payout status
+        if ($query->view == 'dragonpay' && $query->api == 'payout' && $request->getMethod() == 'GET') {
+            $this->_updatePayoutStatus($request, $query);
+        }
+
         // Verify online payment
         if ($query->view == 'dragonpay' && $request->getMethod() == 'POST') {
             $this->_verifyOnlinePayment($request->data);
@@ -63,27 +68,22 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
             $this->_showOnlinePaymentStatus($query);
         }
 
-        // Update payout status
-        if ($query->view == 'dragonpay' && $query->api == 'payout' && $request->getMethod() == 'GET') {
-            $this->_updatePayoutStatus($request->data);
-        }
-
         return $request;
     }
 
-    protected function _updatePayoutStatus($data)
+    protected function _updatePayoutStatus($request, $query)
     {
         $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
         $dragonpay = $config->getJsonValue();
         $result    = 'result=OK';
 
-        if ($this->_login($dragonpay->nuc_user, $dragonpay->nuc_password))
+        if ($this->_login($request, $dragonpay->nuc_user, $dragonpay->nuc_password))
         {
             try
             {
                 $controller = $this->getObject('com://site/nucleonplus.controller.payoutprocessor');
-                $controller->id($data->txnid);
-                $controller->updatepayoutstatus($data->toArray());
+                $controller->id($query->txnid);
+                $controller->updatepayoutstatus($query->toArray());
             }
             catch (Exception $e)
             {
@@ -159,17 +159,27 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         return $id;
     }
 
-    protected function _login($user, $password)
+    protected function _login($request, $user, $password)
     {
-        $app = JFactory::getApplication('site');
-        jimport('joomla.plugin.helper');
+        $loggedIn = (bool) $this->getObject('user')->getId();
 
-        $credentials = array(
-            'username' => $user,
-            'password' => $password
-        );
+        if (!$loggedIn)
+        {
+            $app = JFactory::getApplication('site');
+            jimport('joomla.plugin.helper');
 
-        return $app->login($credentials);
+            $credentials = array(
+                'username' => $user,
+                'password' => $password
+            );
+
+            $app->login($credentials);
+
+            $url = (string) $request->getUrl();
+            JFactory::getApplication()->redirect($url);
+        }
+
+        return $loggedIn;
     }
 
     protected function _logout()

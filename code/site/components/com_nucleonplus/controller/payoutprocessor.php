@@ -12,29 +12,31 @@ class ComNucleonplusControllerPayoutprocessor extends ComKoowaControllerModel
 {
     protected function _actionUpdatepayoutstatus(KControllerContextInterface $context)
     {
-        $data     = $context->request->data;
-        $data->id = $data->txnid;
-
-        switch ($data->status) {
-            case 'S':
-                $data->status = ComNucleonplusModelEntityPayout::PAYOUT_STATUS_DISBURSED;
-                break;
-
-            case 'P':
-                $data->payment_status = $data->status;
-                break;
-        }
+        $data = $context->request->data;
 
         // Record dragonpay payout status
         $this->_recordPayoutStatus($data);
 
-        return parent::_actionEdit($context);
+        switch ($data->status) {
+            case ComDragonpayModelEntityPayout::STATUS_SUCCESSFUL:
+                $data->id = $data->txnid;
+
+                $payout = $this->getObject('com://admin/nucleonplus.model.payouts')->id($data->id)->fetch();
+                $payout->status = ComNucleonplusModelEntityPayout::PAYOUT_STATUS_DISBURSED;
+                $payout->save();
+                
+                $this->_sendMail($payout);
+
+                return $payout;
+
+                break;
+        }
     }
 
     protected function _recordPayoutStatus($data)
     {
         $controller = $this->getObject('com:dragonpay.controller.payout');
-        $payout     = $this->getObject('com:dragonpay.model.payouts')->id($data->txnid)->fetch();
+        $payout     = $controller->getModel()->id($data->txnid)->fetch();
 
         if (count($payout) == 1)
         {
@@ -42,6 +44,26 @@ class ComNucleonplusControllerPayoutprocessor extends ComKoowaControllerModel
                 ->id($data->txnid)
                 ->edit($data->toArray())
             ;
+        }
+    }
+
+    protected function _sendMail($payout)
+    {
+        // Send email notification
+        $emailSubject = JText::sprintf('COM_NUCLEONPLUS_PAYOUT_EMAIL_FUNDS_TRANSFER_SUCCESSFUL_SUBJECT', $payout->id);
+        $emailBody    = JText::sprintf(
+            'COM_NUCLEONPLUS_PAYOUT_EMAIL_FUNDS_TRANSFER_SUCCESSFUL_BODY',
+            $payout->name,
+            'PHP 15.00',
+            JUri::root()
+        );
+
+        $config = JFactory::getConfig();
+        $mail   = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $payout->email, $emailSubject, $emailBody);
+
+        // Check for an error.
+        if ($mail !== true) {
+            $context->response->addMessage(JText::_('COM_NUCLEONPLUS_PAYOUT_EMAIL_SEND_MAIL_FAILED'), 'error');
         }
     }
 }
