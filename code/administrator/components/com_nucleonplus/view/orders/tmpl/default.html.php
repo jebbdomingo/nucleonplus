@@ -58,14 +58,9 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'item_name', 'title' => 'Item')); ?>
-                            </th>
-                            <th>
                                 <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
                             </th>
-                            <th data-hide="phone,phablet">
-                                Payment Reference
-                            </th>
+                            <th><div class="text-right">Price</div></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -73,7 +68,7 @@ defined('KOOWA') or die; ?>
                             <?= import('default_orders.html', ['orders' => $orders]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="9" align="center" style="text-align: center;">
+                                <td colspan="8" align="center" style="text-align: center;">
                                     <?= translate('No order(s) found.') ?>
                                 </td>
                             </tr>
@@ -81,7 +76,7 @@ defined('KOOWA') or die; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="9">
+                            <td colspan="8">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>

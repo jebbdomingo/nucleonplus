@@ -42,15 +42,12 @@
                     </tr>
                 <? endif ?>
                 <tr>
-                    <td><label><strong><?= translate('Bank Account Number') ?></strong></label></td>
+                    <td><label><strong><?= translate('Bank') ?></strong></label></td>
                     <td>
-                        <input name="bank_account_number" id="bank_account_number" value="<?= $member->_account_bank_account_number ?>" placeholder="BDO only" />
-                    </td>
-                </tr>
-                <tr>
-                    <td><label><strong><?= translate('Bank Account Name') ?></strong></label></td>
-                    <td>
-                        <input name="bank_account_name" id="bank_account_name" value="<?= $member->_account_bank_account_name ?>" />
+                        <?= helper('listbox.banks', array(
+                            'name'     => 'bank_name',
+                            'selected' => $member->_account_bank_name,
+                        )) ?>
                     </td>
                 </tr>
                 <tr>
@@ -60,6 +57,18 @@
                             'name'     => 'bank_account_type',
                             'selected' => $member->_account_bank_account_type,
                         )) ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label><strong><?= translate('Bank Account Number') ?></strong></label></td>
+                    <td>
+                        <input name="bank_account_number" id="bank_account_number" value="<?= $member->_account_bank_account_number ?>" placeholder="BDO only" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label><strong><?= translate('Bank Account Name') ?></strong></label></td>
+                    <td>
+                        <input name="bank_account_name" id="bank_account_name" value="<?= $member->_account_bank_account_name ?>" />
                     </td>
                 </tr>
                 <tr>
@@ -89,15 +98,9 @@
                 <tr>
                     <td><label><strong><?= translate('City') ?></strong></label></td>
                     <td>
-                        <input name="city" id="city" value="<?= $member->_account_city ?>" />
-                    </td>
-                </tr>
-                <tr>
-                    <td><label><strong><?= translate('State/Province') ?></strong></label></td>
-                    <td>
-                        <?= helper('listbox.stateProvince', array(
-                            'name'     => 'state',
-                            'selected' => $member->_account_state
+                        <?= helper('listbox.cities', array(
+                            'name'     => 'city',
+                            'selected' => $member->_account_city,
                         )) ?>
                     </td>
                 </tr>

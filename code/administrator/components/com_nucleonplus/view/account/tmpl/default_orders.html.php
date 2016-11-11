@@ -8,12 +8,11 @@
     <div class="panel-body">
         <table class="table table-striped">
             <thead>
-                <th>Order No.</th>
-                <th>Product Package</th>
-                <th>Price</th>
+                <th>Order #</th>
                 <th>Order Status</th>
                 <th>Invoice Status</th>
-                <th>Ordered On</th>
+                <th>Date</th>
+                <th><div class="text-right">Price</div></th>
             </thead>
             <tbody>
                 <? if (count($purchases = $account->getLatestPurchases(5)) > 0): ?>
@@ -22,19 +21,22 @@
                             <td>
                                 <a href="<?= route('view=order&id='.$order->id) ?>"><?= $order->id ?></a>
                             </td>
-                            <td><?= $order->package_name ?></td>
-                            <td><?= $order->package_price ?></td>
-                            <td><span class="label label-<?= ($order->order_status == 'cancelled') ? 'default' : 'info' ?>"><?= ucwords(escape($order->order_status)) ?></span></td>
-                            <td><span class="label label-<?= ($order->invoice_status == 'sent') ? 'default' : 'info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span></td>
+                            <td>
+                                <span class="label label-<?= ($order->order_status == 'cancelled') ? 'default' : 'info' ?>"><?= ucwords(escape($order->order_status)) ?></span>
+                            </td>
+                            <td>
+                                <span class="label label-<?= ($order->invoice_status == 'sent') ? 'default' : 'info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span>
+                            </td>
                             <td>
                                 <div><?= helper('date.humanize', array('date' => $order->created_on)) ?></div>
                                 <div><?= $order->created_on ?></div> 
                             </td>
+                            <td><div class="text-right">&#8369;<?= number_format($order->getTotal(), 2) ?></div></td>
                         </tr>
                     <? endforeach ?>
                 <? else: ?>
                     <tr>
-                        <td colspan="6">
+                        <td colspan="5">
                             <p class="text-center">No Purchase(s) Yet</p>
                         </td>
                     </tr>

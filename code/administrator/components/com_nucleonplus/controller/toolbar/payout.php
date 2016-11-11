@@ -92,39 +92,50 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
     protected function _afterRead(KControllerContextInterface $context)
     {
-        parent::_afterRead($context);
-
-        $this->removeCommand('apply');
-        $this->removeCommand('save');
-        
         $controller = $this->getController();
         $canSave    = ($controller->isEditable() && $controller->canSave());
         $allowed    = true;
 
+        $this->addCommand('back', array(
+            'href'  => 'option=com_' . $controller->getIdentifier()->getPackage() . '&view=payouts',
+            'label' => 'Back to List'
+        ));
+
+        parent::_afterRead($context);
+
+        $this->removeCommand('apply');
+        $this->removeCommand('save');
+        $this->removeCommand('cancel');
+        
         if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
             $allowed = false;
         }
 
-        if ($canSave && ($context->result->status == 'pending') && ($allowed && $controller->canProcessing()))
+        if ($canSave && ($context->result->status == ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PENDING))
         {
-            $this->addCommand('processing', [
-                'allowed' => $allowed
-            ]);
+            if ($controller->canProcessing())
+            {
+                $this->addCommand('processing', [
+                    'allowed' => $allowed
+                ]);
 
-            $config = $this->getObject('com://admin/nucleonplus.model.configs')
-                ->item(ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_NAME)
-                ->fetch()
-            ;
+                $config = $this->getObject('com://admin/nucleonplus.model.configs')
+                    ->item(ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_NAME)
+                    ->fetch()
+                ;
 
-            $date = date('M d, Y', strtotime($config->value));
-            $context->response->addMessage("Payout Processing Run Date: <strong>{$date}</strong>", 'info');
-        }
-        else
-        {
-            $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
-            $link = '<a href="' . $url . '">here</a>';
+                $date = date('M d, Y', strtotime($config->value));
+                $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
+                $link = '<a href="' . $url . '">' . $date . '</a>';
+                $context->response->addMessage("Payout Processing Run Date: <strong>{$link}</strong>", 'info');
+            }
+            else
+            {
+                $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
+                $link = '<a href="' . $url . '">here</a>';
 
-            $context->response->addMessage("Set payout run date {$link} before processing", 'warning');
+                $context->response->addMessage("Set payout run date {$link} before processing", 'warning');
+            }
         }
 
         if ($canSave && ($context->result->status == ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING && $context->result->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP))
@@ -160,7 +171,7 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
         if ($canSave)
         {
-            // Batch processing
+            // Batch payout processing
             if ($allowed && $controller->canProcessing())
             {
                 $this->addCommand('processing', [
@@ -171,9 +182,11 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
                     ->item(ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_NAME)
                     ->fetch()
                 ;
-                $date = date('M d, Y', strtotime($config->value));
 
-                $context->response->addMessage("Payout Processing Run Date: <strong>{$date}</strong>", 'info');
+                $date = date('M d, Y', strtotime($config->value));
+                $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
+                $link = '<a href="' . $url . '">' . $date . '</a>';
+                $context->response->addMessage("Payout Processing Run Date: <strong>{$link}</strong>", 'info');
             }
             else
             {

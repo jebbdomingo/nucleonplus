@@ -18,6 +18,29 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
     }
 
     /**
+     * Override parent _afterRead
+     *
+     * @param KControllerContextInterface $context A command context object
+     */
+    protected function afterRead(KControllerContextInterface $context)
+    {
+        $controller = $this->getController();
+        $translator = $this->getObject('translator');
+        $name       = $translator->translate(strtolower($context->subject->getIdentifier()->name));
+
+
+        if($controller->getModel()->getState()->isUnique()) {
+            $title = $translator->translate('Edit {item_type}', array('item_type' => $name));
+        } else {
+            $title = $translator->translate('Submit New {item_type} Request', array('item_type' => ucfirst($name)));
+        }
+
+        $this->getCommand('title')->title = $title;
+
+        KControllerToolbarActionbar::_afterRead($context);
+    }
+
+    /**
      *
      * @param KControllerContextInterface $context
      *
@@ -25,13 +48,11 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
      */
     protected function _afterRead(KControllerContextInterface $context)
     {
-        parent::_afterRead($context);
+        $this->afterRead($context);
 
         $this->removeCommand('save');
 
         $controller   = $this->getController();
-        $user         = $this->getObject('user');
-        $account      = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
         $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item('claim_request')->fetch();
         $allowed      = true;
 
@@ -45,16 +66,23 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
         }
 
         // Outstanding payout request notification
-        if ($context->result->isNew() && $controller->getModel()->hasOutstandingRequest($account->id)) {
+        if ($context->result->isNew() && $controller->hasOutstandingRequest()) {
             $context->response->addMessage('You have outstanding payout request', 'warning');
         }
 
-        // Bank account details notification
-        $acctNo   = trim($account->bank_account_number);
-        $acctName = trim($account->bank_account_name);
-        $mobile   = trim($account->mobile);
+        if ($context->result->isNew() && !$controller->checkMinimumAmount())
+        {
+            $config = $this->getObject('com:nucleonplus.model.configs')
+                ->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
+                ->fetch()
+            ;
+            $amount  = number_format((float) $config->value, 2);
+            $message = "Minimum amount for each payout request is &#8369;{$amount}";
+            $context->response->addMessage($message, 'warning');
+        }
 
-        if (empty($acctNo) || empty($acctName) || empty($mobile))
+        // Bank account details notification
+        if (!$controller->checkBankDetails())
         {
             $url  = JRoute::_('index.php?option=com_nucleonplus&view=member&tmpl=koowa&layout=form', false);
             $link = '<a href="' . $url . '">here</a>';

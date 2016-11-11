@@ -41,15 +41,12 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><label><strong><?= translate('Bank Account Number') ?></strong></label></td>
+                    <td><label><strong><?= translate('Bank') ?></strong></label></td>
                     <td>
-                        <input name="bank_account_number" id="bank_account_number" value="<?= $member->_account_bank_account_number ?>" placeholder="BDO only" />
-                    </td>
-                </tr>
-                <tr>
-                    <td><label><strong><?= translate('Bank Account Name') ?></strong></label></td>
-                    <td>
-                        <input name="bank_account_name" id="bank_account_name" value="<?= $member->_account_bank_account_name ?>" />
+                        <?= helper('listbox.banks', array(
+                            'name'     => 'bank_name',
+                            'selected' => $member->_account_bank_name,
+                        )) ?>
                     </td>
                 </tr>
                 <tr>
@@ -59,6 +56,18 @@
                             'name'     => 'bank_account_type',
                             'selected' => $member->_account_bank_account_type,
                         )) ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label><strong><?= translate('Bank Account Number') ?></strong></label></td>
+                    <td>
+                        <input name="bank_account_number" id="bank_account_number" value="<?= $member->_account_bank_account_number ?>" placeholder="BDO only" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label><strong><?= translate('Bank Account Name') ?></strong></label></td>
+                    <td>
+                        <input name="bank_account_name" id="bank_account_name" value="<?= $member->_account_bank_account_name ?>" />
                     </td>
                 </tr>
                 <tr>

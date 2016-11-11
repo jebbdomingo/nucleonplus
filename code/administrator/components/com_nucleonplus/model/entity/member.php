@@ -133,6 +133,7 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             'sponsor_id'          => $this->sponsor_id,
             'PrintOnCheckName'    => $this->PrintOnCheckName,
             'status'              => 'pending',
+            'bank_name'           => $this->bank_name,
             'bank_account_number' => $this->bank_account_number,
             'bank_account_name'   => $this->bank_account_name,
             'bank_account_type'   => $this->bank_account_type,
@@ -163,6 +164,7 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
 
         $account->sponsor_id          = $this->sponsor_id;
         $account->PrintOnCheckName    = $this->PrintOnCheckName;
+        $account->bank_name           = $this->bank_name;
         $account->bank_account_number = $this->bank_account_number;
         $account->bank_account_name   = $this->bank_account_name;
         $account->bank_account_type   = $this->bank_account_type;

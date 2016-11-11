@@ -35,16 +35,9 @@
                 <?= $order->account_number ?>
             </a>
         </td>
-        <td >
-            <a href="<?= route('view=order&id='.$order->id); ?>">
-                <?= $order->package_name ?>
-            </a>
-        </td>
         <td>
             <?= helper('date.format', array('date' => $order->created_on)) ?>
         </td>
-        <td>
-            <?= escape($order->payment_reference) ?>
-        </td>
+        <td><div class="text-right">&#8369;<?= number_format($order->getTotal(), 2) ?></div></td>
     </tr>
 <? endforeach; ?>

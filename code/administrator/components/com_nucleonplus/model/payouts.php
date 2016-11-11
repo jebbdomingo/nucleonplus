@@ -19,7 +19,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             ->insert('status', 'string')
             ->insert('search', 'string')
             ->insert('created_on', 'string')
-            ->insert('payout_method', 'string', ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER)
+            ->insert('payout_method', 'string')
         ;
     }
 
@@ -113,8 +113,10 @@ class ComNucleonplusModelPayouts extends KModelDatabase
         return (float) $entities->total;
     }
 
-    public function hasOutstandingRequest($accountId)
+    public function hasOutstandingRequest()
     {
+        $state = $this->getState();
+
         $status = array(
             ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PENDING,
             ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING,
@@ -127,7 +129,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             ->table('nucleonplus_payouts AS tbl')
             ->columns('tbl.nucleonplus_payout_id, COUNT(tbl.nucleonplus_payout_id) AS count')
             ->where('tbl.status IN :status')->bind(['status' => $status])
-            ->where('tbl.account_id = :account')->bind(['account' => $accountId])
+            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id])
         ;
 
         $result = $table->select($query);

@@ -14,33 +14,48 @@ defined('KOOWA') or die; ?>
 
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
 <ktml:style src="media://com_nucleonplus/css/admin-read.css" />
+<ktml:style src="media://com_nucleonplus/css/admin-account-read.css" />
 
 <ktml:module position="toolbar">
-    <ktml:toolbar type="actionbar" title="COM_NUCLEONPLUS_ORDER" icon="task-add icon-book">
+    <ktml:toolbar type="actionbar" title="<?= object('user.provider')->load($account->user_id)->getName(); ?>" icon="task-add icon-book">
 </ktml:module>
 
 <div class="row-fluid">
 
-    <div class="span4">
+    <div class="span3">
 
         <fieldset class="form-vertical">
 
-            <?= import('com://admin/nucleonplus.order.default_account.html', ['order' => $order]) ?>
-
-            <?= import('com://admin/nucleonplus.order.default_reward.html', ['order' => $order]) ?>
+            <?= import('com://admin/nucleonplus.account.default_account_summary.html', ['account' => $account]) ?>
 
         </fieldset>
-        
+
     </div>
 
-    <div class="span8">
+    <div class="span9">
 
         <fieldset class="form-vertical">
 
-            <?= import('com://admin/nucleonplus.order.default_order.html', ['order' => $order]) ?>
+            <form method="post" class="-koowa-form -koowa-grid">
+            
+                <input type="hidden" name="account_id" value="<?= $account->id ?>" />
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><?= translate('Order') ?></h3>
+                    </div>
+                    <div class="panel-body">
+                        <?= import('default_list.html') ?>
+                        <div style="text-align: right">
+                            <h4>Total: <strong>&#8369;<?= number_format($order->getAmount(), 2) ?></strong></h4>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
 
         </fieldset>
-        
+
     </div>
 
 </div>
