@@ -159,7 +159,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'payment_method'  => ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY,
             'shipping_method' => ComNucleonplusModelEntityOrder::SHIPPING_METHOD_XEND,
             'address'         => $cart->address,
-            'city_id'         => $cart->city_id,
+            'city'            => $cart->city_id,
             'postal_code'     => $cart->postal_code,
             'shipping_cost'   => $cart->getShippingCost(),
             'payment_charge'  => $cart->getPaymentCharge(),

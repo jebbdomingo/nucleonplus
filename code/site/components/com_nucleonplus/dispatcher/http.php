@@ -59,12 +59,12 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         }
 
         // Verify online payment
-        if ($query->view == 'dragonpay' && $request->getMethod() == 'POST') {
+        if ($query->view == 'dragonpay' && $query->api == 'payment' && $query->switch == 'postback' && $request->getMethod() == 'POST') {
             $this->_verifyOnlinePayment($query);
         }
 
         // Show online payment status
-        if ($query->view == 'dragonpay' && $request->getMethod() == 'GET') {
+        if ($query->view == 'dragonpay' && $query->api == 'payment' && $query->switch == 'returnurl' && $request->getMethod() == 'GET') {
             $this->_showOnlinePaymentStatus($query);
         }
 
