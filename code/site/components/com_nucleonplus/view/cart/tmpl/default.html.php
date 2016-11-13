@@ -88,7 +88,7 @@ defined('KOOWA') or die; ?>
                         <div class="col-sm-10">
                             <?= helper('listbox.cities', array(
                                 'name'     => 'city',
-                                'selected' => $cart->city_id,
+                                'selected' => $city,
                             )) ?>
                         </div>
                     </div>
