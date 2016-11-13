@@ -10,6 +10,46 @@
 
 class ComNucleonplusControllerPayoutprocessor extends ComKoowaControllerModel
 {
+    /**
+     * Constructor.
+     *
+     * @param KObjectConfig $config Configuration options.
+     */
+    public function __construct(KObjectConfig $config)
+    {
+        parent::__construct($config);
+
+        $this->addCommandCallback('before.updatepayoutstatus', '_validatePayout');
+    }
+
+    protected function _validatePayout(KControllerContextInterface $context)
+    {
+        $data   = $context->request->data;
+        $payout = $this->getObject('com://admin/nucleonplus.model.payouts')->id($data->txnid)->fetch();
+
+        // Validate payout
+        if (!count($payout)) {
+            throw new Exception('INVALID_TRANSACTION');
+        }
+
+        // Validate digest from dragonpay
+        $config     = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+        $dragonpay  = $config->getJsonValue();
+        $parameters = array(
+            'txnid'    => $data->txnid,
+            'refno'    => $data->refno,
+            'status'   => $data->status,
+            'message'  => $data->message,
+            'password' => $dragonpay->password
+        );
+        $digestStr = implode(':', $parameters);
+        $digest    = sha1($digestStr);
+
+        if ($data->digest !== $digest) {
+            throw new KControllerExceptionRequestInvalid('FAIL_DIGEST_MISMATCH');
+        }
+    }
+
     protected function _actionUpdatepayoutstatus(KControllerContextInterface $context)
     {
         $data = $context->request->data;
