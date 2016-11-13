@@ -61,7 +61,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
         // Verify online payment
         if ($query->view == 'dragonpay' && $query->api == 'payment' && $query->switch == 'postback') {
-            $this->_verifyOnlinePayment($query);
+            $this->_verifyOnlinePayment($request->data);
         }
 
         // Show online payment status
@@ -99,7 +99,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         exit("{$result}");
     }
 
-    protected function _verifyOnlinePayment($query)
+    protected function _verifyOnlinePayment($data)
     {
         $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
         $dragonpay = $config->getJsonValue();
@@ -109,13 +109,9 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         {
             try
             {
-                if (isset($query['account_id'])) {
-                    unset($query['account_id']);
-                }
-            
                 $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
-                $controller->id($query->txnid);
-                $controller->verifyonlinepayment($query->toArray());
+                $controller->id($data->txnid);
+                $controller->verifyonlinepayment($data->toArray());
             }
             catch (Exception $e)
             {
@@ -180,15 +176,17 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
             $app->login($credentials);
 
-            $data  = parent::getRequest()->data->toArray();
-            $query = parent::getRequest()->getUrl()->getQuery(true);
-            $query = array_merge($query, $data);
+            // $data  = parent::getRequest()->data->toArray();
+            // $query = parent::getRequest()->getUrl()->getQuery(true);
+            // $query = array_merge($query, $data);
 
-            parent::getRequest()->getUrl()->setQuery($query);
+            // parent::getRequest()->getUrl()->setQuery($query);
 
-            $url = (string) parent::getRequest()->getUrl();
+            // $url = (string) parent::getRequest()->getUrl();
 
-            JFactory::getApplication()->redirect($url);
+            // JFactory::getApplication()->redirect($url);
+            
+            $loggedIn = true;
         }
 
         return $loggedIn;
