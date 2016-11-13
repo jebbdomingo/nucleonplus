@@ -102,12 +102,14 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
             $digestStr = implode(':', $parameters);
             $digest    = sha1($digestStr);
 
-            if (getenv('APP_ENV') != 'production') {
-                var_dump($digest);
-            }
 
-            if ($data->digest !== $digest) {
-                die('result=FAIL_DIGEST_MISMATCH');
+            if ($data->digest !== $digest)
+            {
+                if (getenv('APP_ENV') != 'production') {
+                    var_dump($digest);
+                }
+
+                throw new Exception('FAIL_DIGEST_MISMATCH');
             }
         }
     }
