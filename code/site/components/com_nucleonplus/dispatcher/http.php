@@ -42,7 +42,8 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
         if ($query->view == 'account') {
             $query->id = (int) $user->getId();
-        } else $query->account_id = (int) $user->getId();
+        }
+        else $query->account_id = (int) $user->getId();
 
         if ($query->view == 'member') {
             $query->id = (int) $user->getId();
@@ -108,6 +109,10 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         {
             try
             {
+                if (isset($query['account_id'])) {
+                    unset($query['account_id']);
+                }
+            
                 $controller = $this->getObject('com://site/nucleonplus.controller.dragonpay');
                 $controller->id($query->txnid);
                 $controller->verifyonlinepayment($query->toArray());

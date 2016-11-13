@@ -137,20 +137,16 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
 
     protected function _actionVerifyonlinepayment(KControllerContextInterface $context)
     {
-        $data     = $context->request->data;
-        $data->id = $data->txnid;
+        $data = $context->request->data;
 
-        if ($data->status == ComDragonpayModelEntityPayment::STATUS_PENDING)
-        {
-            $data->payment_status = $data->status;
-            $order = parent::_actionEdit($context);
-        }
-        elseif ($data->status == ComDragonpayModelEntityPayment::STATUS_SUCCESSFUL)
+        if ($data->status == ComDragonpayModelEntityPayment::STATUS_SUCCESSFUL)
         {
             // Mark as Paid
-            $data->invoice_status = ComNucleonplusModelEntityOrder::INVOICE_STATUS_PAID;
-            $data->order_status   = ComNucleonplusModelEntityOrder::STATUS_PROCESSING;
-            $data->payment_status = $data->status;
+            $context->request->setData([
+                'id'             => $data->txnid,
+                'invoice_status' => ComNucleonplusModelEntityOrder::INVOICE_STATUS_PAID,
+                'order_status'   => ComNucleonplusModelEntityOrder::STATUS_PROCESSING,
+            ]);
 
             // Fetch after edit to get the joined columns
             $order = parent::_actionEdit($context);
@@ -165,7 +161,6 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
             // Automatically activate reward
             $this->_activateReward($order);
         }
-        else throw new Exception('FAIL_INVALID_STATUS');
 
         return $order;
     }
