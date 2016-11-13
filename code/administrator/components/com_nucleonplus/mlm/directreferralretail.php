@@ -58,6 +58,6 @@ class ComNucleonplusMlmDirectreferralretail extends ComNucleonplusMlmDirectrefer
      */
     protected function _recordAcctgTransaction($reward)
     {
-        $this->_accounting_service->allocateDRBonus($reward->product_id, $reward->prpv);
+        $this->_accounting_service->allocateDRBonus($reward->product_id, $reward->drpv);
     }
 }
