@@ -145,7 +145,7 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
     {
         $config = new KObjectConfig($config);
         $config->append(array(
-            'address' => '2nd Floor E.C. Valle Commercial Center, Angono Rizal',
+            'address' => '330 3rd Street San Martin Subdivision, Brgy. San Isidro, Angono Rizal',
             'phone'   => '(02) 775-9047',
             'mobile'  => '0932 691 7537',
             'email'   => 'nucleon.plus@gmail.com',
