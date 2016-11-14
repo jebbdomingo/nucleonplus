@@ -42,12 +42,36 @@ defined('KOOWA') or die; ?>
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><?= translate('Order') ?></h3>
+                        <div class="panel-title">
+                            <div class="row-fluid">
+                                <div class="span6">
+                                    <h3><?= translate('Order') ?> #<?= $order->id ?></h3>
+                                </div>
+                                <div class="span6">
+                                    <div class="text-right">
+                                        <?= helper('com://site/nucleonplus.labels.orderStatus', array('value' => $order->order_status)) ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="panel-body">
                         <?= import('default_list.html') ?>
+
+                        <? if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY): ?>
+                            <div style="text-align: right">
+                                Sub-total: &#8369;<?= number_format($order->getAmount(), 2) ?>
+                            </div>
+                            <div style="text-align: right">
+                                Shipping: &#8369;<?= number_format($order->shipping_cost, 2) ?>
+                            </div>
+                            <div style="text-align: right">
+                                <?= $order->getPaymentMode() ?>: &#8369;<?= number_format($order->payment_charge, 2) ?>
+                            </div>
+                        <? endif ?>
+
                         <div style="text-align: right">
-                            <h4>Total: <strong>&#8369;<?= number_format($order->getAmount(), 2) ?></strong></h4>
+                            <h4>Total: <strong>&#8369;<?= number_format($order->total, 2) ?></strong></h4>
                         </div>
                     </div>
                 </div>

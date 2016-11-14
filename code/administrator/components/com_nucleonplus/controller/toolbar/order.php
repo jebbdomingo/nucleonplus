@@ -217,6 +217,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
             $allowed = false;
         }
 
+        $this->removeCommand('new');
         $this->removeCommand('delete');
 
         // Verify payment command
