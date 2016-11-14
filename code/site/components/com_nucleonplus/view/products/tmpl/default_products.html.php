@@ -50,16 +50,16 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                                 ?>
                             </td>
                         </tr>
-                        <tr>
-                            <td>Direct Referral Bonus</td>
-                            <td class="text-right">
-                                <?
-                                $directReferral = $product->prpv * $product->slots;
-                                echo number_format($directReferral, 2);
-                                ?>
-                            </td>
-                        </tr>
                         <? if ($product->Type == 'Group'): ?>
+                            <tr>
+                                <td>Direct Referral Bonus</td>
+                                <td class="text-right">
+                                    <?
+                                    $directReferral = $product->prpv * $product->slots;
+                                    echo number_format($directReferral, 2);
+                                    ?>
+                                </td>
+                            </tr>
                             <tr class="success">
                                 <td>Commission <span class="label label-primary">New</span></td>
                                 <td class="text-right">
