@@ -168,7 +168,7 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
 
         $template = '<div class="panel panel-info">';
         $template .= '<div class="panel-heading"><strong>Visit our store</strong></div>';
-        $template .= "<div class=\"panel-body\">Come visit our store at {$config->address}</div>";
+        $template .= "<div class=\"panel-body\">Come visit our store at {$config->address}.</div>";
         $template .= '</div>';
 
         return $template;
@@ -187,7 +187,7 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
 
         $template = '<div class="jumbotron">';
         $template .= '<h1><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Visit our store</h1>';
-        $template .= "<p>Come visit our store at {$config->address}</p>";
+        $template .= "<p>Come visit our store at {$config->address}.</p>";
         $template .= '</div>';
 
         return $template;
