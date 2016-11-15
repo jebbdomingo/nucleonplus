@@ -254,8 +254,7 @@ class ComNucleonplusMlmPackagepatronage extends KObject
                     $this->_payOtherSlot($slot);
 
                     // Process member patronage
-                    $reward = $this->getObject($this->_reward_model)->id($pendingSlot->reward_id)->fetch();
-                    $reward->processPatronage();
+                    $pendingSlot->getReward()->processPatronage();
 
                     break;
                 }

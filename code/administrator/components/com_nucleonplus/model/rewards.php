@@ -69,7 +69,7 @@ class ComNucleonplusModelRewards extends KModelDatabase
         $table = $this->getObject('com://admin/nucleonplus.database.table.rewards');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_rewards AS tbl')
-            ->where('tbl.status = :status')->bind(array('status' => 'active'))
+            ->where('tbl.status = :status')->bind(array('status' => ComNucleonplusModelEntityReward::STATUS_ACTIVE))
             ->where('tbl.nucleonplus_reward_id != :reward_id')->bind(array('reward_id' => $rewardId))
             ->limit(1)
             ->order('tbl.nucleonplus_reward_id', 'ASC')
