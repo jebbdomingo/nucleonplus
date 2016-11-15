@@ -25,13 +25,6 @@ class ComNucleonplusMlmCompensation extends KObject
     protected $_directreferral_package;
 
     /**
-     * Direct Referral Retail
-     *
-     * @var string
-     */
-    protected $_directreferral_retail;
-
-    /**
      * Patronage
      *
      * @var string
@@ -70,7 +63,6 @@ class ComNucleonplusMlmCompensation extends KObject
 
         $this->_reward_active_status   = $config->reward_active_status;
         $this->_directreferral_package = $this->getObject($config->directreferral_package);
-        $this->_directreferral_retail  = $this->getObject($config->directreferral_retail);
         $this->_patronage              = $this->getObject($config->patronage);
         $this->_unilevel_package       = $this->getObject($config->unilevel_package);
         $this->_unilevel_retail        = $this->getObject($config->unilevel_retail);
@@ -88,7 +80,6 @@ class ComNucleonplusMlmCompensation extends KObject
     {
         $config->append(array(
             'directreferral_package' => 'com:nucleonplus.mlm.directreferralpackage',
-            'directreferral_retail'  => 'com:nucleonplus.mlm.directreferralretail',
             'unilevel_package'       => 'com:nucleonplus.mlm.unilevelpackage',
             'unilevel_retail'        => 'com:nucleonplus.mlm.unilevelretail',
             'patronage'              => 'com:nucleonplus.mlm.packagepatronage',
