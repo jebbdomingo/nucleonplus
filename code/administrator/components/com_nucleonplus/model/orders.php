@@ -87,20 +87,20 @@ class ComNucleonplusModelOrders extends KModelDatabase
      *
      * @return decimal
      */
-    // public function getAmount()
-    // {
-    //     $state = $this->getState();
+    public function getAmount()
+    {
+        $state = $this->getState();
 
-    //     $table = $this->getObject('com://admin/nucleonplus.database.table.orderitems');
-    //     $query = $this->getObject('database.query.select')
-    //         ->table('nucleonplus_orderitems AS tbl')
-    //         ->columns('tbl.nucleonplus_orderitem_id, SUM(tbl.item_price * tbl.quantity) AS total')
-    //         ->where('tbl.order_id = :order_id')->bind(['order_id' => $state->id])
-    //         ->group('tbl.order_id')
-    //     ;
+        $table = $this->getObject('com://admin/nucleonplus.database.table.orderitems');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_orderitems AS tbl')
+            ->columns('tbl.nucleonplus_orderitem_id, SUM(tbl.item_price * tbl.quantity) AS total')
+            ->where('tbl.order_id = :order_id')->bind(['order_id' => $state->id])
+            ->group('tbl.order_id')
+        ;
 
-    //     $entities = $table->select($query);
+        $entities = $table->select($query);
 
-    //     return (float) $entities->total;
-    // }
+        return (float) $entities->total;
+    }
 }
