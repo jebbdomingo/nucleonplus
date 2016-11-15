@@ -20,7 +20,11 @@ defined('KOOWA') or die; ?>
                 <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Order #')); ?></th>
                 <th><?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?></th>
                 <th><?= helper('grid.sort', array('column' => 'order_status', 'title' => 'Status')); ?></th>
-                <th><div class="text-right"><?= translate('Amount') ?></div></th>
+                <th>
+                    <div class="text-right">
+                        <?= helper('grid.sort', array('column' => 'total', 'title' => 'Total')); ?>
+                    </div>
+                </th>
             </thead>
             <tbody>
                 <? if (count($orders) > 0): ?>

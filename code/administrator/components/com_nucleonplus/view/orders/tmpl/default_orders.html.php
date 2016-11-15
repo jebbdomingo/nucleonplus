@@ -38,6 +38,6 @@
         <td>
             <?= helper('date.format', array('date' => $order->created_on)) ?>
         </td>
-        <td><div class="text-right">&#8369;<?= number_format($order->getTotal(), 2) ?></div></td>
+        <td><div class="text-right">&#8369;<?= number_format($order->total, 2) ?></div></td>
     </tr>
 <? endforeach; ?>

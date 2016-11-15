@@ -46,13 +46,13 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
 
         switch ($account->status)
         {
-            case 'new':
-            case 'pending':
+            case ComNucleonplusModelEntityAccount::STATUS_NEW:
+            case ComNucleonplusModelEntityAccount::STATUS_PENDING:
                 $this->setStatusMessage($this->getObject('translator')->translate('Unable to place order, the account is currently inactive'));
                 return false;
                 break;
 
-            case 'terminated':
+            case ComNucleonplusModelEntityAccount::STATUS_TERMINATED:
                 $this->setStatusMessage($this->getObject('translator')->translate('Unable to place order, the account was terminated'));
                 return false;
                 break;
@@ -63,9 +63,16 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
         }
     }
 
-    public function getPropertyTotal()
+    /**
+     * Calculate order totals
+     *
+     * @return void
+     */
+    public function calculate()
     {
-        return $this->getTotal();
+        // Calculate total
+        $this->sub_total = $this->getAmount();
+        $this->total     = $this->sub_total + (float) $this->shipping_cost + (float) $this->payment_charge;
     }
 
     /**
@@ -94,11 +101,6 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
             ->id($this->id)
             ->getAmount()
         ;
-    }
-
-    public function getTotal()
-    {
-        return $this->getAmount() + (float) $this->shipping_cost + (float) $this->payment_charge;
     }
 
     public function getPaymentMode()

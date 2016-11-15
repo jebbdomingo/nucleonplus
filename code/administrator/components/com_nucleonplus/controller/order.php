@@ -76,7 +76,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     {
         $config->append(array(
             'salesreceipt_service' => 'com:nucleonplus.accounting.service.salesreceipt',
-            'inventory_service'    => 'com:nucleonplus.accounting.service.inventory',
             'reward'               => 'com:nucleonplus.mlm.packagereward',
         ));
 
@@ -417,9 +416,18 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                 }
             }
 
+            // Calculate order totals based on order items
+            $order->calculate();
+
+            /**
+             * @todo Move cart operation to com:cart behavior
+             */
             // Delete the cart
             $cart->delete();
 
+            /**
+             * @todo Move accounting operation to com:qbsync behavior
+             */
             // Record sale in accounting
             $this->_salesreceipt_service->recordSale($order);
 

@@ -75,7 +75,7 @@ else $footerAmountSize = 'col-xs-12';
                                 <div class="col-sm-10">
                                     <h6 class="text-right">Sub-total</h6>
                                 </div>
-                                <div class="col-sm-2 text-right">&#8369;<?= number_format($order->getAmount(), 2) ?></div>
+                                <div class="col-sm-2 text-right">&#8369;<?= number_format($order->sub_total, 2) ?></div>
                             </div>
                         </div>
                         <? if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY): ?>

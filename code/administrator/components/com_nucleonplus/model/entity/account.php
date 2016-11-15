@@ -17,6 +17,10 @@
  */
 class ComNucleonplusModelEntityAccount extends KModelEntityRow
 {
+    const STATUS_NEW        = 'new';
+    const STATUS_PENDING    = 'pending';
+    const STATUS_TERMINATED = 'terminated';
+
     /**
      * Get direct referral accounts
      *

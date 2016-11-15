@@ -187,6 +187,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                     }
                 }
 
+                // Calculate order totals based on order items
+                $order->calculate();
+
+                /**
+                 * @todo Move to com:cart behavior
+                 */
                 // Delete the cart
                 $cart->delete();
             }

@@ -60,7 +60,7 @@ defined('KOOWA') or die; ?>
 
                         <? if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY): ?>
                             <div style="text-align: right">
-                                Sub-total: &#8369;<?= number_format($order->getAmount(), 2) ?>
+                                Sub-total: &#8369;<?= number_format($order->sub_total, 2) ?>
                             </div>
                             <div style="text-align: right">
                                 Shipping: &#8369;<?= number_format($order->shipping_cost, 2) ?>

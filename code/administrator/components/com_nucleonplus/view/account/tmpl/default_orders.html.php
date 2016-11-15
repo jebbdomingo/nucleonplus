@@ -31,7 +31,7 @@
                                 <div><?= helper('date.humanize', array('date' => $order->created_on)) ?></div>
                                 <div><?= $order->created_on ?></div> 
                             </td>
-                            <td><div class="text-right">&#8369;<?= number_format($order->getTotal(), 2) ?></div></td>
+                            <td><div class="text-right">&#8369;<?= number_format($order->total, 2) ?></div></td>
                         </tr>
                     <? endforeach ?>
                 <? else: ?>

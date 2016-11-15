@@ -60,7 +60,11 @@ defined('KOOWA') or die; ?>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
                             </th>
-                            <th><div class="text-right">Price</div></th>
+                            <th>
+                                <div class="text-right">
+                                    <?= helper('grid.sort', array('column' => 'total', 'title' => 'Total')); ?>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
