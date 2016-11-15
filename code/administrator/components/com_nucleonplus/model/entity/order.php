@@ -66,13 +66,15 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     /**
      * Calculate order totals
      *
-     * @return void
+     * @return KModelEntityInterface
      */
     public function calculate()
     {
         // Calculate total
         $this->sub_total = $this->getAmount();
         $this->total     = $this->sub_total + (float) $this->shipping_cost + (float) $this->payment_charge;
+
+        return $this;
     }
 
     /**
