@@ -173,10 +173,7 @@ class ComNucleonplusMlmCompensation extends KObject
     {
         $result = false;
 
-        // Retail direct referral bonus
-        // $this->_directreferral_retail->create($reward);
-
-        // Create unilevel bonuses (indirect referrals)
+        // Create unilevel bonuses (direct and indirect referrals)
         $this->_unilevel_retail->create($reward);
 
         // Create rebates
