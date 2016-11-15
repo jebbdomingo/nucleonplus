@@ -58,6 +58,8 @@ class ComNucleonplusModelOrders extends KModelDatabase
             $query->where('tbl.order_status IN :order_status')->bind(['order_status' => (array) $state->order_status]);
         }
 
+        var_dump($state->getValues());
+
         if ($state->search)
         {
             $conditions = array(
