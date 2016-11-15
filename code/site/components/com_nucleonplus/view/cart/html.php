@@ -21,7 +21,8 @@ class ComNucleonplusViewCartHtml extends ComKoowaViewHtml
         $paymentCharge = $cart->getPaymentCharge();
         $total         = ($amount + $shippingCost + $paymentCharge);
 
-        // $context->data->cart           = $cart;
+        var_dump($cart->city);
+        
         $context->data->address       = $cart->address ? $cart->address : $account->street;
         $context->data->city          = $cart->city ? $cart->city : $account->city_id;
         $context->data->items         = $cart->getItems() ? $cart->getItems() : array();
