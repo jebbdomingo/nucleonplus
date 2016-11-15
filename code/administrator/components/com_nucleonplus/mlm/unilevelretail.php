@@ -54,16 +54,32 @@ class ComNucleonplusMlmUnilevelretail extends ComNucleonplusMlmUnilevel
      */
     private function _recordReferrals(KModelEntityInterface $account, KModelEntityInterface $reward)
     {
-        $result = false;
+        $drPoints = $reward->drpv;
+        $result   = false;
 
         if (is_null($account->sponsor_id))
         {
-            // No direct referrer sponsor, flushout indirect referral bonus
+            // No direct referrer sponsor, flushout direct and indirect referral bonus
+            $this->_accounting_service->allocateSurplusDRBonus($reward->product_id, $drPoints);
+
             $irPoints = (($reward->irpv * $this->_unilevel_count) * $reward->slots);
             $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, $irPoints);
         }
         else
         {
+            // Record direct referral
+            $data = [
+                'reward_id'     => $reward->id,
+                'account_id'    => $account->getIdFromSponsor(),
+                'referral_type' => 'dr', // Direct Referral
+                'points'        => $drPoints,
+            ];
+
+            $this->_controller->add($data);
+
+            // Post direct referral to accounting system
+            $this->_accounting_service->allocateDRBonus($reward->product_id, $reward->drpv);
+
             // Check if direct referrer has sponsor
             $directSponsor = $this->getObject('com:nucleonplus.model.accounts')->id($account->getIdFromSponsor())->fetch();
 
@@ -124,7 +140,6 @@ class ComNucleonplusMlmUnilevelretail extends ComNucleonplusMlmUnilevel
                     $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, $points);
 
                     break;
-
                 }
 
                 break;
