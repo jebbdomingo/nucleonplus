@@ -127,7 +127,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else
         {
-            $order_status    = 'completed';
+            $order_status    = ComNucleonplusModelEntityOrder::STATUS_COMPLETED;
             $invoice_status  = 'paid';
             $payment_method  = 'cash';
             $shipping_method = 'na';
@@ -235,7 +235,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
             foreach ($entities as $entity)
             {
-                if (!in_array($entity->order_status, array('awaiting_payment', 'awaiting_verification'))) {
+                if (!in_array($entity->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_VERIFICATION))) {
                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Payment" or "Awaiting Verfication" status can be voided'));
                     $result = false;
                 }
@@ -314,7 +314,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
             foreach ($entities as $entity)
             {
-                if ($entity->order_status <> 'shipped') {
+                if ($entity->order_status <> ComNucleonplusModelEntityOrder::STATUS_SHIPPED) {
                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Shipped" status can be marked as "Delivered"'));
                     $result = false;
                 }
@@ -354,7 +354,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
             foreach ($entities as $entity)
             {
-                if ($entity->order_status <> 'delivered') {
+                if ($entity->order_status <> ComNucleonplusModelEntityOrder::STATUS_DELIVERED) {
                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Delivered" status can be marked as "Completed"'));
                     $result = false;
                 }
@@ -458,42 +458,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     }
 
     /**
-     * Specialized save action, changing state by marking as paid
-     *
-     * @param   KControllerContextInterface $context A command context object
-     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
-     * 
-     * @return  KModelEntityInterface
-     */
-    protected function _actionVerifypayment(KControllerContextInterface $context)
-    {
-        // Mark as Paid
-        $context->getRequest()->data->invoice_status = 'paid';
-        $context->getRequest()->data->order_status   = 'processing';
-
-        $orders = parent::_actionEdit($context);
-
-        try
-        {
-            foreach ($orders as $order)
-            {
-                $this->_salesreceipt_service->recordSale($order);     
-                $context->response->addMessage("Payment for Order #{$order->id} has been verified");
-
-                // Automatically activate reward
-                $this->_activateReward($order);
-            }
-
-        }
-        catch (Exception $e)
-        {
-            $context->response->addMessage($e->getMessage(), 'exception');
-        }
-
-        return $orders;
-    }
-
-    /**
      * Specialized save action, changing state by updating the order status
      *
      * @param   KControllerContextInterface $context A command context object
@@ -504,7 +468,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _actionShip(KControllerContextInterface $context)
     {
         $context->getRequest()->setData([
-            'order_status'       => 'shipped',
+            'order_status'       => ComNucleonplusModelEntityOrder::STATUS_SHIPPED,
             'tracking_reference' => $context->request->data->tracking_reference,
         ]);
 
@@ -542,7 +506,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _actionMarkdelivered(KControllerContextInterface $context)
     {
         $context->getRequest()->setData([
-            'order_status' => 'delivered'
+            'order_status' => ComNucleonplusModelEntityOrder::STATUS_DELIVERED
         ]);
 
         return parent::_actionEdit($context);
@@ -559,7 +523,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _actionMarkcompleted(KControllerContextInterface $context)
     {
         $context->getRequest()->setData([
-            'order_status' => 'completed'
+            'order_status' => ComNucleonplusModelEntityOrder::STATUS_COMPLETED
         ]);
 
         return parent::_actionEdit($context);
@@ -577,73 +541,109 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     {
         // Mark as Paid
         $context->getRequest()->setData([
-            'order_status' => 'void',
+            'order_status' => ComNucleonplusModelEntityOrder::STATUS_VOID,
             'note'         => $context->request->data->note,
         ]);
 
         return parent::_actionEdit($context);
     }
 
-    /**
-     * Activates the reward and create corresponding slots
-     *
-     * @param   KControllerContextInterface $context A command context object
-     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
-     * 
-     * @return  KModelEntityInterface
-     */
-    protected function _actionActivatereward(KControllerContextInterface $context)
-    {
-        if (!$context->result instanceof KModelEntityInterface) {
-            $orders = $this->getModel()->fetch();
-        } else {
-            $orders = $context->result;
-        }
+    // /**
+    //  * Specialized save action, changing state by marking as paid
+    //  *
+    //  * @param   KControllerContextInterface $context A command context object
+    //  * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
+    //  * 
+    //  * @return  KModelEntityInterface
+    //  */
+    // protected function _actionVerifypayment(KControllerContextInterface $context)
+    // {
+    //     // Mark as Paid
+    //     $context->getRequest()->data->invoice_status = 'paid';
+    //     $context->getRequest()->data->order_status   = ComNucleonplusModelEntityOrder::STATUS_PROCESSING;
 
-        if (count($orders))
-        {
-            try
-            {
-                foreach ($orders as $order) {
-                    $this->_activateReward($order);
-                }
-            }
-            catch (Exception $e)
-            {
-                $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'exception');
-                $context->getResponse()->send();
-            }
-        }
-        else throw new KControllerExceptionResourceNotFound('Resource could not be found');
+    //     $orders = parent::_actionEdit($context);
 
-        return $orders;
-    }
+    //     try
+    //     {
+    //         foreach ($orders as $order)
+    //         {
+    //             $this->_salesreceipt_service->recordSale($order);     
+    //             $context->response->addMessage("Payment for Order #{$order->id} has been verified");
 
-    /**
-     * Activates the reward
-     *
-     * @param   KModelEntityInterface $order
-     * 
-     * @throws  KControllerExceptionRequestInvalid
-     * @throws  KControllerExceptionResourceNotFound
-     * 
-     * @return  void
-     */
-    protected function _activateReward(KModelEntityInterface $order)
-    {
-        $translator = $this->getObject('translator');
+    //             // Automatically activate reward
+    //             $this->_activateReward($order);
+    //         }
 
-        // Check order status if its reward can be activated
-        if (!in_array($order->order_status, array('processing', 'completed'))) {
-            throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" status"));
-        }
+    //     }
+    //     catch (Exception $e)
+    //     {
+    //         $context->response->addMessage($e->getMessage(), 'exception');
+    //     }
 
-        // Try to activate reward
-        $rewards = $order->getRewards();
-        foreach ($rewards as $reward)
-        {
-            $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
-            $this->getResponse()->addMessage("Reward #{$reward->id} has been activated");
-        }
-    }
+    //     return $orders;
+    // }
+
+    // /**
+    //  * Activates the reward and create corresponding slots
+    //  *
+    //  * @param   KControllerContextInterface $context A command context object
+    //  * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
+    //  * 
+    //  * @return  KModelEntityInterface
+    //  */
+    // protected function _actionActivatereward(KControllerContextInterface $context)
+    // {
+    //     if (!$context->result instanceof KModelEntityInterface) {
+    //         $orders = $this->getModel()->fetch();
+    //     } else {
+    //         $orders = $context->result;
+    //     }
+
+    //     if (count($orders))
+    //     {
+    //         try
+    //         {
+    //             foreach ($orders as $order) {
+    //                 $this->_activateReward($order);
+    //             }
+    //         }
+    //         catch (Exception $e)
+    //         {
+    //             $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'exception');
+    //             $context->getResponse()->send();
+    //         }
+    //     }
+    //     else throw new KControllerExceptionResourceNotFound('Resource could not be found');
+
+    //     return $orders;
+    // }
+
+    // /**
+    //  * Activates the reward
+    //  *
+    //  * @param   KModelEntityInterface $order
+    //  * 
+    //  * @throws  KControllerExceptionRequestInvalid
+    //  * @throws  KControllerExceptionResourceNotFound
+    //  * 
+    //  * @return  void
+    //  */
+    // protected function _activateReward(KModelEntityInterface $order)
+    // {
+    //     $translator = $this->getObject('translator');
+
+    //     // Check order status if its reward can be activated
+    //     if (!in_array($order->order_status, array('processing', 'completed'))) {
+    //         throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" status"));
+    //     }
+
+    //     // Try to activate reward
+    //     $rewards = $order->getRewards();
+    //     foreach ($rewards as $reward)
+    //     {
+    //         $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
+    //         $this->getResponse()->addMessage("Reward #{$reward->id} has been activated");
+    //     }
+    // }
 }
