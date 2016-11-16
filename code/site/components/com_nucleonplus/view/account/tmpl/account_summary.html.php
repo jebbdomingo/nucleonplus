@@ -15,7 +15,7 @@
                 <td><span class="label label-<?= ($account->status == 'closed') ? 'default' : 'info' ?>"><?= ucwords(escape($account->status)) ?></span></td>
             </tr>
             <tr>
-                <td><label><strong><?= translate('Registered On') ?></strong></label></td>
+                <td><label><strong><?= translate('Registered') ?></strong></label></td>
                 <td><div><?= helper('date.humanize', array('date' => $account->created_on)) ?></div></td>
             </tr>
             <tr>
