@@ -275,7 +275,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             {
                 $order->setProperties($context->request->data->toArray());
 
-                if ($order->order_status <> 'processing') {
+                if ($order->order_status <> ComNucleonplusModelEntityOrder::STATUS_PROCESSING) {
                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Processing" status can be shipped'));
                 }
 
@@ -513,11 +513,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         // Send email notification
         $config       = JFactory::getConfig();
         $emailSubject = JText::sprintf('COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_SUBJECT', $order->id);
+        $tracking     = '<a href="http://tracker.xend.com.ph/?waybill=' . $order->tracking_reference . '">' . $order->tracking_reference . '</a>';
         $emailBody    = JText::sprintf(
             'COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_BODY',
             $order->name,
             $order->id,
-            $order->tracking_reference,
+            $tracking,
             JUri::root()
         );
 

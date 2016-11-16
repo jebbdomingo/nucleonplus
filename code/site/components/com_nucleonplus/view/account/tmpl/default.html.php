@@ -11,6 +11,7 @@
 defined('KOOWA') or die; ?>
 
 <?= helper('behavior.koowa'); ?>
+<?= helper('behavior.sponsorlink'); ?>
 
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
 
@@ -19,6 +20,7 @@ defined('KOOWA') or die; ?>
     <div class="col-md-4">
 
         <?= import('com://site/nucleonplus.account.account_summary.html', ['account' => $account]) ?>
+        <?= import('com://site/nucleonplus.account.sponsor_link.html', ['account' => $account]) ?>
 
     </div>
 
@@ -27,6 +29,7 @@ defined('KOOWA') or die; ?>
         <fieldset class="form-vertical">
 
             <form method="post" class="-koowa-grid">
+
 
                 <?= import('com://site/nucleonplus.account.default_rewards.html', ['account' => $account]) ?>
 

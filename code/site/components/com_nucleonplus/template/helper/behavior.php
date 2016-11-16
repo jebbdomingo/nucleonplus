@@ -199,4 +199,31 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
 
         return $html;
     }
+
+    public function sponsorlink($config = array())
+    {
+        $config = new KObjectConfigJson($config);
+        $config->append(array(
+            'selector' => '.sponsor_link'
+        ));
+
+        $signature = md5(serialize(array($config->selector)));
+        if (!isset(self::$_loaded[$signature])) {
+            $html = "
+            <script>
+            kQuery(function($) {
+                $('{$config->selector}').on('focus', function(event){
+                    event.preventDefault();
+
+                    $(this).select();
+                });
+            });
+            </script>
+            ";
+
+            self::$_loaded[$signature] = true;
+        }
+
+        return $html;
+    }
 }

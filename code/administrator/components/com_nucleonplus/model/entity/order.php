@@ -19,6 +19,7 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     const INVOICE_STATUS_SENT = 'sent';
     const INVOICE_STATUS_PAID = 'paid';
 
+    const SHIPPING_METHOD_NA   = 'na';
     const SHIPPING_METHOD_XEND = 'xend';
 
     const PAYMENT_METHOD_CASH      = 'cash';
