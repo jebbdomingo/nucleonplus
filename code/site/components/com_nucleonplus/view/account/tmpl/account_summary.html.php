@@ -16,10 +16,7 @@
             </tr>
             <tr>
                 <td><label><strong><?= translate('Registered On') ?></strong></label></td>
-                <td>
-                    <div><?= helper('date.humanize', array('date' => $account->created_on)) ?></div>
-                    <div><?= $account->created_on ?></div>
-                </td>
+                <td><div><?= helper('date.humanize', array('date' => $account->created_on)) ?></div></td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
