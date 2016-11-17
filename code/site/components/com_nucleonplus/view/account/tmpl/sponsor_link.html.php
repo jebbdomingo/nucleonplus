@@ -22,5 +22,5 @@ defined('KOOWA') or die; ?>
         </span>
     </div><!-- /input-group -->
 
-    <span id="helpBlock" class="help-block help-sm">Copy this link to refer a friend and start earning</span>
+    <span id="helpBlock" class="help-block small">Copy this link to refer a friend and start earning</span>
 </div>
