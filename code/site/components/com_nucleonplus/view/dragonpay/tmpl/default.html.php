@@ -20,20 +20,21 @@ $context = 'default';
 $icon    = null;
 $title   = null;
 $message = object('request')->query->message;
+$status  = object('request')->query->status;
 
-if (object('request')->query->status == 'S')
+if ($status == 'S')
 {
     $context = 'success';
     $icon    = 'glyphicon-ok';
     $title   = 'Payment Successful';
 }
-elseif (object('request')->query->status == 'P')
+elseif ($status == 'P')
 {
     $context = 'warning';
     $icon    = 'glyphicon-hourglass';
     $title   = 'Pending Payment';
 }
-elseif (object('request')->query->status == 'F')
+elseif ($status == 'F')
 {
     $context = 'danger';
     $icon    = 'glyphicon-warning-sign';
