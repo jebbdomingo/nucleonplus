@@ -149,6 +149,9 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
             ]);
 
             $order = parent::_actionEdit($context);
+
+            // Record dragonpay payment transaction
+            $this->_recordPaymentStatus($data);
         }
         elseif ($data->status == ComDragonpayModelEntityPayment::STATUS_SUCCESSFUL)
         {
