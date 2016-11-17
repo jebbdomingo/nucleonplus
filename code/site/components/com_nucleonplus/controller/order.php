@@ -130,8 +130,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             {
                 $order->setProperties($context->request->data->toArray());
 
-                if ($order->order_status <> ComNucleonplusModelEntityOrder::STATUS_PAYMENT) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awiating Payment" status can be cancelled'));
+                if (!in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_PENDING))) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Pending" or "Awaiting Payment" status can be cancelled'));
                 }
             }
         }
@@ -230,7 +230,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _actionMarkdelivered(KControllerContextInterface $context)
     {
         $context->getRequest()->setData([
-            'order_status' => 'delivered'
+            'order_status' => ComNucleonplusModelEntityOrder::STATUS_DELIVERED
         ]);
 
         $order = parent::_actionEdit($context);
@@ -250,7 +250,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _actionCancelorder(KControllerContextInterface $context)
     {
         // Copy the package data in the order table
-        $context->request->data->order_status = 'cancelled';
+        $context->getRequest()->setData([
+            'order_status' => ComNucleonplusModelEntityOrder::STATUS_CANCELLED
+        ]);
 
         $order = parent::_actionEdit($context);
 

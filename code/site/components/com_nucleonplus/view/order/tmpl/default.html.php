@@ -105,7 +105,7 @@ else $footerAmountSize = 'col-xs-12';
                             <div class="<?= $footerAmountSize ?>">
                                 <h4 class="text-right">Total <strong>&#8369;<?= number_format($order->total, 2) ?></strong></h4>
                             </div>
-                            <? if ($order->order_status == ComNucleonplusModelEntityOrder::STATUS_PAYMENT): ?>
+                            <? if (in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PENDING,ComNucleonplusModelEntityOrder::STATUS_PAYMENT))): ?>
                                 <div class="col-xs-3">
                                     <form action="<?= route('view=order') ?>" method="post">
                                         <button type="button" role="button" class="orderCancelAction btn btn-danger btn-block" data-prompt="Cancelled order cannot be recovered, would you like to continue?">

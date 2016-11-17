@@ -334,8 +334,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             {
                 $order->setProperties($context->request->data->toArray());
 
-                if ($order->order_status <> ComNucleonplusModelEntityOrder::STATUS_PAYMENT) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awiating Payment" status can be cancelled'));
+                if (!in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_PENDING))) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Pending" or "Awaiting Payment" status can be cancelled'));
                 }
             }
         }

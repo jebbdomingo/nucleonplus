@@ -161,7 +161,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         }
 
         // Cancel command
-        if ($canSave && (in_array($context->result->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT))))
+        if ($canSave && (in_array($context->result->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PENDING,ComNucleonplusModelEntityOrder::STATUS_PAYMENT))))
         {
             $this->addCommand('cancelorder', [
                 'allowed' => $allowed,
