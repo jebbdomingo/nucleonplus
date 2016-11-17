@@ -186,11 +186,13 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
                 $('{$config->selector}').on('click', function(event){
                     event.preventDefault();
 
-                    var form  = $(this).closest('form');
-                    var input = '<input type=\"hidden\" name=\"_action\" value=\"{$config->action}\"  />';
+                    if (confirm('Cancelled order cannot be recovered, would you like to continue?'))
+                    {
+                        var form  = $(this).closest('form');
+                        var input = '<input type=\"hidden\" name=\"_action\" value=\"{$config->action}\"  />';
 
-                    form.append(input);
-                    form.submit();
+                        form.append(input).submit();
+                    }
                 });
             });
             </script>
@@ -243,23 +245,22 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
         return $html;
     }
 
-    public function sponsorlink($config = array())
+    public function clipboardable($config = array())
     {
         $config = new KObjectConfigJson($config);
         $config->append(array(
-            'selector' => '.sponsor_link'
+            'selector' => '.btn'
         ));
 
         $signature = md5(serialize(array($config->selector)));
         if (!isset(self::$_loaded[$signature])) {
             $html = "
+            <script src=\"https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js\"></script>
             <script>
             kQuery(function($) {
-                $('{$config->selector}').on('focus', function(event){
-                    event.preventDefault();
+                new Clipboard('{$config->selector}');
 
-                    $(this).select();
-                });
+                $('{$config->selector}').tooltip({trigger: 'click'});
             });
             </script>
             ";

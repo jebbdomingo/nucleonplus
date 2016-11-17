@@ -10,8 +10,17 @@
 
 defined('KOOWA') or die; ?>
 
-    <div class="well bg-info">
-        <h3 class="page-header"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?= translate('Referral Link') ?></h3>
-        <p class="text-info">Copy this link to refer a friend and start earning</p>
-        <textarea class="sponsor_link" readonly="readonly" style="width: 100%; height: 75px"><?= JURI::root() . "index.php/sign-up/?sponsor_id={$account->account_number}" ?></textarea>
-    </div>
+<div class="well bg-info">
+    <h3 class="page-header"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?= translate('Referral Link') ?></h3>
+
+    <div class="input-group">
+        <input id="sponsor-link" type="text" class="form-control input-sm" value="<?= JURI::root() . "index.php/sign-up/?sponsor_id={$account->account_number}" ?>" readonly="readonly" />
+        <span class="input-group-btn">
+            <button class="btn btn-sm btn-default" type="button" data-clipboard-target="#sponsor-link" title="Copied">
+                <span class="glyphicon glyphicon-copy" aria-hidden="true"></span>
+            </button>
+        </span>
+    </div><!-- /input-group -->
+
+    <span id="helpBlock" class="help-block help-sm">Copy this link to refer a friend and start earning</span>
+</div>
