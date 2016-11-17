@@ -32,26 +32,6 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
     }
 
     /**
-     * Confirm payment Command
-     *
-     * @param KControllerToolbarCommand $command
-     *
-     * @return void
-     */
-    protected function _commandMarkpaid(KControllerToolbarCommand $command)
-    {
-        $command->icon = 'icon-32-save';
-
-        $command->append(array(
-            'attribs' => array(
-                'data-action' => 'verifypayment'
-            )
-        ));
-
-        $command->label = 'Verify Payment &amp; Activate Reward';
-    }
-
-    /**
      * Ship order Command
      *
      * @param KControllerToolbarCommand $command
@@ -112,23 +92,23 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
     }
 
     /**
-     * Void Command
+     * Ship order Command
      *
      * @param KControllerToolbarCommand $command
      *
      * @return void
      */
-    protected function _commandVoid(KControllerToolbarCommand $command)
+    protected function _commandCancelorder(KControllerToolbarCommand $command)
     {
-        $command->icon = 'icon-32-save';
+        $command->icon = 'icon-32-delete';
 
         $command->append(array(
             'attribs' => array(
-                'data-action' => 'void'
+                'data-action' => 'cancelorder',
             )
         ));
 
-        $command->label = 'Void';
+        $command->label = 'Cancel Order';
     }
 
     protected function _afterRead(KControllerContextInterface $context)
@@ -136,42 +116,25 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         parent::_afterRead($context);
 
         $this->removeCommand('save');
+        $this->removeCommand('apply');
+        $this->removeCommand('cancel');
 
-        // Disallow direct editing once has been created
-        if ($context->result->order_status)
-        {
-            $this->removeCommand('apply');
-        }
         
         $controller = $this->getController();
         $canSave    = ($controller->isEditable() && $controller->canSave());
         $allowed    = true;
 
+        $this->addCommand('back', array(
+            'href'  => 'option=com_' . $controller->getIdentifier()->getPackage() . '&view=orders',
+            'label' => 'Back to List'
+        ));
+
         if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
             $allowed = false;
         }
 
-        // Verify payment command
-        if ($canSave && ($context->result->order_status == 'awaiting_verification'))
-        {
-            $this->addCommand('markpaid', [
-                'allowed' => $allowed,
-                'attribs' => ['data-novalidate' => 'novalidate']
-            ]);
-        }
-
-        // Acivate reward
-        // In rare case that a reward isn't activated when the order is paid we can use this button to activate the reward
-        if ($canSave && $context->result->_reward_status == 'pending' && (in_array($context->result->order_status, array('processing', 'completed'))))
-        {
-            $this->addCommand('activatereward', [
-                'allowed' => $allowed,
-                'attribs' => ['data-novalidate' => 'novalidate']
-            ]);
-        }
-
         // Ship order command
-        if ($canSave && ($context->result->order_status == 'processing'))
+        if ($canSave && ($context->result->order_status == ComNucleonplusModelEntityOrder::STATUS_PROCESSING))
         {
             $this->addCommand('ship', [
                 'allowed' => $allowed,
@@ -180,7 +143,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         }
 
         // Mark order as delivered command
-        if ($canSave && ($context->result->order_status == 'shipped'))
+        if ($canSave && ($context->result->order_status == ComNucleonplusModelEntityOrder::STATUS_SHIPPED))
         {
             $this->addCommand('markdelivered', [
                 'allowed' => $allowed,
@@ -189,7 +152,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         }
 
         // Mark order as completed command
-        if ($canSave && ($context->result->order_status == 'delivered'))
+        if ($canSave && ($context->result->order_status == ComNucleonplusModelEntityOrder::STATUS_DELIVERED))
         {
             $this->addCommand('markcompleted', [
                 'allowed' => $allowed,
@@ -197,11 +160,12 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
             ]);
         }
 
-        // Void command
-        if ($canSave && (in_array($context->result->order_status, array('awaiting_payment', 'awaiting_verification'))))
+        // Cancel command
+        if ($canSave && (in_array($context->result->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT))))
         {
-            $this->addCommand('void', [
-                'allowed' => $allowed
+            $this->addCommand('cancelorder', [
+                'allowed' => $allowed,
+                'attribs' => array('data-novalidate' => 'novalidate')
             ]);
         }
     }
@@ -220,14 +184,6 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         $this->removeCommand('new');
         $this->removeCommand('delete');
 
-        // Verify payment command
-        if ($controller->isEditable() && $controller->canSave())
-        {
-            $this->addCommand('markpaid', [
-                'allowed' => $allowed
-            ]);
-        }
-
         // Mark order as delivered command
         if ($controller->isEditable() && $controller->canSave())
         {
@@ -244,10 +200,10 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
             ]);
         }
 
-        // Void command
+        // Cancel command
         if ($controller->isEditable() && $controller->canSave())
         {
-            $this->addCommand('void', [
+            $this->addCommand('cancelorder', [
                 'allowed' => $allowed
             ]);
         }

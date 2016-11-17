@@ -172,7 +172,6 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
     {
         $config = new KObjectConfigJson($config);
         $config->append(array(
-            'form'     => 'orderForm',
             'selector' => '.orderCancelAction',
             'action'   => 'cancelorder',
         ));
@@ -187,8 +186,52 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
                 $('{$config->selector}').on('click', function(event){
                     event.preventDefault();
 
-                    $('input[name=\"_action\"]').val('{$config->action}');
-                    $('form[name=\"{$config->form}\"]').submit();
+                    var form  = $(this).closest('form');
+                    var input = '<input type=\"hidden\" name=\"_action\" value=\"{$config->action}\"  />';
+
+                    form.append(input);
+                    form.submit();
+                });
+            });
+            </script>
+            ";
+
+            self::$_loaded[$signature] = true;
+        }
+
+        return $html;
+    }
+
+    /**
+     * Mark order as delivered
+     *
+     * @param array $config
+     * 
+     * @return string
+     */
+    public function orderDeliverable($config = array())
+    {
+        $config = new KObjectConfigJson($config);
+        $config->append(array(
+            'selector' => '.orderDeliverable',
+            'action'   => 'markdelivered',
+        ));
+
+        $html = $this->koowa();
+
+        $signature = md5(serialize(array($config->selector,$config->confirm_message)));
+        if (!isset(self::$_loaded[$signature])) {
+            $html .= "
+            <script>
+            kQuery(function($) {
+                $('{$config->selector}').on('click', function(event){
+                    event.preventDefault();
+
+                    var form  = $(this).closest('form');
+                    var input = '<input type=\"hidden\" name=\"_action\" value=\"{$config->action}\"  />';
+
+                    form.append(input);
+                    form.submit();
                 });
             });
             </script>

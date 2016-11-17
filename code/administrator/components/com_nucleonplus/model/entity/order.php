@@ -18,6 +18,7 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     const STATUS_DELIVERED    = 'delivered';
     const STATUS_COMPLETED    = 'completed';
     const STATUS_VOID         = 'void';
+    const STATUS_CANCELLED    = 'cancelled';
 
     const INVOICE_STATUS_SENT = 'sent';
     const INVOICE_STATUS_PAID = 'paid';

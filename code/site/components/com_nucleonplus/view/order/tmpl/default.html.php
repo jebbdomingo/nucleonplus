@@ -12,9 +12,11 @@ defined('KOOWA') or die; ?>
 
 <?= helper('behavior.koowa'); ?>
 <?= helper('behavior.orderCancellable'); ?>
+<?= helper('behavior.orderDeliverable'); ?>
 
 <?
-if($order->order_status == 'awaiting_payment') {
+if (in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_SHIPPED)))
+{
     $footerAmountSize = 'col-xs-9';
 }
 else $footerAmountSize = 'col-xs-12';
@@ -103,12 +105,24 @@ else $footerAmountSize = 'col-xs-12';
                             <div class="<?= $footerAmountSize ?>">
                                 <h4 class="text-right">Total <strong>&#8369;<?= number_format($order->total, 2) ?></strong></h4>
                             </div>
-                            <? if ($order->order_status == 'awaiting_payment'): ?>
-                            <div class="col-xs-3">
-                                <button type="button" class="orderCancelAction btn btn-danger btn-block">
-                                    Cancel
-                                </button>
-                            </div>
+                            <? if ($order->order_status == ComNucleonplusModelEntityOrder::STATUS_PAYMENT): ?>
+                                <div class="col-xs-3">
+                                    <form action="<?= route('view=order') ?>" method="post">
+                                        <button type="button" role="button" class="orderCancelAction btn btn-danger btn-block">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                            Cancel
+                                        </button>
+                                    </form>
+                                </div>
+                            <? elseif ($order->order_status == ComNucleonplusModelEntityOrder::STATUS_SHIPPED): ?>
+                                <div class="col-xs-3">
+                                    <form action="<?= route('view=order') ?>" method="post">
+                                        <button type="button" role="button" class="orderDeliverable btn btn-success btn-block">
+                                            <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+                                            Order Received
+                                        </button>
+                                    </form>
+                                </div>
                             <? endif ?>
                         </div>
                     </div>

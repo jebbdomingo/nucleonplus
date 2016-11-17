@@ -42,10 +42,10 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         parent::__construct($config);
 
         $this->addCommandCallback('before.add', '_validate');
-        $this->addCommandCallback('before.verifypayment', '_validateVerify');
         $this->addCommandCallback('before.ship', '_validateShip');
         $this->addCommandCallback('before.markdelivered', '_validateDelivered');
         $this->addCommandCallback('before.markcompleted', '_validateCompleted');
+        $this->addCommandCallback('before.cancelorder', '_validateCancelorder');
         $this->addCommandCallback('before.void', '_validateVoid');
 
         // Sales Receipt Service
@@ -77,6 +77,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $config->append(array(
             'salesreceipt_service' => 'com:nucleonplus.accounting.service.salesreceipt',
             'reward'               => 'com:nucleonplus.mlm.packagereward',
+            'behaviors' => array(
+                'cancellable',
+            ),
         ));
 
         parent::_initialize($config);
@@ -144,69 +147,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             $context->getRequest()->setData($data->toArray());
 
             $result = true;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Validate payment
-     *
-     * @param KControllerContextInterface $context
-     * 
-     * @return KModelEntityInterface
-     */
-    protected function _validateVerify(KControllerContextInterface $context)
-    {
-        $result = true;
-
-        if (!$context->result instanceof KModelEntityInterface) {
-            $entities = $this->getModel()->fetch();
-        } else {
-            $entities = $context->result;
-        }
-
-        try
-        {
-            $translator = $this->getObject('translator');
-
-            foreach ($entities as $entity)
-            {
-                // Check order status if it can be verified
-                if ($entity->order_status <> ComNucleonplusModelEntityOrder::STATUS_VERIFICATION) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified'));
-                    $result = false;
-                }
-
-                // Check inventory for available stock
-                foreach ($entity->getOrderItems() as $item)
-                {
-                    $package  = $this->getObject('com:nucleonplus.model.packages')->id($item->package_id)->fetch();
-
-                    if (count($package) === 0)
-                    {
-                        throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
-                        $result = false;
-                    }
-
-                    // Check inventory for available stock
-                    foreach ($package->getItems() as $item)
-                    {
-                        if (!$item->hasAvailableStock())
-                        {
-                            throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
-                            $result = false;
-                        }
-                    }
-                }
-            }
-        }
-        catch(Exception $e)
-        {
-            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
-            $context->getResponse()->send();
-
-            $result = false;
         }
 
         return $result;
@@ -371,6 +311,41 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         return $result;
     }
 
+    /**
+     * Validate cancellation of order
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _validateCancelorder(KControllerContextInterface $context)
+    {
+        if (!$context->result instanceof KModelEntityInterface) {
+            $orders = $this->getModel()->fetch();
+        } else {
+            $orders = $context->result;
+        }
+
+        try
+        {
+            $translator = $this->getObject('translator');
+
+            foreach ($orders as $order)
+            {
+                $order->setProperties($context->request->data->toArray());
+
+                if ($order->order_status <> ComNucleonplusModelEntityOrder::STATUS_PAYMENT) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awiating Payment" status can be cancelled'));
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+        }
+    }
+
     protected function _actionAdd(KControllerContextInterface $context)
     {
         $user       = $this->getObject('user');
@@ -474,15 +449,18 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $order = parent::_actionEdit($context);
 
+        $context->response->addMessage("Order #{$order->id} has been marked as shipped.");
+
         // Send email notification
         $config       = JFactory::getConfig();
         $emailSubject = JText::sprintf('COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_SUBJECT', $order->id);
-        $tracking     = '<a href="http://tracker.xend.com.ph/?waybill=' . $order->tracking_reference . '">' . $order->tracking_reference . '</a>';
+        $trackingLink = '<a href="http://tracker.xend.com.ph/?waybill=' . $order->tracking_reference . '">' . $order->tracking_reference . '</a>';
+        $orderLink    = '<a href="' . JUri::root() . 'index.php/home/my-orders?view=order&id=' . $order->id . '">' . $order->id . '</a>';
         $emailBody    = JText::sprintf(
             'COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_BODY',
             $order->name,
-            $order->id,
-            $tracking,
+            $orderLink,
+            $trackingLink,
             JUri::root()
         );
 
@@ -509,7 +487,11 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'order_status' => ComNucleonplusModelEntityOrder::STATUS_DELIVERED
         ]);
 
-        return parent::_actionEdit($context);
+        $order = parent::_actionEdit($context);
+
+        $context->response->addMessage("Order #{$order->id} has been marked as delivered.");
+
+        return $order;
     }
 
     /**
@@ -526,26 +508,32 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'order_status' => ComNucleonplusModelEntityOrder::STATUS_COMPLETED
         ]);
 
-        return parent::_actionEdit($context);
+        $order = parent::_actionEdit($context);
+
+        $context->response->addMessage("Order #{$order->id} has been marked as completed.");
+
+        return $order;
     }
 
     /**
-     * Specialized save action, changing state by updating the order status
+     * Cancel Order
      *
-     * @param   KControllerContextInterface $context A command context object
-     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
-     * 
-     * @return  KModelEntityInterface
+     * @param KControllerContextInterface $context
+     *
+     * @return entity
      */
-    protected function _actionVoid(KControllerContextInterface $context)
+    protected function _actionCancelorder(KControllerContextInterface $context)
     {
         // Mark as Paid
         $context->getRequest()->setData([
-            'order_status' => ComNucleonplusModelEntityOrder::STATUS_VOID,
-            'note'         => $context->request->data->note,
+            'order_status' => ComNucleonplusModelEntityOrder::STATUS_CANCELLED
         ]);
 
-        return parent::_actionEdit($context);
+        $order = parent::_actionEdit($context);
+
+        $context->response->addMessage("Order #{$order->id} has been cancelled.");
+
+        return $order;
     }
 
     // /**
@@ -645,5 +633,68 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     //         $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
     //         $this->getResponse()->addMessage("Reward #{$reward->id} has been activated");
     //     }
+    // }
+    
+    /**
+     * Validate payment
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    // protected function _validateVerify(KControllerContextInterface $context)
+    // {
+    //     $result = true;
+
+    //     if (!$context->result instanceof KModelEntityInterface) {
+    //         $entities = $this->getModel()->fetch();
+    //     } else {
+    //         $entities = $context->result;
+    //     }
+
+    //     try
+    //     {
+    //         $translator = $this->getObject('translator');
+
+    //         foreach ($entities as $entity)
+    //         {
+    //             // Check order status if it can be verified
+    //             if ($entity->order_status <> ComNucleonplusModelEntityOrder::STATUS_VERIFICATION) {
+    //                 throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified'));
+    //                 $result = false;
+    //             }
+
+    //             // Check inventory for available stock
+    //             foreach ($entity->getOrderItems() as $item)
+    //             {
+    //                 $package  = $this->getObject('com:nucleonplus.model.packages')->id($item->package_id)->fetch();
+
+    //                 if (count($package) === 0)
+    //                 {
+    //                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
+    //                     $result = false;
+    //                 }
+
+    //                 // Check inventory for available stock
+    //                 foreach ($package->getItems() as $item)
+    //                 {
+    //                     if (!$item->hasAvailableStock())
+    //                     {
+    //                         throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
+    //                         $result = false;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     catch(Exception $e)
+    //     {
+    //         $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+    //         $context->getResponse()->send();
+
+    //         $result = false;
+    //     }
+
+    //     return $result;
     // }
 }

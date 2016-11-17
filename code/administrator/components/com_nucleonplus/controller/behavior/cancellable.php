@@ -8,16 +8,14 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusControllerBehaviorOnlinepayable extends ComDragonpayControllerBehaviorOnlinepayable
+class ComNucleonplusControllerBehaviorCancellable extends ComDragonpayControllerBehaviorCancellable
 {
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'actions' => array('after.add'),
+            'actions' => array('before.cancelorder'),
             'columns' => array(
-                'txnid'  => 'id',
-                'amount' => 'total',
-                'mode'   => 'payment_mode',
+                'txnId' => 'id'
             )
         ));
 

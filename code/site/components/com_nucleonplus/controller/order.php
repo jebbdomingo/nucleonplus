@@ -39,7 +39,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         // Validation
         $this->addCommandCallback('before.add', '_validate');
-        $this->addCommandCallback('before.confirm', '_validateConfirm');
+        $this->addCommandCallback('before.cancelorder', '_validateCancelorder');
     }
 
     /**
@@ -55,7 +55,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $config->append(array(
             'reward'    => 'com://admin/nucleonplus.mlm.packagereward',
             'behaviors' => array(
-                'onlinepayable'
+                'onlinepayable',
+                'com://admin/nucleonplus.controller.behavior.cancellable',
             ),
         ));
 
@@ -107,34 +108,38 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     }
 
     /**
-     * Validate payment confirmation
+     * Validate cancellation of order
      *
      * @param KControllerContextInterface $context
      * 
      * @return KModelEntityInterface
      */
-    protected function _validateConfirm(KControllerContextInterface $context)
+    protected function _validateCancelorder(KControllerContextInterface $context)
     {
-        $result = true;
+        if (!$context->result instanceof KModelEntityInterface) {
+            $orders = $this->getModel()->fetch();
+        } else {
+            $orders = $context->result;
+        }
 
         try
         {
             $translator = $this->getObject('translator');
-            
-            if (empty(trim($context->request->data->payment_reference))) {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Please enter your deposit slip reference #'));
-                $result = false;
+
+            foreach ($orders as $order)
+            {
+                $order->setProperties($context->request->data->toArray());
+
+                if ($order->order_status <> ComNucleonplusModelEntityOrder::STATUS_PAYMENT) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awiating Payment" status can be cancelled'));
+                }
             }
         }
         catch(Exception $e)
         {
             $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
             $context->getResponse()->send();
-
-            $result = false;
         }
-
-        return $result;
     }
 
     /**
@@ -215,32 +220,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     }
 
     /**
-     * Special confirm action which wraps edit action
-     *
-     * @param KControllerContextInterface $context
-     *
-     * @return entity
-     */
-    protected function _actionConfirm(KControllerContextInterface $context)
-    {
-        $context->getRequest()->setData([
-            'order_status'      => 'awaiting_verification',
-            'payment_reference' => $context->getRequest()->data->payment_reference
-        ]);
-
-
-        $order = parent::_actionEdit($context);
-
-        $response = $context->getResponse();
-        $response->addMessage('Thank you for your payment, we will ship your order immediately once your payment has been verified.');
-
-        $identifier = $context->getSubject()->getIdentifier();
-        $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
-
-        $response->setRedirect(JRoute::_($url, false));
-    }
-
-    /**
      * Specialized save action, changing state by updating the order status
      *
      * @param   KControllerContextInterface $context A command context object
@@ -256,13 +235,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $order = parent::_actionEdit($context);
 
-        $response = $context->getResponse();
-        $response->addMessage('Thank you for your business.', 'info');
+        $context->response->addMessage('Thank you for your business');
 
-        $identifier = $context->getSubject()->getIdentifier();
-        $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
-
-        $response->setRedirect(JRoute::_($url, false));
+        return $order;
     }
 
     /**
@@ -279,12 +254,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $order = parent::_actionEdit($context);
 
-        $response = $context->getResponse();
-        $response->addMessage('Your order has been cancelled.', 'warning');
+        $context->response->addMessage("Your Order #{$order->id} has been cancelled.", 'warning');
 
-        $identifier = $context->getSubject()->getIdentifier();
-        $url        = sprintf('index.php?option=com_%s&view=orders', $identifier->package);
-
-        $response->setRedirect(JRoute::_($url, false));
+        return $order;
     }
 }
