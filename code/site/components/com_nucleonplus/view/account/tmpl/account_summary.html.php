@@ -1,5 +1,5 @@
 <div class="well">
-    <h3 class="page-header"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> <?= translate('Account Summary'); ?></h3>
+    <h4 class="page-header"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> <?= translate('Account Summary'); ?></h4>
     <table class="table table-condensed">
         <tbody>
             <tr>

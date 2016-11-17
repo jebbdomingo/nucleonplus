@@ -11,7 +11,7 @@
 defined('KOOWA') or die; ?>
 
 <div class="well bg-info">
-    <h3 class="page-header"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?= translate('Referral Link') ?></h3>
+    <h4 class="page-header"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?= translate('Referral Link') ?></h4>
 
     <div class="input-group">
         <input id="sponsor-link" type="text" class="form-control input-sm" value="<?= JURI::root() . "index.php/sign-up/?sponsor_id={$account->account_number}" ?>" readonly="readonly" />
