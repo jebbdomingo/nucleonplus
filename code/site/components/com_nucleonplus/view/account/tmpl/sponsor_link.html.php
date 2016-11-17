@@ -17,7 +17,7 @@ defined('KOOWA') or die; ?>
         <input id="sponsor-link" type="text" class="form-control input-sm" value="<?= JURI::root() . "index.php/sign-up/?sponsor_id={$account->account_number}" ?>" readonly="readonly" />
         <span class="input-group-btn">
             <button class="btn btn-sm btn-default" type="button" data-clipboard-target="#sponsor-link" title="Copied">
-                <span class="glyphicon glyphicon-copy" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Copy
             </button>
         </span>
     </div><!-- /input-group -->
