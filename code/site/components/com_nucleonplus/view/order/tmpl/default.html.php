@@ -108,9 +108,9 @@ else $footerAmountSize = 'col-xs-12';
                             <? if ($order->order_status == ComNucleonplusModelEntityOrder::STATUS_PAYMENT): ?>
                                 <div class="col-xs-3">
                                     <form action="<?= route('view=order') ?>" method="post">
-                                        <button type="button" role="button" class="orderCancelAction btn btn-danger btn-block">
+                                        <button type="button" role="button" class="orderCancelAction btn btn-danger btn-block" data-prompt="Cancelled order cannot be recovered, would you like to continue?">
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                                            Cancel
+                                            Cancel Order
                                         </button>
                                     </form>
                                 </div>
