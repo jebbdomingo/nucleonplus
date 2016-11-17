@@ -15,7 +15,7 @@ defined('KOOWA') or die; ?>
 <?= helper('behavior.orderDeliverable'); ?>
 
 <?
-if (in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_SHIPPED)))
+if (in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PENDING, ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_SHIPPED)))
 {
     $footerAmountSize = 'col-xs-9';
 }
