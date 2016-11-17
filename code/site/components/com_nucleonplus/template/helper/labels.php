@@ -23,14 +23,14 @@ class ComNucleonplusTemplateHelperLabels extends KTemplateHelperAbstract
         $config
         ->append(array(
             'states'  => array(
-                'awaiting_payment'      => array('label' => 'Awaiting Payment',      'type' => 'warning'),
-                'awaiting_verification' => array('label' => 'Awaiting Verification', 'type' => 'warning'),
-                'processing'            => array('label' => 'Processing',            'type' => 'info'),
-                'shipped'               => array('label' => 'Shipped',               'type' => 'primary'),
-                'delivered'             => array('label' => 'Delivered',             'type' => 'success'),
-                'completed'             => array('label' => 'Completed',             'type' => 'success'),
-                'cancelled'             => array('label' => 'Cancelled',             'type' => 'default'),
-                'void'                  => array('label' => 'Void',                  'type' => 'default'),
+                ComNucleonplusModelEntityOrder::STATUS_PENDING      => array('label' => 'Pending',               'type' => 'default'),
+                ComNucleonplusModelEntityOrder::STATUS_PAYMENT      => array('label' => 'Awaiting Payment',      'type' => 'warning'),
+                ComNucleonplusModelEntityOrder::STATUS_VERIFICATION => array('label' => 'Awaiting Verification', 'type' => 'warning'),
+                ComNucleonplusModelEntityOrder::STATUS_PROCESSING   => array('label' => 'Processing',            'type' => 'info'),
+                ComNucleonplusModelEntityOrder::STATUS_SHIPPED      => array('label' => 'Shipped',               'type' => 'primary'),
+                ComNucleonplusModelEntityOrder::STATUS_DELIVERED    => array('label' => 'Delivered',             'type' => 'success'),
+                ComNucleonplusModelEntityOrder::STATUS_COMPLETED    => array('label' => 'Completed',             'type' => 'success'),
+                ComNucleonplusModelEntityOrder::STATUS_CANCELLED    => array('label' => 'Cancelled',             'type' => 'default'),
             )
         ))
         ->append(array(
