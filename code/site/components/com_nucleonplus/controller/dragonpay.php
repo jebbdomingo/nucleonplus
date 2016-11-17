@@ -139,7 +139,18 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
     {
         $data = $context->request->data;
 
-        if ($data->status == ComDragonpayModelEntityPayment::STATUS_SUCCESSFUL)
+        if ($data->status == ComDragonpayModelEntityPayment::STATUS_PENDING)
+        {
+            // Awaiting payment
+            $context->request->setData([
+                'id'             => $data->txnid,
+                'invoice_status' => ComNucleonplusModelEntityOrder::INVOICE_STATUS_SENT,
+                'order_status'   => ComNucleonplusModelEntityOrder::STATUS_PAYMENT,
+            ]);
+
+            $order = parent::_actionEdit($context);
+        }
+        elseif ($data->status == ComDragonpayModelEntityPayment::STATUS_SUCCESSFUL)
         {
             // Mark as Paid
             $context->request->setData([
