@@ -139,6 +139,9 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
     {
         $data = $context->request->data;
 
+        // Record dragonpay payment transaction
+        $this->_recordPaymentStatus($data);
+
         if ($data->status == ComDragonpayModelEntityPayment::STATUS_PENDING)
         {
             // Awaiting payment
@@ -149,9 +152,6 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
             ]);
 
             $order = parent::_actionEdit($context);
-
-            // Record dragonpay payment transaction
-            $this->_recordPaymentStatus($data);
         }
         elseif ($data->status == ComDragonpayModelEntityPayment::STATUS_SUCCESSFUL)
         {
@@ -165,9 +165,6 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
             // Fetch after edit to get the joined columns
             $order = parent::_actionEdit($context);
             $order = $this->getObject('com://admin/nucleonplus.model.orders')->id($order->id)->fetch();
-
-            // Record dragonpay payment transaction
-            $this->_recordPaymentStatus($data);
 
             // Record transaction to accounting books
             $this->_salesreceipt_service->recordSale($order);
