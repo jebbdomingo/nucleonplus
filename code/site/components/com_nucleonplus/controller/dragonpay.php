@@ -70,7 +70,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         foreach ($orders as $order)
         {
             // Check order status if it can be verified
-            if ($order->order_status <> ComNucleonplusModelEntityOrder::STATUS_PENDING) {
+            if (!in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_PENDING))) {
                 throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified.' . ' Order #' . $order->id));
             }
 
