@@ -39,7 +39,7 @@ class ComNucleonplusModelCarts extends ComCartModelCarts
     {
         $state = $this->getState();
 
-        $table = $this->getObject('com://admin/cart.database.table.carts');
+        $table = $this->getObject('com:cart.database.table.carts');
         $query = $this->getObject('database.query.select')
             ->table('carts AS tbl')
             ->columns('tbl.cart_id, SUM(_item.UnitPrice * _cart_items.quantity) AS total')
@@ -63,7 +63,7 @@ class ComNucleonplusModelCarts extends ComCartModelCarts
     {
         $state = $this->getState();
 
-        $table = $this->getObject('com://admin/cart.database.table.items');
+        $table = $this->getObject('com:cart.database.table.items');
         $query = $this->getObject('database.query.select')
             ->table('cart_items AS tbl')
             ->columns('tbl.cart_item_id, SUM(_item.weight * tbl.quantity) AS total')

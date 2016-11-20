@@ -19,8 +19,6 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
 {
     public function __construct(KObjectConfig $config)
     {
-        @ini_set('max_execution_time', 300);
-
         parent::__construct($config);
     }
     
@@ -35,63 +33,12 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
 
     protected function _actionAdd(KControllerContextInterface $context)
     {
-        $user    = $this->getObject('user');
-        $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
-        $data    = $context->request->data;
-
-        $cart      = $this->getModel()->customer($account->id)->fetch();
-        $cartItems = array();
-
-        if (count($cart))
-        {
-            // Add item(s) to the cart
-            if ($items = $cart->getItems())
-            {
-                foreach ($items as $item)
-                {
-                    $cartItems[] = $item->row;
-
-                    // Existing item, update quantity instead
-                    if ($item->row == $data->ItemRef)
-                    {
-                        $item->quantity += $data->quantity;
-                        $item->save();
-                    }
-                }
-            }
-
-            if (!in_array($data->ItemRef, $cartItems))
-            {
-                // New item
-                $cartItemData = array(
-                    'cart_id'  => $cart->id,
-                    'row'      => $data->ItemRef,
-                    'quantity' => $data->quantity,
-                );
-
-                $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);
-                $item->save();
-            }
-        }
-        else
-        {
-            // New cart
-            $data->account_id = $account->id;
-            $cart = parent::_actionAdd($context);
-
-            // New item
-            $cartItemData = array(
-                'cart_id'  => $cart->id,
-                'row'      => $data->ItemRef,
-                'quantity' => $data->quantity,
-            );
-            $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->create($cartItemData);
-            $item->save();
-        }
+        $cart = parent::_actionAdd($context);
 
         $response = $context->getResponse();
         $response->addMessage('Item added to your shopping cart');
 
+        // Redirect to shopping cart view
         $identifier = $context->getSubject()->getIdentifier();
         $itemid     = 119;
         $url        = sprintf('index.php?option=com_%s&view=cart&Itemid=%s', $identifier->package, $itemid);
@@ -99,32 +46,32 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
         $response->setRedirect(JRoute::_($url, false));
     }
 
-    protected function _actionUpdatecart(KControllerContextInterface $context)
-    {
-        if (!$context->result instanceof KModelEntityInterface) {
-            $cart = $this->getModel()->fetch();
-        } else {
-            $cart = $context->result;
-        }
+    // protected function _actionUpdatecart(KControllerContextInterface $context)
+    // {
+    //     if (!$context->result instanceof KModelEntityInterface) {
+    //         $cart = $this->getModel()->fetch();
+    //     } else {
+    //         $cart = $context->result;
+    //     }
 
-        if (count($cart))
-        {
-            $cart->setProperties($context->request->data->toArray());
-            $cart->save();
+    //     if (count($cart))
+    //     {
+    //         $cart->setProperties($context->request->data->toArray());
+    //         $cart->save();
 
-            if (in_array($cart->getStatus(), array(KDatabase::STATUS_FETCHED, KDatabase::STATUS_UPDATED)))
-            {
-                foreach ($cart->getItems() as $item)
-                {
-                    $item->quantity = (int) $context->request->data->quantity[$item->id];
-                    $item->save();
-                }
+    //         if (in_array($cart->getStatus(), array(KDatabase::STATUS_FETCHED, KDatabase::STATUS_UPDATED)))
+    //         {
+    //             foreach ($cart->getItems() as $item)
+    //             {
+    //                 $item->quantity = (int) $context->request->data->quantity[$item->id];
+    //                 $item->save();
+    //             }
 
-                $context->response->addMessage('You shopping cart has been updated');
-            }
-            else $context->response->addMessage($cart->getStatusMessage(), 'error');
-        }
-    }
+    //             $context->response->addMessage('You shopping cart has been updated');
+    //         }
+    //         else $context->response->addMessage($cart->getStatusMessage(), 'error');
+    //     }
+    // }
 
     protected function _actionConfirm(KControllerContextInterface $context)
     {
@@ -152,26 +99,24 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
             }
             else 
             {
-                $itemid = 119;
                 $context->response->addMessage($cart->getStatusMessage(), 'error');
-                $url = 'index.php?option=com_nucleonplus&view=cart&Itemid=' . $itemid;
+                $url = 'index.php?option=com_nucleonplus&view=cart';
             }
         }
+
+        $itemid = 119;
+        $url    .= "&Itemid={$itemid}";
 
         $context->response->setRedirect(JRoute::_($url, false));
     }
 
     protected function _actionDeleteitem(KControllerContextInterface $context)
     {
-        $user    = $this->getObject('user');
-        $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
-        $data    = $context->request->data;
-        $id      = $data->item_id;
+        $data     = $context->request->data;
+        $data->id = $data->item_id;
 
-        $item = $this->getObject('com://admin/nucleonplus.model.cartitems')->id($id)->fetch();
-        $item->delete();
+        parent::_actionDeleteitem($context);
 
-        $response = $context->getResponse();
-        $response->addMessage('Item has deleted from your shopping cart', 'warning');
+        $context->response->addMessage('Item has been deleted from your shopping cart');
     }
 }
