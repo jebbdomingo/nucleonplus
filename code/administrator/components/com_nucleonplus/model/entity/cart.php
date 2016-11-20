@@ -9,9 +9,9 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusModelEntityCart extends ComCartModelEntityCart
+class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements ComNucleonplusModelEntityCartInterface
 {
-    const INTERFACT_SITE = 'site';
+    const INTERFACT_SITE  = 'site';
     const INTERFACT_ADMIN = 'admin';
 
     public function save()
@@ -47,24 +47,23 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart
 
     public function getAmount()
     {
-        return $this->getObject('com://admin/nucleonplus.model.carts')
+        return (float) $this->getObject('com://admin/nucleonplus.model.carts')
             ->customer($this->customer)
             ->getAmount()
         ;
     }
 
-    public function getShippingCost()
+    public function getShippingFee()
     {
         $city = $this->getObject('com://admin/nucleonplus.model.cities')->id($this->city_id)->fetch();
+        $dest = $city->_province_id == ComNucleonplusModelEntityCity::DESTINATION_METRO_MANILA ? 'manila' : 'provincial';
 
-        return $this->getObject('com://admin/nucleonplus.model.shippingrates')
-            ->getRate($city->_province_id, $this->getWeight())
-        ;
+        return $this->getShippingCost($dest, $this->getWeight());
     }
 
     public function getSubTotal()
     {
-        return (float) $this->getAmount() + (float) $this->getShippingCost();
+        return $this->getAmount() + $this->getShippingFee();
     }
 
     public function getWeight()
@@ -73,40 +72,5 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart
             ->cart_id($this->id)
             ->getWeight()
         ;
-    }
-
-    public function getPaymentCharge()
-    {
-        $amount = 0;
-
-        if ($this->payment_mode)
-        {
-            $rate = $this->getObject('com://admin/nucleonplus.model.paymentrates')
-                ->mode($this->payment_mode)
-                ->fetch()
-            ;
-            
-            $amount = $rate->amount;
-        }
-
-        return (float) $amount;
-    }
-
-    public function getPaymentMode()
-    {
-        $description = null;
-
-        if ($this->payment_mode)
-        {
-            $entity =  $this->getObject('com://admin/nucleonplus.model.paymentrates')
-                ->mode($this->payment_mode)
-                ->fetch()
-            ;
-
-            $description = $entity->description;
-        }
-
-
-        return $description;
     }
 }

@@ -16,7 +16,7 @@ class ComNucleonplusDatabaseTableAccounts extends KDatabaseTableAbstract
             'behaviors' => array(
                 'modifiable',
                 'creatable',
-                'shippable'
+                'locatable'
             ),
             'filters' => array(
                 'user_id' => 'digit'

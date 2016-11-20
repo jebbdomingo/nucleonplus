@@ -92,7 +92,7 @@ else $footerAmountSize = 'col-xs-12';
                             <div class="row">
                                 <div class="text-center">
                                     <div class="col-sm-10">
-                                        <h6 class="text-right"><?= $order->getPaymentMode() ?></h6>
+                                        <h6 class="text-right"><?= $order->getPaymentDescription() ?></h6>
                                     </div>
                                     <div class="col-sm-2 text-right">&#8369;<?= $order->payment_charge ?></div>
                                 </div>

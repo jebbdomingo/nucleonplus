@@ -110,22 +110,4 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
             ->getAmount()
         ;
     }
-
-    public function getPaymentMode()
-    {
-        $description = null;
-
-        if ($this->payment_mode)
-        {
-            $entity =  $this->getObject('com://admin/nucleonplus.model.paymentrates')
-                ->mode($this->payment_mode)
-                ->fetch()
-            ;
-
-            $description = $entity->description;
-        }
-
-
-        return $description;
-    }
 }

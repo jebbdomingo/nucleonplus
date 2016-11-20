@@ -89,7 +89,7 @@ defined('KOOWA') or die; ?>
                     <div class="row">
                         <div class="text-center">
                             <div class="col-sm-10">
-                                <h6 class="text-right"><?= $cart->getPaymentMode() ?></h6>
+                                <h6 class="text-right"><?= $cart->getPaymentDescription() ?></h6>
                             </div>
                             <div class="col-sm-2 text-right">&#8369;<?= number_format($cart->getPaymentCharge(), 2) ?></div>
                         </div>

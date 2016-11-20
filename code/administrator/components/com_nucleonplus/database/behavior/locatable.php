@@ -8,7 +8,7 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusDatabaseBehaviorShippable extends KDatabaseBehaviorAbstract
+class ComNucleonplusDatabaseBehaviorLocatable extends KDatabaseBehaviorAbstract
 {
     /**
      *

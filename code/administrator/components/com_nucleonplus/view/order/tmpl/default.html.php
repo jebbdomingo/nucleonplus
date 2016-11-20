@@ -70,7 +70,7 @@ defined('KOOWA') or die; ?>
                                 Shipping: &#8369;<?= number_format($order->shipping_cost, 2) ?>
                             </div>
                             <div style="text-align: right">
-                                <?= $order->getPaymentMode() ?>: &#8369;<?= number_format($order->payment_charge, 2) ?>
+                                <?= $order->getPaymentDescription() ?>: &#8369;<?= number_format($order->payment_charge, 2) ?>
                             </div>
                         <? endif ?>
 

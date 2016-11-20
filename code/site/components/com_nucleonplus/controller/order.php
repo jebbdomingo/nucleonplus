@@ -166,7 +166,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'address'         => $cart->address,
             'city'            => $cart->city_id,
             'postal_code'     => $cart->postal_code,
-            'shipping_cost'   => $cart->getShippingCost(),
+            'shipping_cost'   => $cart->getShippingFee(),
             'payment_charge'  => $cart->getPaymentCharge(),
             'payment_mode'    => $cart->payment_mode,
         ));

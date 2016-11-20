@@ -45,6 +45,34 @@ class ComNucleonplusTemplateHelperDragonpay extends ComKoowaTemplateHelperListbo
         return parent::optionlist($config);
     }
 
+    protected function _isProcessorActive($processor)
+    {
+        return $processor->status == 'A';
+    }
+
+    protected function _isAmountAllowed($processor, $amount)
+    {
+        return $amount >= $processor->minAmount && $amount < $processor->maxAmount;
+    }
+
+    public function confirm(array $config = array())
+    {
+        $config = new KObjectConfig($config);
+
+        $disabled      = null;
+        $shippingCost  = $config->entity->getShippingFee();
+        $paymentCharge = $config->entity->getPaymentCharge();
+
+        $btnState = 'btn-success';
+        $btnText  = 'Confirm';
+
+        $html = '<button type="button" ' . $disabled . ' class="cartConfirmCheckoutAction btn ' . $btnState . ' btn-block">
+                    ' . $btnText . '
+                 </button>';
+
+        return $html;
+    }
+
     // /**
     //  * Generates payment method list box
     //  * 
@@ -87,32 +115,4 @@ class ComNucleonplusTemplateHelperDragonpay extends ComKoowaTemplateHelperListbo
 
     //     return parent::optionlist($config);
     // }
-
-    protected function _isProcessorActive($processor)
-    {
-        return $processor->status == 'A';
-    }
-
-    protected function _isAmountAllowed($processor, $amount)
-    {
-        return $amount >= $processor->minAmount && $amount < $processor->maxAmount;
-    }
-
-    public function confirm(array $config = array())
-    {
-        $config = new KObjectConfig($config);
-
-        $disabled      = null;
-        $shippingCost  = $config->entity->getShippingCost();
-        $paymentCharge = $config->entity->getPaymentCharge();
-
-        $btnState = 'btn-success';
-        $btnText  = 'Confirm';
-
-        $html = '<button type="button" ' . $disabled . ' class="cartConfirmCheckoutAction btn ' . $btnState . ' btn-block">
-                    ' . $btnText . '
-                 </button>';
-
-        return $html;
-    }
 }

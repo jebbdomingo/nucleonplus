@@ -17,7 +17,7 @@ class ComNucleonplusViewCartHtml extends ComKoowaViewHtml
         $account       = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
         $cart          = $context->data->cart;
         $amount        = $cart->getAmount();
-        $shippingCost  = $cart->getShippingCost();
+        $shippingCost  = $cart->getShippingFee();
         $paymentCharge = $cart->getPaymentCharge();
         $total         = ($amount + $shippingCost + $paymentCharge);
 
