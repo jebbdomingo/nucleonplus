@@ -30,6 +30,8 @@ class ComNucleonplusControllerEmployeeaccount extends ComKoowaControllerModel
      */
     public function __construct(KObjectConfig $config)
     {
+        @ini_set('max_execution_time', 300);
+        
         parent::__construct($config);
 
         $identifier = $this->getIdentifier($config->employee_service);

@@ -39,6 +39,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     public function __construct(KObjectConfig $config)
     {
+        @ini_set('max_execution_time', 300);
+
         parent::__construct($config);
 
         $this->addCommandCallback('before.add', '_validate');
@@ -364,8 +366,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'city_id'         => $cart->city_id,
             'postal_code'     => $cart->postal_code
         ));
-
-        @ini_set('max_execution_time', 300);
 
         if ($order->save())
         {

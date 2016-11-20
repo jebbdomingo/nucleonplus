@@ -25,6 +25,8 @@ class ComNucleonplusControllerMember extends ComKoowaControllerModel
      */
     public function __construct(KObjectConfig $config)
     {
+        @ini_set('max_execution_time', 300);
+        
         parent::__construct($config);
 
         $this->addCommandCallback('before.add', '_validateSponsorId');
