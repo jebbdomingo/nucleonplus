@@ -536,6 +536,34 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         return $order;
     }
 
+    /**
+     * Activates the reward
+     *
+     * @param   KModelEntityInterface $order
+     * 
+     * @throws  KControllerExceptionRequestInvalid
+     * @throws  KControllerExceptionResourceNotFound
+     * 
+     * @return  void
+     */
+    protected function _activateReward(KModelEntityInterface $order)
+    {
+        $translator = $this->getObject('translator');
+
+        // Check order status if its reward can be activated
+        if (!in_array($order->order_status, array('processing', 'completed'))) {
+            throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" status"));
+        }
+
+        // Try to activate reward
+        $rewards = $order->getRewards();
+        foreach ($rewards as $reward)
+        {
+            $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
+            $this->getResponse()->addMessage("Reward #{$reward->id} has been activated");
+        }
+    }
+
     // /**
     //  * Specialized save action, changing state by marking as paid
     //  *
@@ -608,40 +636,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     // }
 
     // /**
-    //  * Activates the reward
-    //  *
-    //  * @param   KModelEntityInterface $order
-    //  * 
-    //  * @throws  KControllerExceptionRequestInvalid
-    //  * @throws  KControllerExceptionResourceNotFound
-    //  * 
-    //  * @return  void
-    //  */
-    // protected function _activateReward(KModelEntityInterface $order)
-    // {
-    //     $translator = $this->getObject('translator');
-
-    //     // Check order status if its reward can be activated
-    //     if (!in_array($order->order_status, array('processing', 'completed'))) {
-    //         throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" status"));
-    //     }
-
-    //     // Try to activate reward
-    //     $rewards = $order->getRewards();
-    //     foreach ($rewards as $reward)
-    //     {
-    //         $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
-    //         $this->getResponse()->addMessage("Reward #{$reward->id} has been activated");
-    //     }
-    // }
-    
-    /**
-     * Validate payment
-     *
-     * @param KControllerContextInterface $context
-     * 
-     * @return KModelEntityInterface
-     */
+    // * Validate payment
+    // *
+    // * @param KControllerContextInterface $context
+    // * 
+    // * @return KModelEntityInterface
+    // */
     // protected function _validateVerify(KControllerContextInterface $context)
     // {
     //     $result = true;

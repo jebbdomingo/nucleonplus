@@ -31,8 +31,17 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
         parent::_initialize($config);
     }
 
+    protected function _validateAdd(KControllerContextInterface $context)
+    {
+        $data       = $context->request->data;
+        $data->row  = $data->ItemRef;
+    }
+
     protected function _actionAdd(KControllerContextInterface $context)
     {
+        $data      = $context->request->data;
+        $data->row = $data->ItemRef;
+
         $cart = parent::_actionAdd($context);
 
         $response = $context->getResponse();
@@ -45,33 +54,6 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
 
         $response->setRedirect(JRoute::_($url, false));
     }
-
-    // protected function _actionUpdatecart(KControllerContextInterface $context)
-    // {
-    //     if (!$context->result instanceof KModelEntityInterface) {
-    //         $cart = $this->getModel()->fetch();
-    //     } else {
-    //         $cart = $context->result;
-    //     }
-
-    //     if (count($cart))
-    //     {
-    //         $cart->setProperties($context->request->data->toArray());
-    //         $cart->save();
-
-    //         if (in_array($cart->getStatus(), array(KDatabase::STATUS_FETCHED, KDatabase::STATUS_UPDATED)))
-    //         {
-    //             foreach ($cart->getItems() as $item)
-    //             {
-    //                 $item->quantity = (int) $context->request->data->quantity[$item->id];
-    //                 $item->save();
-    //             }
-
-    //             $context->response->addMessage('You shopping cart has been updated');
-    //         }
-    //         else $context->response->addMessage($cart->getStatusMessage(), 'error');
-    //     }
-    // }
 
     protected function _actionConfirm(KControllerContextInterface $context)
     {

@@ -31,6 +31,15 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
         parent::_initialize($config);
     }
 
+    protected function _validateAdd(KControllerContextInterface $context)
+    {
+        $data           = $context->request->data;
+        $data->row      = $data->ItemRef;
+        $data->quantity = $data->form_quantity;
+
+        parent::_validateAdd($context);
+    }
+
     protected function _validateCheckout(KControllerContextInterface $context)
     {
         $translator = $this->getObject('translator');
@@ -83,6 +92,6 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
     {
         parent::_actionDeleteitem($context);
 
-        $context->response->addMessage('Item has been deleted from your shopping cart');
+        $context->response->addMessage('Item has been deleted from the shopping cart');
     }
 }
