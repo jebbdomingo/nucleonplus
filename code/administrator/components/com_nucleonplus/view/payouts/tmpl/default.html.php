@@ -68,7 +68,9 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'amount', 'title' => 'Amount')); ?>
+                                <div class="text-right">
+                                    <?= helper('grid.sort', array('column' => 'amount', 'title' => 'Amount')); ?>
+                                </div>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
