@@ -22,7 +22,7 @@ defined('KOOWA') or die; ?>
                 <th>Status</th>
                 <th>Encashment Method</th>
                 <th>Date</th>
-                <th><div class="pull-right">Amount</div></th>
+                <th><div class="text-right">Amount</div></th>
             </thead>
             <tbody>
                 <? if (count($payouts) > 0): ?>
@@ -34,7 +34,7 @@ defined('KOOWA') or die; ?>
                             </td>
                             <td><?= $payout->payout_method ?></td>
                             <td><?= helper('date.humanize', array('date' => $payout->created_on)) ?></td>
-                            <td><div class="pull-right">P<?= number_format($payout->amount) ?></div></td>
+                            <td><div class="text-right">&#8369;<?= number_format($payout->amount, 2) ?></div></td>
                         </tr>
                     <? endforeach ?>
                 <? else: ?>

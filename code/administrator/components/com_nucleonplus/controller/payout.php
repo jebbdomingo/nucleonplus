@@ -92,7 +92,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
             foreach ($payouts as $payout)
             {
-                if ($payout->status <> 'pending') {
+                if ($payout->status <> ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PENDING) {
                     throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Payout Status: Only pending payouts can be processed"));
                 }
             }
@@ -125,7 +125,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
             foreach ($payouts as $payout)
             {
-                if ($payout->status <> 'processing') {
+                if ($payout->status <> ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING) {
                     throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Payout Status: Payout # {$payout->id} is not in processing"));
                 }
             }
@@ -246,7 +246,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
             foreach ($payouts as $payout)
             {
-                if ($payout->status <> 'checkgenerated') {
+                if ($payout->status <> ComNucleonplusModelEntityPayout::PAYOUT_STATUS_CHECK_GENERATED) {
                     throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Payout Status: Check for Payout # {$payout->id} is not yet generated"));
                 }
             }
@@ -289,7 +289,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
                 foreach($payouts as $payout)
                 {
-                    if ($payout->payout_method == ComNucleonplusModelpayoutPayout::PAYOUT_METHOD_FUNDS_TRANSFER) {
+                    if ($payout->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER) {
                         $data['run_date'] = date('Y-m-d', strtotime($config->value));
                     }
 
