@@ -106,7 +106,7 @@ class ComNucleonplusMlmUnilevelpackage extends ComNucleonplusMlmUnilevel
         $points = ($reward->irpv * $reward->slots);
         $x      = 0;
 
-        // Try to get referrers up to the 10th level
+        // Try to get referrers up to the 20th level
         while ($x < $this->_unilevel_count)
         {
             $indirectReferrer = $this->getObject('com:nucleonplus.model.accounts')->id($id)->fetch();

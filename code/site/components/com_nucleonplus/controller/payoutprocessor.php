@@ -45,7 +45,12 @@ class ComNucleonplusControllerPayoutprocessor extends ComKoowaControllerModel
         $digestStr = implode(':', $parameters);
         $digest    = sha1($digestStr);
 
-        if ($data->digest !== $digest) {
+        if ($data->digest !== $digest)
+        {
+            if (getenv('APP_ENV') != 'production') {
+                var_dump($digest);
+            }
+
             throw new KControllerExceptionRequestInvalid('FAIL_DIGEST_MISMATCH');
         }
     }
