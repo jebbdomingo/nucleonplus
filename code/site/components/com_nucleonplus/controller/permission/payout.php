@@ -82,7 +82,7 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
             $rebates
         );
 
-        if ($total > (float) $minAmount->value) {
+        if ($total >= (float) $minAmount->value) {
             $result = true;
         }
 
