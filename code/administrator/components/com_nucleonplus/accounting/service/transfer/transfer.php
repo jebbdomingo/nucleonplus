@@ -34,6 +34,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         $this->_transfer_controller = $this->getObject($config->transfer_controller);
 
         // Accounts
+        $this->_online_payments_account           = $config->online_payments_account;
         $this->_savings_account                   = $config->savings_account;
         $this->_checking_account                  = $config->checking_account;
         $this->_charges_account                   = $config->charges_account;
@@ -63,6 +64,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
 
         $config->append(array(
             'transfer_controller'               => 'com:qbsync.controller.transfer',
+            'online_payments_account'           => $data->ACCOUNT_ONLINE_PAYMENTS,
             'savings_account'                   => $data->ACCOUNT_BANK_REF,
             'checking_account'                  => $data->ACCOUNT_CHECKING_REF,
             'charges_account'                   => $data->ACCOUNT_CHARGES,
@@ -78,6 +80,23 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         ));
 
         parent::_initialize($config);
+    }
+
+    /**
+     * Record online payment remittance
+     * 
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function depositOnlinePayment($entityId, $amount)
+    {
+        $sourceAccount = $this->_online_payments_account;
+        $targetAccount = $this->_savings_account;
+        $note          = 'Deposit from online payment processing network';
+
+        return $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
