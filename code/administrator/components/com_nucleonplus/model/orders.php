@@ -57,7 +57,6 @@ class ComNucleonplusModelOrders extends KModelDatabase
         }
 
         if ($state->order_status && $state->order_status <> 'all') {
-            die('bad');
             $query->where('tbl.order_status IN :order_status')->bind(['order_status' => (array) $state->order_status]);
         }
 
