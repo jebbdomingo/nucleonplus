@@ -16,7 +16,6 @@
             </thead>
             <tbody>
                 <? if (count($purchases = $account->getLatestPurchases(5)) > 0): ?>
-                <? var_dump(count($purchases)) ?>
                     <? foreach ($purchases as $order): ?>
                         <tr>
                             <td>
