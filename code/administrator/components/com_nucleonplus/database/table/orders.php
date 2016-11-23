@@ -17,7 +17,7 @@ class ComNucleonplusDatabaseTableOrders extends KDatabaseTableAbstract
                 'modifiable',
                 'creatable',
                 'rewardable',
-                'locatable',
+                // 'locatable',
                 'com:dragonpay.database.behavior.onlinepayable',
             ),
             'filters' => array(
