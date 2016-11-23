@@ -77,20 +77,7 @@ class ComNucleonplusMlmRevenue extends KObject
      */
     public function _actionCreate(KModelEntityInterface $reward)
     {
-        $order = $this->getObject('com://admin/nucleonplus.model.orders')->id($reward->product_id)->fetch();
-
-        if (count($order))
-        {
-            $amount = 0;
-            
-            foreach ($order->getOrderItems() as $orderItem)
-            {
-                $item   = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
-                $amount += (float) $item->profit * $orderItem->quantity;
-            }
-            
-            $this->_accounting_service->allocateRevenue($reward->product_id, $amount);
-        }
-
+        $amount = (float) $reward->profit;
+        $this->_accounting_service->allocateRevenue($reward->product_id, $amount);
     }
 }
