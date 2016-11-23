@@ -9,7 +9,7 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusMlmRevenue extends ComNucleonplusMlmUnilevel
+class ComNucleonplusMlmRevenue extends KObject
 {
     /**
      * Accounting Service
