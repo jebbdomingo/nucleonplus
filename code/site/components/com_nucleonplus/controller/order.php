@@ -251,6 +251,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     protected function _actionCancelorder(KControllerContextInterface $context)
     {
+        $this->getObject('com://admin/nucleonplus.model.orders');
+        
         // Copy the package data in the order table
         $context->getRequest()->setData([
             'order_status' => ComNucleonplusModelEntityOrder::STATUS_CANCELLED
