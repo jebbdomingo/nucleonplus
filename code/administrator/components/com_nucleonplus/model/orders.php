@@ -50,7 +50,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         $state = $this->getState();
 
-        var_dump($state->getValues());
+        echo '<pre>' . print($state->getValues(), true) . '</pre>';
 
         if ($state->account_id) {
             $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
