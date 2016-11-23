@@ -52,6 +52,13 @@ class ComNucleonplusMlmCompensation extends KObject
      */
     protected $_rebates;
 
+
+    /* Revenue
+     *
+     * @var string
+     */
+    protected $_revenue;
+
     /**
      * Constructor.
      *
@@ -67,6 +74,7 @@ class ComNucleonplusMlmCompensation extends KObject
         $this->_unilevel_package       = $this->getObject($config->unilevel_package);
         $this->_unilevel_retail        = $this->getObject($config->unilevel_retail);
         $this->_rebates                = $this->getObject($config->rebates);
+        $this->_revenue                = $this->getObject($config->revenue);
     }
 
     /**
@@ -84,6 +92,7 @@ class ComNucleonplusMlmCompensation extends KObject
             'unilevel_retail'        => 'com:nucleonplus.mlm.unilevelretail',
             'patronage'              => 'com:nucleonplus.mlm.packagepatronage',
             'rebates'                => 'com:nucleonplus.mlm.packagerebates',
+            'rebates'                => 'com:nucleonplus.mlm.revenue',
             'reward_active_status'   => ComNucleonplusModelEntityReward::STATUS_ACTIVE, // Reward's active status
         ));
 
@@ -106,6 +115,9 @@ class ComNucleonplusMlmCompensation extends KObject
         // Create the commission only if the reward is not yet activated
         if ($reward->status <> $this->_reward_active_status)
         {
+            // Record revenue
+            $this->_revenue->create($reward);
+
             if ($reward->type == ComNucleonplusModelEntityReward::REWARD_PACKAGE) {
                 $result = $this->_createPackageCompensation($reward);
             } elseif ($reward->type == ComNucleonplusModelEntityReward::REWARD_RETAIL) {

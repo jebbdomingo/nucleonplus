@@ -47,6 +47,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         $this->_surplus_unilevel_dr_bonus_account = $config->surplus_unilevel_dr_bonus_account;
         $this->_surplus_unilevel_ir_bonus_account = $config->surplus_unilevel_ir_bonus_account;
         $this->_delivery_expense_account          = $config->delivery_expense_account;
+        $this->_revenue_account                   = $config->revenue_account;
     }
 
     /**
@@ -77,9 +78,27 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
             'surplus_unilevel_dr_bonus_account' => $data->ACCOUNT_REFERRAL_DIRECT_FLUSHOUT,
             'surplus_unilevel_ir_bonus_account' => $data->ACCOUNT_REFERRAL_INDIRECT_FLUSHOUT,
             'delivery_expense_account'          => $data->ACCOUNT_EXPENSE_DELIVERY,
+            'revenue_account'                   => $data->ACCOUNT_REVENUE,
         ));
 
         parent::_initialize($config);
+    }
+
+    /**
+     * Allocate outright revenue
+     * 
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function allocateRevenue($entityId, $amount)
+    {
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_revenue_account;
+        $note          = 'Outright revenue from product';
+
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
