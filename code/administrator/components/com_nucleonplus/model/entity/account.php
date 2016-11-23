@@ -44,7 +44,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
             ->account_id($this->id)
             ->sort('id')
             ->direction('desc')
-            // ->limit($limit)
+            ->limit($limit)
             ->fetch()
         ;
     }
