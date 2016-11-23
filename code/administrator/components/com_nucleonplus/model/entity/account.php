@@ -40,7 +40,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getLatestPurchases($limit = 5)
     {
-        return $this->getObject('com:nucleonplus.model.orders')
+        return $this->getObject('com://admin/nucleonplus.model.orders')
             ->account_id($this->id)
             ->sort('id')
             ->direction('desc')
