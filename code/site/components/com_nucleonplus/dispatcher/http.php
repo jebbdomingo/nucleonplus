@@ -22,12 +22,18 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
     protected function _actionDispatch(KDispatcherContextInterface $context)
     {
         $view        = $this->getRequest()->query->view;
+        $id          = $this->getRequest()->query->id;
         $excemptions = array('products', 'dragonpay', 'dragonpaypo');
+
+        if ($view && ($view == 'order' && !$id))
+        {
+            $context->response->setRedirect($context->request->getBaseUrl()->toString());
+            $context->response->send();
+        }
 
         if ($view && (!in_array($view, $excemptions) && !$this->getUser()->isAuthentic()))
         {
             $message = 'Please login to access your account';
-            
             $context->response->setRedirect($context->request->getBaseUrl()->toString(), $message, 'warning');
             $context->response->send();
         }
