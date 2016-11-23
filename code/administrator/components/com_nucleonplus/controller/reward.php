@@ -77,17 +77,17 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
             foreach ($rewards as $reward)
             {
                 switch ($reward->status) {
-                    case 'active':
+                    case ComNucleonplusModelEntityReward::STATUS_ACTIVE:
                         throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is already active"));
                         $result = false;
                         break;
                     
-                    case 'ready':
+                    case ComNucleonplusModelEntityReward::STATUS_READY:
                         throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is ready for payout"));
                         $result = false;
                         break;
 
-                    case 'claimed':
+                    case ComNucleonplusModelEntityReward::STATUS_CLAIMED:
                         throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is already claimed"));
                         $result = false;
                         break;

@@ -92,7 +92,7 @@ class ComNucleonplusMlmCompensation extends KObject
             'unilevel_retail'        => 'com:nucleonplus.mlm.unilevelretail',
             'patronage'              => 'com:nucleonplus.mlm.packagepatronage',
             'rebates'                => 'com:nucleonplus.mlm.packagerebates',
-            'rebates'                => 'com:nucleonplus.mlm.revenue',
+            'revenue'                => 'com:nucleonplus.mlm.revenue',
             'reward_active_status'   => ComNucleonplusModelEntityReward::STATUS_ACTIVE, // Reward's active status
         ));
 

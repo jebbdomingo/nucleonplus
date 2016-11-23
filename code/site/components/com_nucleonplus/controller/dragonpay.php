@@ -222,7 +222,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
 
         // Check order status if its reward can be activated
         if (!in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PROCESSING, ComNucleonplusModelEntityOrder::STATUS_COMPLETED))) {
-            throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" status"));
+            throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" or \"Completed\" status"));
         }
 
         // Try to activate reward
