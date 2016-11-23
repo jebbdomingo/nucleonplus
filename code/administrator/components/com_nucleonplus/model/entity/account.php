@@ -42,7 +42,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
     {
         return $this->getObject('com:nucleonplus.model.orders')
             ->account_id($this->id)
-            ->sort('created_on')
+            ->sort('id')
             ->direction('desc')
             ->limit($limit)
             ->fetch()
