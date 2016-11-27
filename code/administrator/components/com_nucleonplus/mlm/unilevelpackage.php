@@ -129,12 +129,9 @@ class ComNucleonplusMlmUnilevelpackage extends ComNucleonplusMlmUnilevel
             {
                 if ($x < $this->_unilevel_count)
                 {
-
                     $points = ($this->_unilevel_count - $x) * $reward->irpv;
                     $this->_accounting_service->allocateSurplusIRBonus($reward->product_id, $points);
-
                     break;
-
                 }
 
                 break;

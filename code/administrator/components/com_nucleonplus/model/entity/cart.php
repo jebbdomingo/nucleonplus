@@ -11,14 +11,14 @@
 
 class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements ComNucleonplusModelEntityCartInterface
 {
-    const INTERFACT_SITE  = 'site';
-    const INTERFACT_ADMIN = 'admin';
+    const INTERFACE_SITE  = 'site';
+    const INTERFACE_ADMIN = 'admin';
 
     public function save()
     {
         $result = false;
 
-        if (!$this->isNew() && $this->interface == self::INTERFACT_SITE)
+        if (!$this->isNew() && $this->interface == self::INTERFACE_SITE)
         {
             if (empty($this->address) || empty($this->city))
             {
@@ -47,7 +47,17 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements Co
 
     public function getAmount()
     {
+        $app       = JFactory::getApplication();
+        $interface = null;
+
+        if ($app->isAdmin()) {
+            $interface = self::INTERFACE_ADMIN;
+        } else {
+            $interface = self::INTERFACE_SITE;
+        }
+
         return (float) $this->getObject('com://admin/nucleonplus.model.carts')
+            ->interface($interface)
             ->customer($this->customer)
             ->getAmount()
         ;

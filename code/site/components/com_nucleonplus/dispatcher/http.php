@@ -137,7 +137,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         $model = $this->getObject('com://admin/nucleonplus.model.carts');
         $cart  = $model
             ->customer($this->getObject('user')->getId())
-            ->interface(ComNucleonplusModelEntityCart::INTERFACT_SITE)
+            ->interface(ComNucleonplusModelEntityCart::INTERFACE_SITE)
             ->fetch()
         ;
 
@@ -149,7 +149,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         {
             $cart = $model->create(array(
                 'customer'  => $this->getObject('user')->getId(),
-                'interface' => 'site'
+                'interface' => ComNucleonplusModelEntityCart::INTERFACE_SITE
             ));
             $cart->save();
 
