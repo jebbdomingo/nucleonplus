@@ -48,6 +48,8 @@ class ComNucleonplusModelCarts extends ComCartModelCarts
             ->group('tbl.customer')
         ;
 
+        $this->_buildQueryWhere($query);
+
         $row = $table->select($query);
 
         return (float) $row->total;
@@ -67,7 +69,6 @@ class ComNucleonplusModelCarts extends ComCartModelCarts
             ->table('cart_items AS tbl')
             ->columns('tbl.cart_item_id, SUM(_item.weight * tbl.quantity) AS total')
             ->join(array('_item' => 'qbsync_items'), 'tbl.row = _item.ItemRef', 'INNER')
-            ->where('tbl.cart_id = :cart_id')->bind(['cart_id' => $state->cart_id])
             ->group('tbl.cart_id')
         ;
 
