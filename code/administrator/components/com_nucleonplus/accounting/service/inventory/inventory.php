@@ -31,20 +31,30 @@ class ComNucleonplusAccountingServiceInventory extends KObject
 
             foreach ($groupedItems as $groupedItem)
             {
-                $inventoryQty = ((int) $groupedItem->_item_qty_onhand - (int) $groupedItem->_item_qty_purchased);
-
-                if ($quantity < $inventoryQty) {
-                    $result = true;
+                if ($groupedItem->_item_type == ComQbsyncModelEntityItem::TYPE_INVENTORY_ITEM)
+                {
+                    if (!$this->_checkQuantity(($quantity * $groupedItem->quantity), $groupedItem->_item_qty_onhand, $groupedItem->_item_qty_purchased))
+                    {
+                        $result = false;
+                        break;
+                    }
+                    else $result = true;
                 }
             }
         }
-        else
-        {
-            $inventoryQty = ((int) $item->QtyOnHand - (int) $item->quantity_purchased);
+        else $result = $this->_checkQuantity($quantity, $item->QtyOnHand, $item->quantity_purchased);
 
-            if ($quantity < $inventoryQty) {
-                $result = true;
-            }
+        return $result;
+    }
+
+    protected function _checkQuantity($quantity, $onHand, $purchases)
+    {
+        $result = false;
+
+        $inventoryQty = ((int) $onHand - (int) $purchases);
+
+        if ($quantity <= $inventoryQty) {
+            $result = true;
         }
 
         return $result;

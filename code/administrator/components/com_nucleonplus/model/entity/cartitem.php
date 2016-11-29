@@ -26,25 +26,31 @@ class ComNucleonplusModelEntityCartitem extends ComCartModelEntityItem
 
             foreach ($items as $item)
             {
-                $inventoryQty = ((int) $item->_item_qty_onhand - (int) $item->_item_qty_purchased);
-
-                if ($this->quantity > $inventoryQty)
+                if ($item->_item_type == self::TYPE_INVENTORY_ITEM)
                 {
-                    $result = false;
-                    break;
+                    if (!$this->_checkQuantity(($this->quantity * $item->quantity), $item->_item_qty_onhand, $item->_item_qty_purchased))
+                    {
+                        $result = false;
+                        break;
+                    }
+                    else $result = true;
                 }
-                else $result = true;
             }
         }
-        else
-        {
-            $inventoryQty = ((int) $this->_item_qty_onhand - (int) $this->_item_qty_purchased);
+        else $result = $this->_checkQuantity($this->quantity, $this->_item_qty_onhand, $this->_item_qty_purchased);
 
-            if ($this->quantity < $inventoryQty) {
-                $result = true;
-            }
+        return $result;
+    }
+
+    protected function _checkQuantity($quantity, $onHand, $purchases)
+    {
+        $result = false;
+
+        $inventoryQty = ((int) $onHand - (int) $purchases);
+
+        if ($quantity <= $inventoryQty) {
+            $result = true;
         }
-
 
         return $result;
     }

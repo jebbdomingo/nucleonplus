@@ -80,11 +80,11 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
                 $item  = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
 
                 if (count($item) === 0) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Item'));
+                    throw new KControllerExceptionRequestInvalid($translator->translate('FAIL_INVALID_ITEM'));
                 }
 
                 // Check inventory for available stock
-                if (!$inventory->hasAvailableStock($item->ItemRef, $item->quantity)) {
+                if (!$inventory->hasAvailableStock($item->ItemRef, $orderItem->quantity)) {
                     throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->item_name}"));
                 }
             }
