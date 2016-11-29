@@ -24,10 +24,12 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
             <div class="thumbnail">
                 <div class="caption">
                     <h3><?= $product->Name ?></h3>
-                    <table class="table">
+                    <h4>&#8369;<?= number_format($product->UnitPrice, 2) ?></h4>
+                    <p><?= $product->Description ?></p>
+                    <!-- <table class="table">
                         <tr class="info">
                             <th>Price</th>
-                            <th class="text-right">&#8369;<?= number_format($product->UnitPrice) ?></th>
+                            <th class="text-right">&#8369;<?= number_format($product->UnitPrice, 2) ?></th>
                         </tr>
                         <tr>
                             <td>Unilevel Direct Referral Bonus</td>
@@ -70,7 +72,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                                 </td>
                             </tr>
                         <? endif ?>
-                    </table>
+                    </table> -->
 
                     <? if ($onlinePurchaseEnabled): ?>
                         <p>
