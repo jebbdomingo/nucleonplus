@@ -79,10 +79,17 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                                     <input type="hidden" name="_action" value="add" />
                                     <input type="hidden" name="ItemRef" value="<?= $product->ItemRef ?>" />
                                     <input type="hidden" name="quantity" value="1" />
-                                    <button class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
-                                        <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                                        Add to cart
-                                    </button>
+                                    <? if ($product->hasAvailableStock()): ?>
+                                        <button class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
+                                            <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                                                Add to cart
+                                        </button>
+                                    <? else: ?>
+                                        <button class="btn btn-default btn-md" role="button" disabled="disabled">
+                                            <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                                                Out of stock
+                                        </button>
+                                    <? endif ?>
                                 </form>
                             <? else: ?>
                                 <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">

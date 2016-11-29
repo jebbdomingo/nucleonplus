@@ -77,7 +77,6 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
                 }
 
                 $url = 'index.php?option=com_nucleonplus&view=cart&layout=confirm';
-                
             }
             else 
             {
