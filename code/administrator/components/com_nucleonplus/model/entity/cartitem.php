@@ -28,9 +28,12 @@ class ComNucleonplusModelEntityCartitem extends ComCartModelEntityItem
             {
                 $inventoryQty = ((int) $item->_item_qty_onhand - (int) $item->_item_qty_purchased);
 
-                if ($this->quantity < $inventoryQty) {
-                    $result = true;
+                if ($this->quantity > $inventoryQty)
+                {
+                    $result = false;
+                    break;
                 }
+                else $result = true;
             }
         }
         else
