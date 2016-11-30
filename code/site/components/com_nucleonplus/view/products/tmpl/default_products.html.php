@@ -22,6 +22,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
         ?>
         <div class="col-sm-6 col-md-4">
             <div class="thumbnail">
+                <img src="<?= JURI::root() . 'images/' . $product->image ?>" alt="<?= $product->Name ?>" style="height: 304px" />
                 <div class="caption">
                     <h3><?= $product->Name ?></h3>
                     <h4>&#8369;<?= number_format($product->UnitPrice, 2) ?></h4>

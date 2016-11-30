@@ -289,7 +289,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         $order = parent::_actionEdit($context);
 
-        $context->response->addMessage("Your Order #{$order->id} has been cancelled.", 'warning');
+        $context->response->addMessage("Your Order #{$order->id} has been cancelled.");
 
         return $order;
     }
