@@ -75,7 +75,10 @@ defined('KOOWA') or die; ?>
                     </div>
                     <? endif ?>
 
-                    <h3>Shipping Address</h3>
+                    <h3>
+                        Shipping Address<br />
+                        <small><a href="<?= route('view=member&layout=form&tmpl=koowa') ?>">set default shipping address</a></small>
+                    </h3>
 
                     <div class="form-group">
                         <label for="address" class="col-sm-2 control-label">Address</label>
@@ -125,7 +128,8 @@ defined('KOOWA') or die; ?>
                         </div>
                         <div class="col-xs-3">
                             <?= helper('dragonpay.confirm', array(
-                                'entity' => $cart
+                                'entity'   => $cart,
+                                'disabled' => $cart->getAmount() <= 0 ? 'disabled="disabled"' : null
                             )) ?>
                         </div>
                     </div>

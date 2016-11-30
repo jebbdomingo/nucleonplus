@@ -34,6 +34,7 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
         parent::__construct($config);
 
         $this->addCommandCallback('after.add', '_checkInventory');
+        $this->addCommandCallback('before.confirm', '_validateConfirm');
         $this->addCommandCallback('after.confirm', '_checkInventory');
 
         // Inventory service
@@ -62,6 +63,34 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
     {
         $data       = $context->request->data;
         $data->row  = $data->ItemRef;
+    }
+
+    protected function _validateConfirm(KControllerContextInterface $context)
+    {
+        if (!$context->result instanceof KModelEntityInterface) {
+            $cart = $this->getModel()->fetch();
+        } else {
+            $cart = $context->result;
+        }
+
+        $translator = $this->getObject('translator');
+        $result     = false;
+
+        try
+        {
+            if (count($cart->getItems()) == 0) {
+                throw new KControllerExceptionRequestInvalid($translator->translate('Please add an item to confirm'));
+            }
+
+            $result = true;
+        }
+        catch(Exception $e)
+        {
+            $context->response->setRedirect($context->request->getReferrer(), $e->getMessage(), 'error');
+            $context->response->send();
+        }
+
+        return $result;
     }
 
     protected function _checkInventory(KControllerContextInterface $context)

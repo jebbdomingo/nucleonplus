@@ -59,11 +59,11 @@ class ComNucleonplusTemplateHelperDragonpay extends ComKoowaTemplateHelperListbo
     {
         $config = new KObjectConfig($config);
 
-        $disabled      = null;
         $shippingCost  = $config->entity->getShippingFee();
         $paymentCharge = $config->entity->getPaymentCharge();
 
-        $btnState = 'btn-success';
+        $btnState = $config->disabled ? 'btn-default' : 'btn-success';
+        $disabled = $config->disabled ? 'disabled="disabled"' : null;
         $btnText  = 'Confirm';
 
         $html = '<button type="button" ' . $disabled . ' class="cartConfirmCheckoutAction btn ' . $btnState . ' btn-block">
