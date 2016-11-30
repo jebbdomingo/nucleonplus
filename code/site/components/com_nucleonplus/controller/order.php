@@ -26,6 +26,13 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected $_reward;
 
     /**
+     * Inventory service
+     *
+     * @var ComNucleonplusAccountingInventoryQuantityInterface
+     */
+    protected $_inventory_service;
+
+    /**
      * Constructor.
      *
      * @param KObjectConfig $config Configuration options.
@@ -42,6 +49,17 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         // Validation
         $this->addCommandCallback('before.add', '_validate');
         $this->addCommandCallback('before.cancelorder', '_validateCancelorder');
+
+        // Inventory service
+        $identifier = $this->getIdentifier($config->inventory_service);
+        $service    = $this->getObject($identifier);
+        if (!($service instanceof ComNucleonplusAccountingServiceInventoryInterface))
+        {
+            throw new UnexpectedValueException(
+                "Service $identifier does not implement ComNucleonplusAccountingServiceInventoryInterface"
+            );
+        }
+        else $this->_inventory_service = $service;
     }
 
     /**
@@ -55,8 +73,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'reward'    => 'com://admin/nucleonplus.mlm.packagereward',
-            'behaviors' => array(
+            'reward'            => 'com://admin/nucleonplus.mlm.packagereward',
+            'inventory_service' => 'com://admin/nucleonplus.accounting.service.inventory',
+            'behaviors'         => array(
                 'onlinepayable',
                 'com://admin/nucleonplus.controller.behavior.cancellable',
             ),
@@ -91,15 +110,25 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                     $error = 'Invalid city';
                 }
 
-                foreach ($cart->getItems() as $item)
+                $itemQty = $cart->getItemQuantities();
+
+                foreach ($itemQty as $id => $qty)
                 {
-                    // Check inventory for available stock
-                    if (!$item->hasAvailableStock()) {
-                        $error = "Insufficient stock of {$item->_item_name}";
+                    $result = $this->_inventory_service->getQuantity($id, true);
+
+                    if ($result['available'] < $qty)
+                    {
+                        $error  = "Insufficient stock of {$result['Name']}, only ({$result['available']}) item/s left in stock and you already have ({$qty}) in your shopping cart";
+                        
+                        if (JDEBUG)
+                        {
+                            $error .= '<pre>' . print_r($itemQty, true) . '</pre>';
+                            $error .= '<pre>' . print_r($result, true) . '</pre>';
+                        }
                     }
                 }
             }
-            else $error = 'Cart System Error';
+            else $error = 'Cart System Error - Invalid Shopping Cart';
         }
 
         if ($error)

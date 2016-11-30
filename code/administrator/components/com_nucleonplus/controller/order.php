@@ -26,6 +26,13 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected $_salesreceipt_service;
 
     /**
+     * Sales Receipt Service
+     *
+     * @var ComNucleonplusAccountingServiceInventoryInterface
+     */
+    protected $_inventory_service;
+
+    /**
      * Reward controller identifier
      *
      * @var string
@@ -62,6 +69,17 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         }
         else $this->_salesreceipt_service = $service;
 
+        // Inventory service
+        $identifier = $this->getIdentifier($config->inventory_service);
+        $service    = $this->getObject($identifier);
+        if (!($service instanceof ComNucleonplusAccountingServiceInventoryInterface))
+        {
+            throw new UnexpectedValueException(
+                "Service $identifier does not implement ComNucleonplusAccountingServiceInventoryInterface"
+            );
+        }
+        else $this->_inventory_service = $service;
+
         // Reward service
         $this->_reward = $config->reward;
     }
@@ -78,6 +96,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     {
         $config->append(array(
             'salesreceipt_service' => 'com:nucleonplus.accounting.service.salesreceipt',
+            'inventory_service'    => 'com://admin/nucleonplus.accounting.service.inventory',
             'reward'               => 'com:nucleonplus.mlm.packagereward',
             'behaviors' => array(
                 'cancellable',
@@ -112,11 +131,21 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         {
             if (count($cart) && count($cart->getItems()))
             {
-                foreach ($cart->getItems() as $item)
+                $itemQty = $cart->getItemQuantities();
+                
+                foreach ($itemQty as $id => $qty)
                 {
-                    // Check inventory for available stock
-                    if (!$item->hasAvailableStock()) {
-                        $error = "Insufficient stock of {$item->_item_name}";
+                    $result = $this->_inventory_service->getQuantity($id, true);
+
+                    if ($result['available'] < $qty)
+                    {
+                        $error  = "Insufficient stock of {$result['Name']}, only ({$result['available']}) item/s left in stock and you already have ({$qty}) in the cart";
+                        
+                        if (JDEBUG)
+                        {
+                            $error .= '<pre>' . print_r($itemQty, true) . '</pre>';
+                            $error .= '<pre>' . print_r($result, true) . '</pre>';
+                        }
                     }
                 }
             }
@@ -563,138 +592,4 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             $this->getResponse()->addMessage("Reward #{$reward->id} has been activated");
         }
     }
-
-    // /**
-    //  * Specialized save action, changing state by marking as paid
-    //  *
-    //  * @param   KControllerContextInterface $context A command context object
-    //  * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
-    //  * 
-    //  * @return  KModelEntityInterface
-    //  */
-    // protected function _actionVerifypayment(KControllerContextInterface $context)
-    // {
-    //     // Mark as Paid
-    //     $context->getRequest()->data->invoice_status = 'paid';
-    //     $context->getRequest()->data->order_status   = ComNucleonplusModelEntityOrder::STATUS_PROCESSING;
-
-    //     $orders = parent::_actionEdit($context);
-
-    //     try
-    //     {
-    //         foreach ($orders as $order)
-    //         {
-    //             $this->_salesreceipt_service->recordSale($order);     
-    //             $context->response->addMessage("Payment for Order #{$order->id} has been verified");
-
-    //             // Automatically activate reward
-    //             $this->_activateReward($order);
-    //         }
-
-    //     }
-    //     catch (Exception $e)
-    //     {
-    //         $context->response->addMessage($e->getMessage(), 'exception');
-    //     }
-
-    //     return $orders;
-    // }
-
-    // /**
-    //  * Activates the reward and create corresponding slots
-    //  *
-    //  * @param   KControllerContextInterface $context A command context object
-    //  * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
-    //  * 
-    //  * @return  KModelEntityInterface
-    //  */
-    // protected function _actionActivatereward(KControllerContextInterface $context)
-    // {
-    //     if (!$context->result instanceof KModelEntityInterface) {
-    //         $orders = $this->getModel()->fetch();
-    //     } else {
-    //         $orders = $context->result;
-    //     }
-
-    //     if (count($orders))
-    //     {
-    //         try
-    //         {
-    //             foreach ($orders as $order) {
-    //                 $this->_activateReward($order);
-    //             }
-    //         }
-    //         catch (Exception $e)
-    //         {
-    //             $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'exception');
-    //             $context->getResponse()->send();
-    //         }
-    //     }
-    //     else throw new KControllerExceptionResourceNotFound('Resource could not be found');
-
-    //     return $orders;
-    // }
-
-    // /**
-    // * Validate payment
-    // *
-    // * @param KControllerContextInterface $context
-    // * 
-    // * @return KModelEntityInterface
-    // */
-    // protected function _validateVerify(KControllerContextInterface $context)
-    // {
-    //     $result = true;
-
-    //     if (!$context->result instanceof KModelEntityInterface) {
-    //         $entities = $this->getModel()->fetch();
-    //     } else {
-    //         $entities = $context->result;
-    //     }
-
-    //     try
-    //     {
-    //         $translator = $this->getObject('translator');
-
-    //         foreach ($entities as $entity)
-    //         {
-    //             // Check order status if it can be verified
-    //             if ($entity->order_status <> ComNucleonplusModelEntityOrder::STATUS_VERIFICATION) {
-    //                 throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified'));
-    //                 $result = false;
-    //             }
-
-    //             // Check inventory for available stock
-    //             foreach ($entity->getOrderItems() as $item)
-    //             {
-    //                 $package  = $this->getObject('com:nucleonplus.model.packages')->id($item->package_id)->fetch();
-
-    //                 if (count($package) === 0)
-    //                 {
-    //                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Product Pack'));
-    //                     $result = false;
-    //                 }
-
-    //                 // Check inventory for available stock
-    //                 foreach ($package->getItems() as $item)
-    //                 {
-    //                     if (!$item->hasAvailableStock())
-    //                     {
-    //                         throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->_item_name}"));
-    //                         $result = false;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     catch(Exception $e)
-    //     {
-    //         $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
-    //         $context->getResponse()->send();
-
-    //         $result = false;
-    //     }
-
-    //     return $result;
-    // }
 }

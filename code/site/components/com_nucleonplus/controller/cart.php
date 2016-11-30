@@ -17,15 +17,42 @@
  */
 class ComNucleonplusControllerCart extends ComCartControllerCart
 {
+    /**
+     * Inventory service
+     *
+     * @var ComNucleonplusAccountingInventoryQuantityInterface
+     */
+    protected $_inventory_service;
+
+    /**
+     * Constructor.
+     *
+     * @param KObjectConfig $config Configuration options.
+     */
     public function __construct(KObjectConfig $config)
     {
         parent::__construct($config);
+
+        $this->addCommandCallback('after.add', '_checkInventory');
+        $this->addCommandCallback('after.confirm', '_checkInventory');
+
+        // Inventory service
+        $identifier = $this->getIdentifier($config->inventory_service);
+        $service    = $this->getObject($identifier);
+        if (!($service instanceof ComNucleonplusAccountingServiceInventoryInterface))
+        {
+            throw new UnexpectedValueException(
+                "Service $identifier does not implement ComNucleonplusAccountingServiceInventoryInterface"
+            );
+        }
+        else $this->_inventory_service = $service;
     }
     
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'model' => 'com:nucleonplus.model.carts'
+            'model'             => 'com:nucleonplus.model.carts',
+            'inventory_service' => 'com://admin/nucleonplus.accounting.service.inventory',
         ));
 
         parent::_initialize($config);
@@ -35,6 +62,45 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
     {
         $data       = $context->request->data;
         $data->row  = $data->ItemRef;
+    }
+
+    protected function _checkInventory(KControllerContextInterface $context)
+    {
+        if (!$context->result instanceof KModelEntityInterface) {
+            $cart = $this->getModel()->fetch();
+        } else {
+            $cart = $context->result;
+        }
+
+        $translator = $this->getObject('translator');
+        $error      = false;
+
+        if (count($cart))
+        {
+            $itemQty = $cart->getItemQuantities();
+
+            foreach ($itemQty as $id => $qty)
+            {
+                $result = $this->_inventory_service->getQuantity($id, true);
+
+                if ($result['available'] < $qty)
+                {
+                    $error  = "Insufficient stock of {$result['Name']}, only ({$result['available']}) item/s left in stock and you already have ({$qty}) in your shopping cart";
+                    
+                    if (JDEBUG)
+                    {
+                        $error .= '<pre>' . print_r($itemQty, true) . '</pre>';
+                        $error .= '<pre>' . print_r($result, true) . '</pre>';
+                    }
+                }
+            }
+        }
+
+        if ($error)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $translator->translate($error), 'error');
+            $context->getResponse()->send();
+        }
     }
 
     protected function _actionAdd(KControllerContextInterface $context)

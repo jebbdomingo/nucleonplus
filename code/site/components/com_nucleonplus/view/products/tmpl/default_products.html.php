@@ -88,7 +88,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                                         </button>
                                     <? else: ?>
                                         <button class="btn btn-default btn-md" role="button" disabled="disabled">
-                                            <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                                                 Out of stock
                                         </button>
                                     <? endif ?>

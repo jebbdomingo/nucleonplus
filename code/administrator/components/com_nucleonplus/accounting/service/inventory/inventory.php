@@ -9,53 +9,35 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-class ComNucleonplusAccountingServiceInventory extends KObject
+class ComNucleonplusAccountingServiceInventory extends KObject implements ComNucleonplusAccountingServiceInventoryInterface
 {
     /**
-     * Check available stock
+     * Result of inventory count for each item
      *
-     * @param integer $itemRef
-     * @param integer $quantity
+     * @var array
+     */
+    protected $_data;
+
+    /**
+     * Get quantity
+     *
+     * @param mixed   $id
+     * @param boolean $detailed
      *
      * @return boolean
      */
-    public function hasAvailableStock($itemRef, $quantity)
+    public function getQuantity($id, $detailed = false)
     {
-        $result = false;
-        $item   = $this->getObject('com://admin/qbsync.model.items')->ItemRef($itemRef)->fetch();
+        $item = $this->getObject('com://admin/qbsync.model.items')->ItemRef($id)->fetch();
+        $available = ((int) $item->QtyOnHand - (int) $item->quantity_purchased);
 
-        if ($item->Type == 'Group')
+        if ($detailed)
         {
-            // Query grouped items
-            $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($itemRef)->fetch();
-
-            foreach ($groupedItems as $groupedItem)
-            {
-                if ($groupedItem->_item_type == ComQbsyncModelEntityItem::TYPE_INVENTORY_ITEM)
-                {
-                    if (!$this->_checkQuantity(($quantity * $groupedItem->quantity), $groupedItem->_item_qty_onhand, $groupedItem->_item_qty_purchased))
-                    {
-                        $result = false;
-                        break;
-                    }
-                    else $result = true;
-                }
-            }
+            // Inventory item details
+            $result = $item->getProperties();
+            $result['available'] = $available;
         }
-        else $result = $this->_checkQuantity($quantity, $item->QtyOnHand, $item->quantity_purchased);
-
-        return $result;
-    }
-
-    protected function _checkQuantity($quantity, $onHand, $purchases)
-    {
-        $result = false;
-
-        $inventoryQty = ((int) $onHand - (int) $purchases);
-
-        if ($quantity <= $inventoryQty) {
-            $result = true;
-        }
+        else $result = $available;
 
         return $result;
     }

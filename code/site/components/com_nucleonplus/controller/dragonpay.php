@@ -74,18 +74,12 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
                 throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified.' . ' Order #' . $order->id));
             }
 
-            $inventory = $this->getObject('com://admin/nucleonplus.accounting.service.inventory');
             foreach ($order->getOrderItems() as $orderItem)
             {
-                $item  = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
+                $item = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
 
                 if (count($item) === 0) {
                     throw new KControllerExceptionRequestInvalid($translator->translate('FAIL_INVALID_ITEM'));
-                }
-
-                // Check inventory for available stock
-                if (!$inventory->hasAvailableStock($item->ItemRef, $orderItem->quantity)) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate("Insufficient stock of {$item->item_name}"));
                 }
             }
 

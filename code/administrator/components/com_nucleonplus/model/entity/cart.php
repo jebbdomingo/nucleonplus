@@ -40,6 +40,40 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements Co
         ;
     }
 
+    /**
+     * Get cart items and its quantities
+     *
+     * @return array
+     */
+    public function getItemQuantities()
+    {
+        $data  = array();
+        $items = $this->getObject('com://admin/nucleonplus.model.cartitems')
+            ->cart_id($this->id)
+            ->fetch()
+        ;
+
+        foreach ($items as $item)
+        {
+            if ($item->_item_type == ComQbsyncModelEntityItem::TYPE_GROUP)
+            {
+                // Query grouped items
+                $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($item->_item_ref)->fetch();
+
+                foreach ($groupedItems as $groupItem)
+                {
+                    if ($groupItem->_item_type == ComQbsyncModelEntityItem::TYPE_INVENTORY_ITEM)
+                    {
+                        @$data[$groupItem->_item_ref] += (int) $item->quantity * (int) $groupItem->quantity;
+                    }
+                }
+            }
+            else @$data[$item->_item_ref] += (int) $item->quantity;
+        }
+
+        return $data;
+    }
+
     public function getPropertySubtotal()
     {
         return $this->getSubTotal();
