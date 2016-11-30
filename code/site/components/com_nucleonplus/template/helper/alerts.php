@@ -186,7 +186,7 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
         $config = $this->storeInfo();
 
         $template = '<div class="jumbotron">';
-        $template .= '<h1><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Visit our store</h1>';
+        $template .= '<h2><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Visit our store</h2>';
         $template .= "<p>Come visit our store at {$config->address}.</p>";
         $template .= '</div>';
 
