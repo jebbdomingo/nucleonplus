@@ -29,4 +29,41 @@ class ComNucleonplusControllerPermissionOrder extends ComNucleonplusControllerPe
 
         return $result;
     }
+
+    /**
+     * Specialized permission check
+     *
+     * @return boolean
+     */
+    public function canShip()
+    {
+        $result = false;
+        $order  = $this->getModel()->fetch();
+
+        $isProcessing = $order->order_status == ComNucleonplusModelEntityOrder::STATUS_PROCESSING;
+
+        if (parent::canEdit() && $isProcessing && $this->hasTracking()) {
+            $result = true;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Specialized permission check
+     *
+     * @return boolean
+     */
+    public function hasTrackingNumber()
+    {
+        $result      = false;
+        $order       = $this->getModel()->fetch();
+        $hasTracking = (boolean) trim($order->tracking_reference);
+
+        if ($hasTracking) {
+            $result = true;
+        }
+
+        return $result;
+    }
 }

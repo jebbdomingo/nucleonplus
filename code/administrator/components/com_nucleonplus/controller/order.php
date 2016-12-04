@@ -208,7 +208,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             {
                 $order->setProperties($context->request->data->toArray());
 
-                if (!$this->canProcess() && $order->order_status <> ComNucleonplusModelEntityOrder::STATUS_VERIFIED) {
+                if (!$this->canProcess()) {
                     throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only "Verified" Orders can be processed'));
                 }
             }
@@ -243,12 +243,12 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             {
                 $order->setProperties($context->request->data->toArray());
 
-                if ($order->order_status <> ComNucleonplusModelEntityOrder::STATUS_PROCESSING) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Processing" status can be shipped'));
+                if (!$this->hasTrackingNumber()) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Please enter shipment tracking reference'));
                 }
 
-                if (empty(trim($order->tracking_reference))) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Please enter shipment tracking reference'));
+                if (!$this->canShip()) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Processing" status can be shipped'));
                 }
             }
         }
@@ -485,10 +485,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     protected function _actionShip(KControllerContextInterface $context)
     {
-        $context->getRequest()->setData([
-            'order_status'       => ComNucleonplusModelEntityOrder::STATUS_SHIPPED,
-            'tracking_reference' => $context->request->data->tracking_reference,
-        ]);
+        $context->request->data->order_status       = ComNucleonplusModelEntityOrder::STATUS_SHIPPED;
+        $context->request->data->tracking_reference = $context->request->data->tracking_reference;
 
         $order = parent::_actionEdit($context);
 

@@ -23,10 +23,13 @@ else $footerAmountSize = 'col-xs-12';
 ?>
 
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
+<ktml:style src="media://com_nucleonplus/css/order-steps.css" />
 
 <div class="row">
 
     <div class="col-xs-12">
+
+        <?= helper('ordertimeline.timeline', array('state' => $order->order_status)); ?>
 
         <fieldset class="form-vertical">
 
