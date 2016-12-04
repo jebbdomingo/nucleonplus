@@ -12,23 +12,23 @@
 class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActionbar
 {
     /**
-     * Activate Reward Command
+     * Ship order Command
      *
      * @param KControllerToolbarCommand $command
      *
      * @return void
      */
-    protected function _commandActivatereward(KControllerToolbarCommand $command)
+    protected function _commandProcessing(KControllerToolbarCommand $command)
     {
         $command->icon = 'icon-32-save';
 
         $command->append(array(
             'attribs' => array(
-                'data-action' => 'activatereward'
+                'data-action' => 'processing'
             )
         ));
 
-        $command->label = 'Activate Reward';
+        $command->label = 'Processing';
     }
 
     /**
@@ -119,7 +119,6 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         $this->removeCommand('apply');
         $this->removeCommand('cancel');
 
-        
         $controller = $this->getController();
         $canSave    = ($controller->isEditable() && $controller->canSave());
         $allowed    = true;
@@ -131,6 +130,15 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
 
         if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
             $allowed = false;
+        }
+
+        // Process order command
+        if ($controller->canProcess())
+        {
+            $this->addCommand('processing', [
+                'allowed' => $allowed,
+                'attribs' => ['data-novalidate' => 'novalidate']
+            ]);
         }
 
         // Ship order command
@@ -183,6 +191,14 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
 
         $this->removeCommand('new');
         $this->removeCommand('delete');
+
+        // Mark order as in processing command
+        if ($controller->isEditable() && $controller->canSave())
+        {
+            $this->addCommand('processing', [
+                'allowed' => $allowed
+            ]);
+        }
 
         // Mark order as delivered command
         if ($controller->isEditable() && $controller->canSave())

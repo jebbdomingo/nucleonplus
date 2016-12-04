@@ -114,27 +114,27 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         ))
         ->append(array(
             'orderStatus' => array(
-                array('label' => 'Awaiting Payment', 'value' => 'awaiting_payment'),
-                array('label' => 'Awaiting Verification', 'value' => 'awaiting_verification'),
-                array('label' => 'Processing', 'value' => 'processing'),
-                array('label' => 'Shipped', 'value' => 'shipped'),
-                array('label' => 'Delivered', 'value' => 'delivered'),
-                array('label' => 'Cancelled', 'value' => 'cancelled'),
-                array('label' => 'Completed', 'value' => 'completed'),
-                array('label' => 'Void', 'value' => 'void'),
+                array('label' => 'Pending', 'value' => ComNucleonplusModelEntityOrder::STATUS_PENDING),
+                array('label' => 'Awaiting Payment', 'value' => ComNucleonplusModelEntityOrder::STATUS_PAYMENT),
+                array('label' => 'Verified', 'value' => ComNucleonplusModelEntityOrder::STATUS_VERIFIED),
+                array('label' => 'Processing', 'value' => ComNucleonplusModelEntityOrder::STATUS_PROCESSING),
+                array('label' => 'Shipped', 'value' => ComNucleonplusModelEntityOrder::STATUS_SHIPPED),
+                array('label' => 'Delivered', 'value' => ComNucleonplusModelEntityOrder::STATUS_DELIVERED),
+                array('label' => 'Cancelled', 'value' => ComNucleonplusModelEntityOrder::STATUS_CANCELLED),
+                array('label' => 'Completed', 'value' => ComNucleonplusModelEntityOrder::STATUS_COMPLETED),
             )
         ))
         ->append(array(
             'orderStatusFilters' => array(
-                'all'                   => 'All',
-                'awaiting_payment'      => 'Awaiting Payment',
-                'awaiting_verification' => 'Awaiting Verification',
-                'processing'            => 'Processing',
-                'shipped'               => 'Shipped',
-                'delivered'             => 'Delivered',
-                'cancelled'             => 'Cancelled',
-                'completed'             => 'Completed',
-                'void'                  => 'Void',
+                'all'                                             => 'All',
+                ComNucleonplusModelEntityOrder::STATUS_PENDING    => 'Pending',
+                ComNucleonplusModelEntityOrder::STATUS_PAYMENT    => 'Awaiting Payment',
+                ComNucleonplusModelEntityOrder::STATUS_VERIFIED   => 'Verified',
+                ComNucleonplusModelEntityOrder::STATUS_PROCESSING => 'Processing',
+                ComNucleonplusModelEntityOrder::STATUS_SHIPPED    => 'Shipped',
+                ComNucleonplusModelEntityOrder::STATUS_DELIVERED  => 'Delivered',
+                ComNucleonplusModelEntityOrder::STATUS_CANCELLED  => 'Cancelled',
+                ComNucleonplusModelEntityOrder::STATUS_COMPLETED  => 'Completed',
             )
         ))
         ->append(array(

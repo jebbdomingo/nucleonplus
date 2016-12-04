@@ -51,11 +51,11 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         parent::__construct($config);
 
         $this->addCommandCallback('before.add', '_validate');
+        $this->addCommandCallback('before.processing', '_validateProcessing');
         $this->addCommandCallback('before.ship', '_validateShip');
         $this->addCommandCallback('before.markdelivered', '_validateDelivered');
         $this->addCommandCallback('before.markcompleted', '_validateCompleted');
         $this->addCommandCallback('before.cancelorder', '_validateCancelorder');
-        $this->addCommandCallback('before.void', '_validateVoid');
 
         // Sales Receipt Service
         $identifier = $this->getIdentifier($config->salesreceipt_service);
@@ -100,6 +100,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'reward'               => 'com:nucleonplus.mlm.packagereward',
             'behaviors' => array(
                 'cancellable',
+                'processable',
+                'shippable'
             ),
         ));
 
@@ -184,31 +186,30 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     }
 
     /**
-     * Validate void action
+     * Validate processing action
      *
      * @param KControllerContextInterface $context
      * 
      * @return KModelEntityInterface
      */
-    protected function _validateVoid(KControllerContextInterface $context)
+    protected function _validateProcessing(KControllerContextInterface $context)
     {
-        $result = true;
-
         if (!$context->result instanceof KModelEntityInterface) {
-            $entities = $this->getModel()->fetch();
+            $orders = $this->getModel()->fetch();
         } else {
-            $entities = $context->result;
+            $orders = $context->result;
         }
 
         try
         {
             $translator = $this->getObject('translator');
 
-            foreach ($entities as $entity)
+            foreach ($orders as $order)
             {
-                if (!in_array($entity->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_VERIFICATION))) {
-                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Payment" or "Awaiting Verfication" status can be voided'));
-                    $result = false;
+                $order->setProperties($context->request->data->toArray());
+
+                if (!$this->canProcess() && $order->order_status <> ComNucleonplusModelEntityOrder::STATUS_VERIFIED) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only "Verified" Orders can be processed'));
                 }
             }
         }
@@ -216,11 +217,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         {
             $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
             $context->getResponse()->send();
-
-            $result = false;
         }
-
-        return $result;
     }
 
     /**
@@ -465,7 +462,24 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      * Specialized save action, changing state by updating the order status
      *
      * @param   KControllerContextInterface $context A command context object
-     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
+     * 
+     * @return  KModelEntityInterface
+     */
+    protected function _actionProcessing(KControllerContextInterface $context)
+    {
+        $context->request->data->order_status = ComNucleonplusModelEntityOrder::STATUS_PROCESSING;
+
+        $order = parent::_actionEdit($context);
+
+        $context->response->addMessage("Order #{$order->id} has been marked on-processing.");
+
+        return $order;
+    }
+
+    /**
+     * Specialized save action, changing state by updating the order status
+     *
+     * @param   KControllerContextInterface $context A command context object
      * 
      * @return  KModelEntityInterface
      */
@@ -506,7 +520,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      * Specialized save action, changing state by updating the order status
      *
      * @param   KControllerContextInterface $context A command context object
-     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
      * 
      * @return  KModelEntityInterface
      */
@@ -527,7 +540,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      * Specialized save action, changing state by updating the order status
      *
      * @param   KControllerContextInterface $context A command context object
-     * @throws  KControllerExceptionRequestNotAuthorized If the user is not authorized to update the resource
      * 
      * @return  KModelEntityInterface
      */
@@ -580,8 +592,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $translator = $this->getObject('translator');
 
         // Check order status if its reward can be activated
-        if (!in_array($order->order_status, array('processing', 'completed'))) {
-            throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" status"));
+        if ($order->order_status == ComNucleonplusModelEntityOrder::STATUS_COMPLETED) {
+            throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Completed\" status"));
         }
 
         // Try to activate reward

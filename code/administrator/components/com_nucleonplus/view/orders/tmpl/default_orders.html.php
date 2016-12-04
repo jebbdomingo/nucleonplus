@@ -20,7 +20,7 @@
             </a>
         </td>
         <td>
-            <span class="label <?= ($order->order_status == 'cancelled') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->order_status)) ?></span>
+            <?= helper('com://site/nucleonplus.labels.orderStatus', array('value' => $order->order_status)) ?>
         </td>
         <td>
             <span class="label <?= ($order->invoice_status == 'sent') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span>

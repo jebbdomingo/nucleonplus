@@ -71,7 +71,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         {
             // Check order status if it can be verified
             if (!in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_PENDING))) {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Verification" status can be verified.' . ' Order #' . $order->id));
+                throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Awaiting Payment" or "Pending" status can be verified.' . ' Order #' . $order->id));
             }
 
             foreach ($order->getOrderItems() as $orderItem)
@@ -149,11 +149,11 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         }
         elseif ($data->status == ComDragonpayModelEntityPayment::STATUS_SUCCESSFUL)
         {
-            // Mark as Paid
+            // Mark as Paid - Verified
             $context->request->setData([
                 'id'             => $data->txnid,
                 'invoice_status' => ComNucleonplusModelEntityOrder::INVOICE_STATUS_PAID,
-                'order_status'   => ComNucleonplusModelEntityOrder::STATUS_PROCESSING,
+                'order_status'   => ComNucleonplusModelEntityOrder::STATUS_VERIFIED,
             ]);
 
             // Fetch after edit to get the joined columns
@@ -206,7 +206,6 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
      * @param   KModelEntityInterface $order
      * 
      * @throws  KControllerExceptionRequestInvalid
-     * @throws  KControllerExceptionResourceNotFound
      * 
      * @return  boolean
      */
@@ -215,8 +214,8 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
         $translator = $this->getObject('translator');
 
         // Check order status if its reward can be activated
-        if (!in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PROCESSING, ComNucleonplusModelEntityOrder::STATUS_COMPLETED))) {
-            throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Processing\" or \"Completed\" status"));
+        if (!in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_VERIFIED, ComNucleonplusModelEntityOrder::STATUS_COMPLETED))) {
+            throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be \"Verified\" or \"Completed\""));
         }
 
         // Try to activate reward
