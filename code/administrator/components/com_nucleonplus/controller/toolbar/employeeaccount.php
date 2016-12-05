@@ -61,6 +61,10 @@ class ComNucleonplusControllerToolbarEmployeeaccount extends ComKoowaControllerT
             $allowed = false;
         }
 
+        if (!$controller->canAdd()) {
+            $this->removeCommand('new');
+        }
+
         if ($controller->isEditable() && $controller->canSave()) {
             $this->addCommand('edit', [
                 'href' => 'view=member&id=' . $context->result->user_id
