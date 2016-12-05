@@ -40,10 +40,10 @@ class ComNucleonplusControllerToolbarEmployeeaccount extends ComKoowaControllerT
     {
         parent::_afterBrowse($context);
 
-        if (!$controller->canAdmin()) {
+        if (!$this->getController()->canAdmin()) {
             $this->removeCommand('new');
         }
-        
+
         $this->removeCommand('delete');
         
         $this->_addBrowseCommands($context);
