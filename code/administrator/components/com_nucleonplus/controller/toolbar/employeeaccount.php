@@ -40,6 +40,10 @@ class ComNucleonplusControllerToolbarEmployeeaccount extends ComKoowaControllerT
     {
         parent::_afterBrowse($context);
 
+        if (!$controller->canAdmin()) {
+            $this->removeCommand('new');
+        }
+        
         $this->removeCommand('delete');
         
         $this->_addBrowseCommands($context);
@@ -59,10 +63,6 @@ class ComNucleonplusControllerToolbarEmployeeaccount extends ComKoowaControllerT
 
         if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
             $allowed = false;
-        }
-
-        if (!$controller->canAdd()) {
-            $this->removeCommand('new');
         }
 
         if ($controller->isEditable() && $controller->canSave()) {
