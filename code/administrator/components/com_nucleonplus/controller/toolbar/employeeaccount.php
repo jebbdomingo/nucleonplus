@@ -39,6 +39,8 @@ class ComNucleonplusControllerToolbarEmployeeaccount extends ComKoowaControllerT
     protected function _afterBrowse(KControllerContextInterface $context)
     {
         parent::_afterBrowse($context);
+
+        $this->removeCommand('delete');
         
         $this->_addBrowseCommands($context);
     }

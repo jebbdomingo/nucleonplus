@@ -187,4 +187,15 @@ class ComNucleonplusModelEntityEmployee extends KModelEntityRow
 
         return $account;
     }
+
+    /**
+     * Prevent deletion of account
+     * An account can only be deactivated or terminated but not deleted
+     *
+     * @return boolean FALSE
+     */
+    public function delete()
+    {
+        return false;
+    }
 }
