@@ -56,6 +56,14 @@ defined('KOOWA') or die; ?>
                         </div>
                     </div>
                     <div class="panel-body">
+                        <? if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY): ?>
+                            <div class="well">
+                                <h3>Ship To:</h3>
+                                <?= $order->address ?>, 
+                                <?= $order->city ?>
+                            </div>
+                        <? endif; ?>
+                        
                         <? if ($order->shipping_method == ComNucleonplusModelEntityOrder::SHIPPING_METHOD_XEND): ?>
                             <?= import('tracking.html') ?>
                         <? endif ?>
