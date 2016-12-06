@@ -4,7 +4,11 @@
             <td style="width: 10%">Item</td>
             <td style="width: 90%">
                 <?= helper('listbox.productList', array(
-                    'name' => 'ItemRef'
+                    'name'    => 'ItemRef',
+                    'attribs' => array(
+                        'style' => 'width: 100%',
+                        'size'  => false,
+                    )
                 )) ?>
             </td>
         </tr>

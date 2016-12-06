@@ -313,15 +313,29 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     public function productList($config = array())
     {
         $config = new KObjectConfigJson($config);
+
+        $items   = $this->getObject('com:qbsync.model.items')->fetch();
+        $options = array();
+
+        foreach ($items as $item)
+        {
+            if (!in_array($item->Type, ComQbsyncModelEntityItem::$item_types)) {
+                continue;
+            }
+
+            $options[] = array('label' => "{$item->Name} | PHP {$item->UnitPrice} | ItemRef:{$item->ItemRef}", 'value' => $item->ItemRef);
+        }
+
         $config->append(array(
-            'identifier' => 'com:qbsync.model.items',
-            'value'      => 'ItemRef',
-            'label'      => 'Name',
-            'sort'       => 'Name',
-            'validate'   => false,
+            'name'     => 'ItemRef',
+            'selected' => null,
+            'options'  => $options,
+            'filter'   => array(),
+            'select2'  => true,
+            'deselect' => true,
         ));
 
-        return $this->_autocomplete($config);
+        return parent::optionlist($config);
     }
 
     /**
