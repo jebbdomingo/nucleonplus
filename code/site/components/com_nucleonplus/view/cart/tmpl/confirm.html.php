@@ -39,9 +39,9 @@ defined('KOOWA') or die; ?>
                 </div>
                 <div class="panel-body">
                     <div class="well">
-                        <h3>Ship To:</h3>
-                        <?= $address ?>, 
-                        <?= $cart->city ?>
+                        <h3>Shipping Address</h3>
+                        <h5><?= $recipient_name ?></h5>
+                        <p><?= $address ?>, <?= $cart->city ?></p>
                     </div>
                     
                     <? foreach ($items as $item): ?>

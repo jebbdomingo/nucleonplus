@@ -81,6 +81,12 @@ defined('KOOWA') or die; ?>
                     </h3>
 
                     <div class="form-group">
+                        <label for="recipient_name" class="col-sm-2 control-label">Recipient Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="recipient_name" name="recipient_name" size="100%" value="<?= $recipient_name ?>" />
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="address" class="col-sm-2 control-label">Address</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="address" name="address" placeholder="Street, subdivision, baranggay ..." size="100%" value="<?= $address ?>" />
