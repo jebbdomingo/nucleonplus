@@ -87,6 +87,12 @@ defined('KOOWA') or die; ?>
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="recipient_email" class="col-sm-2 control-label">Recipient Email</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="recipient_email" name="recipient_email" size="100%" value="<?= $recipient_email ?>" />
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="address" class="col-sm-2 control-label">Address</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="address" name="address" placeholder="Street, subdivision, baranggay ..." size="100%" value="<?= $address ?>" />

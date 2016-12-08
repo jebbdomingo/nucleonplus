@@ -40,7 +40,7 @@ defined('KOOWA') or die; ?>
                 <div class="panel-body">
                     <div class="well">
                         <h3>Shipping Address</h3>
-                        <h5><?= $recipient_name ?></h5>
+                        <h5><?= $recipient_name ?> <small><?= $recipient_email ?></small></h5>
                         <p><?= $address ?>, <?= $cart->city ?></p>
                     </div>
                     

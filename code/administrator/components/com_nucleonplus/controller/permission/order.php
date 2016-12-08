@@ -42,7 +42,7 @@ class ComNucleonplusControllerPermissionOrder extends ComNucleonplusControllerPe
 
         $isProcessing = $order->order_status == ComNucleonplusModelEntityOrder::STATUS_PROCESSING;
 
-        if (parent::canEdit() && $isProcessing && $this->hasTracking()) {
+        if (parent::canEdit() && $isProcessing && $this->hasTrackingNumber()) {
             $result = true;
         }
 
