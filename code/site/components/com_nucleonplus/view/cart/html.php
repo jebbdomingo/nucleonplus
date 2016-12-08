@@ -22,7 +22,6 @@ class ComNucleonplusViewCartHtml extends ComKoowaViewHtml
         $total         = ($amount + $shippingCost + $paymentCharge);
 
         $context->data->recipient_name  = $cart->recipient_name ? $cart->recipient_name : $user->getName();
-        $context->data->recipient_email = $cart->recipient_email ? $cart->recipient_email : $user->getEmail();
         $context->data->address         = $cart->address ? $cart->address : $account->street;
         $context->data->city            = $cart->city ? $cart->city_id : $account->city_id;
         $context->data->items           = $cart->getItems() ? $cart->getItems() : array();

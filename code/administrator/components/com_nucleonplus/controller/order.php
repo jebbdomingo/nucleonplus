@@ -495,8 +495,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         // Send email notification
         $config       = JFactory::getConfig();
         $emailSubject = JText::sprintf('COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_SUBJECT', $order->id);
-        $trackingLink = '<a href="http://tracker.xend.com.ph/?waybill=' . $order->tracking_reference . '">' . $order->tracking_reference . '</a>';
-        $orderLink    = '<a href="' . JUri::root() . 'index.php/home/my-orders?view=order&id=' . $order->id . '">' . $order->id . '</a>';
+        $trackingLink = "http://tracker.xend.com.ph/?waybill={$order->tracking_reference}";
+        $orderLink    = JUri::root() . 'index.php/home/my-orders?view=order&id=' . $order->id;
         $emailBody    = JText::sprintf(
             'COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_BODY',
             $order->name,
