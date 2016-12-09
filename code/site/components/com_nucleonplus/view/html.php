@@ -12,10 +12,19 @@ class ComNucleonplusViewHtml extends ComKoowaViewHtml
 {
     protected function _fetchData(KViewContext $context)
     {
+        $user = $this->getObject('user');
         $data = $this->getObject('com://admin/nucleonplus.accounting.service.data');
 
         $context->data->onlinePurchaseEnabled = $data->CONFIG_ONLINE_PURCHASE_ENABLED;
-        $context->data->isAuthenticated       = $this->getObject('user')->isAuthentic();
+        $context->data->isAuthenticated       = $user->isAuthentic();
+
+        // Manager is not allowed to buy from frontend
+        $canBuy = false;
+        if (!in_array(6, $user->getGroups())) {
+            $canBuy = true;
+        }
+
+        $context->data->canBuy = $canBuy;
 
         parent::_fetchData($context);
     }
