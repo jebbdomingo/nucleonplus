@@ -58,7 +58,7 @@ defined('KOOWA') or die; ?>
                     <div class="panel-body">
                         <? if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY): ?>
                             <div class="well">
-                                <h3>Shipping Address</h3>
+                                <h3>Shipping Information</h3>
                                 <h5><?= $order->recipient_name ?></h5>
                                 <p><?= $order->address ?>, <?= $order->city ?></p>
                             </div>
