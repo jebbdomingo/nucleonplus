@@ -75,9 +75,9 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                         <? endif ?>
                     </table> -->
 
-                    <? if ($onlinePurchaseEnabled): ?>
+                    <? if ($onlinePurchaseEnabled && $canBuy): ?>
                         <p>
-                            <? if ($isAuthenticated && $canBuy): ?>
+                            <? if ($isAuthenticated): ?>
                                 <form action="<?= route('view=cart') ?>" method="post">
                                     <input type="hidden" name="_action" value="add" />
                                     <input type="hidden" name="ItemRef" value="<?= $product->ItemRef ?>" />
