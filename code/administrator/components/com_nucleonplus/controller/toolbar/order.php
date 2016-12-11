@@ -100,11 +100,13 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
      */
     protected function _commandCancelorder(KControllerToolbarCommand $command)
     {
+        $translator    = $this->getObject('translator');
         $command->icon = 'icon-32-delete';
 
         $command->append(array(
             'attribs' => array(
                 'data-action' => 'cancelorder',
+                'data-prompt' => $translator->translate('Cancelled order cannot be recovered. Would you like to continue?'),
             )
         ));
 

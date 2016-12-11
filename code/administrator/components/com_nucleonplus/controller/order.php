@@ -573,7 +573,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $translator = $this->getObject('translator');
 
         // Check order status if its reward can be activated
-        if ($order->order_status == ComNucleonplusModelEntityOrder::STATUS_COMPLETED) {
+        if ($order->order_status != ComNucleonplusModelEntityOrder::STATUS_COMPLETED) {
             throw new KControllerExceptionRequestInvalid($translator->translate("Unable to activate corresponding reward: Order #{$order->id} should be in \"Completed\" status"));
         }
 
