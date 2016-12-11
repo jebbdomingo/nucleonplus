@@ -19,6 +19,7 @@ class ComNucleonplusModelCartitems extends ComCartModelItems
             ->columns(array('_item_type'          => '_item.Type'))
             ->columns(array('_item_name'          => '_item.Name'))
             ->columns(array('_item_price'         => '_item.UnitPrice'))
+            ->columns(array('_item_image'         => '_item.image'))
             ->columns(array('_item_description'   => '_item.Description'))
             ->columns(array('_item_qty_onhand'    => '_item.QtyOnHand'))
             ->columns(array('_item_qty_purchased' => '_item.quantity_purchased'))

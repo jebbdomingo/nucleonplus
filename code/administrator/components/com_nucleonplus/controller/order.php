@@ -408,6 +408,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
                     'ItemRef'    => $item->_item_ref,
                     'item_name'  => $item->_item_name,
                     'item_price' => $item->_item_price,
+                    'item_image' => $item->_item_image,
                     'quantity'   => $item->quantity,
                 ));
                 $orderItem->save();

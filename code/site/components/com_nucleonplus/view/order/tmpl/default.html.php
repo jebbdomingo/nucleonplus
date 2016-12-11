@@ -63,7 +63,8 @@ else $footerAmountSize = 'col-xs-12';
                         
                         <? foreach ($order->getOrderItems() as $item): ?>
                             <div class="row">
-                                <div class="col-xs-2"><img class="img-responsive" src="http://placehold.it/100x70">
+                                <div class="col-xs-2">
+                                    <img src="<?= JURI::root() . 'images/' . $item->item_image ?>" alt="<?= $item->item_name ?>" style="width: 100px" />
                                 </div>
                                 <div class="col-xs-4">
                                     <h4 class="product-name"><strong><?= $item->item_name ?></strong></h4><h4><small>Item description</small></h4>

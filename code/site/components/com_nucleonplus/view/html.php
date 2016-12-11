@@ -19,10 +19,10 @@ class ComNucleonplusViewHtml extends ComKoowaViewHtml
         $context->data->isAuthenticated       = $user->isAuthentic();
 
         // Manager is not allowed to buy from frontend
-        $canBuy = false;
-        if (!in_array(6, $user->getGroups())) {
-            $canBuy = true;
+        if (in_array(6, $user->getGroups())) {
+            $canBuy = false;
         }
+        else $canBuy = true;
 
         $context->data->canBuy = $canBuy;
 
