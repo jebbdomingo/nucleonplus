@@ -101,7 +101,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'behaviors' => array(
                 'cancellable',
                 'processable',
-                'shippable'
+                'shippable',
+                'com:xend.controller.behavior.shippable',
             ),
         ));
 
@@ -491,25 +492,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
         $order = parent::_actionEdit($context);
 
         $context->response->addMessage("Order #{$order->id} has been marked as shipped.");
-
-        // Send email notification
-        $config       = JFactory::getConfig();
-        $emailSubject = JText::sprintf('COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_SUBJECT', $order->id);
-        $trackingLink = "http://tracker.xend.com.ph/?waybill={$order->tracking_reference}";
-        $orderLink    = JUri::root() . 'index.php/home/my-orders?view=order&id=' . $order->id;
-        $emailBody    = JText::sprintf(
-            'COM_NUCLEONPLUS_ORDER_EMAIL_SHIPPED_BODY',
-            $order->name,
-            $orderLink,
-            $trackingLink,
-            JUri::root()
-        );
-
-        $mail = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $order->_user_email, $emailSubject, $emailBody);
-        // Check for an error.
-        if ($mail !== true) {
-            $context->response->addMessage(JText::_('COM_NUCLEONPLUS_PAYOUT_EMAIL_SEND_MAIL_FAILED'), 'error');
-        }
 
         return $order;
     }
