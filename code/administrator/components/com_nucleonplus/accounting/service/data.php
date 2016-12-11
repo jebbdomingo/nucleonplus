@@ -65,6 +65,7 @@ class ComNucleonplusAccountingServiceData extends KObject
         }
         else
         {
+            $trace = debug_backtrace();
             trigger_error(
                 'Undefined property via __get(): ' . $name .
                 ' in ' . $trace[0]['file'] .
