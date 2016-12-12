@@ -14,7 +14,7 @@ defined('KOOWA') or die; ?>
     <h4 class="page-header"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?= translate('Referral Link') ?></h4>
 
     <div class="input-group">
-        <input id="sponsor-link" type="text" class="form-control input-sm" value="<?= JURI::root() . "index.php/sign-up/?sponsor_id={$account->account_number}" ?>" readonly="readonly" />
+        <input id="sponsor-link" type="text" class="form-control input-sm" value="<?= JURI::root() . "sign-up/?sponsor_id={$account->account_number}" ?>" readonly="readonly" />
         <span class="input-group-btn">
             <button class="btn btn-sm btn-default" type="button" data-clipboard-target="#sponsor-link" title="Copied">
                 <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Copy
