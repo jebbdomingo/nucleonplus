@@ -69,6 +69,20 @@ class ComNucleonplusModelOrders extends KModelDatabase
     }
 
     /**
+     * Set default sorting
+     *
+     * @param KModelContextInterface $context A model context object
+     *
+     * @return void
+     */
+    protected function _beforeFetch(KModelContextInterface $context)
+    {
+        if (is_null($context->state->sort)) {
+            $context->query->order('tbl.nucleonplus_order_id', 'desc');
+        }
+    }
+
+    /**
      * Get the total amount of this order
      *
      * @return decimal
