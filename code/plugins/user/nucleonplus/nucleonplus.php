@@ -40,7 +40,7 @@ class PlgUserNucleonplus extends JPlugin
             {
                 if ($customer = $this->_syncAccount($oldUser))
                 {
-                    $account  = KObjectManager::getInstance()->getObject('com://admin/nucleonplus.model.accounts')->id($oldUser['id'])->fetch();
+                    $account  = $this->getObject('com://admin/nucleonplus.model.accounts')->id($oldUser['id'])->fetch();
                     $account->CustomerRef = $customer->CustomerRef;
                     $account->activate();
                     $account->save();
@@ -94,7 +94,7 @@ class PlgUserNucleonplus extends JPlugin
             if ($account = $this->_createAccount($user))
             {
                 // Push member to accounting service for later sync
-                KObjectManager::getInstance()->getObject('com://admin/nucleonplus.accounting.service.member')->pushMember($account);
+                $this->getObject('com://admin/nucleonplus.accounting.service.member')->pushMember($account);
             }
         }
     }
@@ -112,7 +112,7 @@ class PlgUserNucleonplus extends JPlugin
     {
         if (isset($user['sponsor_id']) && $user['sponsor_id'])
         {
-            $sponsor = KObjectManager::getInstance()->getObject('com://admin/nucleonplus.model.accounts')->account_number($user['sponsor_id'])->fetch();
+            $sponsor = $this->getObject('com://admin/nucleonplus.model.accounts')->account_number($user['sponsor_id'])->fetch();
 
             if (count($sponsor) == 0) {
                 throw new Exception('Invalid Sponsor ID');
@@ -135,8 +135,8 @@ class PlgUserNucleonplus extends JPlugin
      */
     protected function _syncAccount($user, $action = 'add')
     {
-        $account  = KObjectManager::getInstance()->getObject('com://admin/nucleonplus.model.accounts')->id($user['id'])->fetch();
-        $customer = KObjectManager::getInstance()->getObject('com://admin/qbsync.model.customers')
+        $account  = $this->getObject('com://admin/nucleonplus.model.accounts')->id($user['id'])->fetch();
+        $customer = $this->getObject('com://admin/qbsync.model.customers')
             ->account_id($user['id'])
             ->action($action)
             ->fetch()
@@ -165,13 +165,13 @@ class PlgUserNucleonplus extends JPlugin
     protected function _createAccount($user)
     {
         // Create account
-        $model   = KObjectManager::getInstance()->getObject('com://admin/nucleonplus.model.accounts');
+        $model   = $this->getObject('com://admin/nucleonplus.model.accounts');
         $account = $model->create(array(
             'status'              => 'new',
             'id'                  => $user['id'],
             'user_id'             => $user['id'],
             'PrintOnCheckName'    => $user['name'],
-            'sponsor_id'          => $user['sponsor_id'],
+            'sponsor_id'          => $this->getObject('user')->get('sponsor_id'),
             'bank_account_number' => $user['bank_account_number'],
             'bank_account_name'   => $user['bank_account_name'],
             'bank_account_type'   => $user['bank_account_type'],
@@ -192,8 +192,44 @@ class PlgUserNucleonplus extends JPlugin
         }
 
         // Fetch newly created account to get joined tables
-        $account = KObjectManager::getInstance()->getObject('com://admin/nucleonplus.model.accounts')->id($account->id)->fetch();
+        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->id($account->id)->fetch();
 
         return $account;
+    }
+
+    /**
+     * Get an instance of an object identifier
+     *
+     * @param KObjectIdentifier|string $identifier An ObjectIdentifier or valid identifier string
+     * @param array                    $config     An optional associative array of configuration settings.
+     * @return KObjectInterface  Return object on success, throws exception on failure.
+     */
+    final public function getObject($identifier, array $config = array())
+    {
+        return KObjectManager::getInstance()->getObject($identifier, $config);
+    }
+
+    /**
+     * Overridden to only run if we have Nooku framework installed
+     */
+    public function update(&$args)
+    {
+        $return = null;
+
+        if (class_exists('Koowa') && class_exists('KObjectManager') && (bool) JComponentHelper::getComponent('com_nucleonplus', true)->enabled)
+        {
+            try
+            {
+                $return = parent::update($args);
+            }
+            catch (Exception $e)
+            {
+                if (JDEBUG) {
+                    JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+                }
+            }
+        }
+
+        return $return;
     }
 }
