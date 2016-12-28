@@ -21,9 +21,10 @@ class ComNucleonplusTemplateHelperReferrallink extends ComKoowaTemplateHelperBeh
         $config  = new KObjectConfigJson($config);
         $config->append(array(
             'selector' => '.btn',
-            'url'      => 'http:/' . $this->getTemplate()->route("sponsor_id={$account->account_number}"),
-            // 'url'      => JURI::root() . "sign-up/?sponsor_id={$account->account_number}",
+            'url'      => null,
         ));
+
+        $url = $config->url . "&sponsor_id={$account->account_number}";
 
         $signature = md5(serialize(array($config->selector)));
         if (!isset(self::$_loaded[$signature])) {
@@ -43,7 +44,7 @@ class ComNucleonplusTemplateHelperReferrallink extends ComKoowaTemplateHelperBeh
                 <span class="input-group-addon" id="basic-addon1">
                     <span class="glyphicon glyphicon-link" aria-hidden="true"></span> Referral Link
                 </span>
-                <input id="sponsor-link" type="text" class="form-control input-sm" value="' . $config->url . '" readonly="readonly" />
+                <input id="sponsor-link" type="text" class="form-control input-sm" value="' . $url . '" readonly="readonly" />
                 <span class="input-group-btn">
                     <button class="btn btn-sm btn-primary" type="button" data-clipboard-target="#sponsor-link" title="Copied">
                         <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Copy

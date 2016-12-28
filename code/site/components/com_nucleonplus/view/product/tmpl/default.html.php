@@ -34,7 +34,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
 
                     <div class="col-sm-8">
 
-                        <?= helper('referrallink.clipboard') ?>
+                        <?= helper('referrallink.clipboard', array('url' => JUri::root() . "products.html?view=product&id={$product->id}")) ?>
 
                     </div>
 
