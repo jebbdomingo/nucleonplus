@@ -24,8 +24,8 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
             <div class="thumbnail">
                 <img src="<?= JURI::root() . 'images/' . $product->image ?>" alt="<?= $product->Name ?>" style="height: 304px" />
                 <div class="caption">
-                    <h3><?= $product->Name ?></h3>
-                    <h4>&#8369;<?= number_format($product->UnitPrice, 2) ?></h4>
+                    <a href="<?= route("view=product&id={$product->id}") ?>"><h3><?= $product->Name ?></h3></a>
+                    <h4>&#8369; <?= number_format($product->UnitPrice, 2) ?></h4>
                     <p><?= $product->Description ?></p>
                     <!-- <table class="table">
                         <tr class="info">
@@ -76,31 +76,39 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                     </table> -->
 
                     <? if ($onlinePurchaseEnabled && $canBuy): ?>
-                        <p>
-                            <? if ($isAuthenticated): ?>
-                                <form action="<?= route('view=cart') ?>" method="post">
-                                    <input type="hidden" name="_action" value="add" />
-                                    <input type="hidden" name="ItemRef" value="<?= $product->ItemRef ?>" />
-                                    <input type="hidden" name="quantity" value="1" />
-                                    <? if ($product->hasAvailableStock()): ?>
-                                        <button class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
-                                            <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                                                Add to cart
-                                        </button>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <a href="<?= route("view=product&id={$product->id}") ?>" class="btn btn-primary btn-md" role="button">
+                                        <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                        View
+                                    </a>
+                                </div>
+                                <div class="col-sm-9">
+                                    <? if ($isAuthenticated): ?>
+                                        <form action="<?= route('view=cart') ?>" method="post">
+                                            <input type="hidden" name="_action" value="add" />
+                                            <input type="hidden" name="ItemRef" value="<?= $product->ItemRef ?>" />
+                                            <input type="hidden" name="quantity" value="1" />
+                                            <? if ($product->hasAvailableStock()): ?>
+                                                <button class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
+                                                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                                                        Add to cart
+                                                </button>
+                                            <? else: ?>
+                                                <button class="btn btn-default btn-md" role="button" disabled="disabled">
+                                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                                        Out of stock
+                                                </button>
+                                            <? endif ?>
+                                        </form>
                                     <? else: ?>
-                                        <button class="btn btn-default btn-md" role="button" disabled="disabled">
-                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                                Out of stock
-                                        </button>
-                                    <? endif ?>
-                                </form>
-                            <? else: ?>
-                                <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
-                                    <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
-                                    Buy Now
-                                </a>
-                            <? endif; ?>
-                        </p>
+                                        <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
+                                            <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
+                                            Buy Now
+                                        </a>
+                                    <? endif; ?>
+                                </div>
+                            </div>
                     <? endif; ?>
                 </div>
             </div>

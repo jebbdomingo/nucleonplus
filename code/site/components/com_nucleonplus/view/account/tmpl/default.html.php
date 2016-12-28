@@ -11,7 +11,6 @@
 defined('KOOWA') or die; ?>
 
 <?= helper('behavior.koowa'); ?>
-<?= helper('behavior.clipboardable'); ?>
 
 <ktml:style src="media://koowa/com_koowa/css/koowa.css" />
 

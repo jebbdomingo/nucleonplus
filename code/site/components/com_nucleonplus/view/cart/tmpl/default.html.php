@@ -50,7 +50,8 @@ defined('KOOWA') or die; ?>
                                 <img src="<?= JURI::root() . 'images/' . $item->_item_image ?>" alt="<?= $item->_item_name ?>" style="width: 100px" />
                             </div>
                             <div class="col-sm-4">
-                                <h4 class="product-name"><strong><?= $item->_item_name ?></strong></h4><h4><small><?= $item->_item_description ?></small></h4>
+                                <a href="<?= route("view=product&id=$item->_item_id") ?>"><h4 class="product-name"><strong><?= $item->_item_name ?></strong></h4></a>
+                                <h4><small><?= $item->_item_description ?></small></h4>
                             </div>
                             <div class="col-sm-6">
                                 <div class="col-sm-6 text-right">

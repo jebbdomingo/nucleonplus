@@ -22,7 +22,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
     protected function _actionDispatch(KDispatcherContextInterface $context)
     {
         $view        = $this->getRequest()->query->view;
-        $excemptions = array('products', 'dragonpay', 'dragonpaypo');
+        $excemptions = array('product', 'products', 'dragonpay', 'dragonpaypo');
 
         if ($view && (!in_array($view, $excemptions) && !$this->getUser()->isAuthentic()))
         {

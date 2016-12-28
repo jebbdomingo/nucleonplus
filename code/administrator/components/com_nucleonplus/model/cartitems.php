@@ -15,6 +15,7 @@ class ComNucleonplusModelCartitems extends ComCartModelItems
         parent::_buildQueryColumns($query);
 
         $query
+            ->columns(array('_item_id'           => '_item.qbsync_item_id'))
             ->columns(array('_item_ref'           => '_item.ItemRef'))
             ->columns(array('_item_type'          => '_item.Type'))
             ->columns(array('_item_name'          => '_item.Name'))

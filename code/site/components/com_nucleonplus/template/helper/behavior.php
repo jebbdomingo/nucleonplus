@@ -249,7 +249,8 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
     {
         $config = new KObjectConfigJson($config);
         $config->append(array(
-            'selector' => '.btn'
+            'selector' => '.btn',
+            'url'      => JURI::root() . "sign-up/?sponsor_id={$account->id}",
         ));
 
         $signature = md5(serialize(array($config->selector)));
@@ -264,6 +265,17 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
             });
             </script>
             ";
+
+            $html .= '
+            <div class="input-group">
+                <input id="sponsor-link" type="text" class="form-control input-sm" value="{$config->url}" readonly="readonly" />
+                <span class="input-group-btn">
+                    <button class="btn btn-sm btn-default" type="button" data-clipboard-target="#sponsor-link" title="Copied">
+                        <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Copy
+                    </button>
+                </span>
+            </div><!-- /input-group -->
+            ';
 
             self::$_loaded[$signature] = true;
         }

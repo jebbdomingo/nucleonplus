@@ -10,6 +10,8 @@
 
 defined('KOOWA') or die; ?>
 
+<?= helper('behavior.clipboardable'); ?>
+
 <div class="well bg-info">
     <h4 class="page-header"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?= translate('Referral Link') ?></h4>
 
