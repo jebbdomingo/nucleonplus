@@ -35,6 +35,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                     <div class="col-sm-8">
 
                         <?= helper('referrallink.clipboard', array('url' => JUri::root() . "products.html?view=product&id={$product->id}")) ?>
+                        <span id="helpBlock" class="help-block small">Share this product link to refer a friend and start earning</span>
 
                     </div>
 

@@ -10,19 +10,10 @@
 
 defined('KOOWA') or die; ?>
 
-<?= helper('behavior.clipboardable'); ?>
-
 <div class="well bg-info">
     <h4 class="page-header"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?= translate('Referral Link') ?></h4>
 
-    <div class="input-group">
-        <input id="sponsor-link" type="text" class="form-control input-sm" value="<?= JURI::root() . "sign-up/?sponsor_id={$account->account_number}" ?>" readonly="readonly" />
-        <span class="input-group-btn">
-            <button class="btn btn-sm btn-default" type="button" data-clipboard-target="#sponsor-link" title="Copied">
-                <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Copy
-            </button>
-        </span>
-    </div><!-- /input-group -->
+    <?= helper('referrallink.clipboard', array('url' => JURI::root() . "sign-up")) ?>
 
-    <span id="helpBlock" class="help-block small">Copy this link to refer a friend and start earning</span>
+    <span id="helpBlock" class="help-block small">Share this link to refer a friend and start earning</span>
 </div>
