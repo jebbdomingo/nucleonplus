@@ -149,7 +149,18 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
             'cart_id'    => $context->request->data->cart_id,
         );
 
-        return $this->getObject('com://admin/nucleonplus.controller.order')->add($data);
+        $controller = $this->getObject('com://admin/nucleonplus.controller.order');
+        $controller->getRequest()->query->format = 'json';
+        $controller->add($data);
+        
+        $result = $controller->getResponse()->getMessages();
+
+        if (isset($result['success']))
+        {
+            foreach ($result['success'] as $message) {
+                $context->response->addMessage($message);
+            }
+        }
     }
 
     protected function _actionDeleteitem(KControllerContextInterface $context)
