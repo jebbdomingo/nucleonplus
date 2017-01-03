@@ -150,7 +150,6 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
         );
 
         $controller = $this->getObject('com://admin/nucleonplus.controller.order');
-        $controller->getRequest()->query->format = 'json';
         $controller->add($data);
         
         $result = $controller->getResponse()->getMessages();
