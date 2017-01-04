@@ -19,8 +19,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
 <div class="row">
 
     <div class="col-sm-4">
-
-        <img src="<?= JURI::root() . 'images/' . $product->image ?>" alt="<?= $product->Name ?>" style="height: 304px" />
+        <img src="<?= JURI::root() . 'images/' . $product->image ?>" alt="<?= $product->Name ?>" style="width: 300px" />
     </div>
 
     <div class="col-sm-8">
