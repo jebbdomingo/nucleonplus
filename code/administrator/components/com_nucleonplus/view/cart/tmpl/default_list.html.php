@@ -1,8 +1,6 @@
 <table class="table table-striped">
     <thead>
-        <th style="text-align: center;" width="1">
-            <?= helper('grid.checkall')?>
-        </th>
+        <th style="text-align: center;" width="1">&nbsp;</th>
         <th>Item</th>
         <th>Price</th>
         <th>Quantity</th>

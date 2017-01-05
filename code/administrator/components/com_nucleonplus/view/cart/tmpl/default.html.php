@@ -36,7 +36,7 @@ defined('KOOWA') or die; ?>
 
         <fieldset class="form-vertical">
 
-            <form method="post" class="-koowa-form -koowa-grid">
+            <form method="post" class="-koowa-form">
             
                 <input type="hidden" name="account_id" value="<?= $account->id ?>" />
                 <input type="hidden" name="cart_id" value="<?= $cart->id ?>" />
