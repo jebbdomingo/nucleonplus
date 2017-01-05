@@ -331,7 +331,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
             'selected' => null,
             'options'  => $options,
             'filter'   => array(),
-            'select2'  => true,
+            // 'select2'  => true,
             'deselect' => true,
         ));
 
