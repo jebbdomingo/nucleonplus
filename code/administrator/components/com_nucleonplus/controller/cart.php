@@ -62,6 +62,16 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
         $data->row      = $data->ItemRef;
         $data->quantity = $data->form_quantity;
 
+        var_dump($data->ItemRef);
+        echo '<br />';
+        var_dump($data->form_quantity);
+        echo '<br />';
+        var_dump($data->row);
+        echo '<br />';
+        var_dump($data->quantity);
+        echo '<br />';
+        die('test');
+
         parent::_validateAdd($context);
     }
 
