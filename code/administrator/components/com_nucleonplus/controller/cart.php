@@ -59,12 +59,8 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
     protected function _validateAdd(KControllerContextInterface $context)
     {
         $data           = $context->request->data;
-        var_dump($data->toArray());
-        echo '<br />';
-        die('test');
         $data->row      = $data->ItemRef;
         $data->quantity = $data->form_quantity;
-
 
         parent::_validateAdd($context);
     }
