@@ -63,19 +63,24 @@ defined('KOOWA') or die; ?>
                                 <p><?= $order->address ?>, <?= $order->city ?></p>
 
                                 <? if ($order->getCouriers()): ?>
-                                <h3>Shippers Cost Breakdown</h3>
-                                <div class="row-fluid">
-                                    <div class="span3"><strong>Xend</strong></div>
-                                    <div class="span9">&#8369; <?= number_format($order->getCouriers()->xend, 2) ?></div>
-                                </div>
-                                <div class="row-fluid">
-                                    <div class="span3"><strong>Phlpost</strong></div>
-                                    <div class="span9">&#8369; <?= number_format($order->getCouriers()->phlpost, 2) ?></div>
-                                </div>
-                                <div class="row-fluid">
-                                    <div class="span3"><strong>Total Shipping Cost</strong></div>
-                                    <div class="span9">&#8369; <?= number_format($order->shipping_cost, 2) ?></div>
-                                </div>
+                                <h3>Couriers Cost Breakdown</h3>
+                                <table>
+                                    <tr>
+                                        <td><strong>Xend</strong></td>
+                                        <td>&nbsp;:&nbsp;</td>
+                                        <td><div style="text-align: right">&#8369; <?= number_format($order->getCouriers()->xend, 2) ?></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Phlpost</strong></td>
+                                        <td>&nbsp;:&nbsp;</td>
+                                        <td><div style="text-align: right">&#8369; <?= number_format($order->getCouriers()->phlpost, 2) ?></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Shipping Cost</strong></td>
+                                        <td>&nbsp;:&nbsp;</td>
+                                        <td><div style="text-align: right">&#8369; <?= number_format($order->shipping_cost, 2) ?></div></td>
+                                    </tr>
+                                </table>
                                 <? endif ?>
                             </div>
                         <? endif; ?>
