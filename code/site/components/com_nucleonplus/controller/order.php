@@ -76,7 +76,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'reward'            => 'com://admin/nucleonplus.mlm.packagereward',
             'inventory_service' => 'com://admin/nucleonplus.accounting.service.inventory',
             'behaviors'         => array(
-                // 'onlinepayable',
+                'onlinepayable',
                 'com://admin/nucleonplus.controller.behavior.cancellable',
             ),
         ));
