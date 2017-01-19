@@ -62,15 +62,15 @@ defined('KOOWA') or die; ?>
                                 <h5><?= $order->recipient_name ?></h5>
                                 <p><?= $order->address ?>, <?= $order->city ?></p>
 
-                                <? if ($order->getShippers()): ?>
+                                <? if ($order->getCouriers()): ?>
                                 <h3>Shippers Cost Breakdown</h3>
                                 <div class="row-fluid">
                                     <div class="span3"><strong>Xend</strong></div>
-                                    <div class="span9">&#8369; <?= number_format($order->getShippers()->xend, 2) ?></div>
+                                    <div class="span9">&#8369; <?= number_format($order->getCouriers()->xend, 2) ?></div>
                                 </div>
                                 <div class="row-fluid">
                                     <div class="span3"><strong>Phlpost</strong></div>
-                                    <div class="span9">&#8369; <?= number_format($order->getShippers()->phlpost, 2) ?></div>
+                                    <div class="span9">&#8369; <?= number_format($order->getCouriers()->phlpost, 2) ?></div>
                                 </div>
                                 <div class="row-fluid">
                                     <div class="span3"><strong>Total Shipping Cost</strong></div>
