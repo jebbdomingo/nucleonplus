@@ -60,7 +60,7 @@ class ComNucleonplusModelCarts extends ComCartModelCarts
      *
      * @return integer
      */
-    public function getWeight()
+    public function getWeight($itemType = null)
     {
         $state = $this->getState();
 
@@ -71,6 +71,10 @@ class ComNucleonplusModelCarts extends ComCartModelCarts
             ->join(array('_item' => 'qbsync_items'), 'tbl.row = _item.ItemRef', 'INNER')
             ->group('tbl.cart_id')
         ;
+
+        if ($itemType) {
+            $query->where('_item.shipping_type = :type')->bind(['type' => $itemType]);
+        }
 
         $this->_buildQueryWhere($query);
 

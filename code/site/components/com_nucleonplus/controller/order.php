@@ -199,6 +199,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'city'            => $cart->city_id,
             'postal_code'     => $cart->postal_code,
             'shipping_cost'   => $cart->getShippingFee(),
+            'shippers'        => json_encode($cart->getShippingFees()),
             'payment_charge'  => $cart->getPaymentCharge(),
             'payment_mode'    => $cart->payment_mode,
         ));

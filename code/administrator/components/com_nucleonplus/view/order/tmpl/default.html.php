@@ -61,6 +61,22 @@ defined('KOOWA') or die; ?>
                                 <h3>Shipping Information</h3>
                                 <h5><?= $order->recipient_name ?></h5>
                                 <p><?= $order->address ?>, <?= $order->city ?></p>
+
+                                <? if ($order->getShippers()): ?>
+                                <h3>Shippers Cost Breakdown</h3>
+                                <div class="row-fluid">
+                                    <div class="span3"><strong>Xend</strong></div>
+                                    <div class="span9">&#8369; <?= number_format($order->getShippers()->xend, 2) ?></div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span3"><strong>Phlpost</strong></div>
+                                    <div class="span9">&#8369; <?= number_format($order->getShippers()->phlpost, 2) ?></div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span3"><strong>Total Shipping Cost</strong></div>
+                                    <div class="span9">&#8369; <?= number_format($order->shipping_cost, 2) ?></div>
+                                </div>
+                                <? endif ?>
                             </div>
                         <? endif; ?>
                         
@@ -72,18 +88,18 @@ defined('KOOWA') or die; ?>
 
                         <? if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY): ?>
                             <div style="text-align: right">
-                                Sub-total: &#8369;<?= number_format($order->sub_total, 2) ?>
+                                Sub-total: &#8369; <?= number_format($order->sub_total, 2) ?>
                             </div>
                             <div style="text-align: right">
-                                Shipping: &#8369;<?= number_format($order->shipping_cost, 2) ?>
+                                Shipping: &#8369; <?= number_format($order->shipping_cost, 2) ?>
                             </div>
                             <div style="text-align: right">
-                                <?= $order->getPaymentDescription() ?>: &#8369;<?= number_format($order->payment_charge, 2) ?>
+                                <?= $order->getPaymentDescription() ?>: &#8369; <?= number_format($order->payment_charge, 2) ?>
                             </div>
                         <? endif ?>
 
                         <div style="text-align: right">
-                            <h4>Total: <strong>&#8369;<?= number_format($order->total, 2) ?></strong></h4>
+                            <h4>Total: <strong>&#8369; <?= number_format($order->total, 2) ?></strong></h4>
                         </div>
                     </div>
                 </div>

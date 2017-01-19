@@ -15,7 +15,6 @@ class ComNucleonplusDatabaseTableCarts extends ComCartDatabaseTableCarts
         $config->append(array(
             'behaviors' => array(
                 'locatable',
-                'com:xend.database.behavior.shippable',
                 'com:dragonpay.database.behavior.onlinepayable',
             )
         ));

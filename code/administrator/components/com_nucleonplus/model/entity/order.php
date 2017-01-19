@@ -109,4 +109,9 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
             ->getAmount()
         ;
     }
+
+    public function getShippers()
+    {
+        return json_decode($this->shippers);
+    }
 }
