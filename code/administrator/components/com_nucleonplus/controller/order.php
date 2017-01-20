@@ -489,6 +489,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     {
         $context->request->data->order_status       = ComNucleonplusModelEntityOrder::STATUS_SHIPPED;
         $context->request->data->tracking_reference = $context->request->data->tracking_reference;
+        $context->request->data->_couriers          = array_keys((array) $this->getModel()->fetch()->getCouriers());
 
         $order = parent::_actionEdit($context);
 

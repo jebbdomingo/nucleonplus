@@ -59,27 +59,42 @@ defined('KOOWA') or die; ?>
                         <? if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY): ?>
                             <div class="well">
                                 <h3>Shipping Information</h3>
-                                <h5><?= $order->recipient_name ?></h5>
+                                <h4><?= $order->recipient_name ?></h4>
                                 <p><?= $order->address ?>, <?= $order->city ?></p>
 
                                 <? if ($order->getCouriers()): ?>
-                                <h3>Couriers Cost Breakdown</h3>
-                                <table>
-                                    <tr>
-                                        <td><strong>Xend</strong></td>
-                                        <td>&nbsp;:&nbsp;</td>
-                                        <td><div style="text-align: right">&#8369; <?= number_format($order->getCouriers()->xend, 2) ?></div></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Phlpost</strong></td>
-                                        <td>&nbsp;:&nbsp;</td>
-                                        <td><div style="text-align: right">&#8369; <?= number_format($order->getCouriers()->phlpost, 2) ?></div></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Total Shipping Cost</strong></td>
-                                        <td>&nbsp;:&nbsp;</td>
-                                        <td><div style="text-align: right">&#8369; <?= number_format($order->shipping_cost, 2) ?></div></td>
-                                    </tr>
+                                <h4>Shipping Cost Breakdown</h4>
+                                <table border="1" width="100%">
+                                    <thead>
+                                        <th>Courier</th>
+                                        <th>Weight (gms)</th>
+                                        <th>Cost</th>
+                                    </thead>
+                                    <tbody>
+                                        <?
+                                        $weight = 0;
+                                        $amount = 0;
+                                        ?>
+                                        <? foreach ($order->getCouriers() as $courier): ?>
+                                        <?
+                                        $weight += $courier->weight;
+                                        $amount += $courier->amount;
+                                        ?>
+                                            <tr>
+                                                <td><strong><?= $courier->name ?></strong></td>
+                                                <td><div style="text-align: right"><?= $courier->weight ?></div></td>
+                                                <td><div style="text-align: right">&#8369; <?= number_format($courier->amount, 2) ?></div></td>
+                                            </tr>
+                                        <? endforeach ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td><div style="text-align: right"><?= $weight ?></div></td>
+                                            <td><div style="text-align: right">&#8369; <?= number_format($amount, 2) ?></div></td>
+                                        </tr></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                                 <? endif ?>
                             </div>

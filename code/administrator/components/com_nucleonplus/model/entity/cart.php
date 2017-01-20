@@ -119,12 +119,16 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements Co
             switch ($item->_item_shipping_type) {
                 case ComQbsyncModelEntityItem::TYPE_SHIPPING_POST:
                     // Philippine post office
-                    $amount += $this->getObject('com:phlpost.service.shippingrates')->getRate($dest, (int) $item->_item_weight);
+                    $amount += $this->getObject('com:phlpost.service.shippingrates')
+                        ->getRate($dest, $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_POST))
+                    ;
                     break;
                 
                 default:
                     // Default shipping service
-                    $amount += $this->getObject('com:xend.model.shippingrates')->getRate($dest, $this->getWeight());
+                    $amount += $this->getObject('com:xend.model.shippingrates')
+                        ->getRate($dest, $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND))
+                    ;
                     break;
             }
         }
@@ -137,13 +141,17 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements Co
     /**
      * Get breakdown shipping fees from multiple courier
      *
-     * @return array
+     * @return array of courier objects
      */
     public function getShippingFees()
     {
         $city   = $this->getObject('com://admin/nucleonplus.model.cities')->id($this->city_id)->fetch();
         $dest   = $city->_province_id == ComNucleonplusModelEntityCity::DESTINATION_METRO_MANILA ? 'manila' : 'provincial';
-        $result = array();
+
+        $postWeight = 0;
+        $postRate   = 0;
+        $xendWeight = 0;
+        $xendRate   = 0;
 
         // Compute shipping cost for each of the items
         $items = $this->getObject('com://admin/nucleonplus.model.cartitems')
@@ -156,17 +164,41 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements Co
             switch ($item->_item_shipping_type) {
                 case ComQbsyncModelEntityItem::TYPE_SHIPPING_POST:
                     // Philippine post office
-                    $result[ComQbsyncModelEntityItem::TYPE_SHIPPING_POST] += $this->getObject('com:phlpost.service.shippingrates')->getRate($dest, $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_POST));
+                    $postWeight += $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_POST);
+
                     break;
                 
                 default:
-                    // Default shipping service
-                    $result[ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND] += $this->getObject('com:xend.model.shippingrates')->getRate($dest, $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND));
+                    $xendWeight += $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND);
+
                     break;
             }
         }
 
-        return $result;
+        $postRate = $this
+            ->getObject('com:phlpost.service.shippingrates')
+            ->getRate($dest, $postWeight)
+        ;
+
+        $xendRate = $this
+            ->getObject('com:xend.model.shippingrates')
+            ->getRate($dest, $xendWeight)
+        ;
+
+        $couriers = array(
+            array(
+                'name'   => ComQbsyncModelEntityItem::TYPE_SHIPPING_POST,
+                'weight' => $postWeight,
+                'amount' => $postRate
+            ),
+            array(
+                'name'   => ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND,
+                'weight' => $xendWeight,
+                'amount' => $xendRate
+            )
+        );
+
+        return $couriers;
     }
 
     public function getSubTotal()
@@ -174,7 +206,7 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements Co
         return $this->getAmount() + $this->getShippingFee();
     }
 
-    public function getWeight($itemType)
+    public function getWeight($itemType = null)
     {
         return $this->getObject('com://admin/nucleonplus.model.carts')
             ->cart_id($this->id)
