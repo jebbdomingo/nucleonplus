@@ -28,41 +28,41 @@ class PlgUserNucleonplus extends JPlugin
     public function onUserBeforeSave($oldUser, $isNew, $newUser)
     {
         // Existing user (Update)
-        if(!$isNew)
-        {
-            // On user activation
-            if(isset($oldUser['activation']) &&
-               !empty($oldUser['activation']) &&
-               isset($oldUser['requireReset']) &&
-               $oldUser['requireReset'] == 0 &&
-               isset($newUser['activation']) &&
-               empty($newUser['activation']))
-            {
-                if ($customer = $this->_syncAccount($oldUser))
-                {
-                    $account  = $this->getObject('com://admin/nucleonplus.model.accounts')->id($oldUser['id'])->fetch();
-                    $account->CustomerRef = $customer->CustomerRef;
-                    $account->activate();
-                    $account->save();
+        // if(!$isNew)
+        // {
+        //     // On user activation
+        //     if(isset($oldUser['activation']) &&
+        //        !empty($oldUser['activation']) &&
+        //        isset($oldUser['requireReset']) &&
+        //        $oldUser['requireReset'] == 0 &&
+        //        isset($newUser['activation']) &&
+        //        empty($newUser['activation']))
+        //     {
+        //         if ($customer = $this->_syncAccount($oldUser))
+        //         {
+        //             $account  = $this->getObject('com://admin/nucleonplus.model.accounts')->id($oldUser['id'])->fetch();
+        //             $account->CustomerRef = $customer->CustomerRef;
+        //             $account->activate();
+        //             $account->save();
 
-                    // Attempt to send success email
-                    $emailSubject = "Your Nucleon Plus Account has been activated";
-                    $emailBody    = JText::sprintf(
-                        'PLG_NUCLEONPLUS_EMAIL_ACTIVATION_BODY',
-                        $account->_name,
-                        JUri::root()
-                    );
+        //             // Attempt to send success email
+        //             $emailSubject = "Your Nucleon Plus Account has been activated";
+        //             $emailBody    = JText::sprintf(
+        //                 'PLG_NUCLEONPLUS_EMAIL_ACTIVATION_BODY',
+        //                 $account->_name,
+        //                 JUri::root()
+        //             );
 
-                    $config = JFactory::getConfig();
-                    $email  = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $account->_email, $emailSubject, $emailBody);
-                    if ($email !== true)
-                    {
-                        throw new Exception(JText::sprintf('PLG_NUCLEONPLUS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
-                        return false;
-                    }
-                }
-            }
-        }
+        //             $config = JFactory::getConfig();
+        //             $email  = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $account->_email, $emailSubject, $emailBody);
+        //             if ($email !== true)
+        //             {
+        //                 throw new Exception(JText::sprintf('PLG_NUCLEONPLUS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
+        //                 return false;
+        //             }
+        //         }
+        //     }
+        // }
 
         // New user (Registration)
         if ($isNew)
@@ -81,6 +81,37 @@ class PlgUserNucleonplus extends JPlugin
     }
 
     /**
+     * Send success activation email
+     *
+     * @param  string $name Name of the recipient
+     * @param  string $email Email address of the recipient
+     *
+     * @throws Exception Email exception
+     *
+     * @return boolean
+     */
+    protected function sendSuccessActivationEmail($name, $email)
+    {
+        // Attempt to send success email
+        $subject = "Your Nucleon Plus Account has been activated";
+        $body    = JText::sprintf(
+            'PLG_NUCLEONPLUS_EMAIL_ACTIVATION_BODY',
+            $name,
+            JUri::root()
+        );
+
+        $config   = JFactory::getConfig();
+        $mailFrom = $config->get('mailfrom');
+        $fromName = $config->get('fromname');
+
+        $result = JFactory::getMailer()->sendMail($mailFrom, $fromName, $email, $subject, $body);
+
+        if ($result !== true) {
+            throw new Exception(JText::sprintf('PLG_NUCLEONPLUS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'));
+        }
+    }
+
+    /**
      * Hook into onUserAfterSave user event
      *
      * @return void
@@ -95,6 +126,15 @@ class PlgUserNucleonplus extends JPlugin
             {
                 // Push member to accounting service for later sync
                 $this->getObject('com://admin/nucleonplus.accounting.service.member')->pushMember($account);
+
+                if ($customer = $this->_syncAccount($user))
+                {
+                    $account->CustomerRef = $customer->CustomerRef;
+                    $account->activate();
+                    $account->save();
+
+                    $this->sendSuccessActivationEmail($account->_name, $account->_email);
+                }
             }
         }
     }
@@ -172,16 +212,6 @@ class PlgUserNucleonplus extends JPlugin
             'user_id'             => $user['id'],
             'PrintOnCheckName'    => $user['name'],
             'sponsor_id'          => $this->getObject('user')->get('sponsor_id'),
-            'bank_account_number' => $user['bank_account_number'],
-            'bank_account_name'   => $user['bank_account_name'],
-            'bank_account_type'   => $user['bank_account_type'],
-            'bank_account_branch' => $user['bank_account_branch'],
-            'phone'               => $user['phone'],
-            'mobile'              => $user['mobile'],
-            'street'              => $user['street'],
-            'city'                => $user['city'],
-            'state'               => $user['state'],
-            'postal_code'         => $user['postal_code'],
         ));
         
         if ($account->save() === false)
