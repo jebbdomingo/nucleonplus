@@ -104,99 +104,100 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements Co
      */
     public function getShippingFee()
     {
-        $city   = $this->getObject('com://admin/nucleonplus.model.cities')->id($this->city_id)->fetch();
-        $dest   = $city->_province_id == ComNucleonplusModelEntityCity::DESTINATION_METRO_MANILA ? 'manila' : 'provincial';
-        $amount = 0;
+        $amount   = 0;
+        $couriers = $this->getShippingFees();
 
-        // Compute shipping cost for each of the items
-        $items = $this->getObject('com://admin/nucleonplus.model.cartitems')
-            ->cart_id($this->id)
-            ->fetch()
-        ;
-
-        foreach ($items as $item)
+        if (count($couriers) > 1)
         {
-            switch ($item->_item_shipping_type) {
-                case ComQbsyncModelEntityItem::TYPE_SHIPPING_POST:
-                    // Philippine post office
-                    $amount += $this->getObject('com:phlpost.service.shippingrates')
-                        ->getRate($dest, $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_POST))
-                    ;
-                    break;
-                
-                default:
-                    // Default shipping service
-                    $amount += $this->getObject('com:xend.model.shippingrates')
-                        ->getRate($dest, $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND))
-                    ;
-                    break;
+            // Multiple couriers
+            foreach ($couriers as $courier) {
+                $amount += @$courier['amount'];
             }
         }
+        else $amount = @$couriers[0]['amount'];
 
         return $amount;
-
-        // return $this->getShippingCost($dest, $this->getWeight());
     }
 
     /**
      * Get breakdown shipping fees from multiple courier
      *
-     * @return array of courier objects
+     * @return array of couriers
      */
     public function getShippingFees()
     {
         $city   = $this->getObject('com://admin/nucleonplus.model.cities')->id($this->city_id)->fetch();
         $dest   = $city->_province_id == ComNucleonplusModelEntityCity::DESTINATION_METRO_MANILA ? 'manila' : 'provincial';
 
-        $postWeight = 0;
-        $postRate   = 0;
-        $xendWeight = 0;
-        $xendRate   = 0;
-
         // Compute shipping cost for each of the items
         $items = $this->getObject('com://admin/nucleonplus.model.cartitems')
             ->cart_id($this->id)
             ->fetch()
         ;
 
-        foreach ($items as $item)
-        {
-            switch ($item->_item_shipping_type) {
-                case ComQbsyncModelEntityItem::TYPE_SHIPPING_POST:
-                    // Philippine post office
-                    $postWeight += $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_POST);
-
-                    break;
-                
-                default:
-                    $xendWeight += $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND);
-
-                    break;
-            }
+        $couriers = array();
+        foreach ($items as $item) {
+            @$couriers[$item->_item_shipping_type] = null;
         }
 
-        $postRate = $this
-            ->getObject('com:phlpost.service.shippingrates')
-            ->getRate($dest, $postWeight)
-        ;
+        $hasPost = array_key_exists(ComQbsyncModelEntityItem::TYPE_SHIPPING_POST, $couriers);
+        $hasXend = array_key_exists(ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND, $couriers);
 
-        $xendRate = $this
-            ->getObject('com:xend.model.shippingrates')
-            ->getRate($dest, $xendWeight)
-        ;
+        $couriers = array();
 
-        $couriers = array(
-            array(
-                'name'   => ComQbsyncModelEntityItem::TYPE_SHIPPING_POST,
-                'weight' => $postWeight,
-                'amount' => $postRate
-            ),
-            array(
+        // If the cart has items that both shipped with post and xend, we use xend for all
+        if ($hasPost && $hasXend)
+        {
+            $weight     = $this->getWeight();
+            $couriers[] = array(
                 'name'   => ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND,
-                'weight' => $xendWeight,
-                'amount' => $xendRate
-            )
-        );
+                'weight' => $weight,
+                'amount' => $this
+                    ->getObject('com:xend.model.shippingrates')
+                    ->getRate($dest, $weight)
+            );
+        }
+        else
+        {
+            $postWeight = 0;
+            $xendWeight = 0;
+
+            foreach ($items as $item)
+            {
+                switch ($item->_item_shipping_type)
+                {
+                    case ComQbsyncModelEntityItem::TYPE_SHIPPING_POST:
+                        // Philippine post office
+                        $postWeight += $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_POST);
+                        break;
+                    
+                    default:
+                        $xendWeight += $this->getWeight(ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND);
+                        break;
+                }
+            }
+
+            if ($postWeight)
+            {
+                $couriers[] = array(
+                    'name'   => ComQbsyncModelEntityItem::TYPE_SHIPPING_POST,
+                    'weight' => $postWeight,
+                    'amount' => $this
+                        ->getObject('com:phlpost.service.shippingrates')
+                        ->getRate($dest, $postWeight)
+                );
+            }
+
+            if ($xendWeight) {
+                $couriers[] = array(
+                    'name'   => ComQbsyncModelEntityItem::TYPE_SHIPPING_XEND,
+                    'weight' => $xendWeight,
+                    'amount' => $this
+                        ->getObject('com:xend.model.shippingrates')
+                        ->getRate($dest, $xendWeight)
+                );
+            }
+        }
 
         return $couriers;
     }
