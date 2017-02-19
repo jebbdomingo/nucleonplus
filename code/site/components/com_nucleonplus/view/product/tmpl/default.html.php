@@ -94,7 +94,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
 
         <!-- Tab panes -->
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="description">...</div>
+            <div role="tabpanel" class="tab-pane active" id="description"><p><?= $product->fulltext ?></p></div>
         </div>
 
     </div>
