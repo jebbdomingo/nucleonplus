@@ -14,7 +14,7 @@
 	<div class="row">
 		<div class="col-sm-8 col-xs-12 pull-right">
 			<a href="login.html" class="btn btn-primary btn-block" role="button">
-				<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login
+				<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login or Signup
 			</a>
 		</div>
 	</div>
