@@ -20,6 +20,7 @@ defined('KOOWA') or die; ?>
 
         <?= import('com://site/nucleonplus.account.account_summary.html', ['account' => $account]) ?>
         <?= import('com://site/nucleonplus.account.sponsor_link.html', ['account' => $account]) ?>
+        <?= import('com://site/nucleonplus.account.members_manual.html') ?>
 
     </div>
 
