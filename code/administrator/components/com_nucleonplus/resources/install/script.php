@@ -7,6 +7,8 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
+require_once __DIR__.'/helper.php';
+
 class com_nucleonplusInstallerScript extends JoomlatoolsInstallerHelper
 {
 }

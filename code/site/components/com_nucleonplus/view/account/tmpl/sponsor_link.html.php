@@ -10,10 +10,6 @@
 
 defined('KOOWA') or die; ?>
 
-<div class="well bg-info">
-    <h4 class="page-header"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?= translate('Referral Link') ?></h4>
+<?= helper('referrallink.clipboard', array('url' => JURI::root() . "sign-up")) ?>
 
-    <?= helper('referrallink.clipboard', array('url' => JURI::root() . "sign-up")) ?>
-
-    <span id="helpBlock" class="help-block small">Share this link to refer a friend and start earning</span>
-</div>
+<span id="helpBlock" class="help-block small">Share this link to refer a friend and start earning</span>

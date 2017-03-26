@@ -10,38 +10,62 @@
 
 defined('KOOWA') or die; ?>
 
-<?= helper('behavior.koowa'); ?>
+<?= helper('ui.load', array(
+    'domain' => 'admin'
+)); ?>
 
-<ktml:style src="media://koowa/com_koowa/css/koowa.css" />
+<? // Add template class to visually enclose the forms ?>
+<script>document.documentElement.className += " k-frontend-ui";</script>
 
-<div class="row">
+<!-- Wrapper -->
+<div class="k-wrapper k-js-wrapper">
 
-    <div class="col-md-4">
+    <!-- Overview -->
+    <div class="k-content-wrapper">
 
-        <?= import('com://site/nucleonplus.account.account_summary.html', ['account' => $account]) ?>
-        <?= import('com://site/nucleonplus.account.sponsor_link.html', ['account' => $account]) ?>
+        <div class="k-sidebar-left k-js-sidebar-left">
 
-    </div>
+            <div class="k-sidebar-item__header"><?= translate('Account Summary') ?></div>
+            <div class="k-sidebar-item__content">
+                <?= import('com://site/nucleonplus.account.account_summary.html', ['account' => $account]) ?>
+            </div>
+            <div class="k-sidebar-item__header"><?= translate('Sponsor Link') ?></div>
+            <div class="k-sidebar-item__content">
+                <?= import('com://site/nucleonplus.account.sponsor_link.html', ['account' => $account]) ?>
+            </div>
 
-    <div class="col-md-8">
-
-        <div class="alert alert-info" role="alert">
-            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
-            <a href="media://com_nucleonplus/members-manual.pdf" target="_blank"><?= translate('Download Member\'s Manual') ?></a>
-            <span id="helpBlock" class="help-block small">All you need to know on how to earn in Nucleon +</span>
         </div>
 
-        <fieldset class="form-vertical">
+        <!-- Content -->
+        <div class="k-content k-js-content">
 
-            <form method="post" class="-koowa-grid">
+            <!-- Title when sidebar is invisible -->
+            <ktml:toolbar type="titlebar" title="Nucleon Plus" mobile>
 
-                <?= import('com://site/nucleonplus.account.default_rewards.html', ['account' => $account]) ?>
+            <!-- Toolbar -->
+            <ktml:toolbar type="actionbar">
 
-                <?= import('com://admin/nucleonplus.account.default_direct_referrals.html', ['account' => $account]) ?>
+            <!-- Component -->
+            <div class="k-component-wrapper">
 
-            </form>
+                <!-- Form -->
+                <form class="k-component k-js-component k-js-grid-controller" action="" method="post">
+                
+                    <div class="alert alert-info" role="alert">
+                        <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                        <a href="media://com_nucleonplus/members-manual.pdf" target="_blank"><?= translate('Download Member\'s Manual') ?></a>
+                        <span id="helpBlock" class="help-block small">All you need to know on how to earn in Nucleon +</span>
+                    </div>
 
-        </fieldset>
+                    <?= import('com://site/nucleonplus.account.default_rewards.html', ['account' => $account]) ?>
+
+                    <?= import('com://admin/nucleonplus.account.default_direct_referrals.html', ['account' => $account]) ?>
+
+                </form>
+
+            </div>
+
+        </div>
 
     </div>
 

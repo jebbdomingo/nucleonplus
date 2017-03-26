@@ -24,12 +24,6 @@
         </sql>
     </uninstall>
 
-    <update>
-        <schemas>
-            <schemapath type="mysql">resources/updates</schemapath>
-        </schemas>
-    </update>
-
     <files folder="site/components/com_nucleonplus">
         <folder>controller</folder>
         <folder>database</folder>
@@ -74,5 +68,6 @@
 
     <dependencies>
         <dependency type="plugin" element="nucleonplus" folder="user">extensions/plg_user_nucleonplus</dependency>
+        <dependency type="plugin" element="nucleonplus" folder="system">extensions/plg_system_nucleonplus</dependency>
     </dependencies>
 </extension>

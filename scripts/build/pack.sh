@@ -20,7 +20,7 @@ cd ../../../joomlatools-framework && phing -Dframework.location=$framework_locat
 cd $build_dir
 
 # clone installer
-git clone --depth 1 --branch nucleonplus git@github.com:joomlatools/joomlatools-extension-installer.git $build_dir/installer
+git clone --depth 1 --branch master git@github.com:joomlatools/joomlatools-extension-installer.git $build_dir/installer
 rm -rf $build_dir/installer/.git
 rm -f $build_dir/installer/.gitignore
 rm -f $build_dir/installer/README.md

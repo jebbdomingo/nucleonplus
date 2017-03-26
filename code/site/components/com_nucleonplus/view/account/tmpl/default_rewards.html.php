@@ -10,12 +10,9 @@
 
 defined('KOOWA') or die; ?>
 
-<div class="panel panel-primary">
-    <div class="panel-heading">
-        <h3 class="panel-title"><?= translate('My Commission') ?></h3>
-    </div>
-    <div class="panel-body">
-        <table class="table">
+<div class="k-table-container">
+    <div class="k-table">
+        <table class="k-js-responsive-table">
             <thead>
                 <th>&nbsp;</th>
                 <th class="text-right">Points</th>

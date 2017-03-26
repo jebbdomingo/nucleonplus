@@ -1,9 +1,6 @@
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Direct Referrals</h3>
-    </div>
-    <div class="panel-body">
-        <table class="table table-striped">
+<div class="k-table-container">
+    <div class="k-table">
+        <table class="k-js-responsive-table">
             <thead>
                 <th>Name</th>
                 <th>Account No.</th>
