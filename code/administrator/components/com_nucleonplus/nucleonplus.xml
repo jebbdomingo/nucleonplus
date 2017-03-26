@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="2.5" method="upgrade">
+<extension type="component" version="3.0.0" method="upgrade">
     <identifier>com:nucleonplus</identifier>
     <name>com_nucleonplus</name>
     <author>Jebb Domingo</author>
@@ -23,6 +23,12 @@
             <file driver="mysql" charset="utf8">resources/install/uninstall.sql</file>
         </sql>
     </uninstall>
+
+    <update>
+        <schemas>
+            <schemapath type="mysql">resources/updates</schemapath>
+        </schemas>
+    </update>
 
     <files folder="site/components/com_nucleonplus">
         <folder>controller</folder>
