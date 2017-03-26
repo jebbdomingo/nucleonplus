@@ -21,9 +21,16 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     /**
      * Reward
      *
-     * @var ComNucleonplusRebatePackagereward
+     * @var ComNucleonplusMlmPackagereward
      */
     protected $_reward;
+
+    /**
+     * Inventory service
+     *
+     * @var ComNucleonplusAccountingInventoryQuantityInterface
+     */
+    protected $_inventory_service;
 
     /**
      * Constructor.
@@ -32,6 +39,8 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     public function __construct(KObjectConfig $config)
     {
+        @ini_set('max_execution_time', 300);
+        
         parent::__construct($config);
 
         // Reward service
@@ -39,7 +48,18 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         // Validation
         $this->addCommandCallback('before.add', '_validate');
-        $this->addCommandCallback('before.confirm', '_validateConfirm');
+        $this->addCommandCallback('before.cancelorder', '_validateCancelorder');
+
+        // Inventory service
+        $identifier = $this->getIdentifier($config->inventory_service);
+        $service    = $this->getObject($identifier);
+        if (!($service instanceof ComNucleonplusAccountingServiceInventoryInterface))
+        {
+            throw new UnexpectedValueException(
+                "Service $identifier does not implement ComNucleonplusAccountingServiceInventoryInterface"
+            );
+        }
+        else $this->_inventory_service = $service;
     }
 
     /**
@@ -53,73 +73,104 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'reward' => 'com://admin/nucleonplus.rebate.packagereward',
+            'reward'            => 'com://admin/nucleonplus.mlm.packagereward',
+            'inventory_service' => 'com://admin/nucleonplus.accounting.service.inventory',
+            'behaviors'         => array(
+                'onlinepayable',
+                'com://admin/nucleonplus.controller.behavior.cancellable',
+            ),
         ));
 
         parent::_initialize($config);
     }
 
-    /**
-     * Validate order
-     *
-     * @param KControllerContextInterface $context
-     * 
-     * @return KModelEntityInterface
-     */
     protected function _validate(KControllerContextInterface $context)
     {
-        $result = true;
+        $user       = $this->getObject('user');
+        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $translator = $this->getObject('translator');
+        $data       = $context->request->data;
+        $cart       = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
+        $error      = false;
 
-        try
+        // Validate account
+        if (count($account) === 0)
         {
-            $user       = $this->getObject('user');
-            $translator = $this->getObject('translator');
-            
-            if ($this->getModel('com:nucleonplus.model.orders')->hasCurrentOrder($user->getId())) {
-                throw new KControllerExceptionRequestInvalid($translator->translate('You can only purchase one product package per day'));
-                $result = false;
+            $error = 'Invalid Account';
+        }
+        else
+        {
+            if (count($cart))
+            {
+                if (empty(trim($cart->address))) {
+                    $error = 'Invalid address';
+                }
+
+                if (empty(trim($cart->city_id))) {
+                    $error = 'Invalid city';
+                }
+
+                $itemQty = $cart->getItemQuantities();
+
+                foreach ($itemQty as $id => $qty)
+                {
+                    $result = $this->_inventory_service->getQuantity($id, true);
+
+                    if ($result['available'] < $qty)
+                    {
+                        $error  = "Insufficient stock of {$result['Name']}, only ({$result['available']}) item/s left in stock and you already have ({$qty}) in your shopping cart";
+                        
+                        if (JDEBUG)
+                        {
+                            $error .= '<pre>' . print_r($itemQty, true) . '</pre>';
+                            $error .= '<pre>' . print_r($result, true) . '</pre>';
+                        }
+                    }
+                }
             }
+            else $error = 'Cart System Error - Invalid Shopping Cart';
         }
-        catch(Exception $e)
+
+        if ($error)
         {
-            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $translator->translate($error), 'error');
             $context->getResponse()->send();
-
-            $result = false;
         }
-
-        return $result;
     }
 
     /**
-     * Validate payment confirmation
+     * Validate cancellation of order
      *
      * @param KControllerContextInterface $context
      * 
      * @return KModelEntityInterface
      */
-    protected function _validateConfirm(KControllerContextInterface $context)
+    protected function _validateCancelorder(KControllerContextInterface $context)
     {
-        $result = true;
+        if (!$context->result instanceof KModelEntityInterface) {
+            $orders = $this->getModel()->fetch();
+        } else {
+            $orders = $context->result;
+        }
 
         try
         {
             $translator = $this->getObject('translator');
-            
-            if (empty(trim($context->request->data->payment_reference))) {
-                throw new KControllerExceptionRequestInvalid($translator->translate('Please enter your deposit slip reference #'));
-                $result = false;
+
+            foreach ($orders as $order)
+            {
+                $order->setProperties($context->request->data->toArray());
+
+                if (!in_array($order->order_status, array(ComNucleonplusModelEntityOrder::STATUS_PAYMENT, ComNucleonplusModelEntityOrder::STATUS_PENDING))) {
+                    throw new KControllerExceptionRequestInvalid($translator->translate('Invalid Order Status: Only Order(s) with "Pending" or "Awaiting Payment" status can be cancelled'));
+                }
             }
         }
         catch(Exception $e)
         {
             $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
             $context->getResponse()->send();
-
-            $result = false;
         }
-
-        return $result;
     }
 
     /**
@@ -131,33 +182,62 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     protected function _actionAdd(KControllerContextInterface $context)
     {
-        $package = $this->getObject('com:nucleonplus.model.packages')->id($context->request->data->package_id)->fetch();
+        $user       = $this->getObject('user');
+        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $translator = $this->getObject('translator');
+        $data       = $context->request->data;
+        $cart       = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
 
-        $context->getRequest()->setData([
-            // Copy the package data in the order table
-            'package_name'       => $package->name,
-            'package_price'      => $package->price,
-
-            'account_id'         => $context->request->data->account_id,
-            'package_id'         => $context->request->data->package_id,
-            'order_status'       => 'awaiting_payment',
-            'invoice_status'     => 'sent',
-            'payment_method'     => 'deposit',
-            'shipping_method'    => 'xend',
-            'tracking_reference' => $context->request->data->tracking_reference,
-            'payment_reference'  => $context->request->data->payment_reference,
-            'note'               => $context->request->data->note,
-        ]);
+        $order = $this->getModel()->create(array(
+            'account_id'      => $account->id,
+            'order_status'    => ComNucleonplusModelEntityOrder::STATUS_PENDING,
+            'invoice_status'  => ComNucleonplusModelEntityOrder::INVOICE_STATUS_SENT,
+            'payment_method'  => ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY,
+            'shipping_method' => ComNucleonplusModelEntityOrder::SHIPPING_METHOD_XEND,
+            'recipient_name'  => $cart->recipient_name,
+            'address'         => $cart->address,
+            'city'            => $cart->city_id,
+            'postal_code'     => $cart->postal_code,
+            'shipping_cost'   => $cart->getShippingFee(),
+            'couriers'        => json_encode($cart->getShippingFees()),
+            'payment_charge'  => $cart->getPaymentCharge(),
+            'payment_mode'    => $cart->payment_mode,
+        ));
 
         try
         {
-            $order = parent::_actionAdd($context);
+            if ($order->save())
+            {
+                foreach ($cart->getItems() as $item)
+                {
+                    $orderItem = $this->getObject('com://admin/nucleonplus.model.orderitems')->create(array(
+                        'order_id'   => $order->id,
+                        'ItemRef'    => $item->_item_ref,
+                        'item_name'  => $item->_item_name,
+                        'item_price' => $item->_item_price,
+                        'item_image' => $item->_item_image,
+                        'quantity'   => $item->quantity,
+                    ));
+                    $orderItem->save();
 
-            $response = $context->getResponse();
-            $response->addMessage("Thank you for your business, we will process your order once you confirm your payment. Please see the instruction below.");
+                    // Create reward
+                    for ($i=0; $i < $orderItem->quantity; $i++) { 
+                        $this->_reward->create($orderItem);
+                    }
+                }
 
-            // Create reward
-            $this->_reward->create($order);
+                // Calculate order totals based on order items
+                $order
+                    ->calculate()
+                    ->save()
+                ;
+
+                /**
+                 * @todo Move to com:cart behavior
+                 */
+                // Delete the cart
+                $cart->delete();
+            }
         }
         catch(Exception $e)
         {
@@ -174,33 +254,6 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     }
 
     /**
-     * Special confirm action which wraps edit action
-     *
-     * @param KControllerContextInterface $context
-     *
-     * @return entity
-     */
-    protected function _actionConfirm(KControllerContextInterface $context)
-    {
-        $context->getRequest()->setData([
-            'order_status'      => 'awaiting_verification',
-            'payment_reference' => $context->getRequest()->data->payment_reference
-        ]);
-
-
-        $order = parent::_actionEdit($context);
-
-        $response = $context->getResponse();
-        $response->addMessage('Thank you for your payment, we will ship your order immediately once your payment has been verified.');
-
-        $identifier = $context->getSubject()->getIdentifier();
-        $view       = KStringInflector::singularize($identifier->name);
-        $url        = sprintf('index.php?option=com_%s&view=%s&layout=form&tmpl=koowa&id=%d', $identifier->package, $view, $order->id);
-
-        $response->setRedirect(JRoute::_($url, false));
-    }
-
-    /**
      * Specialized save action, changing state by updating the order status
      *
      * @param   KControllerContextInterface $context A command context object
@@ -210,11 +263,17 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
      */
     protected function _actionMarkdelivered(KControllerContextInterface $context)
     {
+        $this->getObject('com://admin/nucleonplus.model.orders');
+
         $context->getRequest()->setData([
-            'order_status' => 'delivered'
+            'order_status' => ComNucleonplusModelEntityOrder::STATUS_DELIVERED
         ]);
 
-        return parent::_actionEdit($context);
+        $order = parent::_actionEdit($context);
+
+        $context->response->addMessage('Thank you for your business');
+
+        return $order;
     }
 
     /**
@@ -227,17 +286,14 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _actionCancelorder(KControllerContextInterface $context)
     {
         // Copy the package data in the order table
-        $context->request->data->order_status = 'cancelled';
+        $context->getRequest()->setData([
+            'order_status' => ComNucleonplusModelEntityOrder::STATUS_CANCELLED
+        ]);
 
         $order = parent::_actionEdit($context);
 
-        $response = $context->getResponse();
-        $response->addMessage('Your order has been cancelled.');
+        $context->response->addMessage("Your Order #{$order->id} has been cancelled.");
 
-        $identifier = $context->getSubject()->getIdentifier();
-        $view       = KStringInflector::singularize($identifier->name);
-        $url        = sprintf('index.php?option=com_%s&view=%s&layout=form&tmpl=koowa&id=%d', $identifier->package, $view, $order->id);
-
-        $response->setRedirect(JRoute::_($url, false));
+        return $order;
     }
 }

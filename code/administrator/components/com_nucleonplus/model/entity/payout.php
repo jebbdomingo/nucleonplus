@@ -12,6 +12,27 @@
 
 class ComNucleonplusModelEntityPayout extends KModelEntityRow
 {
+    const PAYOUT_METHOD_PICKUP         = 'pickup';
+    const PAYOUT_METHOD_FUNDS_TRANSFER = 'funds_transfer';
+
+    const PAYOUT_STATUS_PENDING         = 'pending';
+    const PAYOUT_STATUS_PROCESSING      = 'processing';
+    const PAYOUT_STATUS_CHECK_GENERATED = 'checkgenerated';
+    const PAYOUT_STATUS_DISBURSED       = 'disbursed';
+
+    public static $payout_status = array(
+        self::PAYOUT_STATUS_PENDING         => 'Pending',
+        self::PAYOUT_STATUS_PROCESSING      => 'Processing',
+        self::PAYOUT_STATUS_CHECK_GENERATED => 'Check Generated',
+        self::PAYOUT_STATUS_DISBURSED       => 'Disbursed',
+    );
+    
+    const PAYOUT_TRANSFER_STATUS_SUCCESS    = 'S';
+    const PAYOUT_TRANSFER_STATUS_FAILED     = 'F';
+    const PAYOUT_TRANSFER_STATUS_PENDING    = 'P';
+    const PAYOUT_TRANSFER_STATUS_INPROGRESS = 'G';
+    const PAYOUT_TRANSFER_STATUS_VOIDED     = 'V';
+
     /**
      * Prevent deletion of payout
      * A payout can only be voided but not deleted

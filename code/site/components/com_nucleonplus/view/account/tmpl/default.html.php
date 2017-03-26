@@ -18,11 +18,18 @@ defined('KOOWA') or die; ?>
 
     <div class="col-md-4">
 
-        <?= import('com://admin/nucleonplus.account.default_account_summary.html', ['account' => $account]) ?>
+        <?= import('com://site/nucleonplus.account.account_summary.html', ['account' => $account]) ?>
+        <?= import('com://site/nucleonplus.account.sponsor_link.html', ['account' => $account]) ?>
 
     </div>
 
     <div class="col-md-8">
+
+        <div class="alert alert-info" role="alert">
+            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+            <a href="media://com_nucleonplus/members-manual.pdf" target="_blank"><?= translate('Download Member\'s Manual') ?></a>
+            <span id="helpBlock" class="help-block small">All you need to know on how to earn in Nucleon +</span>
+        </div>
 
         <fieldset class="form-vertical">
 

@@ -23,17 +23,12 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
 
         $command->append(array(
             'attribs' => array(
-                'data-action' => 'activate'
+                'data-action'     => 'activate',
+                'data-novalidate' => 'novalidate' // This is needed for koowa-grid and view without form
             )
         ));
 
         $command->label = 'Activate';
-    }
-
-    protected function _commandPlaceorder(KControllerToolbarCommand $command)
-    {
-        $command->icon  = 'icon-32-new';
-        $command->label = 'Place an Order';
     }
 
     protected function _commandPos(KControllerToolbarCommand $command)
@@ -79,16 +74,15 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
         }
 
         if ($controller->isEditable() && $controller->canSave() && !in_array($context->result->status, array('new', 'pending'))) {
-            $this->addCommand('placeorder', [
+            $this->addCommand('pos', [
                 'allowed' => $allowed,
-                'href'    => 'view=order&account_id=' . $context->result->id
+                'href' => 'view=cart&customer=' . $context->result->id
             ]);
         }
 
-        if ($controller->isEditable() && $controller->canSave() && !in_array($context->result->status, array('new', 'pending'))) {
-            $this->addCommand('pos', [
+        if ($controller->isEditable() && $controller->canSave() && $context->result->status == 'pending') {
+            $this->addCommand('activate', [
                 'allowed' => $allowed,
-                'href' => 'view=order&account_id=' . $context->result->id . '&layout=pos'
             ]);
         }
 

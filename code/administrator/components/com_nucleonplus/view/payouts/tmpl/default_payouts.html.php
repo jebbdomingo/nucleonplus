@@ -23,6 +23,9 @@
             <span class="label <?= ($payout->status == 'pending') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($payout->status)) ?></span>
         </td>
         <td>
+            <?= $payout->payout_method ?>
+        </td>
+        <td>
             <a href="<?= route('view=account&id='.$payout->account_id); ?>">
                 <?= $payout->name ?>
             </a>
@@ -33,10 +36,8 @@
             </a>
         </td>
         <td>
-            <?= number_format($payout->amount, 2) ?>
-        </td>
-        <td>
             <?= helper('date.format', array('date' => $payout->created_on)) ?>
         </td>
+        <td><div class="text-right">&#8369;<?= number_format($payout->amount, 2) ?></div></td>
     </tr>
 <? endforeach; ?>

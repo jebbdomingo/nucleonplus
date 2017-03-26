@@ -10,21 +10,27 @@
  */
 
 /**
- * Member's Rebate Entity.
+ * Member's Patronage Bonus Entity.
  *
  * @author  Jebb Domingo <https://github.com/jebbdomingo>
  * @package Component\Nucelonplus
  */
 class ComNucleonplusModelEntityReward extends KModelEntityRow
 {
+    const REWARD_PACKAGE = 'Group';
+    const REWARD_RETAIL  = 'Inventory';
+    const STATUS_ACTIVE  = 'active';
+    const STATUS_READY   = 'ready';
+    const STATUS_CLAIMED = 'claimed';
+
     /**
-     * Process member's rebates
+     * Process member's patronage bonus
      *
      * @return boolean|void
      */
-    public function processRebate()
+    public function processPatronage()
     {
-        if ($this->status <> 'active') {
+        if ($this->status <> self::STATUS_ACTIVE) {
             return;
         }
 
@@ -64,16 +70,18 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
             }
         }
 
-        // Ensure payout matches the expected amount of reward's product rebate pv x the binary of number of slots
-        if ($requiredSlots == $payoutSlots)
+        // Ensure payout matches the expected amount of reward's product patronage bonus pv x the binary of number of slots
+        if ($requiredSlots === $payoutSlots)
         {
-            $controller = $this->getObject('com:nucleonplus.controller.rebate');
+            $model = $this->getObject('com:nucleonplus.model.patronagebonuses');
 
-            foreach ($data as $datum) {
-                $controller->add($datum);
+            foreach ($data as $datum)
+            {
+                $entity = $model->create($datum);
+                $entity->save();
             }
 
-            $this->status = 'ready';
+            $this->status = self::STATUS_READY;
             $this->save();
         }
     }
@@ -87,5 +95,10 @@ class ComNucleonplusModelEntityReward extends KModelEntityRow
     public function delete()
     {
         return false;
+    }
+
+    public function getAccount()
+    {
+        return $this->getObject('com:nucleonplus.model.accounts')->id($this->customer_id)->fetch();
     }
 }

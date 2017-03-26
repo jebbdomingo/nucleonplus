@@ -9,11 +9,10 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-/**
- * @todo Implement a local queue of accounting/inventory transactions in case of trouble connecting to accounting system
- */
 class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleonplusAccountingServiceMemberInterface
 {
+    protected $_disabled = false;
+
     /**
      *
      * @var ComKoowaControllerModel
@@ -58,14 +57,18 @@ class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleo
      */
     public function pushMember(KModelEntityInterface $account, $action = 'add')
     {
+        if ($this->_disabled) {
+            return false;
+        }
+        
         $data = array(
+            'PrintOnCheckName' => $account->PrintOnCheckName ? $account->PrintOnCheckName : $account->_name,
             'CustomerRef'      => $account->CustomerRef,
             'account_id'       => $account->id,
-            'DisplayName'      => $account->_name,
+            'DisplayName'      => "{$account->_name} - {$account->account_number}", // Make display name unique
             'PrimaryPhone'     => $account->phone,
             'Mobile'           => $account->mobile,
             'PrimaryEmailAddr' => $account->_email,
-            'PrintOnCheckName' => $account->_name,
             'Line1'            => $account->street,
             'City'             => $account->city,
             'State'            => $account->state,

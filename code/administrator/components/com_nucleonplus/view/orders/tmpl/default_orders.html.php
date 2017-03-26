@@ -20,7 +20,7 @@
             </a>
         </td>
         <td>
-            <span class="label <?= ($order->order_status == 'cancelled') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->order_status)) ?></span>
+            <?= helper('com://site/nucleonplus.labels.orderStatus', array('value' => $order->order_status)) ?>
         </td>
         <td>
             <span class="label <?= ($order->invoice_status == 'sent') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($order->invoice_status)) ?></span>
@@ -35,16 +35,9 @@
                 <?= $order->account_number ?>
             </a>
         </td>
-        <td >
-            <a href="<?= route('view=order&id='.$order->id); ?>">
-                <?= $order->package_name ?>
-            </a>
-        </td>
         <td>
             <?= helper('date.format', array('date' => $order->created_on)) ?>
         </td>
-        <td>
-            <?= escape($order->payment_reference) ?>
-        </td>
+        <td><div class="text-right">&#8369;<?= number_format($order->total, 2) ?></div></td>
     </tr>
 <? endforeach; ?>

@@ -17,6 +17,10 @@
  */
 class ComNucleonplusModelEntityAccount extends KModelEntityRow
 {
+    const STATUS_NEW        = 'new';
+    const STATUS_PENDING    = 'pending';
+    const STATUS_TERMINATED = 'terminated';
+
     /**
      * Get direct referral accounts
      *
@@ -36,13 +40,23 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getLatestPurchases($limit = 5)
     {
-        return $this->getObject('com:nucleonplus.model.orders')
+        return $this->getObject('com://admin/nucleonplus.model.orders')
             ->account_id($this->id)
-            ->sort('created_on')
+            ->sort('id')
             ->direction('desc')
             ->limit($limit)
             ->fetch()
         ;
+    }
+
+    /**
+     * Get sponsor's account
+     *
+     * @return KModelEntityInterface
+     */
+    public function getSponsor()
+    {
+        return $this->getObject('com:nucleonplus.model.accounts')->account_number($this->sponsor_id)->fetch();
     }
 
     /**
@@ -125,5 +139,22 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
     public function delete()
     {
         return false;
+    }
+
+    /**
+     * Activate
+     * Encapsulate activation business logic
+     *
+     * @throws Exception
+     *
+     * @return void
+     */
+    public function activate()
+    {
+        if ($this->CustomerRef == 0) {
+            throw new Exception("Account Activation Error: CustomerRef is required");
+        }
+
+        $this->status = 'active';
     }
 }

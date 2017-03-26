@@ -10,18 +10,19 @@
  */
 
 /**
- * Item Interface.
+ * Inventory Quantity Checker Interface.
  *
  * @author Jebb Domingo <https://github.com/jebbdomingo>
  */
 interface ComNucleonplusAccountingServiceInventoryInterface
 {
     /**
-     * Decrease an item's quantity
+     * Get quantity
      *
-     * @param KModelEntityInterface $order
+     * @param mixed   $id
+     * @param boolean $detailed
      *
-     * @return void
+     * @return boolean
      */
-    public function decreaseQuantity(KModelEntityInterface $order);
+    public function getQuantity($id, $detailed = false);
 }

@@ -21,12 +21,6 @@ class ComNucleonplusModelSlots extends KModelDatabase
 
     protected function _initialize(KObjectConfig $config)
     {
-        /*$config->append(array(
-            'behaviors' => array(
-                'searchable' => array('columns' => array('package_name', 'account_number'))
-            )
-        ));*/
-
         parent::_initialize($config);
     }
 
@@ -69,14 +63,14 @@ class ComNucleonplusModelSlots extends KModelDatabase
      *
      * @return array|null
      */
-    public function getUnpaidSlots()
+    public function getUnpaidSlots($reward_id)
     {
         $state = $this->getState();
 
         $table = $this->getObject('com://admin/nucleonplus.database.table.slots');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_slots AS tbl')
-            ->where('tbl.reward_id != :reward_id')->bind(['reward_id' => $state->reward_id])
+            ->where('tbl.reward_id != :reward_id')->bind(['reward_id' => $reward_id])
             ->where('tbl.lf_slot_id = 0 OR tbl.rt_slot_id = 0')
         ;
 

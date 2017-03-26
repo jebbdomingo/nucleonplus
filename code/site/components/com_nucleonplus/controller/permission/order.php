@@ -19,8 +19,15 @@ class ComNucleonplusControllerPermissionOrder extends ComKoowaControllerPermissi
      */
     public function canConfirm()
     {
-        if ($this->getModel()->fetch()->created_by === $this->getObject('user')->getId()) {
-            return true;
+        $data    = $this->getObject('com://admin/nucleonplus.accounting.service.data');
+
+        if ($this->getModel()->fetch()->created_by <> $this->getObject('user')->getId())
+        {
+            return false;
+        }
+        elseif (!$data->CONFIG_ONLINE_PURCHASE_ENABLED)
+        {
+            return false;
         }
         else return parent::canSave();
     }
@@ -33,10 +40,16 @@ class ComNucleonplusControllerPermissionOrder extends ComKoowaControllerPermissi
      */
     public function canAdd()
     {
+        $data    = $this->getObject('com://admin/nucleonplus.accounting.service.data');
         $user    = $this->getObject('user');
         $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
 
-        if (in_array($account->status, array('new', 'pending', 'terminated'))) {
+        if (in_array($account->status, array('new', 'pending', 'terminated')))
+        {
+            return false;
+        }
+        elseif (!$data->CONFIG_ONLINE_PURCHASE_ENABLED)
+        {
             return false;
         }
         else return parent::canAdd();

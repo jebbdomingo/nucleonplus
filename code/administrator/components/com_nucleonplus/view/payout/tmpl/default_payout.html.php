@@ -23,6 +23,10 @@
                     <td><?= $payout->status ?></td>
                 </tr>
                 <tr>
+                    <td><label><strong><?= translate('Encashment Method'); ?></strong></label></td>
+                    <td><?= $payout->payout_method ?></td>
+                </tr>
+                <tr>
                     <td><label><strong><?= translate('Date') ?></strong></label></td>
                     <td>
                         <div><?= helper('date.format', array('date' => $payout->created_on)) ?></div>

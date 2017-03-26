@@ -17,7 +17,35 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
     {
         parent::__construct($config);
 
-        $this->addCommandCallback('before.add', '_validate');
+        $this->addCommandCallback('before.add', '_checkClaim');
+        $this->addCommandCallback('before.add', '_validateData');
+    }
+
+    /**
+     * Check if claiming is enabled
+     *
+     * @param KControllerContextInterface $context
+     * 
+     * @return KModelEntityInterface
+     */
+    protected function _checkClaim(KControllerContextInterface $context)
+    {
+        try
+        {
+            $translator = $this->getObject('translator');
+            $data       = $context->request->data;
+
+            if (!in_array($data->payout_method, array(ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP, ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER))) {
+                throw new Exception('Please choose how do you want to encash your commissions');
+            }
+        }
+        catch(Exception $e)
+        {
+            $context->getResponse()->setRedirect($this->getRequest()->getReferrer(), $e->getMessage(), 'error');
+            $context->getResponse()->send();
+
+            $result = false;
+        }
     }
 
     /**
@@ -27,50 +55,120 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
      * 
      * @return KModelEntityInterface
      */
-    protected function _validate(KControllerContextInterface $context)
+    protected function _validateData(KControllerContextInterface $context)
     {
         $user    = $this->getObject('user');
         $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
         
-        $totalPr      = 0;
-        $totalDrBonus = 0;
-        $totalIrBonus = 0;
+        $rebateBonus         = 0;
+        $directReferralBonus = 0;
+        $patronageBonus      = 0;
+        $unilevelDRBonus     = 0;
+        $unilevelIRBonus     = 0;
+
+        $redeemedRebateBonus     = array();
+        $redeemedDRBonus         = array();
+        $redeemedPatronageBonus  = array();
+        $redeemedUnilevelDRBonus = array();
+        $redeemedUnilevelIRBonus = array();
 
         $contextData  = $context->request->data;
 
-        // Ensure there is no discrepancy in member's requested payout in his rebates
+        // Ensure there is no discrepancy in member's rebates payout request
         if ($contextData->rebates)
         {
             foreach ($contextData->rebates as $id)
             {
                 $rebate = $this->getObject('com://admin/nucleonplus.model.rebates')
+                    ->account_id($account->id)
+                    ->id($id)
+                    ->fetch()
+                ;
+
+                if (is_null($rebate->id)) {
+                    throw new Exception("There is a discrepancy in your rebates payout request. ref# {$id}");
+                }
+
+                $reward = $this->getObject('com://admin/nucleonplus.model.rewards')
+                    ->id($rebate->reward_id)
+                    ->payout_id(0)
+                    ->fetch()
+                ;
+
+                // Ensure patronage are paid based on the matched reward/slots
+                if ($reward->rebates <> $rebate->points) {
+                    throw new Exception("There is a discrepancy in your rebates payout. ref# {$reward->id}-{$rebate->id}");
+                }
+                else
+                {
+                    $rebateBonus           += $rebate->points;
+                    $redeemedRebateBonus[] = $rebate->id;
+                }
+            }
+        }
+
+        // Ensure there is no discrepancy in member's direct referral bonus payout
+        if ($contextData->direct_referrals)
+        {
+            foreach ($contextData->direct_referrals as $id)
+            {
+                $directReferral = $this->getObject('com://admin/nucleonplus.model.directreferrals')
+                    ->account_id($account->id)
+                    ->id($id)
+                    ->fetch()
+                ;
+
+                if (is_null($directReferral->id)) {
+                    throw new Exception("There is a discrepancy in your direct referral payout request. ref# {$id}");
+                }
+
+                $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
+                    ->id($directReferral->reward_id)
+                    ->payout_id(0)
+                    ->fetch()
+                ;
+
+                // Ensure patronage are paid based on the matched reward/slots
+                if ($rewardFrom->prpv <> $directReferral->points) {
+                    throw new Exception("There is a discrepancy in your direct referral payout. ref# {$rewardFrom->id}-{$directReferral->id}");
+                }
+                else
+                {
+                    $directReferralBonus += $directReferral->points;
+                    $redeemedDRBonus[]   = $directReferral->id;
+                }
+            }
+        }
+
+        // Ensure there is no discrepancy in member's requested payout in his patronages
+        if ($contextData->patronages)
+        {
+            foreach ($contextData->patronages as $id)
+            {
+                $patronage = $this->getObject('com://admin/nucleonplus.model.patronagebonuses')
                     ->customer_id($account->id)
                     ->id($id)
                     ->fetch()
                 ;
 
-                if (is_null($rebate->id))
-                {
-                    throw new Exception("There is a discrepancy in your rebates payout request. ref# {$id}");
-
-                    return false;
+                if (is_null($patronage->id)) {
+                    throw new Exception("There is a discrepancy in your patronage bonus payout request. ref# {$id}");
                 }
 
                 $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
-                    ->id($rebate->reward_id_from)
+                    ->id($patronage->reward_id_from)
+                    ->status(array('active', 'ready'))
                     ->fetch()
                 ;
 
-                // Ensure rebates are paid based on the matched reward/slots
-                if ($rewardFrom->prpv <> $rebate->points) {
-                    throw new Exception("There is a discrepancy in your rewards. ref# {$rewardFrom->id}-{$rebate->id}");
-
-                    return false;
+                // Ensure patronage are paid based on the matched reward/slots
+                if ($rewardFrom->prpv <> $patronage->points) {
+                    throw new Exception("There is a discrepancy in your patronage bonus. ref# {$rewardFrom->id}-{$patronage->id}");
                 }
                 else
                 {
-                    $totalPr += $rewardFrom->prpv;
-                    $redeemedPr[] = $rebate->id;
+                    $patronageBonus += $patronage->points;
+                    $redeemedPatronageBonus[] = $patronage->id;
                 }
             }
         }
@@ -88,11 +186,8 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                     ->fetch()
                 ;
 
-                if (is_null($referral->id))
-                {
-                    throw new Exception("There is a discrepancy in your direct referral payout request. ref# {$id}");
-
-                    return false;
+                if (is_null($referral->id)) {
+                    throw new Exception("There is a discrepancy in your unilevel direct referral payout request. ref# {$id}");
                 }
 
                 $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
@@ -102,13 +197,12 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
                 // Ensure referral bonus are paid based on the paying reward
                 if (($rewardFrom->drpv * $rewardFrom->slots) <> $referral->points) {
-                    throw new Exception("There is a discrepancy in your direct referral bonus. ref# {$rewardFrom->id}-{$referral->id}");
-                    return false;
+                    throw new Exception("There is a discrepancy in your unilevel direct referral bonus. ref# {$rewardFrom->id}-{$referral->id}");
                 }
                 else
                 {
-                    $totalDr      += $rewardFrom->drpv;
-                    $redeemedDr[] = $referral->id;
+                    $unilevelDRBonus           += $referral->points;
+                    $redeemedUnilevelDRBonus[] = $referral->id;
                 }
             }
         }
@@ -126,11 +220,8 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
                     ->fetch()
                 ;
 
-                if (is_null($referral->id))
-                {
-                    throw new Exception("There is a discrepancy in your indirect referral payout request. ref# {$id}");
-
-                    return false;
+                if (is_null($referral->id)) {
+                    throw new Exception("There is a discrepancy in your unilevel indirect referral payout request. ref# {$id}");
                 }
 
                 $rewardFrom = $this->getObject('com://admin/nucleonplus.model.rewards')
@@ -141,24 +232,28 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
 
                 // Ensure referral bonus is paid based on the paying reward
                 if (($rewardFrom->irpv * $rewardFrom->slots) <> $referral->points) {
-                    throw new Exception("There is a discrepancy in your indirect referral bonus. ref# {$rewardFrom->id}-{$referral->id}");
-                    return false;
+                    throw new Exception("There is a discrepancy in your unilevel indirect referral bonus. ref# {$rewardFrom->id}-{$referral->id}");
                 }
                 else
                 {
-                    $totalIr      += $rewardFrom->irpv;
-                    $redeemedIr[] = $referral->id;
+                    $unilevelIRBonus           += $referral->points;
+                    $redeemedUnilevelIRBonus[] = $referral->id;
                 }
             }
         }
 
+        $total = ($rebateBonus + $unilevelDRBonus + $unilevelIRBonus + $patronageBonus + $directReferralBonus);
+
         $data = new KObjectConfig([
-            'account_id'  => $account->id,
-            'amount'      => $totalDr + $totalIr + $totalPr,
-            'status'      => 'pending',
-            'redeemed_pr' => $redeemedPr,
-            'redeemed_dr' => $redeemedDr,
-            'redeemed_ir' => $redeemedIr,
+            'account_id'            => $account->id,
+            'amount'                => $total,
+            'status'                => 'pending',
+            'payout_method'         => $contextData->payout_method,
+            'redeemed_rebate_bonus' => $redeemedRebateBonus,
+            'redeemed_dr_bonus'     => $redeemedDRBonus,
+            'redeemed_pr'           => $redeemedPatronageBonus,
+            'redeemed_dr'           => $redeemedUnilevelDRBonus,
+            'redeemed_ir'           => $redeemedUnilevelIRBonus,
         ]);
 
         $context->getRequest()->setData($data->toArray());
@@ -174,49 +269,74 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
      */
     protected function _actionAdd(KControllerContextInterface $context)
     {
-        $entity = parent::_actionAdd($context);
+        $payout = parent::_actionAdd($context);
 
-        $rebates           = $context->request->data->redeemed_pr;
-        $directReferrals   = $context->request->data->redeemed_dr;
-        $indirectReferrals = $context->request->data->redeemed_ir;
-        $rewards = [];
+        $rebateBonus         = $context->request->data->redeemed_rebate_bonus;
+        $directReferralBonus = $context->request->data->redeemed_dr_bonus;
+        $patronages          = $context->request->data->redeemed_pr;
+        $directReferrals     = $context->request->data->redeemed_dr;
+        $indirectReferrals   = $context->request->data->redeemed_ir;
+        $rewards             = array();
 
         // Rebates payout request processing
-        foreach ($rebates as $id)
+        foreach ($rebateBonus as $id)
         {
-            $rebate = $this->getObject('com:nucleonplus.model.rebates')->id($id)->fetch();
+            $rebate            = $this->getObject('com:nucleonplus.model.rebates')->id($id)->fetch();
+            $rebate->payout_id = $payout->id;
             $rebate->save();
+        }
 
-            $rewards[] = $rebate->reward_id_to;
+        // Direct referral payout request processing
+        foreach ($directReferralBonus as $id)
+        {
+            $referral            = $this->getObject('com:nucleonplus.model.directreferrals')->id($id)->fetch();
+            $referral->payout_id = $payout->id;
+            $referral->save();
+        }
+
+        // Patronage payout request processing
+        foreach ($patronages as $id)
+        {
+            $patronage = $this->getObject('com:nucleonplus.model.patronagebonuses')->id($id)->fetch();
+            $patronage->payout_id = $payout->id;
+            $patronage->save();
+
+            $rewards[] = $patronage->reward_id_to;
         }
 
         $rewards = array_unique($rewards);
 
-        // Update status of the rewards/rebates claimed
+        // Update status of the rewards claimed
         foreach ($rewards as $id)
         {
-            $reward = $this->getObject('com:nucleonplus.model.rewards')->id($id)->fetch();
-            $reward->payout_id = $entity->id;
-            $reward->status = 'processing';
+            $reward            = $this->getObject('com:nucleonplus.model.rewards')->id($id)->fetch();
+            $reward->payout_id = $payout->id;
+            $reward->status    = 'processing';
             $reward->save();
         }
 
-        // Update direct referral bonus status
+        // Reference related direct referrals with payout
         foreach ($directReferrals as $id)
         {
-            $referral = $this->getObject('com:nucleonplus.model.referralbonuses')->id($id)->fetch();
-            $referral->payout_id = $entity->id;
+            $referral            = $this->getObject('com:nucleonplus.model.referralbonuses')->id($id)->fetch();
+            $referral->payout_id = $payout->id;
             $referral->save();
         }
 
-        // Update indirect referral bonus status
+        // Reference related indirect referrals with payout
         foreach ($indirectReferrals as $id)
         {
-            $referral = $this->getObject('com:nucleonplus.model.referralbonuses')->id($id)->fetch();
-            $referral->payout_id = $entity->id;
+            $referral            = $this->getObject('com:nucleonplus.model.referralbonuses')->id($id)->fetch();
+            $referral->payout_id = $payout->id;
             $referral->save();
         }
 
-        return $entity;
+        $response = $context->getResponse();
+        $response->addMessage("Your Payout Request #{$payout->id} has been created successfully");
+        $identifier = $context->getSubject()->getIdentifier();
+        $url        = sprintf('index.php?option=com_%s&view=payouts', $identifier->package);
+        $response->setRedirect(JRoute::_($url, false));
+
+        return $payout;
     }
 }

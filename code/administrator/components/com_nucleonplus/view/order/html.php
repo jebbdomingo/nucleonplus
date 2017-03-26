@@ -9,23 +9,13 @@
  */
 class ComNucleonplusViewOrderHtml extends KViewHtml
 {
-    /**
-     * Initializes the config for the object
-     *
-     * Called from {@link __construct()} as a first step of object instantiation.
-     *
-     * @param   KObjectConfig $config Configuration options
-     * @return  void
-     */
-    public function __construct(KObjectConfig $config)
+    protected function _fetchData(KViewContext $context)
     {
-        parent::__construct($config);
+        parent::_fetchData($context);
 
-        $query = $this->getUrl()->getQuery(true);
+        $order   = $context->data->order;
+        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($order->account_id)->fetch();
 
-        if (isset($query['account_id']) && $query['account_id']) {
-            $this->_data['account_id'] = $query['account_id'];
-        }
-        else $this->_data['account_id'] = null;
+        $context->data->account = $account;
     }
 }

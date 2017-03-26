@@ -43,7 +43,7 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.checkall')?>
                             </th>
                             <th class="nucleonplus_table__title_field">
-                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'Member Name')); ?>
+                                <?= helper('grid.sort', array('column' => '_user.name', 'title' => 'Member Name')); ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>

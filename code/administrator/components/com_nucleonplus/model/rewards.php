@@ -40,7 +40,7 @@ class ComNucleonplusModelRewards extends KModelDatabase
         $state = $this->getState();
 
         if ($state->status) {
-            $query->where('tbl.status = :status')->bind(['status' => $state->status]);
+            $query->where('tbl.status IN :status')->bind(['status' => (array) $state->status]);
         }
 
         if ($state->product_id) {
@@ -54,5 +54,27 @@ class ComNucleonplusModelRewards extends KModelDatabase
         if ($state->payout_id === 0 || $state->payout_id > 0) {
             $query->where('tbl.payout_id = :payout_id')->bind(['payout_id' => $state->payout_id]);
         }
+    }
+
+    /**
+     * Fetch the next active reward
+     * This is used in packagepatronage for determining which reward is next in line for payout
+     *
+     * @param integer $reward_id
+     *
+     * @return KModelEntityInterface
+     */
+    public function getNextActiveReward($rewardId)
+    {
+        $table = $this->getObject('com://admin/nucleonplus.database.table.rewards');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_rewards AS tbl')
+            ->where('tbl.status = :status')->bind(array('status' => ComNucleonplusModelEntityReward::STATUS_ACTIVE))
+            ->where('tbl.nucleonplus_reward_id != :reward_id')->bind(array('reward_id' => $rewardId))
+            ->limit(1)
+            ->order('tbl.nucleonplus_reward_id', 'ASC')
+        ;
+
+        return $table->select($query);
     }
 }

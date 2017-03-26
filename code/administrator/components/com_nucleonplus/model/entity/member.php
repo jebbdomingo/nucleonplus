@@ -65,37 +65,45 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
 
         $member = new KObjectConfig($this->getProperties());
 
-        // Merge the following fields as these are not automatically updated by Nooku
-        $member->merge([
-            'password'     => JUserHelper::genRandomPassword(),
-            'requireReset' => 1,
-            'sendEmail'    => 1,
-            // 'activation' => JApplicationHelper::getHash($this->password);
-            // 'block'      => 1;
-        ]);
-
-        $user = new JUser;
-
-        $data = $member->toArray();
-        if(!$user->bind($data)) {
-            throw new Exception("Could not bind data. Error: " . $user->getError());
-        }
-
-        if (!$user->save()) {
-            throw new Exception("Could not save user. Error: " . $user->getError());
-        }
-
         if ($this->isNew())
         {
+            $user = new JUser;
+
+            // Merge the following fields as these are not automatically updated by Nooku
+            $member->merge([
+                'password'     => JUserHelper::genRandomPassword(),
+                'requireReset' => 1,
+            ]);
+
+            $data = $member->toArray();
+            if(!$user->bind($data)) {
+                throw new Exception("Could not bind data. Error: " . $user->getError());
+            }
+
+            if (!$user->save()) {
+                throw new Exception("Could not save user. Error: " . $user->getError());
+            }
+
             JUserHelper::addUserToGroup($user->id, self::_USER_GROUP_REGISTERED_);
             $this->id         = $user->id;
-            $account          = $this->_createAccount($user->id, $user->sponsor_id);
+            $account          = $this->_createAccount($user->id);
             $this->account_id = $account->id;
-
-            $this->_member_service->pushMember($account);
         }
         else
         {
+            $user = new JUser($member->id);
+
+            $member->remove('password');
+            $data = $member->toArray();
+
+            if(!$user->bind($data)) {
+                throw new Exception("Could not bind data. Error: " . $user->getError());
+            }
+
+            if (!$user->save(true)) {
+                throw new Exception("Could not save user. Error: " . $user->getError());
+            }
+
             $account          = $this->_updateAccount($user->id);
             $this->account_id = $account->id;
 
@@ -112,19 +120,20 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
      * Create corresponding account for each member/user
      *
      * @param integer $userId
-     * @param integer $sponsorId
      *
      * @return KModelEntityInterface|boolean
      */
-    protected function _createAccount($userId, $sponsorId)
+    protected function _createAccount($userId)
     {
         $model = $this->getObject('com://admin/nucleonplus.model.accounts');
 
         $account = $model->create(array(
             'id'                  => $userId,
             'user_id'             => $userId,
-            'sponsor_id'          => $sponsorId,
-            'status'              => 'active',
+            'sponsor_id'          => $this->sponsor_id,
+            'PrintOnCheckName'    => $this->PrintOnCheckName,
+            'status'              => 'pending',
+            'bank_name'           => $this->bank_name,
             'bank_account_number' => $this->bank_account_number,
             'bank_account_name'   => $this->bank_account_name,
             'bank_account_type'   => $this->bank_account_type,
@@ -153,6 +162,9 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
     {
         $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($userId)->fetch();
 
+        $account->sponsor_id          = $this->sponsor_id;
+        $account->PrintOnCheckName    = $this->PrintOnCheckName;
+        $account->bank_name           = $this->bank_name;
         $account->bank_account_number = $this->bank_account_number;
         $account->bank_account_name   = $this->bank_account_name;
         $account->bank_account_type   = $this->bank_account_type;

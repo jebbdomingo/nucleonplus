@@ -12,6 +12,45 @@
 class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarActionbar
 {
     /**
+     * Toggle claim request Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandToggleclaimrequest(KControllerToolbarCommand $command)
+    {
+        //$command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action'     => 'toggleclaimrequest',
+                'data-novalidate' => 'novalidate'
+            )
+        ));
+    }
+
+    /**
+     * Processing Command
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandProcessing(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'icon-32-save';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'processing'
+            )
+        ));
+
+        $command->label = 'Processing';
+    }
+
+    /**
      * Generate check Command
      *
      * @param KControllerToolbarCommand $command
@@ -53,24 +92,60 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
     protected function _afterRead(KControllerContextInterface $context)
     {
-        parent::_afterRead($context);
-        
         $controller = $this->getController();
         $canSave    = ($controller->isEditable() && $controller->canSave());
         $allowed    = true;
 
+        $this->addCommand('back', array(
+            'href'  => 'option=com_' . $controller->getIdentifier()->getPackage() . '&view=payouts',
+            'label' => 'Back to List'
+        ));
+
+        parent::_afterRead($context);
+
+        $this->removeCommand('apply');
+        $this->removeCommand('save');
+        $this->removeCommand('cancel');
+        
         if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
             $allowed = false;
         }
 
-        if ($canSave && ($context->result->status == 'pending'))
+        if ($canSave && ($context->result->status == ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PENDING))
+        {
+            if ($controller->canProcessing())
+            {
+                $this->addCommand('processing', [
+                    'allowed' => $allowed
+                ]);
+
+                $config = $this->getObject('com://admin/nucleonplus.model.configs')
+                    ->item(ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_NAME)
+                    ->fetch()
+                ;
+
+                $date = date('M d, Y', strtotime($config->value));
+                $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
+                $link = '<a href="' . $url . '">' . $date . '</a>';
+                $context->response->addMessage("Payout Processing Run Date: <strong>{$link}</strong>", 'info');
+            }
+            else
+            {
+                $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
+                $link = '<a href="' . $url . '">here</a>';
+
+                $context->response->addMessage("Set payout run date {$link} before processing", 'warning');
+            }
+        }
+
+        if ($canSave && ($context->result->status == ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING && $context->result->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP))
         {
             $this->addCommand('generatecheck', [
                 'allowed' => $allowed
             ]);
         }
 
-        if ($canSave && ($context->result->status == 'checkgenerated'))
+        if ($canSave && ($context->result->status == ComNucleonplusModelEntityPayout::PAYOUT_STATUS_CHECK_GENERATED && $context->result->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP))
         {
             $this->addCommand('disburse', [
                 'allowed' => $allowed
@@ -96,14 +171,51 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
         if ($canSave)
         {
-            // Batch check
-            $this->addCommand('generatecheck', [
-                'allowed' => $allowed
-            ]);
+            // Batch payout processing
+            if ($allowed && $controller->canProcessing())
+            {
+                $this->addCommand('processing', [
+                    'allowed' => $allowed && $controller->canProcessing()
+                ]);
+
+                $config = $this->getObject('com://admin/nucleonplus.model.configs')
+                    ->item(ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_NAME)
+                    ->fetch()
+                ;
+
+                $date = date('M d, Y', strtotime($config->value));
+                $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
+                $link = '<a href="' . $url . '">' . $date . '</a>';
+                $context->response->addMessage("Payout Processing Run Date: <strong>{$link}</strong>", 'info');
+            }
+            else
+            {
+                $url  = JRoute::_('index.php?option=com_nucleonplus&view=config&id=' . ComNucleonplusModelEntityConfig::PAYOUT_RUN_DATE_ID, false);
+                $link = '<a href="' . $url . '">here</a>';
+
+                $context->response->addMessage("Set payout run date {$link} before processing", 'warning');
+            }
+
+            // Batch generate check
+            if ($canSave && $context->request->query->payout_method == ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP)
+            {
+                $this->addCommand('generatecheck', [
+                    'allowed' => $allowed
+                ]);
+            }
 
             // Batch disburse
             $this->addCommand('disburse', [
                 'allowed' => $allowed
+            ]);
+
+            // Toggle claim request command
+            $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item('claim_request')->fetch();
+
+            $this->addCommand('toggleclaimrequest', [
+                'allowed' => $allowed,
+                'label'   => ($claimRequest->value == ComNucleonplusModelEntityConfig::CLAIM_REQUEST_ENABLED) ? 'Disable Claim Request' : 'Enable Claim Request',
+                'icon'    => ($claimRequest->value == ComNucleonplusModelEntityConfig::CLAIM_REQUEST_ENABLED) ? 'icon-32-stop' : 'icon-32-save'
             ]);
         }
     }

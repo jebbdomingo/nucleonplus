@@ -12,25 +12,33 @@ defined('KOOWA') or die; ?>
 
 <div class="panel panel-primary">
     <div class="panel-heading">
-        <h3 class="panel-title"><?= translate('Rewards') ?></h3>
+        <h3 class="panel-title"><?= translate('Available Commission') ?></h3>
     </div>
     <div class="panel-body">
         <table class="table">
             <thead>
-                <th>Reward</th>
+                <th>&nbsp;</th>
                 <th><div class="pull-right">Points</div></th>
             </thead>
             <tbody>
                 <tr>
-                    <td>Available Product Rebates</td>
+                    <td>Rebates</td>
                     <td><div class="pull-right"><?= number_format($total_rebates, 2) ?></div></td>
                 </tr>
                 <tr>
-                    <td>Available Referral Bonuses</td>
+                    <td>Direct referral bonus</td>
+                    <td><div class="pull-right"><?= number_format($total_direct_referrals, 2) ?></div></td>
+                </tr>
+                <tr>
+                    <td>Patronage bonus</td>
+                    <td><div class="pull-right"><?= number_format($total_patronages, 2) ?></div></td>
+                </tr>
+                <tr>
+                    <td>Unilevel bonus</td>
                     <td><div class="pull-right"><?= number_format($total_referral_bonus, 2) ?></div></td>
                 </tr>
                 <tr class="info">
-                    <td>Total Available Rewards</td>
+                    <td>Total</td>
                     <td><div class="pull-right"><strong><?= number_format($total_bonus, 2) ?></strong></div></td>
                 </tr>
             </tbody>

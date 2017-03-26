@@ -14,6 +14,8 @@
  */
 class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucleonplusAccountingServiceTransferInterface
 {
+    protected $_disabled = false;
+
     /**
      *
      * @var ComKoowaControllerModel
@@ -32,17 +34,20 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         $this->_transfer_controller = $this->getObject($config->transfer_controller);
 
         // Accounts
-        $this->_undeposited_funds_account              = $config->undeposited_funds_account;
-        $this->_system_fee_account                     = $config->system_fee_account;
-        $this->_contingency_fund_account               = $config->contingency_fund_account;
-        $this->_operating_expense_budget_account       = $config->operating_expense_budget_account;
-        $this->_rebates_account                        = $config->rebates_account;
-        $this->_directreferral_bonus_account           = $config->directreferral_bonus_account;
-        $this->_indirectreferral_bonus_account         = $config->indirectreferral_bonus_account;
-        $this->_surplusrebates_account                 = $config->surplusrebates_account;
-        $this->_surplus_directreferral_bonus_account   = $config->surplus_directreferral_bonus_account;
-        $this->_surplus_indirectreferral_bonus_account = $config->surplus_indirectreferral_bonus_account;
-        $this->_delivery_expense_account               = $config->delivery_expense_account;
+        $this->_online_payments_account           = $config->online_payments_account;
+        $this->_savings_account                   = $config->savings_account;
+        $this->_checking_account                  = $config->checking_account;
+        $this->_charges_account                   = $config->charges_account;
+        $this->_rebates_account                   = $config->rebates_account;
+        $this->_dr_bonus_account                  = $config->dr_bonus_account;
+        $this->_patronage_account                 = $config->patronage_account;
+        $this->_unilevel_dr_bonus_account         = $config->unilevel_dr_bonus_account;
+        $this->_unilevel_ir_bonus_account         = $config->unilevel_ir_bonus_account;
+        $this->_surplus_patronage_account         = $config->surplus_patronage_account;
+        $this->_surplus_unilevel_dr_bonus_account = $config->surplus_unilevel_dr_bonus_account;
+        $this->_surplus_unilevel_ir_bonus_account = $config->surplus_unilevel_ir_bonus_account;
+        $this->_delivery_expense_account          = $config->delivery_expense_account;
+        $this->_revenue_account                   = $config->revenue_account;
     }
 
     /**
@@ -50,184 +55,347 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      *
      * Called from {@link __construct()} as a first step of object instantiation.
      *
-     * @param   KObjectConfig $config Configuration options
+     * @param KObjectConfig $config Configuration options
+     * 
      * @return void
      */
     protected function _initialize(KObjectConfig $config)
     {
+        $data = $this->getObject('com:nucleonplus.accounting.service.data');
+
         $config->append(array(
-            'transfer_controller'                    => 'com:qbsync.controller.transfer',
-            'undeposited_funds_account'              => 182,
-            'system_fee_account'                     => 224,
-            'contingency_fund_account'               => 223,
-            'operating_expense_budget_account'       => 225,
-            'rebates_account'                        => 228,
-            'directreferral_bonus_account'           => 226,
-            'indirectreferral_bonus_account'         => 227,
-            'surplusrebates_account'                 => 231,
-            'surplus_directreferral_bonus_account'   => 229,
-            'surplus_indirectreferral_bonus_account' => 230,
-            'delivery_expense_account'               => 234,
+            'transfer_controller'               => 'com:qbsync.controller.transfer',
+            'online_payments_account'           => $data->ACCOUNT_ONLINE_PAYMENTS,
+            'savings_account'                   => $data->ACCOUNT_BANK_REF,
+            'checking_account'                  => $data->ACCOUNT_CHECKING_REF,
+            'charges_account'                   => $data->ACCOUNT_CHARGES,
+            'rebates_account'                   => $data->ACCOUNT_REBATES,
+            'dr_bonus_account'                  => $data->ACCOUNT_DIRECT_REFERRAL_BONUS,
+            'patronage_account'                 => $data->ACCOUNT_PATRONAGE,
+            'unilevel_dr_bonus_account'         => $data->ACCOUNT_REFERRAL_DIRECT,
+            'unilevel_ir_bonus_account'         => $data->ACCOUNT_REFERRAL_INDIRECT,
+            'surplus_patronage_account'         => $data->ACCOUNT_PATRONAGE_FLUSHOUT,
+            'surplus_unilevel_dr_bonus_account' => $data->ACCOUNT_REFERRAL_DIRECT_FLUSHOUT,
+            'surplus_unilevel_ir_bonus_account' => $data->ACCOUNT_REFERRAL_INDIRECT_FLUSHOUT,
+            'delivery_expense_account'          => $data->ACCOUNT_EXPENSE_DELIVERY,
+            'revenue_account'                   => $data->ACCOUNT_REVENUE,
         ));
 
         parent::_initialize($config);
     }
 
     /**
-     *
-     * @param integer $orderId
+     * Allocate outright revenue
+     * 
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateRebates($orderId, $amount)
+    public function allocateRevenue($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_revenue_account;
+        $note          = 'Outright revenue from product';
+
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+    }
+
+    /**
+     * Record online payment remittance
+     * 
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function depositOnlinePayment($entityId, $amount)
+    {
+        $sourceAccount = $this->_online_payments_account;
+        $targetAccount = $this->_savings_account;
+        $note          = 'Deposit from online payment processing network';
+
+        return $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+    }
+
+    /**
+     *
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function allocateRebates($entityId, $amount)
+    {
+        $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_rebates_account;
-        $note          = 'Transfer part of sale to rebates asset account';
+        $note          = 'Rebates';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     * @param integer $orderId
+     *
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateSurplusRebates($orderId, $amount)
+    public function allocateDirectReferral($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
-        $targetAccount = $this->_surplusrebates_account;
-        $note          = 'Transfer surplus rebates i.e. a slot that doesn\'t have available slot to connect with';
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_dr_bonus_account;
+        $note          = 'Direct Referral Bonus';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     * @param integer $orderId
+     *
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateDRBonus($orderId, $amount)
+    public function allocatePatronage($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
-        $targetAccount = $this->_directreferral_bonus_account;
-        $note          = 'Transfer part of sale to direct referral incentives asset account';
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_patronage_account;
+        $note          = 'Patronage';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     * @param integer $orderId
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateIRBonus($orderId, $amount)
+    public function allocateSurplusPatronage($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
-        $targetAccount = $this->_indirectreferral_bonus_account;
-        $note          = 'Transfer part of sale to indirect referral incentives asset account';
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_surplus_patronage_account;
+        $note          = 'Flushout Patronage i.e. a slot that doesn\'t have available slot to connect with';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     * @param integer $orderId
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateSurplusDRBonus($orderId, $amount)
+    public function allocateDRBonus($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
-        $targetAccount = $this->_surplus_directreferral_bonus_account;
-        $note          = 'Transfer surplus direct referral bonus i.e. an account that doesn\'t have a referrer';
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_unilevel_dr_bonus_account;
+        $note          = 'Unilevel Direct Referral';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     * @param integer $orderId
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateSurplusIRBonus($orderId, $amount)
+    public function allocateIRBonus($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
-        $targetAccount = $this->_surplus_indirectreferral_bonus_account;
-        $note          = 'Transfer surplus indirect referral bonus i.e. an account that doesn\'t have an indirect referrer';
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_unilevel_ir_bonus_account;
+        $note          = 'Unilevel Indirect Referral';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     * @param integer $orderId
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateSystemFee($orderId, $amount)
+    public function allocateSurplusDRBonus($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
-        $targetAccount = $this->_system_fee_account;
-        $note          = 'Transfer part of sale to system fee asset account';
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_surplus_unilevel_dr_bonus_account;
+        $note          = 'Flushout Unilevel Direct Referral i.e. an account that doesn\'t have a referrer';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     * @param integer $orderId
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateContingencyFund($orderId, $amount)
+    public function allocateSurplusIRBonus($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
-        $targetAccount = $this->_contingency_fund_account;
-        $note          = 'Transfer part of sale to contingency fund asset account';
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_surplus_unilevel_ir_bonus_account;
+        $note          = 'Flushout Unilevel Indirect Referral i.e. an account that doesn\'t have an indirect referrer';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     * @param integer $orderId
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateOperationsFund($orderId, $amount)
+    public function allocateCharges($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
-        $targetAccount = $this->_operating_expense_budget_account;
-        $note          = 'Transfer part of sale to operating budget asset account';
+        $sourceAccount = $this->_savings_account;
+        $targetAccount = $this->_charges_account;
+        $note          = 'Charges';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
     /**
-     * @param integer $orderId
+     * @param integer $entityId
      * @param decimal $amount
      *
-     * @return void
+     * @return KModelEntityInterface
      */
-    public function allocateDeliveryExpense($orderId, $amount)
+    public function allocateDeliveryExpense($entityId, $amount)
     {
-        $sourceAccount = $this->_undeposited_funds_account;
+        $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_delivery_expense_account;
-        $note          = 'Transfer part of sale to delivery expense allocation asset account';
+        $note          = 'Delivery Expense';
 
-        return $this->_transfer($orderId, $sourceAccount, $targetAccount, $amount, $note);
+        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+    }
+
+    /**
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function rebatesCheck($entityId, $amount)
+    {
+        $sourceAccount = $this->_rebates_account;
+        $targetAccount = $this->_checking_account;
+        $note          = 'Rebates Check';
+
+        $transfer = $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+
+        // Try to sync
+        if ($transfer->sync() == false)
+        {
+            $error = $transfer->getStatusMessage();
+            throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Transfer #{$transfer->id}");
+        }
+
+        return $transfer;
+    }
+
+    /**
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function directReferralBonusCheck($entityId, $amount)
+    {
+        $sourceAccount = $this->_dr_bonus_account;
+        $targetAccount = $this->_checking_account;
+        $note          = 'Direct Referral Bonus Check';
+
+        $transfer = $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+
+        // Try to sync
+        if ($transfer->sync() == false)
+        {
+            $error = $transfer->getStatusMessage();
+            throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Transfer #{$transfer->id}");
+        }
+
+        return $transfer;
+    }
+
+    /**
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function commissionCheck($entityId, $amount)
+    {
+        $sourceAccount = $this->_patronage_account;
+        $targetAccount = $this->_checking_account;
+        $note          = 'Patronage Bonus Check';
+
+        $transfer = $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+        
+        // Try to sync
+        if ($transfer->sync() == false)
+        {
+            $error = $transfer->getStatusMessage();
+            throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Transfer #{$transfer->id}");
+        }
+
+        return $transfer;
+    }
+
+    /**
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function directReferralCheck($entityId, $amount)
+    {
+        $sourceAccount = $this->_unilevel_dr_bonus_account;
+        $targetAccount = $this->_checking_account;
+        $note          = 'Unilevel Direct Referral Check';
+
+        $transfer = $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+
+        // Try to sync
+        if ($transfer->sync() == false)
+        {
+            $error = $transfer->getStatusMessage();
+            throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Transfer #{$transfer->id}");
+        }
+
+        return $transfer;
+    }
+
+    /**
+     * @param integer $entityId
+     * @param decimal $amount
+     *
+     * @return KModelEntityInterface
+     */
+    public function indirectReferralCheck($entityId, $amount)
+    {
+        $sourceAccount = $this->_unilevel_ir_bonus_account;
+        $targetAccount = $this->_checking_account;
+        $note          = 'Unilevel Indirect Referral Check';
+
+        $transfer = $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+        
+        // Try to sync
+        if ($transfer->sync() == false)
+        {
+            $error = $transfer->getStatusMessage();
+            throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Transfer #{$transfer->id}");
+        }
+
+        return $transfer;
     }
 
     /**
      * Transfer funds
      * 
-     * @param integer $orderId
+     * @param string  $entity
+     * @param integer $entityId
      * @param integer $fromAccount
      * @param integer $toAccount
      * @param decimal $amount
@@ -235,16 +403,22 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      *
      * @throws Exception API error
      *
-     * @return resource
+     * @return KModelEntityInterface
      */
-    protected function _transfer($orderId, $fromAccount, $toAccount, $amount, $note = null)
+    protected function _transfer($entity, $entityId, $fromAccount, $toAccount, $amount, $note = null)
     {
+        if ($this->_disabled) {
+            return false;
+        }
+        
         return $this->_transfer_controller->add(array(
-             'order_id'       => $orderId,
+             'entity'         => $entity,
+             'entity_id'      => $entityId,
              'FromAccountRef' => $fromAccount,
              'ToAccountRef'   => $toAccount,
              'Amount'         => $amount,
-             'PrivateNote'    => $note,
+             'TxnDate'        => date('Y-m-d'),
+             'PrivateNote'    => "{$entityId}_{$note}"
         ));
     }
 }

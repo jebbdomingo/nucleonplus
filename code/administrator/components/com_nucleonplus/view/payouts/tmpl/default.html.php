@@ -29,15 +29,25 @@ defined('KOOWA') or die; ?>
         <form action="" method="get" class="-koowa-grid">
             <div class="scopebar">
                 <div class="scopebar-group last hidden-tablet hidden-phone">
-                    <?php echo helper('listbox.payoutStatusFilter', array('active_status' => parameters()->status)); ?>
+                    <?= helper('listbox.payoutStatusFilter', array('active' => parameters()->status)); ?>
                 </div>
                 <div class="scopebar-search">
                     <?= helper('grid.search', array('submit_on_clear' => true, 'placeholder' => 'Account Number or Member\'s Name')) ?>
                 </div>
             </div>
+            <div class="scopebar">
+                <div class="scopebar-group last hidden-tablet hidden-phone">
+                    <?= helper('listbox.payoutMethodsFilter', array('active' => parameters()->payout_method)); ?>
+                </div>
+            </div>
             <div class="nucleonplus_table_container">
                 <table class="table table-striped footable">
                     <thead>
+                        <tr>
+                            <th class="alert alert-info" role="alert" colspan="8">
+                                Total: <strong>&#8369;<?= $total ?></strong>
+                            </th>
+                        </tr>
                         <tr>
                             <th style="text-align: center;" width="1">
                                 <?= helper('grid.checkall')?>
@@ -49,16 +59,21 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>
                             </th>
                             <th>
+                                <?= helper('grid.sort', array('column' => 'payout_method', 'title' => 'Encashment Method')); ?>
+                            </th>
+                            <th>
                                 <?= helper('grid.sort', array('column' => 'name', 'title' => 'Member')); ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'amount', 'title' => 'Amount')); ?>
+                                <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
+                                <div class="text-right">
+                                    <?= helper('grid.sort', array('column' => 'amount', 'title' => 'Amount')); ?>
+                                </div>
                             </th>
                         </tr>
                     </thead>
@@ -67,7 +82,7 @@ defined('KOOWA') or die; ?>
                             <?= import('default_payouts.html', ['payouts' => $payouts]) ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" align="center" style="text-align: center;">
+                                <td colspan="8" align="center" style="text-align: center;">
                                     <?= translate('No payout request') ?>
                                 </td>
                             </tr>
@@ -75,7 +90,7 @@ defined('KOOWA') or die; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="7">
+                            <td colspan="8">
                                 <?= helper('paginator.pagination') ?>
                             </td>
                         </tr>

@@ -11,6 +11,26 @@
 class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActionbar
 {
     /**
+     * Override cancel to overwrite hardcoded button label
+     *
+     * @param KControllerToolbarCommand $command
+     *
+     * @return void
+     */
+    protected function _commandCancel(KControllerToolbarCommand $command)
+    {
+        $command->label = 'Back';
+        $command->icon = 'icon-32-cancel';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action' => 'cancel',
+                'data-novalidate' => 'novalidate',
+            )
+        ));
+    }
+
+    /**
      * Cancel Order Command
      *
      * @param KControllerToolbarCommand $command
@@ -113,5 +133,6 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
         }
 
         $this->removeCommand('save');
+        $this->addCommand('cancel');
     }
 }

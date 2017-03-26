@@ -11,7 +11,7 @@
 
 
 /**
- * Rebate Controller
+ * Reward Controller
  *
  * @author  Jebb Domingo <http://github.com/jebbdomingo>
  * @package Nucleon Plus
@@ -19,25 +19,10 @@
 class ComNucleonplusControllerReward extends ComKoowaControllerModel
 {
     /**
-     * Rebate Package.
      *
-     * @var ComNucleonplusRebatePackagerebate
+     * @var ComNucleonplusMlmCompensation
      */
-    private $_rebate_package;
-
-    /**
-     * Referral Package.
-     *
-     * @var ComNucleonplusRebatePackagereferral
-     */
-    private $_referral_package;
-
-    /**
-     * Order Model Identifier
-     *
-     * @var ComKoowaControllerModel
-     */
-    private $_order_identifier;
+    private $_compensation_package;
 
     /**
      * Constructor.
@@ -46,11 +31,11 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
      */
     public function __construct(KObjectConfig $config)
     {
+        @ini_set('max_execution_time', 300);
+
         parent::__construct($config);
 
-        $this->_rebate_package   = $config->rebate_package;
-        $this->_referral_package = $config->referral_package;
-        $this->_order_identifier = $config->order_identifier;
+        $this->_compensation_package = $this->getObject($config->compensation_package);
     }
 
     /**
@@ -63,9 +48,7 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'rebate_package'   => 'com:nucleonplus.rebate.packagerebate',
-            'referral_package' => 'com:nucleonplus.rebate.packagereferral',
-            'order_identifier' => 'com:nucleonplus.model.orders'
+            'compensation_package' => 'com:nucleonplus.mlm.compensation',
         ));
 
         parent::_initialize($config);
@@ -87,31 +70,34 @@ class ComNucleonplusControllerReward extends ComKoowaControllerModel
             $rewards = $context->result;
         }
 
-        try {
-            $rebatePackage   = $this->getObject($this->_rebate_package);
-            $referralPackage = $this->getObject($this->_referral_package);
+        if (count($rewards))
+        {
+            $translator = $this->getObject('translator');
 
             foreach ($rewards as $reward)
             {
-                $orders = $this->getObject($this->_order_identifier)->id($reward->product_id)->fetch();
+                switch ($reward->status) {
+                    case ComNucleonplusModelEntityReward::STATUS_ACTIVE:
+                        throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is already active"));
+                        $result = false;
+                        break;
+                    
+                    case ComNucleonplusModelEntityReward::STATUS_READY:
+                        throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is ready for payout"));
+                        $result = false;
+                        break;
 
-                foreach ($orders as $order)
-                {
-                    // Create corresponding slots for this order reward
-                    $rebatePackage->create($order);
-
-                    // Create referral bonus payouts
-                    $referralPackage->create($order);
+                    case ComNucleonplusModelEntityReward::STATUS_CLAIMED:
+                        throw new KControllerExceptionRequestInvalid($translator->translate("Invalid Request: Reward #{$reward->id} is already claimed"));
+                        $result = false;
+                        break;
                 }
+
+                // Create compensations
+                $this->_compensation_package->create($reward);
             }
-        } catch (Exception $e) {
-            $identifier = $this->getIdentifier();
-            $url        = sprintf('index.php?option=com_%s&view=order&id=%d', $identifier->package, $this->getRequest()->query->id);
-
-            return JFactory::getApplication()->redirect($url, $e->getMessage(), 'exception');
         }
-
-        // Redirect
+        else throw new KControllerExceptionResourceNotFound('Resource could not be found');
 
         return $rewards;
     }

@@ -15,28 +15,27 @@ class ComNucleonplusModelRebates extends KModelDatabase
         parent::__construct($config);
 
         $this->getState()
-            ->insert('customer_id', 'int')
-            ->insert('status', 'string')
+            ->insert('account_id', 'int')
             ->insert('payout_id', 'int')
         ;
-    }
-
-    protected function _initialize(KObjectConfig $config)
-    {
-        $config->append(array(
-            'behaviors' => array(
-                // 'searchable' => array('columns' => array('status', 'product_id'))
-            )
-        ));
-
-        parent::_initialize($config);
     }
 
     protected function _buildQueryColumns(KDatabaseQueryInterface $query)
     {
         parent::_buildQueryColumns($query);
 
-        $query->columns('r.*');
+        $query
+            ->columns(array('reward_product_id' => '_reward.product_id'))
+        ;
+    }
+
+    protected function _buildQueryJoins(KDatabaseQueryInterface $query)
+    {
+        $query
+            ->join(array('_reward' => 'nucleonplus_rewards'), 'tbl.reward_id = _reward.nucleonplus_reward_id')
+        ;
+
+        parent::_buildQueryJoins($query);
     }
 
     protected function _buildQueryWhere(KDatabaseQueryInterface $query)
@@ -45,25 +44,12 @@ class ComNucleonplusModelRebates extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->customer_id) {
-            $query->where('r.customer_id = :customer_id')->bind(['customer_id' => $state->customer_id]);
-        }
-
-        if ($state->status) {
-            $query->where('r.status = :status')->bind(['status' => $state->status]);
+        if ($state->account_id) {
+            $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
         }
 
         if ($state->payout_id === 0 || $state->payout_id > 0) {
-            $query->where('r.payout_id = :payout_id')->bind(['payout_id' => $state->payout_id]);
+            $query->where('tbl.payout_id = :payout_id')->bind(['payout_id' => $state->payout_id]);
         }
-    }
-
-    protected function _buildQueryJoins(KDatabaseQueryInterface $query)
-    {
-        $query
-            ->join(array('r' => 'nucleonplus_rewards'), 'tbl.reward_id_to = r.nucleonplus_reward_id')
-        ;
-
-        parent::_buildQueryJoins($query);
     }
 }

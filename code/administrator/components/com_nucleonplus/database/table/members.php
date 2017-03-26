@@ -8,14 +8,13 @@
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
+
 class ComNucleonplusDatabaseTableMembers extends KDatabaseTableAbstract
 {
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'name'    => 'users',
-            'filters' => array(
-            )
+            'name' => 'users'
         ));
         
         parent::_initialize($config);

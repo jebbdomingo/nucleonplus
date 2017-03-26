@@ -15,9 +15,11 @@ class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
         $account = $model->fetch();
 
         // Rewards summary
-        $context->data->total_referral_bonus = $model->getTotalAvailableReferralBonus()->total;
-        $context->data->total_rebates        = $model->getTotalAvailableRebates()->total;
-        $context->data->total_bonus          = ($context->data->total_referral_bonus + $context->data->total_rebates);
+        $context->data->total_referral_bonus   = $model->getTotalAvailableReferralBonus()->total;
+        $context->data->total_patronages       = $model->getTotalAvailablePatronages()->total;
+        $context->data->total_direct_referrals = $model->getTotalAvailableDirectReferrals()->total;
+        $context->data->total_rebates          = $model->getTotalAvailableRebates()->total;
+        $context->data->total_bonus            = ($context->data->total_referral_bonus + $context->data->total_patronages + $context->data->total_direct_referrals + $context->data->total_rebates);
 
         parent::_fetchData($context);
     }

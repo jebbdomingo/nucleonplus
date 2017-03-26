@@ -18,18 +18,9 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             ->insert('account_id', 'int')
             ->insert('status', 'string')
             ->insert('search', 'string')
+            ->insert('created_on', 'string')
+            ->insert('payout_method', 'string')
         ;
-    }
-
-    protected function _initialize(KObjectConfig $config)
-    {
-        $config->append(array(
-            'behaviors' => array(
-                // 'searchable' => array('columns' => array('account_number', 'status'))
-            )
-        ));
-
-        parent::_initialize($config);
     }
 
     protected function _buildQueryColumns(KDatabaseQueryInterface $query)
@@ -37,18 +28,22 @@ class ComNucleonplusModelPayouts extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns('a.account_number')
-            ->columns('a.status AS account_status')
-            ->columns('a.created_on AS account_created_on')
-            ->columns('u.name')
+            ->columns(array('_account_bank_account_number' => '_account.bank_account_number'))
+            ->columns(array('_account_bank_account_name'   => '_account.bank_account_name'))
+            ->columns(array('_account_mobile'              => '_account.mobile'))
+            ->columns('_account.account_number')
+            ->columns('_account.status AS account_status')
+            ->columns('_account.created_on AS account_created_on')
+            ->columns('_user.name')
+            ->columns('_user.email')
             ;
     }
 
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('a' => 'nucleonplus_accounts'), 'tbl.account_id = a.nucleonplus_account_id')
-            ->join(array('u' => 'users'), 'a.user_id = u.id')
+            ->join(array('_account' => 'nucleonplus_accounts'), 'tbl.account_id = _account.nucleonplus_account_id')
+            ->join(array('_user' => 'users'), '_account.user_id = _user.id')
         ;
 
         parent::_buildQueryJoins($query);
@@ -64,15 +59,23 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
         }
 
-        if ($state->status && $state->status <> 'all') {
+        if ($state->status) {
             $query->where('tbl.status = :status')->bind(['status' => $state->status]);
+        }
+
+        if ($state->payout_method) {
+            $query->where('tbl.payout_method = :payout_method')->bind(['payout_method' => $state->payout_method]);
+        }
+
+        if ($state->created_on) {
+            $query->where('DATE_FORMAT(tbl.created_on,"%Y-%m-%d") = :created_on')->bind(['created_on' => $state->created_on]);
         }
 
         if ($state->search)
         {
             $conditions = array(
-                'a.account_number LIKE :keyword',
-                'u.name LIKE :keyword',
+                '_account.account_number LIKE :keyword',
+                '_user.name LIKE :keyword',
             );
             $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
         }
@@ -88,7 +91,50 @@ class ComNucleonplusModelPayouts extends KModelDatabase
     protected function _beforeFetch(KModelContextInterface $context)
     {
         if (is_null($context->state->sort)) {
-            $context->query->order('u.name', 'asc');
+            $context->query->order('_user.name', 'asc');
         }
+    }
+
+    public function getTotal()
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('tbl.nucleonplus_payout_id, SUM(tbl.amount) AS total')
+            ->group('tbl.payout_method')
+        ;
+
+        $this->_buildQueryWhere($query);
+
+        $entities = $table->select($query);
+
+        return (float) $entities->total;
+    }
+
+    public function hasOutstandingRequest()
+    {
+        $state = $this->getState();
+
+        $status = array(
+            ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PENDING,
+            ComNucleonplusModelEntityPayout::PAYOUT_STATUS_PROCESSING,
+            ComNucleonplusModelEntityPayout::PAYOUT_TRANSFER_STATUS_PENDING,
+            ComNucleonplusModelEntityPayout::PAYOUT_TRANSFER_STATUS_INPROGRESS,
+        );
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('tbl.nucleonplus_payout_id, COUNT(tbl.nucleonplus_payout_id) AS count')
+            ->where('tbl.status IN :status')->bind(['status' => $status])
+            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id])
+        ;
+
+        $result = $table->select($query);
+        $count  = (int) $result->count;
+
+        return ($count > 0) ? true : false;
     }
 }

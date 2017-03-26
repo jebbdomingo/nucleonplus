@@ -14,6 +14,8 @@
  */
 class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements ComNucleonplusAccountingServiceSalesreceiptInterface
 {
+    protected $_disabled = false;
+    
     /**
      *
      * @var ComKoowaControllerModel
@@ -40,27 +42,33 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
 
     /**
      *
-     * @var decimal
-     */
-    protected $_system_fee_rate;
-
-    /**
-     *
      * @var integer
      */
     protected $_department_ref;
 
     /**
      *
-     * @var decimal
+     * @var integer
      */
-    protected $_contingency_fund_rate;
+    protected $_online_payments_account;
 
     /**
      *
-     * @var decimal
+     * @var integer
      */
-    protected $_operating_expense_rate;
+    protected $_bank_account_ref;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $_undeposited_account_ref;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $_shipping_account;
 
     /**
      * Constructor.
@@ -71,10 +79,14 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
     {
         parent::__construct($config);
 
-        $this->_salesreceipt      = $this->getObject($config->salesreceipt_controller);
-        $this->_salesreceipt_line = $this->getObject($config->salesreceipt_line_controller);
-        $this->_item_controller   = $this->getObject($config->item_controller);
-        $this->_department_ref    = $config->department_ref;
+        $this->_salesreceipt            = $this->getObject($config->salesreceipt_controller);
+        $this->_salesreceipt_line       = $this->getObject($config->salesreceipt_line_controller);
+        $this->_item_controller         = $this->getObject($config->item_controller);
+        $this->_department_ref          = $config->department_ref;
+        $this->_online_payments_account = $config->online_payments_account;
+        $this->_bank_account_ref        = $config->bank_account_ref;
+        $this->_undeposited_account_ref = $config->undeposited_account_ref;
+        $this->_shipping_account        = $config->shipping_account;
 
         // Transfer service
         $identifier = $this->getIdentifier($config->transfer_service);
@@ -87,10 +99,6 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             );
         }
         else $this->_transfer_service = $service;
-
-        $this->_system_fee_rate        = $config->system_fee_rate;
-        $this->_contingency_fund_rate  = $config->contingency_fund_rate;
-        $this->_operating_expense_rate = $config->operating_expense_rate;
     }
 
     /**
@@ -103,15 +111,18 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
      */
     protected function _initialize(KObjectConfig $config)
     {
+        $data = $this->getObject('com:nucleonplus.accounting.service.data');
+
         $config->append(array(
             'salesreceipt_controller'      => 'com:qbsync.controller.salesreceipt',
             'salesreceipt_line_controller' => 'com:qbsync.controller.salesreceiptline',
             'item_controller'              => 'com:qbsync.controller.item',
             'transfer_service'             => 'com:nucleonplus.accounting.service.transfer',
-            'department_ref'               => 2,
-            'system_fee_rate'              => 10.00,
-            'contingency_fund_rate'        => 50.00,
-            'operating_expense_rate'       => 60.00,
+            'department_ref'               => $data->store_angono,
+            'online_payments_account'      => $data->ACCOUNT_ONLINE_PAYMENTS, // Online payment processor account
+            'bank_account_ref'             => $data->account_bank_ref, // Bank Account
+            'undeposited_account_ref'      => $data->account_undeposited_ref, // Undeposited Funds Account
+            'shipping_account'             => $data->ACCOUNT_INCOME_SHIPPING
         ));
 
         parent::_initialize($config);
@@ -126,6 +137,10 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
      */
     public function recordSale(KModelEntityInterface $order)
     {
+        if ($this->_disabled) {
+            return false;
+        }
+
         // Create sales receipt sync queue
         $salesReceiptData = array(
             'DocNumber'    => $order->id,
@@ -133,77 +148,138 @@ class ComNucleonplusAccountingServiceSalesreceipt extends KObject implements Com
             'CustomerRef'  => $order->_account_customer_ref,
             'CustomerMemo' => 'Thank you for your business and have a great day!',
         );
-        if ($order->payment_method == 'deposit') {
-            $salesReceiptData['DepartmentRef'] = $this->_department_ref; // Angono EC Valle store
-        }
-        $salesReceipt = $this->_salesreceipt->add($salesReceiptData);
 
-        // Create corresponding sales receipt line items
-        foreach ($order->getItems() as $item)
+        if ($order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY)
         {
-            $inventoryItem = $this->_item_controller
-                ->id($item->inventory_item_id)
-                ->getModel()
-                ->fetch()
-            ;
-
-            $this->_salesreceipt_line->add(array(
-                'SalesReceipt' => $salesReceipt->id,
-                'Description'  => $item->name,
-                'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($inventoryItem->getId()),
-                'Qty'          => $item->quantity,
-                'Amount'       => ($inventoryItem->getUnitPrice() * $item->quantity),
-            ));
-        }
-
-        // Create package item
-        if ($order->shipping_method == 'xend')
-        {
-            // Product package + delivery service charge
-            $serviceItem = $this->_item_controller
-                ->id($order->getPackage()->acctg_item_delivery_id)
-                ->getModel()
-                ->fetch()
-            ;
-            $this->_salesreceipt_line->add(array(
-                'SalesReceipt' => $salesReceipt->id,
-                'Description'  => "{$order->package_name} + Delivery Charge",
-                'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
-                'Qty'          => 1,
-                'Amount'       => $serviceItem->getUnitPrice(),
-            ));
-
-            // Delivery charge
-            $deliveryExpense = $order->getPackage()->delivery_charge;
-
-            if ($order->payment_method == 'deposit') {
-                $this->_transfer_service->allocateDeliveryExpense($order->id, $deliveryExpense);
-            }
+            // Online payment
+            $salesReceiptData['DepartmentRef']       = $this->_department_ref; // Angono EC Valle store
+            $salesReceiptData['DepositToAccountRef'] = $this->_online_payments_account; // Online payment processor account
+            $salesReceiptData['transaction_type']    = 'online'; // Customer ordered thru website
         }
         else
         {
-            // Product package
-            $serviceItem = $this->_item_controller
-                ->id($order->getPackage()->acctg_item_id)
-                ->getModel()
-                ->fetch()
-            ;
-            $this->_salesreceipt_line->add(array(
-                'SalesReceipt' => $salesReceipt->id,
-                'Description'  => "{$order->package_name} Service",
-                'ItemRef'      => QuickBooks_IPP_IDS::usableIDType($serviceItem->getId()),
-                'Qty'          => 1,
-                'Amount'       => $serviceItem->getUnitPrice(),
-            ));
+            // Cash
+            $user     = $this->getObject('user');
+            $employee = $this->getObject('com:nucleonplus.model.employeeaccounts')->user_id($user->getId())->fetch();
+            
+            $salesReceiptData['DepartmentRef']       = $employee->DepartmentRef; // Store branch
+            $salesReceiptData['DepositToAccountRef'] = $this->_undeposited_account_ref; // Undeposited Funds Account
+            $salesReceiptData['transaction_type']    = 'offline'; // Order placed via onsite POS
+        }
+
+        $salesReceipt = $this->_salesreceipt->add($salesReceiptData);
+        $itemsQty     = array();
+
+        // Product line items
+        foreach ($order->getOrderItems() as $orderItem)
+        {
+            $item = $this->getObject('com://admin/qbsync.model.items')->ItemRef($orderItem->ItemRef)->fetch();
+            
+            // Business Package/Bundle
+            if ($item->Type == ComQbsyncModelEntityItem::TYPE_GROUP)
+            {
+                // Update item quantity
+                $groupedItems = $this->getObject('com://admin/qbsync.model.itemgroups')->parent_id($item->ItemRef)->fetch();
+                $quantity     = 0;
+
+                foreach ($groupedItems as $groupedItem)
+                {
+                    if ($groupedItem->_item_type == 'Inventory')
+                    {
+                        $quantity += ((int) $orderItem->quantity * (int) $groupedItem->quantity);
+                        $oItem    = $this->getObject('com://admin/qbsync.model.items')->ItemRef($groupedItem->ItemRef)->fetch();
+                        @$itemsQty[$oItem->ItemRef] = $quantity;
+                    }
+                }
+
+                // Add salesreceipt line
+                $quantity = (int) $orderItem->quantity;
+                $this->_addSalesReceiptLine(
+                    $salesReceipt->id,
+                    $item->Name,
+                    $item->ItemRef,
+                    $quantity,
+                    0,
+                    $item->Type
+                );
+            }
+            // Retail Item
+            else
+            {
+                // Add salesreceipt line
+                $quantity = (int) $orderItem->quantity;
+                $this->_addSalesReceiptLine(
+                    $salesReceipt->id,
+                    $item->Name,
+                    $item->ItemRef,
+                    $quantity,
+                    ($item->UnitPrice * $quantity),
+                    $item->Type
+                );
+
+                @$itemsQty[$item->ItemRef] += $quantity;
+            }
+        }
+
+        $this->_updateQuantity($itemsQty);
+
+        // Service line items
+        if ($order->shipping_method == 'xend' && $order->payment_method == ComNucleonplusModelEntityOrder::PAYMENT_METHOD_DRAGONPAY)
+        {
+            // Delivery charge
+            if ($shippingCost = $order->shipping_cost)
+            {
+                $this->_salesreceipt_line->add(array(
+                    'SalesReceipt' => $salesReceipt->id,
+                    'Description'  => "Shipping",
+                    'ItemRef'      => $this->_shipping_account,
+                    'Amount'       => $shippingCost
+                ));
+            }
         }
 
         // Allocation parts of sale
-        $systemFee        = ($this->_system_fee_rate * $order->getReward()->slots);
-        $contingencyFund  = ($this->_contingency_fund_rate * $order->getReward()->slots);
-        $operatingExpense = ($this->_operating_expense_rate * $order->getReward()->slots);
+        foreach ($order->getRewards() as $reward)
+        {
+            if ($reward->type == ComNucleonplusModelEntityReward::REWARD_PACKAGE) {
+                $charges = $reward->charges * $reward->slots;
+            }
+            else $charges = $reward->charges;
 
-        $this->_transfer_service->allocateSystemFee($order->id, $systemFee);
-        $this->_transfer_service->allocateContingencyFund($order->id, $contingencyFund);
-        $this->_transfer_service->allocateOperationsFund($order->id, $operatingExpense);
+            $this->_transfer_service->allocateCharges($order->id, $charges);
+        }
+    }
+
+    protected function _addSalesReceiptLine($salesReceiptId, $description, $ItemRef, $quantity, $amount, $type = ComQbsyncModelEntityItem::TYPE_INVENTORY_ITEM)
+    {
+        $this->_salesreceipt_line->add(array(
+            'SalesReceipt' => $salesReceiptId,
+            'Description'  => $description,
+            'ItemRef'      => $ItemRef,
+            'Qty'          => $quantity,
+            'Amount'       => $amount,
+            'Type'         => $type
+        ));
+    }
+
+    /**
+     * Update item's quantity purchased for real time inventory quantity tracking
+     *
+     * @param array $itemsQty
+     *
+     * @return void
+     */
+    protected function _updateQuantity($itemsQty)
+    {
+        foreach ($itemsQty as $ItemRef => $quantity)
+        {
+            $entity = $this->getObject('com://admin/qbsync.model.items')->ItemRef($ItemRef)->fetch();
+
+            if (count($entity))
+            {
+                $entity->updateQuantityPurchased($quantity);
+                $entity->save();
+            }
+        }
     }
 }

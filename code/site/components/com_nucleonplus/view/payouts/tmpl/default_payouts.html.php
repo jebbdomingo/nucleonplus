@@ -12,7 +12,7 @@ defined('KOOWA') or die; ?>
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title"><?= translate('My Payout') ?></h3>
+        <h3 class="panel-title"><?= translate('My Payout(s)') ?></h3>
     </div>
     <div class="panel-body" style="padding: 0px">
 
@@ -20,8 +20,9 @@ defined('KOOWA') or die; ?>
             <thead>
                 <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Payout #')); ?></th>
                 <th>Status</th>
+                <th>Encashment Method</th>
                 <th>Date</th>
-                <th>Amount</th>
+                <th><div class="text-right">Amount</div></th>
             </thead>
             <tbody>
                 <? if (count($payouts) > 0): ?>
@@ -31,21 +32,22 @@ defined('KOOWA') or die; ?>
                             <td>
                                 <span class="label <?= ($payout->status == 'pending') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($payout->status)) ?></span>
                             </td>
+                            <td><?= $payout->payout_method ?></td>
                             <td><?= helper('date.humanize', array('date' => $payout->created_on)) ?></td>
-                            <td><?= $payout->amount ?></td>
+                            <td><div class="text-right">&#8369;<?= number_format($payout->amount, 2) ?></div></td>
                         </tr>
                     <? endforeach ?>
                 <? else: ?>
                     <tr>
-                        <td colspan="4">
-                            <p class="text-center">No Purchase(s) Yet</p>
+                        <td colspan="5">
+                            <p class="text-center">No Payout Request Yet</p>
                         </td>
                     </tr>
                 <? endif ?>
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                         <?= helper('paginator.pagination') ?>
                     </td>
                 </tr>

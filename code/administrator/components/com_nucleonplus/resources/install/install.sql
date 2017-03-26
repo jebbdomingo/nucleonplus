@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `sites_nucleonplus`
+-- Database: `nucleonplus`
 --
 
 -- --------------------------------------------------------
@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_accounts` (
   `sponsor_id` varchar(50) DEFAULT NULL COMMENT 'Sponsor''s account_number',
   `user_id` int(11) NOT NULL,
   `CustomerRef` int(11) NOT NULL COMMENT 'Customer reference in QBO',
+  `PrintOnCheckName` varchar(100) NOT NULL,
   `note` varchar(255) NOT NULL,
   `status` varchar(50) NOT NULL DEFAULT 'new',
   `bank_account_number` varchar(50) NOT NULL,
@@ -57,6 +58,41 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_accounts` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `#__nucleonplus_employeeaccounts`
+--
+
+CREATE TABLE IF NOT EXISTS `#__nucleonplus_employeeaccounts` (
+  `nucleonplus_employee_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL COMMENT 'Foreign key to users table',
+  `EmployeeRef` int(11) NOT NULL,
+  `given_name` varchar(50) NOT NULL,
+  `family_name` varchar(50) NOT NULL,
+  `DepartmentRef` int(11) DEFAULT NULL COMMENT 'Store Location',
+  `PrintOnCheckName` varchar(100) NOT NULL,
+  `note` varchar(255) NOT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'new',
+  `bank_account_number` varchar(50) NOT NULL,
+  `bank_account_name` varchar(50) NOT NULL,
+  `bank_account_type` varchar(50) NOT NULL,
+  `bank_account_branch` varchar(50) NOT NULL,
+  `phone` varchar(255) NOT NULL,
+  `mobile` varchar(255) NOT NULL,
+  `street` varchar(255) NOT NULL,
+  `city` varchar(255) NOT NULL,
+  `state` varchar(255) NOT NULL,
+  `postal_code` varchar(255) NOT NULL,
+  `modified_by` int(11) DEFAULT NULL,
+  `modified_on` datetime DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `created_on` datetime DEFAULT NULL,
+  PRIMARY KEY (`nucleonplus_employee_id`),
+  UNIQUE KEY `user_id` (`user_id`),
+  UNIQUE KEY `nucleonplus_account_id` (`nucleonplus_employee_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `#__nucleonplus_items`
 --
 
@@ -67,14 +103,15 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_items` (
   `price` decimal(10,0) NOT NULL,
   PRIMARY KEY (`nucleonplus_item_id`),
   KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `#__nucleonplus_items`
 --
 
 INSERT INTO `#__nucleonplus_items` (`nucleonplus_item_id`, `inventory_item_id`, `name`, `price`) VALUES
-(1, 35, 'TUM Chocolate Drink', 140);
+(1, 59, 'TUM Chocolate Drink', 140);
+
 
 -- --------------------------------------------------------
 
@@ -116,7 +153,9 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_packageitems` (
   `quantity` int(11) NOT NULL,
   PRIMARY KEY (`nucleonplus_packageitem_id`),
   KEY `name` (`package_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
 
 --
 -- Dumping data for table `#__nucleonplus_packageitems`
@@ -150,23 +189,25 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_packages` (
   `delivery_charge` decimal(10,2) NOT NULL,
   PRIMARY KEY (`nucleonplus_package_id`),
   KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
 
 --
 -- Dumping data for table `#__nucleonplus_packages`
 --
 
 INSERT INTO `#__nucleonplus_packages` (`nucleonplus_package_id`, `rewardpackage_id`, `acctg_item_id`, `acctg_item_delivery_id`, `name`, `price`, `delivery_charge`) VALUES
-(1, 1, 36, 46, 'Package 1', 1500, 99.00),
-(2, 2, 37, 47, 'Package 2', 3000, 198.00),
-(3, 3, 38, 48, 'Package 3', 4500, 297.00),
-(4, 4, 39, 49, 'Package 4', 6000, 396.00),
-(5, 5, 40, 50, 'Package 5', 7500, 495.00),
-(6, 6, 41, 51, 'Package 6', 9000, 594.00),
-(7, 7, 42, 52, 'Package 7', 10500, 693.00),
-(8, 8, 43, 53, 'Package 8', 12000, 792.00),
-(9, 9, 44, 54, 'Package 9', 13500, 891.00),
-(10, 10, 45, 55, 'Package 10', 15000, 990.00);
+(1, 1, 60, 70, 'Package 1', 1500, 99.00),
+(2, 2, 61, 71, 'Package 2', 3000, 198.00),
+(3, 3, 62, 72, 'Package 3', 4500, 297.00),
+(4, 4, 63, 73, 'Package 4', 6000, 396.00),
+(5, 5, 64, 74, 'Package 5', 7500, 495.00),
+(6, 6, 65, 75, 'Package 6', 9000, 594.00),
+(7, 7, 66, 76, 'Package 7', 10500, 693.00),
+(8, 8, 67, 77, 'Package 8', 12000, 792.00),
+(9, 9, 68, 78, 'Package 9', 13500, 891.00),
+(10, 10, 69, 79, 'Package 10', 15000, 990.00);
 
 -- --------------------------------------------------------
 
@@ -177,7 +218,7 @@ INSERT INTO `#__nucleonplus_packages` (`nucleonplus_package_id`, `rewardpackage_
 CREATE TABLE IF NOT EXISTS `#__nucleonplus_payouts` (
   `nucleonplus_payout_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NOT NULL,
-  `amount` decimal(10,2) NOT NULL COMMENT 'Total amount of referral bonus and rebates',
+  `amount` decimal(10,2) NOT NULL COMMENT 'Total amount of MLM bonuses',
   `status` varchar(50) DEFAULT NULL,
   `void` smallint(1) NOT NULL DEFAULT '0',
   `created_by` int(11) NOT NULL,
@@ -185,26 +226,61 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_payouts` (
   `modified_by` int(11) NOT NULL,
   `modified_on` datetime NOT NULL,
   PRIMARY KEY (`nucleonplus_payout_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1001 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1001 ;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__nucleonplus_rebates`
+-- Table structure for table `#__nucleonplus_qbopackages`
 --
 
-CREATE TABLE IF NOT EXISTS `#__nucleonplus_rebates` (
-  `nucleonplus_rebate_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `#__nucleonplus_qbopackages` (
+  `nucleonplus_qbopackage_id` int(11) NOT NULL AUTO_INCREMENT,
+  `package_id` int(11) NOT NULL,
+  `ItemRef` int(11) NOT NULL COMMENT 'Item ID in the accounting system',
+  `ItemRef2` int(11) NOT NULL COMMENT 'Item ID with delivery charge in the accounting system',
+  `UnitPrice` decimal(10,0) NOT NULL,
+  `UnitPrice2` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`nucleonplus_qbopackage_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Dumping data for table `#__nucleonplus_qbopackages`
+--
+
+INSERT INTO `#__nucleonplus_qbopackages` (`nucleonplus_qbopackage_id`, `package_id`, `ItemRef`, `ItemRef2`, `UnitPrice`, `UnitPrice2`) VALUES
+(1, 1, 60, 70, 1360, 1459.00),
+(2, 2, 61, 71, 2720, 2918.00),
+(3, 3, 62, 72, 4080, 4377.00),
+(4, 4, 63, 73, 5440, 5836.00),
+(5, 5, 64, 74, 6800, 7295.00),
+(6, 6, 65, 75, 8160, 8754.00),
+(7, 7, 66, 76, 9520, 10213.00),
+(8, 8, 67, 77, 10880, 11672.00),
+(9, 9, 68, 78, 12240, 13131.00),
+(10, 10, 69, 79, 13600, 14590.00);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `#__nucleonplus_patronagebonuses`
+--
+
+CREATE TABLE IF NOT EXISTS `#__nucleonplus_patronagebonuses` (
+  `nucleonplus_patronagebonus_id` int(11) NOT NULL AUTO_INCREMENT,
   `reward_id_from` int(11) NOT NULL COMMENT 'The Order''s Reward of other Member that pays the reward_id_to',
   `reward_id_to` int(11) NOT NULL COMMENT 'The reward that is paid by the reward_id_from',
   `points` decimal(10,2) NOT NULL,
   `void` smallint(1) NOT NULL DEFAULT '0',
+  `payout_id` int(11) NOT NULL,
   `created_by` int(11) NOT NULL,
   `created_on` datetime NOT NULL,
   `modified_by` int(11) NOT NULL,
   `modified_on` datetime NOT NULL,
-  PRIMARY KEY (`nucleonplus_rebate_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+  PRIMARY KEY (`nucleonplus_patronagebonus_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -225,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_referralbonuses` (
   `modified_by` int(11) NOT NULL,
   `modified_on` datetime NOT NULL,
   PRIMARY KEY (`nucleonplus_referralbonus_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -238,11 +314,13 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_rewardpackages` (
   `name` varchar(50) NOT NULL,
   `description` text NOT NULL,
   `slots` smallint(2) NOT NULL COMMENT 'Number of slots in the rewards sytem',
-  `prpv` smallint(6) NOT NULL COMMENT 'Product Rebate Point Value',
+  `prpv` smallint(6) NOT NULL COMMENT 'Product Patronage Bonus Point Value',
   `drpv` smallint(6) NOT NULL COMMENT 'Direct Referral Point Value',
   `irpv` smallint(6) NOT NULL COMMENT 'Indirect Referral Point Value',
   PRIMARY KEY (`nucleonplus_rewardpackage_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
 
 --
 -- Dumping data for table `#__nucleonplus_rewardpackages`
@@ -266,8 +344,10 @@ INSERT INTO `#__nucleonplus_rewardpackages` (`nucleonplus_rewardpackage_id`, `na
 -- Table structure for table `#__nucleonplus_rewards`
 --
 
+-- --------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS `#__nucleonplus_rewards` (
-  `nucleonplus_reward_id` int(11) NOT NULL AUTO_INCREMENT,
+  `nucleonplus_reward_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL COMMENT 'Order ID',
   `product_name` varchar(50) NOT NULL,
   `customer_id` int(11) NOT NULL COMMENT 'Account ID',
@@ -275,13 +355,14 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_rewards` (
   `status` varchar(50) NOT NULL DEFAULT 'pending',
   `payout_id` int(11) NOT NULL,
   `slots` int(11) NOT NULL COMMENT 'Number of Slots',
-  `prpv` smallint(6) NOT NULL COMMENT 'Product Rebate Point Value',
+  `prpv` smallint(6) NOT NULL COMMENT 'Product Patronage Bonus Point Value',
   `drpv` smallint(6) NOT NULL COMMENT 'Direct Referral Point Value',
   `irpv` smallint(6) NOT NULL COMMENT 'Indirect Referral Point Value',
   `void` smallint(1) NOT NULL,
   PRIMARY KEY (`nucleonplus_reward_id`),
+  UNIQUE KEY `nucleonplus_reward_id` (`nucleonplus_reward_id`),
   KEY `status` (`status`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -301,8 +382,24 @@ CREATE TABLE IF NOT EXISTS `#__nucleonplus_slots` (
   `modified_by` int(11) NOT NULL,
   `modified_on` datetime NOT NULL,
   PRIMARY KEY (`nucleonplus_slot_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `#__nucleonplus_configs`
+--
+
+CREATE TABLE IF NOT EXISTS `#__nucleonplus_configs` (
+  `nucleonplus_config_id` int(11) NOT NULL AUTO_INCREMENT,
+  `item` varchar(255) NOT NULL COMMENT 'Configuration item',
+  `value` varchar(255) NOT NULL COMMENT 'Configuration item value',
+  PRIMARY KEY (`nucleonplus_config_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `#__nucleonplus_configs`
+--
+
+INSERT INTO `#__nucleonplus_configs` (`nucleonplus_config_id`, `item`, `value`) VALUES
+(1, 'claim_request', 'yes');

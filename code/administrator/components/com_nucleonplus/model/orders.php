@@ -18,18 +18,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
             ->insert('account_id', 'int')
             ->insert('order_status', 'string')
             ->insert('search', 'string')
-            ;
-    }
-
-    protected function _initialize(KObjectConfig $config)
-    {
-        $config->append(array(
-            'behaviors' => array(
-                //'searchable' => array('columns' => array('nucleonplus_order_id', 'package_name', 'account_number', 'invoice_status'))
-            )
-        ));
-
-        parent::_initialize($config);
+        ;
     }
 
     protected function _buildQueryColumns(KDatabaseQueryInterface $query)
@@ -41,6 +30,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
             ->columns('_account.status')
             ->columns(array('_account_customer_ref' => '_account.CustomerRef'))
             ->columns('u.name')
+            ->columns(array('_user_email' => 'u.email'))
         ;
     }
 
@@ -65,13 +55,13 @@ class ComNucleonplusModelOrders extends KModelDatabase
         }
 
         if ($state->order_status && $state->order_status <> 'all') {
-            $query->where('tbl.order_status = :order_status')->bind(['order_status' => $state->order_status]);
+            $query->where('tbl.order_status IN :order_status')->bind(['order_status' => (array) $state->order_status]);
         }
 
         if ($state->search)
         {
             $conditions = array(
-                'a.account_number LIKE :keyword',
+                '_account.account_number LIKE :keyword',
                 'u.name LIKE :keyword',
             );
             $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
@@ -79,33 +69,38 @@ class ComNucleonplusModelOrders extends KModelDatabase
     }
 
     /**
-     * Check if the member has existing order at this moment
+     * Set default sorting
      *
-     * conditions: orders
-     * - owned by the $accountId
-     * - created today
-     * - excluding cancelled and void orders
+     * @param KModelContextInterface $context A model context object
      *
-     * @param [type] $accountId [description]
-     *
-     * @return boolean [description]
+     * @return void
      */
-    public function hasCurrentOrder($accountId)
+    protected function _beforeFetch(KModelContextInterface $context)
+    {
+        if (is_null($context->state->sort)) {
+            $context->query->order('tbl.nucleonplus_order_id', 'desc');
+        }
+    }
+
+    /**
+     * Get the total amount of this order
+     *
+     * @return decimal
+     */
+    public function getAmount()
     {
         $state = $this->getState();
 
-        $table = $this->getObject('com://admin/nucleonplus.database.table.orders');
+        $table = $this->getObject('com://admin/nucleonplus.database.table.orderitems');
         $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_orders AS tbl')
-            ->columns('COUNT(tbl.account_id) AS count')
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $accountId])
-            ->where('tbl.created_on >= :created_on')->bind(array('created_on' => date('Y-m-d')))
-            ->where('tbl.order_status NOT IN :status')->bind(['status' => array('cancelled', 'void')])
-            ->group('tbl.account_id')
+            ->table('nucleonplus_orderitems AS tbl')
+            ->columns('tbl.nucleonplus_orderitem_id, SUM(tbl.item_price * tbl.quantity) AS total')
+            ->where('tbl.order_id = :order_id')->bind(['order_id' => $state->id])
+            ->group('tbl.order_id')
         ;
 
         $entities = $table->select($query);
 
-        return (intval($entities->count) > 0) ? true : false;
+        return (float) $entities->total;
     }
 }

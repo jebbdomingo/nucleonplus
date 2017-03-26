@@ -31,6 +31,8 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
      */
     public function __construct(KObjectConfig $config)
     {
+        @ini_set('max_execution_time', 300);
+        
         parent::__construct($config);
 
         $identifier = $this->getIdentifier($config->member_service);
@@ -87,30 +89,52 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
     protected function _actionActivate(KControllerContextInterface $context)
     {
         if(!$context->result instanceof KModelEntityInterface) {
-            $entities = $this->getModel()->fetch();
+            $accounts = $this->getModel()->fetch();
         } else {
-            $entities = $context->result;
+            $accounts = $context->result;
         }
 
-        foreach ($entities as $entity)
+        foreach ($accounts as $account)
         {
-            if ($entity->status == 'pending')
+            if ($account->status == 'pending')
             {
-                $customer = $this->_member_service->pushMember($entity);
+                $customer = $this->_member_service->pushMember($account);
                 
-                if ($customer->sync() === false) {
-                    $context->response->addMessage("Unable to sync Account #{$entity->account_number} to the Accounting System", 'error');
+                if ($customer->sync() == false)
+                {
+                    $error = $customer->getStatusMessage();
+                    throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Account #{$account->account_number}");
                 }
                 else
                 {
-                    $entity->status = 'active';
-                    $entity->save();
-                    $context->response->addMessage("Account #{$entity->account_number} has been activated");
+                    $account->CustomerRef = $customer->CustomerRef;
+                    $account->activate();
+                    $account->save();
+                    
+                    // Send email notification
+                    $config = JFactory::getConfig();
+
+                    $emailSubject = "Your Nucleon Plus Account has been activated";
+                    $emailBody    = JText::sprintf(
+                        'COM_NUCLEONPLUS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
+                        $account->_name,
+                        JUri::root()
+                    );
+
+                    $return = JFactory::getMailer()->sendMail($config->get('mailfrom'), $config->get('fromname'), $account->_email, $emailSubject, $emailBody);
+
+                    // Check for an error.
+                    if ($return !== true)
+                    {
+                        $context->response->addMessage(JText::_('COM_NUCLEONPLUS_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'), 'error');
+                    }
+
+                    $context->response->addMessage("Account #{$account->account_number} has been activated");
                 }
             }
-            else $context->response->addMessage("Unable to activate Account #{$entity->account_number}, only pending accounts can be activated", 'warning');
+            else $context->response->addMessage("Unable to activate Account #{$account->account_number}, only pending accounts can be activated", 'warning');
         }
 
-        return $entities;
+        return $accounts;
     }
 }
