@@ -22,10 +22,12 @@ defined('KOOWA') or die; ?>
 <!-- Wrapper -->
 <div class="k-wrapper k-js-wrapper">
 
+    <!-- Users manaul alert -->
+    <?= import('com://site/nucleonplus.account.members_manual.html'); ?>
+
     <!-- Overview -->
     <div class="k-content-wrapper">
         
-
         <!-- Sidebar -->
         <?= import('com://site/nucleonplus.account.default_sidebar.html'); ?>
 
@@ -35,11 +37,11 @@ defined('KOOWA') or die; ?>
             <!-- Title when sidebar is invisible -->
             <ktml:toolbar type="titlebar" title="Nucleon Plus" mobile>
 
+
             <!-- Component -->
             <div class="k-component-wrapper">
 
                 <div class="k-table-container">
-
                     <div class="k-table">
                         <table class="k-js-responsive-table">
                             <thead>

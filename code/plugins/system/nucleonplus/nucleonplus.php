@@ -10,6 +10,17 @@
 
 class PlgSystemNucleonplus extends JPlugin
 {
+    /**
+     * Hook into onAfterRoute sytem event
+     *
+     * @return void
+     */
+    public function onAfterRoute()
+    {
+        // Render the sticky toolbar
+        $this->_renderToolbar();
+    }
+
     public function onAfterDispatch()
     {
         $request = $this->getObject('request');
@@ -66,6 +77,65 @@ class PlgSystemNucleonplus extends JPlugin
         $document->setMetaData('og:description', $item->Description);
         $document->setMetaData('og:url', JURI::base());
         $document->setMetaData('og:image', $image);
+    }
+
+    /**
+     * Renders the sticky toolbar that provides access to the dashboard.
+     *
+     * @return void
+     */
+    protected function _renderToolbar()
+    {
+        $request = $this->getObject('request')->getQuery();
+        $input   = JFactory::getApplication()->input;
+        $option  = $input->get('option', 'cmd');
+        $view    = $input->get('view', 'cmd');
+        $layout  = $input->get('layout', null);
+        $id      = $input->get('id', null);
+
+        // Permissions
+        $user          = $this->getObject('user');
+        $isAuthentic   = $user->isAuthentic();
+
+        // Component template
+        if ($can_preview) {
+            $notComTmpl = true;
+        } elseif (isset($request->tmpl) && ($request->option !== 'com_nucleonplus' || $request->option == 'com_nucleonplus' && $request->view == 'files')) {
+            $notComTmpl = false;
+        } else {
+            $notComTmpl = true;
+        }
+
+        // Specifications or business rules specific to render the sticky toolbar
+        $canRender = ($notComTmpl && $isAuthentic);
+
+        // Only show the edit bar with the specified specifications above
+        if ($canRender)
+        {
+            $baseUrl = JURI::root();
+            $token   = JSession::getFormToken();
+            $return  = urlencode(base64_encode($baseUrl));
+
+            $config = new KObjectConfigJson();
+            $config->append(array(
+                'options' => array(
+                    'id'            => $id,
+                    'isAuthentic'   => $isAuthentic,
+                    'url'           => array(
+                        'homeUrl'      => JRoute::_($baseUrl),
+                        'dashboardUrl' => JRoute::_($baseUrl . 'index.php?option=com_nucleonplus&view=account'),
+                        'loginUrl'     => JRoute::_('index.php?option=com_users&view=login'),
+                        'logoutUrl'    => JRoute::_("index.php?option=com_users&task=user.logout&{$token}=1&return={$return}")
+                    ),
+                )
+            ));
+
+            $doc = JFactory::getDocument();
+            $doc->addScriptDeclaration('Nucleonplus.ToolBar.init('.$config->options.');');
+            $doc->addStyleSheet(JURI::base() . 'media/com_nucleonplus/css/toolbar.css');
+            $doc->addScript(JURI::base() . 'media/com_nucleonplus/js/nucleonplus.toolbar.js');
+            $doc->addScript(JURI::base() . 'media/com_nucleonplus/js/toolbar.js');
+        }
     }
 
     /**

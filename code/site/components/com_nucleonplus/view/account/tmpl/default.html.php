@@ -22,6 +22,9 @@ defined('KOOWA') or die; ?>
 <!-- Wrapper -->
 <div class="k-wrapper k-js-wrapper">
 
+    <!-- Users manaul alert -->
+    <?= import('com://site/nucleonplus.account.members_manual.html'); ?>
+
     <!-- Overview -->
     <div class="k-content-wrapper">
 
@@ -34,12 +37,6 @@ defined('KOOWA') or die; ?>
             <!-- Title when sidebar is invisible -->
             <ktml:toolbar type="titlebar" title="Nucleon Plus" mobile>
 
-            <div class="k-content-block">
-                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
-                <a href="media://com_nucleonplus/members-manual.pdf" target="_blank"><?= translate('Download Member\'s Manual') ?></a>
-                <span id="helpBlock" class="help-block small">All you need to know on how to earn in Nucleon +</span>
-            </div>
-            
         </div>
 
     </div>

@@ -14,13 +14,16 @@ defined('KOOWA') or die; ?>
     'domain' => 'admin'
 )); ?>
 
-<?= helper('behavior.clipboard', array('success_message' => 'You sponsor link is copied to the clipboard, start sharing!')) ?>
+<?= helper('behavior.clipboard', array('success_message' => 'Your sponsor link is copied to the clipboard, start sharing!')) ?>
 
 <? // Add template class to visually enclose the forms ?>
 <script>document.documentElement.className += " k-frontend-ui";</script>
 
 <!-- Wrapper -->
 <div class="k-wrapper k-js-wrapper">
+
+	<!-- Users manaul alert -->
+    <?= import('com://site/nucleonplus.account.members_manual.html'); ?>
 
     <!-- Overview -->
     <div class="k-content-wrapper">

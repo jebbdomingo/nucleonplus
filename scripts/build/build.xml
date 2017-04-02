@@ -19,6 +19,9 @@
         <copy todir="tmp/extensions/plg_user_nucleonplus">
             <fileset dir="tmp/plugins/user" />
         </copy>
+        <copy todir="tmp/extensions/plg_system_nucleonplus">
+            <fileset dir="tmp/plugins/system" />
+        </copy>
         <delete dir="tmp/plugins" includeemptydirs="true" />
         <!-- <<< plugins -->
 
