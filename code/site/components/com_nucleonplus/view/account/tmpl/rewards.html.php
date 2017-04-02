@@ -22,9 +22,6 @@ defined('KOOWA') or die; ?>
 <!-- Wrapper -->
 <div class="k-wrapper k-js-wrapper">
 
-    <!-- Users manaul alert -->
-    <?= import('com://site/nucleonplus.account.members_manual.html'); ?>
-
     <!-- Overview -->
     <div class="k-content-wrapper">
         
@@ -37,7 +34,6 @@ defined('KOOWA') or die; ?>
             <!-- Title when sidebar is invisible -->
             <ktml:toolbar type="titlebar" title="Nucleon Plus" mobile>
 
-
             <!-- Component -->
             <div class="k-component-wrapper">
 
@@ -46,30 +42,30 @@ defined('KOOWA') or die; ?>
                         <table class="k-js-responsive-table">
                             <thead>
                                 <tr>
-                                    <th><?= translate('Rewards') ?></th>
-                                    <th class="text-right">Points</th>
+                                    <th width="1%"><?= translate('Rewards') ?></th>
+                                    <th width="5%" class="k-table-data--right">Points</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>Rebates</td>
-                                    <td class="text-right"><?= number_format($total_rebates, 2) ?></td>
+                                    <td class="k-table-data--right"><?= number_format($total_rebates, 2) ?></td>
                                 </tr>
                                 <tr>
                                     <td>Direct referral bonus</td>
-                                    <td class="text-right"><?= number_format($total_direct_referrals, 2) ?></td>
+                                    <td class="k-table-data--right"><?= number_format($total_direct_referrals, 2) ?></td>
                                 </tr>
                                 <tr>
                                     <td>Patronage bonus</td>
-                                    <td class="text-right"><?= number_format($total_patronages, 2) ?></td>
+                                    <td class="k-table-data--right"><?= number_format($total_patronages, 2) ?></td>
                                 </tr>
                                 <tr>
                                     <td>Unilevel bonus</td>
-                                    <td><?= number_format($total_referral_bonus, 2) ?></td>
+                                    <td class="k-table-data--right"><?= number_format($total_referral_bonus, 2) ?></td>
                                 </tr>
                                 <tr>
                                     <td><span class="k-table__item--state k-table__item--state-published">Total</span></td>
-                                    <td align="right"><span class="k-table__item--state k-table__item--state-published"><?= number_format($total_bonus, 2) ?></span></td>
+                                    <td class="k-table-data--right"><span class="k-table__item--state k-table__item--state-published"><?= number_format($total_bonus, 2) ?></span></td>
                                 </tr>
                             </tbody>
                         </table>

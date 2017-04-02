@@ -22,9 +22,6 @@ defined('KOOWA') or die; ?>
 <!-- Wrapper -->
 <div class="k-wrapper k-js-wrapper">
 
-    <!-- Users manaul alert -->
-    <?= import('com://site/nucleonplus.account.members_manual.html'); ?>
-
     <!-- Overview -->
     <div class="k-content-wrapper">
 
