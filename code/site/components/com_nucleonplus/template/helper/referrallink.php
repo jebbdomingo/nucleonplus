@@ -20,38 +20,38 @@ class ComNucleonplusTemplateHelperReferrallink extends ComKoowaTemplateHelperBeh
 
         $config  = new KObjectConfigJson($config);
         $config->append(array(
-            'selector' => '.btn',
+            'selector' => '.k-button',
             'url'      => null,
+            'item'     => null,
         ));
 
         $p   = strpos($config->url, '?') ? '&' : '?';
         $url = $config->url . $p . "sponsor_id={$account->account_number}";
 
-        $signature = md5(serialize(array($config->selector)));
+        $signature = md5(serialize(array($config->selector, $config->item)));
         if (!isset(self::$_loaded[$signature])) {
             $html = "
             <script src=\"https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js\"></script>
             <script>
             kQuery(function($) {
                 new Clipboard('{$config->selector}');
-
-                $('{$config->selector}').tooltip({trigger: 'click'});
             });
             </script>
             ";
 
             $html .= '
-            <div class="input-group">
-                <span class="input-group-addon" id="basic-addon1">
-                    <span class="glyphicon glyphicon-link" aria-hidden="true"></span> Referral Link
-                </span>
-                <input id="sponsor-link" type="text" class="form-control input-sm" value="' . $url . '" readonly="readonly" />
-                <span class="input-group-btn">
-                    <button class="btn btn-sm btn-primary" type="button" data-clipboard-target="#sponsor-link" title="Copied">
-                        <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> Copy
-                    </button>
-                </span>
-            </div><!-- /input-group -->
+            <div class="k-form-group">
+                <div class="k-input-group k-input-group--small k-input-group--sponsor-link">
+                    <label class="k-input-group__addon" for="sponsor_link">URL</label>
+                    <input type="text" id="sponsor_link" class="k-form-control" value="' . $url . '" />
+                    <span class="k-input-group__button">
+                        <button id="copy_url" type="button" class="k-button k-button--default k-button--clipboard" data-clipboard-target="#sponsor_link" title="copied">
+                            <span class="k-icon-documents" aria-hidden="true"></span>
+                            <span class="k-visually-hidden">Copy</span>
+                        </button>
+                    </span>
+                </div>
+            </div>
             ';
 
             self::$_loaded[$signature] = true;

@@ -26,7 +26,7 @@ defined('KOOWA') or die; ?>
     <div class="k-content-wrapper">
 
         <!-- Sidebar -->
-        <?= import('com://site/nucleonplus.account.default_sidebar.html'); ?>
+        <?= import('default_sidebar.html'); ?>
 
         <!-- Content -->
         <div class="k-content k-js-content">
@@ -34,9 +34,9 @@ defined('KOOWA') or die; ?>
             <!-- Title when sidebar is invisible -->
             <ktml:toolbar type="titlebar" title="Nucleon Plus" mobile>
 
-            <? if (count($payouts) === 0): ?>
+            <? if (count($account->getDirectReferrals()) === 0): ?>
                 <div class="k-empty-state">
-                    <p>It seems like you don't have any payouts yet.</p>
+                    <p>It seems like you don't have any referrals yet.</p>
                     <?
                     $p   = strpos(JURI::root(), '?') ? '&' : '?';
                     $url = JURI::root() . $p . "sponsor_id={$account->account_number}";
@@ -48,37 +48,22 @@ defined('KOOWA') or die; ?>
                 <div class="k-component-wrapper">
                     <div class="k-table-container">
                         <div class="k-table">
-                            <table>
-					            <thead>
-					            	<tr>
-						                <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Payout #')); ?></th>
-						                <th>Status</th>
-						                <th>Encashment Method</th>
-						                <th>Date</th>
-						                <th><div class="text-right">Amount</div></th>
-					                </tr>
-					            </thead>
-					            <tbody>
-				                    <? foreach ($payouts as $payout): ?>
-				                        <tr>
-				                            <td><?= $payout->id ?></td>
-				                            <td>
-				                                <span class="label <?= ($payout->status == 'pending') ? 'label-default' : 'label-info' ?>"><?= ucwords(escape($payout->status)) ?></span>
-				                            </td>
-				                            <td><?= $payout->payout_method ?></td>
-				                            <td><?= helper('date.humanize', array('date' => $payout->created_on)) ?></td>
-				                            <td><div class="text-right">&#8369;<?= number_format($payout->amount, 2) ?></div></td>
-				                        </tr>
-				                    <? endforeach ?>
-					            </tbody>
-					            <tfoot>
-					                <tr>
-					                    <td colspan="5">
-					                        <?= helper('paginator.pagination') ?>
-					                    </td>
-					                </tr>
-					            </tfoot>
-					        </table>
+                            <table class="k-js-responsive-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Account No.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <? foreach ($account->getDirectReferrals() as $referral): ?>
+                                        <tr>
+                                            <td><?= object('user.provider')->load($referral->user_id)->getName() ?></td>
+                                            <td><?= $referral->account_number ?></td>
+                                        </tr>
+                                    <? endforeach ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

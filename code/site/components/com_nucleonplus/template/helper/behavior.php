@@ -245,22 +245,30 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
         return $html;
     }
 
-    public function clipboardable($config = array())
+    public function clipboard($config = array())
     {
-        $config = new KObjectConfigJson($config);
+        $config  = new KObjectConfigJson($config);
         $config->append(array(
-            'selector' => '.btn'
+            'selector'        => '.k-button--clipboard',
+            'success_message' => 'Copied to the clipboard',
         ));
 
         $signature = md5(serialize(array($config->selector)));
+
         if (!isset(self::$_loaded[$signature])) {
             $html = "
-            <script src=\"https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js\"></script>
+            <script src=\"media://com_nucleonplus/js/clipboard.min.js\"></script>
             <script>
             kQuery(function($) {
-                new Clipboard('{$config->selector}');
+                var clipboard = new Clipboard('{$config->selector}');
 
-                $('{$config->selector}').tooltip({trigger: 'click'});
+                clipboard.on('success', function(e) {
+                    console.log(e);
+                    alert('{$config->success_message}');
+                });
+                clipboard.on('error', function(e) {
+                    console.log(e);
+                });
             });
             </script>
             ";
