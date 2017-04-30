@@ -268,11 +268,13 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
 
     protected function _actionDeleteitem(KControllerContextInterface $context)
     {
-        $data     = $context->request->data;
-        $data->id = $data->item_id;
+        $data = $context->request->data;
+        $items = $this->getObject('com:cart.model.items')->id($data->item_id)->fetch();
 
-        parent::_actionDeleteitem($context);
+        foreach ($items as $item) {
+            $item->delete();
+        }
 
-        $context->response->addMessage('Item has been deleted from your shopping cart');
+        $context->response->addMessage('Item has been deleted from your shopping cart', 'warning');
     }
 }

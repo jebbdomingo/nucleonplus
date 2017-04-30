@@ -13,7 +13,7 @@ class ComNucleonplusControllerToolbarCart extends ComKoowaControllerToolbarActio
 {
     protected function _commandUpdate(KControllerToolbarCommand $command)
     {
-        $command->icon = 'k-icon-enabled';
+        $command->icon = 'k-icon-pencil';
 
         $command->append(array(
             'attribs' => array(
@@ -32,13 +32,28 @@ class ComNucleonplusControllerToolbarCart extends ComKoowaControllerToolbarActio
 
         $command->append(array(
             'attribs' => array(
-                'data-action'     => 'checkout',
+                'data-action'     => 'add',
                 'data-novalidate' => 'novalidate', // This is needed for koowa-grid and view without form
                 'accesskey'       => 'c'
             )
         ));
 
         $command->label = 'Checkout';
+    }
+
+    protected function _commandConfirm(KControllerToolbarCommand $command)
+    {
+        $command->icon = 'k-icon-enabled k-icon--success';
+
+        $command->append(array(
+            'attribs' => array(
+                'data-action'     => 'confirm',
+                'data-novalidate' => 'novalidate', // This is needed for koowa-grid and view without form
+                'accesskey'       => 'c'
+            )
+        ));
+
+        $command->label = 'Confirm';
     }
 
     protected function _afterRead(KControllerContextInterface $context)
@@ -74,6 +89,12 @@ class ComNucleonplusControllerToolbarCart extends ComKoowaControllerToolbarActio
         }
 
         if ($controller->isEditable()) {
+            $this->addCommand('confirm', [
+                'allowed' => $allowed,
+            ]);
+        }
+
+        if ($context->request->query->layout == 'confirm' && $controller->isEditable()) {
             $this->addCommand('checkout', [
                 'allowed' => $allowed,
             ]);

@@ -19,7 +19,6 @@ defined('KOOWA') or die; ?>
 <?= helper('behavior.keepalive'); ?>
 <?= helper('behavior.validator'); ?>
 <?= helper('behavior.deletable'); ?>
-<?= helper('behavior.updatable'); ?>
 
 <? // Add template class to visually enclose the forms ?>
 <script>document.documentElement.className += " k-frontend-ui";</script>
@@ -48,68 +47,71 @@ defined('KOOWA') or die; ?>
                 <!-- Component -->
                 <form class="k-component k-js-component k-js-form-controller k-js-cart-form" name="k-js-cart-form" action="<?= route('view=cart') ?>" method="post">
 
+                    <input type="hidden" name="_action" value="updatecart" />
+                    <input type="hidden" name="cart_id" value="<?= $cart->id ?>" />
+                    <input type="hidden" name="item_id" />
+
                     <!-- Container -->
                     <div class="k-container">
-                        
-                        <input type="hidden" name="_action" value="updatecart" />
-                        <input type="hidden" name="cart_id" value="<?= $cart->id ?>" />
-                        <input type="hidden" name="item_id" />
 
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                <div class="panel-title">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <h5><span class="glyphicon glyphicon-shopping-cart"></span> Shopping Cart</h5>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <a class="btn btn-primary btn-sm btn-block" href="<?= route('view=products') ?>" role="button">
-                                                <span class="glyphicon glyphicon-share-alt"></span> Continue shopping
-                                            </a>
+                        <? if (count($items) > 0): ?>
+                        <div class="k-card">
+                            <div class="k-card__body">
+                                <div class="k-card__header">
+                                    Items in your cart
+                                </div>
+                                <div class="k-card__section">
+                                    <div class="k-table-container">
+                                        <div class="k-table">
+                                            <table class="k-js-fixed-table-header k-js-responsive-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="k-sort-desc">Item</th>
+                                                        <th width="10%" data-hide="phone,tablet">Price</th>
+                                                        <th width="15%" data-hide="phone,tablet,desktop">Quantity</th>
+                                                        <th width="5%" data-hide="phone">Amount</th>
+                                                        <th width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <? foreach ($items as $item): ?>
+                                                        <tr>
+                                                            <td class="k-table-data--ellipsis">
+                                                                <a href="<?= route("view=product&id={$item->_item_id}") ?>"><?= $item->_item_name ?></a>
+                                                            </td>
+                                                            <td>&#8369; <?= number_format($item->_item_price, 2) ?></td>
+                                                            <td class="k-table-data--ellipsis">
+                                                              <input type="text" class="form-control input-sm" size="10" name="quantity[<?= $item->id ?>]" value="<?= $item->quantity ?>">
+                                                            </td>
+                                                            <td class="k-table-data--nowrap">
+                                                                &#8369; <?= number_format($item->_item_price * $item->quantity, 2) ?>
+                                                            </td>
+                                                            <td class="k-table-data--nowrap">
+                                                                <button type="button" class="cartItemDeleteAction k-button k-button--default k-button--small" data-id="<?= $item->id ?>">
+                                                <span class="k-icon-trash" aria-hidden="true"></span>
+                                            </button>
+                                                            </td>
+                                                        </tr>
+                                                    <? endforeach ?>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="k-card__footer">
+                                    <label><?= translate('Sub-total') ?>: &#8369;<?= number_format($cart->getAmount(), 2) ?></label>
                                 </div>
                             </div>
-                            <div class="panel-body">
-                                <? if (count($items) > 0): ?>
-                                <? foreach ($items as $item): ?>
-                                    <div class="row">
-                                        <div class="col-sm-2">
-                                            <img src="<?= JURI::root() . 'images/' . $item->_item_image ?>" alt="<?= $item->_item_name ?>" style="width: 100px" />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <a href="<?= route("view=product&id=$item->_item_id") ?>"><h4 class="product-name"><strong><?= $item->_item_name ?></strong></h4></a>
-                                            <h4><small><?= $item->_item_description ?></small></h4>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="col-sm-6 text-right">
-                                                <h6><strong>&#8369;<?= number_format($item->_item_price, 2) ?> <span class="text-muted">x</span></strong></h6>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <input type="text" class="form-control input-sm" size="10" name="quantity[<?= $item->id ?>]" value="<?= $item->quantity ?>">
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <button type="button" class="cartItemDeleteAction btn btn-link btn-xs" data-id="<?= $item->id ?>">
-                                                    <span class="glyphicon glyphicon-trash"> </span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr />
-                                <? endforeach ?>
-                                <? else: ?>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <p class="text-center bg-warning">Your shopping cart is empty</p>
-                                    </div>
-                                </div>
-                                <? endif ?>
+                        </div>
+                        <? endif ?>
 
-                                <h3>
-                                    Shipping Address<br />
-                                    <small><a href="<?= route('view=member&layout=form&tmpl=koowa') ?>">set default shipping address</a></small>
-                                </h3>
-
+                        <fieldset class="k-form-block">
+                            <div class="k-form-block__header">
+                                Shipping Address
+                                <br />
+                                <small><a href="<?= route('view=member&layout=form&tmpl=koowa') ?>">set default shipping address</a></small>
+                            </div>
+                            <div class="k-form-block__content">
                                 <div class="k-form-group">
                                     <label for="recipient_name"><?= translate('Recipient Name') ?></label>
                                     <input class="k-form-control" type="text" id="recipient_name" name="recipient_name" value="<?= $recipient_name ?>" />
@@ -139,21 +141,8 @@ defined('KOOWA') or die; ?>
                                     <label for="payment_mode"><?= translate('Sub-total') ?>?</label>
                                     <h4 class="text-right"><strong>&#8369;<?= number_format($cart->getAmount(), 2) ?></strong></h4>
                                 </div>
-
-                                <div class="k-form-group">
-                                    <button type="submit" class="cartUpdateAction btn btn-default">
-                                        Update cart
-                                    </button>
-
-                                    <?= helper('dragonpay.confirm', array(
-                                        'entity'   => $cart,
-                                        'disabled' => $cart->getAmount() <= 0 ? 'disabled="disabled"' : null
-                                    )) ?>
-                                </div>
-
                             </div>
-
-                        </div>
+                        </fieldset>
 
                     </div>
 
