@@ -38,7 +38,7 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
 
                     $('input[name=\"_action\"]').val('deleteitem');
                     $('input[name=\"item_id\"]').val(id);
-                    $('form[name=\"cartForm\"]').submit();
+                    $('form[name=\"k-js-cart-form\"]').submit();
                 });
             });
             </script>
@@ -75,7 +75,7 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
                     event.preventDefault();
 
                     $('input[name=\"_action\"]').val('updatecart');
-                    $('form[name=\"cartForm\"]').submit();
+                    $('form[name=\"k-js-cart-form\"]').submit();
                 });
             });
             </script>
@@ -112,7 +112,7 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
                     event.preventDefault();
 
                     $('input[name=\"_action\"]').val('confirm');
-                    $('form[name=\"cartForm\"]').submit();
+                    $('form[name=\"k-js-cart-form\"]').submit();
                 });
             });
             </script>
@@ -149,7 +149,7 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
                     event.preventDefault();
 
                     $('input[name=\"_action\"]').val('add')
-                    $('form[name=\"cartForm\"]').attr('action', '{$config->route}').submit();
+                    $('form[name=\"k-js-cart-form\"]').attr('action', '{$config->route}').submit();
                 });
             });
             </script>

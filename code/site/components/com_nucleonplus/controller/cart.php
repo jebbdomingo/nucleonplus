@@ -8,14 +8,13 @@
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
 
-
 /**
  * Cart Controller
  *
  * @author  Jebb Domingo <http://github.com/jebbdomingo>
  * @package Nucleon Plus
  */
-class ComNucleonplusControllerCart extends ComCartControllerCart
+class ComNucleonplusControllerCart extends ComKoowaControllerModel
 {
     /**
      * Inventory service
@@ -31,8 +30,11 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
      */
     public function __construct(KObjectConfig $config)
     {
+        @ini_set('max_execution_time', 300);
+
         parent::__construct($config);
 
+        $this->addCommandCallback('before.add', '_validateAdd');
         $this->addCommandCallback('after.add', '_checkInventory');
         $this->addCommandCallback('before.confirm', '_validateConfirm');
         $this->addCommandCallback('after.confirm', '_checkInventory');
@@ -52,7 +54,6 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
     protected function _initialize(KObjectConfig $config)
     {
         $config->append(array(
-            'model'             => 'com:nucleonplus.model.carts',
             'inventory_service' => 'com://admin/nucleonplus.accounting.service.inventory',
         ));
 
@@ -63,6 +64,27 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
     {
         $data       = $context->request->data;
         $data->row  = $data->ItemRef;
+        $translator = $this->getObject('translator');
+        $result     = false;
+
+        try
+        {
+            $cart     = $this->getModel()->fetch();
+            $quantity = (int) $data->quantity;
+
+            if (empty($data->row) || !$quantity) {
+                throw new KControllerExceptionRequestInvalid($translator->translate('Please select an item and specify its quantity'));
+            }
+
+            $result = true;
+        }
+        catch(Exception $e)
+        {
+            $context->response->setRedirect($context->request->getReferrer(), $e->getMessage(), 'error');
+            $context->response->send();
+        }
+
+        return $result;
     }
 
     protected function _validateConfirm(KControllerContextInterface $context)
@@ -136,16 +158,47 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
     {
         $data      = $context->request->data;
         $data->row = $data->ItemRef;
+        $cart      = $this->getModel()->fetch();
+        $cartItems = array();
 
-        $cart = parent::_actionAdd($context);
+        if (count($cart))
+        {
+            // Add item(s) to the cart
+            if ($items = $cart->getItems())
+            {
+                foreach ($items as $item)
+                {
+                    $cartItems[] = $item->row;
+
+                    // Existing item, update quantity instead
+                    if ($item->row == $data->ItemRef)
+                    {
+                        $item->quantity += $data->quantity;
+                        $item->save();
+                    }
+                }
+            }
+
+            if (!in_array($data->ItemRef, $cartItems))
+            {
+                // New item
+                $cartItemData = array(
+                    'cart_id'  => $cart->id,
+                    'row'      => $data->row,
+                    'quantity' => $data->quantity,
+                );
+
+                $item = $this->getObject('com:cart.model.items')->create($cartItemData);
+                $item->save();
+            }
+        }
 
         $response = $context->getResponse();
         $response->addMessage('Item added to your shopping cart');
 
         // Redirect to shopping cart view
         $identifier = $context->getSubject()->getIdentifier();
-        $itemid     = 119;
-        $url        = sprintf('index.php?option=com_%s&view=cart&Itemid=%s', $identifier->package, $itemid);
+        $url        = sprintf('index.php?option=com_%s&view=cart', $identifier->package);
 
         $response->setRedirect(JRoute::_($url, false));
     }
@@ -184,6 +237,33 @@ class ComNucleonplusControllerCart extends ComCartControllerCart
         $url    .= "&Itemid={$itemid}";
 
         $context->response->setRedirect(JRoute::_($url, false));
+    }
+
+    protected function _actionUpdatecart(KControllerContextInterface $context)
+    {
+        if (!$context->result instanceof KModelEntityInterface) {
+            $cart = $this->getModel()->fetch();
+        } else {
+            $cart = $context->result;
+        }
+
+        if (count($cart))
+        {
+            $cart->setProperties($context->request->data->toArray());
+            $cart->save();
+
+            if (in_array($cart->getStatus(), array(KDatabase::STATUS_FETCHED, KDatabase::STATUS_UPDATED)))
+            {
+                foreach ($cart->getItems() as $item)
+                {
+                    $item->quantity = (int) $context->request->data->quantity[$item->id];
+                    $item->save();
+                }
+
+                $context->response->addMessage('You shopping cart has been updated');
+            }
+            else $context->response->addMessage($cart->getStatusMessage(), 'error');
+        }
     }
 
     protected function _actionDeleteitem(KControllerContextInterface $context)

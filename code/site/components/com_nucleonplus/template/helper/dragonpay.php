@@ -34,6 +34,7 @@ class ComNucleonplusTemplateHelperDragonpay extends ComKoowaTemplateHelperListbo
 
         $config->append(array(
             'name'     => 'payment_mode',
+            'select2'  => true,
             'selected' => null,
             'options'  => $options,
             'filter'   => array(),
@@ -41,6 +42,17 @@ class ComNucleonplusTemplateHelperDragonpay extends ComKoowaTemplateHelperListbo
                 'style' => 'width: 100%'
             )
         ));
+
+        if($config->select2 && !$config->searchable)
+        {
+            $config->append(array(
+                'select2_options' => array(
+                    'options' => array(
+                        'minimumResultsForSearch' => 'Infinity'
+                    )
+                )
+            ));
+        }
 
         return parent::optionlist($config);
     }

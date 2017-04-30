@@ -30,9 +30,9 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
         $message = '<p>Please note that it will take approximately two (2) banking days after payout request for the payment to reflect on your bank account, considering no error on bank information provided.</p>';
         $message .= "<p>Click {$link} to update your bank details.</p>";
 
-        $template = '<div class="panel panel-info">';
-        $template .= '<div class="panel-heading"><strong>' . $config->title . '</strong></div>';
-        $template .= "<div class=\"panel-body\">{$message}</div>";
+        $template = '<div>';
+        $template .= '<div><strong>' . $config->title . '</strong></div>';
+        $template .= "<div>{$message}</div>";
         $template .= '</div>';
 
         return $template;
@@ -185,9 +185,11 @@ class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
     {
         $config = $this->storeInfo();
 
-        $template = '<div class="jumbotron">';
-        $template .= '<h2><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Visit our store</h2>';
-        $template .= "<p>Come visit our store at {$config->address}.</p>";
+        $template = '<div class="k-well">';
+            $template .= '<div class="k-heading">';
+                $template .= '<span class="k-icon-cart" aria-hidden="true"></span> Visit our store';
+            $template .= "</div>";
+            $template .= "<p>Come visit our store at {$config->address}.</p>";
         $template .= '</div>';
 
         return $template;

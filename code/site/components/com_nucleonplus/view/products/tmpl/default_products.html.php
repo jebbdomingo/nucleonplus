@@ -13,105 +13,92 @@ defined('KOOWA') or die;
 $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
 ?>
 
-<div class="row">
-    <? foreach ($products as $product): ?>
-        <?
-        if (!in_array($product->Type, ComQbsyncModelEntityItem::$item_types)) {
-            continue;
-        }
-        ?>
-        <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <img src="<?= JURI::root() . 'images/' . $product->image ?>" alt="<?= $product->Name ?>" style="height: 304px" />
-                <div class="caption">
-                    <a href="<?= route("view=product&id={$product->id}") ?>"><h3><?= $product->Name ?></h3></a>
-                    <h4>&#8369; <?= number_format($product->UnitPrice, 2) ?></h4>
-                    <p><?= $product->Description ?></p>
-                    <!-- <table class="table">
-                        <tr class="info">
-                            <th>Price</th>
-                            <th class="text-right">&#8369;<?= number_format($product->UnitPrice, 2) ?></th>
-                        </tr>
-                        <tr>
-                            <td>Unilevel Direct Referral Bonus</td>
-                            <td class="text-right">
-                                <?
-                                $dr_fee = ($product->drpv * $product->slots);
-                                echo number_format($dr_fee, 2);
-                                ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Unilevel Indirect Referral Bonus<br />
-                                <small>(Up to 20th Level)</small>
-                            </td>
-                            <td class="text-right">
-                                <?
-                                $ir_fee = ($product->irpv * $product->slots);
-                                echo number_format($ir_fee, 2);
-                                ?>
-                            </td>
-                        </tr>
-                        <? if ($product->Type == 'Group'): ?>
-                            <tr>
-                                <td>Direct Referral Bonus</td>
-                                <td class="text-right">
-                                    <?
-                                    $directReferral = $product->prpv * $product->slots;
-                                    echo number_format($directReferral, 2);
-                                    ?>
-                                </td>
-                            </tr>
-                            <tr class="success">
-                                <td>Commission <span class="label label-primary">New</span></td>
-                                <td class="text-right">
-                                    <?
-                                    $patronages = ($product->prpv * $product->slots) * 2;
-                                    echo number_format($patronages, 2);
-                                    ?>
-                                </td>
-                            </tr>
-                        <? endif ?>
-                    </table> -->
+<div class="k-gallery-container">
+    <div class="k-gallery">
+        <div class="k-gallery__items">
+            <? foreach ($products as $product): ?>
+                <?
+                if (!in_array($product->Type, ComQbsyncModelEntityItem::$item_types)) {
+                    continue;
+                }
+                ?>
+                <div class="k-gallery__item k-gallery__item--file">
 
-                    <? if ($onlinePurchaseEnabled && $canBuy): ?>
-                            <div class="row">
-                                <div class="col-sm-3">
-                                    <a href="<?= route("view=product&id={$product->id}") ?>" class="btn btn-primary btn-md" role="button">
-                                        <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-                                        View
-                                    </a>
-                                </div>
-                                <div class="col-sm-9">
-                                    <? if ($isAuthenticated): ?>
-                                        <form action="<?= route('view=cart') ?>" method="post">
-                                            <input type="hidden" name="_action" value="add" />
-                                            <input type="hidden" name="ItemRef" value="<?= $product->ItemRef ?>" />
-                                            <input type="hidden" name="quantity" value="1" />
-                                            <? if ($product->hasAvailableStock()): ?>
-                                                <button class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
-                                                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                                                        Add to cart
-                                                </button>
-                                            <? else: ?>
-                                                <button class="btn btn-default btn-md" role="button" disabled="disabled">
-                                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                                        Out of stock
-                                                </button>
-                                            <? endif ?>
-                                        </form>
-                                    <? else: ?>
-                                        <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
-                                            <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
-                                            Buy Now
-                                        </a>
-                                    <? endif; ?>
-                                </div>
+                    <div class="k-card">
+                        <div class="k-card__body">
+                            <div class="k-card__image">
+                                <img src="<?= JURI::root() . 'images/' . $product->image ?>" alt="<?= $product->Name ?>" alt="card">
                             </div>
-                    <? endif; ?>
+                            <div class="k-card__header">
+                                <a href="<?= route("view=product&id={$product->id}") ?>"><?= $product->Name ?></a>
+                            </div>
+                            <div class="k-card__section">
+                                &#8369; <?= number_format($product->UnitPrice, 2) ?>
+                                <br />
+                                <?= $product->Description ?>
+                            </div>
+                            <div class="k-card__footer">
+                                <? if ($onlinePurchaseEnabled && $canBuy): ?>
+                                    <form action="<?= route('view=cart') ?>" method="post">
+                                        <div class="k-button-group">
+                                            <a class="k-button k-button--primary" href="<?= route("view=product&id={$product->id}") ?>"><span class="k-icon-eye" aria-hidden="true"></span> View</a>
+
+                                            <? if ($isAuthenticated): ?>
+                                                    <input type="hidden" name="_action" value="add" />
+                                                    <input type="hidden" name="ItemRef" value="<?= $product->ItemRef ?>" />
+                                                    <input type="hidden" name="quantity" value="1" />
+                                                    <? if ($product->hasAvailableStock()): ?>
+                                                        <button class="k-button k-button--primary" role="button" <?= $disabled ?>>
+                                                            <span class="k-icon-cart" aria-hidden="true"></span>
+                                                                Add to cart
+                                                        </button>
+                                                    <? else: ?>
+                                                        <button class="k-button k-button--default" role="button" disabled="disabled">
+                                                            <span class="k-icon-warning" aria-hidden="true"></span>
+                                                                Out of stock
+                                                        </button>
+                                                    <? endif ?>
+                                            <? else: ?>
+                                                <a href="<?= route('option=com_users&view=login') ?>" class="k-button k-button--default" role="button">
+                                                    <span class="k-icon-account-login" aria-hidden="true"></span>
+                                                    Buy Now
+                                                </a>
+                                            <? endif; ?>
+                                        </div>
+                                    </form>
+                                <? endif ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="col-sm-9">
+                        <? if ($isAuthenticated): ?>
+                            <form action="<?= route('view=cart') ?>" method="post">
+                                <input type="hidden" name="_action" value="add" />
+                                <input type="hidden" name="ItemRef" value="<?= $product->ItemRef ?>" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <? if ($product->hasAvailableStock()): ?>
+                                    <button class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
+                                        <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                                            Add to cart
+                                    </button>
+                                <? else: ?>
+                                    <button class="btn btn-default btn-md" role="button" disabled="disabled">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                            Out of stock
+                                    </button>
+                                <? endif ?>
+                            </form>
+                        <? else: ?>
+                            <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
+                                <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
+                                Buy Now
+                            </a>
+                        <? endif; ?>
+                    </div> -->
+
                 </div>
-            </div>
+            <? endforeach; ?>
         </div>
-    <? endforeach; ?>
+    </div>
 </div>

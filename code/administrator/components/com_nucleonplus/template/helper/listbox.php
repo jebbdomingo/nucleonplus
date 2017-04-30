@@ -534,14 +534,15 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     {
         $config = new KObjectConfigJson($config);
         $config->append(array(
-            'model'    => 'cities',
-            'value'    => 'id',
-            'label'    => '_name',
-            'sort'     => '_name',
-            'validate' => false,
+            'model'        => 'cities',
+            'autocomplete' => true,
+            'value'        => 'id',
+            'label'        => 'name',
+            'sort'         => '_name',
+            'validate'     => false,
         ));
 
-        return $this->_autocomplete($config);
+        return parent::_render($config);
     }
 
     public function payoutMethods(array $config = array())

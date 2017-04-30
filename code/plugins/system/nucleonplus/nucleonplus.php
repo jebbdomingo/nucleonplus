@@ -151,13 +151,28 @@ class PlgSystemNucleonplus extends JPlugin
     }
 
     /**
+     * Only run this when:
+     * - Request method is GET
+     * - Document type is HTML
+     * - We are on site app
+     * 
+     * @return bool
+     */
+    protected function _canRun()
+    {
+        return (JFactory::getApplication()->input->getMethod() === 'GET'
+            && JFactory::getDocument()->getType() === 'html'
+            && JFactory::getApplication()->isSite());
+    }
+
+    /**
      * Overridden to only run if we have Nooku framework installed
      */
     public function update(&$args)
     {
         $return = null;
 
-        if (class_exists('Koowa') && class_exists('KObjectManager') && (bool) JComponentHelper::getComponent('com_nucleonplus', true)->enabled)
+        if (class_exists('Koowa') && class_exists('KObjectManager') && (bool) JComponentHelper::getComponent('com_nucleonplus', true)->enabled && $this->_canRun())
         {
             try
             {

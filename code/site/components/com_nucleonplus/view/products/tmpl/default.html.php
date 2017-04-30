@@ -10,16 +10,27 @@
 
 defined('KOOWA') or die; ?>
 
-<?= helper('bootstrap.load', array('javascript' => true)); ?>
-<?= helper('behavior.koowa'); ?>
+<?= helper('ui.load', array(
+    'domain' => 'admin'
+)); ?>
 
-<?= helper('alerts.storeCallout') ?>
+<? // Add template class to visually enclose the forms ?>
+<script>document.documentElement.className += " k-frontend-ui";</script>
 
-<div class="row">
+<!-- Wrapper -->
+<div class="k-wrapper k-js-wrapper">
 
-    <div class="col-sm-12">
+    <!-- Overview -->
+    <div class="k-content-wrapper">
 
-        <?= import('com://site/nucleonplus.products.default_products.html', ['products' => $products]) ?>
+        <!-- Content -->
+        <div class="k-content k-js-content">
+
+            <!-- Component -->
+            <?= helper('alerts.storeCallout') ?>
+            <?= import('com://site/nucleonplus.products.default_products.html', ['products' => $products]) ?>
+
+        </div>
 
     </div>
 

@@ -52,13 +52,6 @@ CREATE TABLE `#__nucleonplus_accounts` (
   KEY `account_number` (`account_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-LOCK TABLES `#__nucleonplus_accounts` WRITE;
-/*!40000 ALTER TABLE `#__nucleonplus_accounts` DISABLE KEYS */;
-
-
-/*!40000 ALTER TABLE `#__nucleonplus_accounts` ENABLE KEYS */;
-UNLOCK TABLES;
-
 
 # Dump of table #__nucleonplus_cities
 # ------------------------------------------------------------
@@ -1760,28 +1753,6 @@ CREATE TABLE `#__nucleonplus_directreferrals` (
   `modified_on` datetime NOT NULL,
   PRIMARY KEY (`nucleonplus_directreferral_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-LOCK TABLES `#__nucleonplus_directreferrals` WRITE;
-/*!40000 ALTER TABLE `#__nucleonplus_directreferrals` DISABLE KEYS */;
-
-INSERT INTO `#__nucleonplus_directreferrals` (`nucleonplus_directreferral_id`, `type`, `reward_id`, `account_id`, `payout_id`, `points`, `void`, `created_by`, `created_on`, `modified_by`, `modified_on`)
-VALUES
-  (1,'Group',7,74,0,100.00,0,71,'2016-12-12 14:14:00',0,'0000-00-00 00:00:00'),
-  (2,'Group',8,75,0,100.00,0,71,'2016-12-12 14:16:50',0,'0000-00-00 00:00:00'),
-  (3,'Group',9,75,0,100.00,0,71,'2016-12-12 14:20:13',0,'0000-00-00 00:00:00'),
-  (4,'Group',10,76,0,100.00,0,71,'2016-12-12 14:21:50',0,'0000-00-00 00:00:00'),
-  (5,'Group',11,79,0,100.00,0,71,'2016-12-12 14:23:46',0,'0000-00-00 00:00:00'),
-  (6,'Group',12,79,0,100.00,0,71,'2016-12-12 14:23:49',0,'0000-00-00 00:00:00'),
-  (7,'Group',13,76,0,100.00,0,71,'2016-12-12 14:25:07',0,'0000-00-00 00:00:00'),
-  (8,'Group',14,81,0,100.00,0,71,'2016-12-12 14:27:24',0,'0000-00-00 00:00:00'),
-  (9,'Group',15,81,0,100.00,0,71,'2016-12-12 14:27:27',0,'0000-00-00 00:00:00'),
-  (10,'Group',16,80,0,100.00,0,71,'2016-12-13 04:26:00',0,'0000-00-00 00:00:00'),
-  (11,'Group',20,78,0,100.00,0,71,'2016-12-19 06:42:13',0,'0000-00-00 00:00:00'),
-  (12,'Group',21,91,0,100.00,0,71,'2016-12-19 06:43:27',0,'0000-00-00 00:00:00'),
-  (13,'Group',23,78,0,100.00,0,71,'2016-12-20 03:37:06',0,'0000-00-00 00:00:00');
-
-/*!40000 ALTER TABLE `#__nucleonplus_directreferrals` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table #__nucleonplus_employeeaccounts
