@@ -1,3 +1,5 @@
+<? $account = object('com://site/nucleonplus.model.accounts')->user_id(object('user')->getId())->fetch(); ?>
+
 <div class="k-sidebar-left k-js-sidebar-left">
 
     <div class="k-sidebar-item">

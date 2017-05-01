@@ -94,23 +94,11 @@ class PlgSystemNucleonplus extends JPlugin
         $id      = $input->get('id', null);
 
         // Permissions
-        $user          = $this->getObject('user');
-        $isAuthentic   = $user->isAuthentic();
-
-        // Component template
-        if ($can_preview) {
-            $notComTmpl = true;
-        } elseif (isset($request->tmpl) && ($request->option !== 'com_nucleonplus' || $request->option == 'com_nucleonplus' && $request->view == 'files')) {
-            $notComTmpl = false;
-        } else {
-            $notComTmpl = true;
-        }
-
-        // Specifications or business rules specific to render the sticky toolbar
-        $canRender = ($notComTmpl && $isAuthentic);
+        $user        = $this->getObject('user');
+        $isAuthentic = $user->isAuthentic();
 
         // Only show the edit bar with the specified specifications above
-        if ($canRender)
+        if ($isAuthentic)
         {
             $baseUrl = JURI::root();
             $token   = JSession::getFormToken();

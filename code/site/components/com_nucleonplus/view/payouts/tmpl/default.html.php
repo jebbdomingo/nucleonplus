@@ -38,8 +38,9 @@ defined('KOOWA') or die; ?>
                 <div class="k-empty-state">
                     <p>It seems like you don't have any payouts yet.</p>
                     <?
-                    $p   = strpos(JURI::root(), '?') ? '&' : '?';
-                    $url = JURI::root() . $p . "sponsor_id={$account->account_number}";
+                    $account = object('com://site/nucleonplus.model.accounts')->user_id(object('user')->getId())->fetch();
+                    $p       = strpos(JURI::root(), '?') ? '&' : '?';
+                    $url     = JURI::root() . $p . "sponsor_id={$account->account_number}";
                     ?>
                     <p><a href="#" class="k-button k-button--success k-button--large k-button--clipboard" data-clipboard-text="<?= $url ?>">Share Nucleon + Now!</a></p>
                 </div>
