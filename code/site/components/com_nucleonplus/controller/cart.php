@@ -224,7 +224,7 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
                     $item->save();
                 }
 
-                $url = 'index.php?option=com_nucleonplus&view=cart&layout=confirm';
+                $url = 'index.php?option=com_nucleonplus&view=cart&layout=confirm&tmpl=koowa';
             }
             else 
             {
@@ -232,9 +232,6 @@ class ComNucleonplusControllerCart extends ComKoowaControllerModel
                 $url = 'index.php?option=com_nucleonplus&view=cart';
             }
         }
-
-        $itemid = 119;
-        $url    .= "&Itemid={$itemid}";
 
         $context->response->setRedirect(JRoute::_($url, false));
     }

@@ -11,6 +11,13 @@
 
 class ComNucleonplusControllerToolbarCart extends ComKoowaControllerToolbarActionbar
 {
+    protected function _commandBack(KControllerToolbarCommand $command)
+    {
+        $command->label = 'Back';
+        $command->icon  = 'k-icon-action-undo k-icon--error';
+        $command->href  = 'view=cart&layout=';
+    }
+
     protected function _commandUpdate(KControllerToolbarCommand $command)
     {
         $command->icon = 'k-icon-pencil';
@@ -28,7 +35,7 @@ class ComNucleonplusControllerToolbarCart extends ComKoowaControllerToolbarActio
 
     protected function _commandCheckout(KControllerToolbarCommand $command)
     {
-        $command->icon = 'k-icon-cart';
+        $command->icon = 'k-icon-cart k-icon--success';
 
         $command->append(array(
             'attribs' => array(
@@ -60,10 +67,10 @@ class ComNucleonplusControllerToolbarCart extends ComKoowaControllerToolbarActio
     {
         $this->_addReadCommands($context);
 
-        parent::_afterRead($context);
+        // parent::_afterRead($context);
         
-        $this->removeCommand('apply');
-        $this->removeCommand('save');
+        // $this->removeCommand('apply');
+        // $this->removeCommand('save');
     }
     
     /**
@@ -82,22 +89,23 @@ class ComNucleonplusControllerToolbarCart extends ComKoowaControllerToolbarActio
             $allowed = false;
         }
 
-        if ($controller->isEditable()) {
-            $this->addCommand('update', [
-                'allowed' => $allowed,
-            ]);
-        }
-
-        if ($controller->isEditable()) {
-            $this->addCommand('confirm', [
-                'allowed' => $allowed,
-            ]);
-        }
-
-        if ($context->request->query->layout == 'confirm' && $controller->isEditable()) {
-            $this->addCommand('checkout', [
-                'allowed' => $allowed,
-            ]);
+        if ($controller->isEditable())
+        {
+            if ($context->request->query->layout == 'confirm') {
+                $this->addCommand('checkout', [
+                    'allowed' => $allowed,
+                ]);
+                $this->addCommand('back');
+                $this->removeCommand('cancel');
+            } else {
+                $this->addCommand('update', [
+                    'allowed' => $allowed,
+                ]);
+                $this->addCommand('confirm', [
+                    'allowed' => $allowed,
+                ]);
+                $this->addCommand('cancel');
+            }
         }
     }
 }

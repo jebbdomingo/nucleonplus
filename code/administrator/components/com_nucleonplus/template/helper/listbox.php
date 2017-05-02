@@ -218,28 +218,6 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     }
 
     /**
-     * Generates status list box
-     *
-     * @todo rename to status list
-     * 
-     * @param array $config [optional]
-     * 
-     * @return html
-     */
-    public function optionList($config = array())
-    {
-        $config = new KObjectConfig($config);
-        $config->append(array(
-            'name'     => 'status',
-            'selected' => null,
-            'options'  => $this->getConfig()->status,
-            'filter'   => array()
-        ));
-
-        return parent::optionlist($config);
-    }
-
-    /**
      * Generates status filter buttons
      *
      * @todo rename to status filter list
@@ -497,9 +475,21 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $config->append(array(
             'name'     => 'bank_account_type',
             'selected' => null,
+            'select2'  => true,
             'options'  => $this->_bank_account_types,
             'filter'   => array()
         ));
+
+        if($config->select2 && !$config->searchable)
+        {
+            $config->append(array(
+                'select2_options' => array(
+                    'options' => array(
+                        'minimumResultsForSearch' => 'Infinity'
+                    )
+                )
+            ));
+        }
 
         return parent::optionlist($config);
     }
@@ -536,6 +526,8 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $config->append(array(
             'model'        => 'cities',
             'autocomplete' => true,
+            'deselect'     => false,
+            'prompt'       => '- '.$this->getObject('translator')->translate('Select').' -',
             'value'        => 'id',
             'label'        => 'name',
             'sort'         => '_name',
@@ -583,9 +575,21 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $config->append(array(
             'name'     => 'bank',
             'selected' => null,
+            'select2'  => true,
             'options'  => $options,
             'filter'   => array()
         ));
+
+        if($config->select2 && !$config->searchable)
+        {
+            $config->append(array(
+                'select2_options' => array(
+                    'options' => array(
+                        'minimumResultsForSearch' => 'Infinity'
+                    )
+                )
+            ));
+        }
 
         return parent::optionlist($config);
     }

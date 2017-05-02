@@ -121,6 +121,9 @@ class PlgUserNucleonplus extends JPlugin
         // Registration succeeded
         if ($isNew && $success && in_array(self::_USER_GROUP_REGISTERED_, $user['groups']))
         {
+            // To indicate that this user is just recently activated. Used after login.
+            $this->getObject('user')->set('activated', true);
+
             // Create corresponding Nucleon Plus Account upon user registration
             if ($account = $this->_createAccount($user))
             {
@@ -130,13 +133,42 @@ class PlgUserNucleonplus extends JPlugin
                 if ($customer = $this->_syncAccount($user))
                 {
                     $account->CustomerRef = $customer->CustomerRef;
-                    $account->activate();
+                    // $account->activate();
+                    $account->status = 'active';
                     $account->save();
 
                     $this->sendSuccessActivationEmail($account->_name, $account->_email);
                 }
             }
         }
+    }
+
+    /**
+     * This method should handle any login logic and report back to the subject
+     *
+     * @param   array  $user     Holds the user data
+     * @param   array  $options  Array holding options (remember, autoregister, group)
+     *
+     * @return  boolean  True on success
+     *
+     * @since   1.5
+     */
+    public function onUserAfterLogin($options = array())
+    {
+        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($options['user']->id)->fetch();
+
+        if ($this->getObject('user')->get('activated') && !$account->sponsor_id)
+        {
+            // Reset 'activated' session handler
+            $this->getObject('user')->remove('activated');
+
+            // Redirect to member form
+            $app = JFactory::getApplication();
+            $app->enqueueMessage('Please enter your Sponsor\'s ID', 'warning');
+            $app->redirect(JRoute::_('index.php?option=com_nucleonplus&view=member&layout=form', false));
+        }
+
+        return true;
     }
 
     /**
@@ -183,7 +215,7 @@ class PlgUserNucleonplus extends JPlugin
         ;
 
         // Attempt to sync member as customer to QBO
-        if ($customer->sync() === false)
+        if (false)//$customer->sync() === false)
         {
             $error = $customer->getStatusMessage();
             throw new Exception($error ? $error : "Sync Error: Account #{$account->account_number}");

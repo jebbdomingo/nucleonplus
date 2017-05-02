@@ -10,107 +10,104 @@
 
 defined('KOOWA') or die; ?>
 
+<?= helper('ui.load', array(
+    'styles' => array('file' => 'admin'),
+    'domain' => 'admin'
+)); ?>
+
 <?= helper('behavior.koowa'); ?>
-<?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.keepalive'); ?>
 <?= helper('behavior.validator'); ?>
-<?= helper('behavior.checkout', array('route' => (string) route('view=order'))); ?>
+<?= helper('behavior.deletable'); ?>
 
-<div class="row">
-    <div class="col-sm-12">
-        <form name="cartForm" method="post" action="<?= route('view=order') ?>" class="form-horizontal">
-            <input type="hidden" name="_action" value="add" />
-            <input type="hidden" name="cart_id" value="<?= $cart->id ?>" />
+<? // Add template class to visually enclose the forms ?>
+<script>document.documentElement.className += " k-frontend-ui";</script>
 
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    <div class="panel-title">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h5><span class="glyphicon glyphicon-shopping-cart"></span> Confirm your order</h5>
-                            </div>
-                            <div class="col-sm-6">
-                                <a class="btn btn-primary btn-sm btn-block" href="<?= route('view=cart&layout=&account_id=') ?>" role="button">
-                                    <span class="glyphicon glyphicon-chevron-left"></span> Back
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="well">
-                        <h3>Shipping Address</h3>
-                        <h5><?= $recipient_name ?></h5>
-                        <p><?= $address ?>, <?= $cart->city ?></p>
-                    </div>
-                    
-                    <? foreach ($items as $item): ?>
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <img src="<?= JURI::root() . 'images/' . $item->_item_image ?>" alt="<?= $item->_item_name ?>" style="width: 100px" />
-                            </div>
-                            <div class="col-sm-4">
-                                <h4 class="product-name"><strong><?= $item->_item_name ?></strong></h4><h4><small><?= $item->_item_description ?></small></h4>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="col-sm-6 text-right">
-                                    <h6><strong>&#8369;<?= number_format($item->_item_price, 2) ?> <span class="text-muted">x</span> <?= $item->quantity ?></strong></h6>
+<!-- Wrapper -->
+<div class="k-wrapper k-js-wrapper">
+
+    <!-- Overview -->
+    <div class="k-content-wrapper">
+
+        <!-- Sidebar -->
+        <?= import('com://site/nucleonplus.account.default_sidebar.html'); ?>
+
+        <!-- Content -->
+        <div class="k-content k-js-content">
+
+            <!-- Toolbar -->
+            <ktml:toolbar type="actionbar">
+
+            <!-- Title when sidebar is invisible -->
+            <ktml:toolbar type="titlebar" title="Nucleon Plus" mobile>
+
+            <!-- Component wrapper -->
+            <div class="k-component-wrapper">
+                <form class="k-component k-js-component k-js-form-controller k-js-cart-form" name="k-js-cart-form" action="<?= route('view=order') ?>" method="post">
+                    <input type="hidden" name="_action" value="add" />
+                    <input type="hidden" name="cart_id" value="<?= $cart->id ?>" />
+
+                    <!-- Container -->
+                    <div class="k-container">
+                        <h3>Recipient</h3>
+                        <dl>
+                            <dt>Name:</dt>
+                            <dd><?= $recipient_name ?></dd>
+                            <dt>Address:</dt>
+                            <dd><?= $address ?>, <?= $cart->city ?></dd>
+                        </dl>
+                                
+                        <div class="k-card">
+                            <div class="k-card__body">
+                                <div class="k-card__header">
+                                    Content
+                                </div>
+                                <div class="k-card__section">
+                                    <div class="k-table-container">
+                                        <div class="k-table">
+                                            <table class="k-js-fixed-table-header k-js-responsive-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="k-sort-desc">Item</th>
+                                                        <th width="10%" data-hide="phone,tablet">Price</th>
+                                                        <th width="15%" data-hide="phone,tablet,desktop">Quantity</th>
+                                                        <th width="5%" data-hide="phone">Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <? foreach ($items as $item): ?>
+                                                        <tr>
+                                                            <td class="k-table-data--ellipsis">
+                                                                <a href="<?= route("view=product&id={$item->_item_id}") ?>"><?= $item->_item_name ?></a>
+                                                            </td>
+                                                            <td>&#8369; <?= number_format($item->_item_price, 2) ?></td>
+                                                            <td class="k-table-data--ellipsis">
+                                                              <?= $item->quantity ?>
+                                                            </td>
+                                                            <td class="k-table-data--nowrap">
+                                                                &#8369; <?= number_format($item->_item_price * $item->quantity, 2) ?>
+                                                            </td>
+                                                        </tr>
+                                                    <? endforeach ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="k-card__footer">
+                                    <label><?= translate('Sub-total') ?>: &#8369;<?= $amount ?></label><br />
+                                    <label><?= translate('Shipping') ?>: &#8369;<?= $shipping_cost ?></label><br />
+                                    <? if (JFactory::getApplication()->getCfg('debug')): ?>
+                                        <label><?= translate('Weight (gms)') ?>: <?= $cart->getWeight() ?></label><br />
+                                    <? endif ?>
+                                    <label><?= translate($cart->getPaymentDescription()) ?>: &#8369;<?= number_format($cart->getPaymentCharge(), 2) ?></label><br />
+                                    <label><?= translate('Total') ?>: &#8369;<?= number_format($total, 2) ?></label><br />
                                 </div>
                             </div>
                         </div>
-                        <hr />
-                    <? endforeach ?>
-
-                    <div class="row">
-                        <div class="text-center">
-                            <div class="col-sm-10">
-                                <h6 class="text-right">Sub-total</h6>
-                            </div>
-                            <div class="col-sm-2 text-right">&#8369;<?= $amount ?></div>
-                        </div>
                     </div>
-                    <div class="row">
-                        <div class="text-center">
-                            <div class="col-sm-10">
-                                <h6 class="text-right">Shipping</h6>
-                            </div>
-                            <div class="col-sm-2 text-right">&#8369;<?= $shipping_cost ?></div>
-                        </div>
-                    </div>
-                    <? if (JFactory::getApplication()->getCfg('debug')): ?>
-                        <div class="row">
-                            <div class="text-center">
-                                <div class="col-sm-10">
-                                    <h6 class="text-right">Weight (gms)</h6>
-                                </div>
-                                <div class="col-sm-2 text-right"><?= $cart->getWeight() ?></div>
-                            </div>
-                        </div>
-                    <? endif; ?>
-                    <div class="row">
-                        <div class="text-center">
-                            <div class="col-sm-10">
-                                <h6 class="text-right"><?= $cart->getPaymentDescription() ?></h6>
-                            </div>
-                            <div class="col-sm-2 text-right">&#8369;<?= number_format($cart->getPaymentCharge(), 2) ?></div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="panel-footer">
-                    <div class="row text-center">
-                        <div class="col-xs-9">
-                            <h4 class="text-right">Total <strong>&#8369;<?= number_format($total, 2) ?></strong></h4>
-                        </div>
-                        <div class="col-xs-3">
-                            <button type="button" class="cartCheckoutAction btn btn-success btn-block">
-                                Checkout
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>

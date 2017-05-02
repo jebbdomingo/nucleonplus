@@ -98,32 +98,29 @@ class PlgSystemNucleonplus extends JPlugin
         $isAuthentic = $user->isAuthentic();
 
         // Only show the edit bar with the specified specifications above
-        if ($isAuthentic)
-        {
-            $baseUrl = JURI::root();
-            $token   = JSession::getFormToken();
-            $return  = urlencode(base64_encode($baseUrl));
+        $baseUrl = JURI::root();
+        $token   = JSession::getFormToken();
+        $return  = urlencode(base64_encode($baseUrl));
 
-            $config = new KObjectConfigJson();
-            $config->append(array(
-                'options' => array(
-                    'id'            => $id,
-                    'isAuthentic'   => $isAuthentic,
-                    'url'           => array(
-                        'homeUrl'      => JRoute::_($baseUrl),
-                        'dashboardUrl' => JRoute::_($baseUrl . 'index.php?option=com_nucleonplus&view=account'),
-                        'loginUrl'     => JRoute::_('index.php?option=com_users&view=login'),
-                        'logoutUrl'    => JRoute::_("index.php?option=com_users&task=user.logout&{$token}=1&return={$return}")
-                    ),
-                )
-            ));
+        $config = new KObjectConfigJson();
+        $config->append(array(
+            'options' => array(
+                'id'          => $id,
+                'isAuthentic' => $isAuthentic,
+                'url'         => array(
+                    'homeUrl'      => JRoute::_($baseUrl),
+                    'dashboardUrl' => JRoute::_($baseUrl . 'index.php?option=com_nucleonplus&view=account'),
+                    'loginUrl'     => JRoute::_('index.php?option=com_users&view=login'),
+                    'logoutUrl'    => JRoute::_("index.php?option=com_users&task=user.logout&{$token}=1&return={$return}")
+                ),
+            )
+        ));
 
-            $doc = JFactory::getDocument();
-            $doc->addScriptDeclaration('Nucleonplus.ToolBar.init('.$config->options.');');
-            $doc->addStyleSheet(JURI::base() . 'media/com_nucleonplus/css/toolbar.css');
-            $doc->addScript(JURI::base() . 'media/com_nucleonplus/js/nucleonplus.toolbar.js');
-            $doc->addScript(JURI::base() . 'media/com_nucleonplus/js/toolbar.js');
-        }
+        $doc = JFactory::getDocument();
+        $doc->addScriptDeclaration('Nucleonplus.ToolBar.init('.$config->options.');');
+        $doc->addStyleSheet(JURI::base() . 'media/com_nucleonplus/css/toolbar.css');
+        $doc->addScript(JURI::base() . 'media/com_nucleonplus/js/nucleonplus.toolbar.js');
+        $doc->addScript(JURI::base() . 'media/com_nucleonplus/js/toolbar.js');
     }
 
     /**

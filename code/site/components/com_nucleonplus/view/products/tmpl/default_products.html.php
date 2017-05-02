@@ -59,7 +59,7 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                                                         </button>
                                                     <? endif ?>
                                             <? else: ?>
-                                                <a href="<?= route('option=com_users&view=login') ?>" class="k-button k-button--default" role="button">
+                                                <a href="<?= route('option=com_users&view=login&tmpl=index') ?>" class="k-button k-button--default" role="button">
                                                     <span class="k-icon-account-login" aria-hidden="true"></span>
                                                     Buy Now
                                                 </a>
@@ -70,32 +70,6 @@ $disabled = (!$isAuthenticated) ? 'disabled="disabled"' : null;
                             </div>
                         </div>
                     </div>
-
-                    <!-- <div class="col-sm-9">
-                        <? if ($isAuthenticated): ?>
-                            <form action="<?= route('view=cart') ?>" method="post">
-                                <input type="hidden" name="_action" value="add" />
-                                <input type="hidden" name="ItemRef" value="<?= $product->ItemRef ?>" />
-                                <input type="hidden" name="quantity" value="1" />
-                                <? if ($product->hasAvailableStock()): ?>
-                                    <button class="btn btn-primary btn-md" role="button" <?= $disabled ?>>
-                                        <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                                            Add to cart
-                                    </button>
-                                <? else: ?>
-                                    <button class="btn btn-default btn-md" role="button" disabled="disabled">
-                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                            Out of stock
-                                    </button>
-                                <? endif ?>
-                            </form>
-                        <? else: ?>
-                            <a href="<?= route('option=com_users&view=login') ?>" class="btn btn-default btn-md" role="button">
-                                <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
-                                Buy Now
-                            </a>
-                        <? endif; ?>
-                    </div> -->
 
                 </div>
             <? endforeach; ?>

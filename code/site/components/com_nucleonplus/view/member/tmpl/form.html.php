@@ -10,36 +10,59 @@
 
 defined('KOOWA') or die; ?>
 
+<?= helper('ui.load', array(
+    'styles' => array('file' => 'admin'),
+    'domain' => 'admin'
+)); ?>
+
 <?= helper('behavior.koowa'); ?>
-<?= helper('bootstrap.load', array('javascript' => true)); ?>
 <?= helper('behavior.keepalive'); ?>
 <?= helper('behavior.validator'); ?>
+<?= helper('behavior.deletable'); ?>
 
-<ktml:style src="media://koowa/com_koowa/css/site.css" />
-<ktml:style src="media://com_nucleonplus/css/bootstrap.css" />
-<ktml:style src="media://com_nucleonplus/css/site-styles.css" />
+<? // Add template class to visually enclose the forms ?>
+<script>document.documentElement.className += " k-frontend-ui";</script>
 
-<? // Toolbar ?>
-<div class="koowa_toolbar">
-    <ktml:toolbar type="actionbar" title="COM_NUCLEONPLUS_MEMBER" icon="task-add icon-pencil-2">
-</div>
+<!-- Wrapper -->
+<div class="k-wrapper k-js-wrapper">
 
-<? // Form ?>
-<div class="koowa_form">
+    <? $account = object('com://admin/nucleonplus.model.accounts')->user_id(object('user')->id)->fetch(); ?>
+    <? if (object('request')->getReferrer()->getQuery() === 'view=login' && !$account->sponsor_id): ?>
+        <div class="k-alert k-alert--warning k-no-margin">
+            <span class="k-icon-warning" aria-hidden="true"></span> Please enter your Sponsor's ID
+        </div>
+    <? endif ?>
 
-    <div class="nucleonplus_form_layout">
+    <!-- Overview -->
+    <div class="k-content-wrapper">
 
-        <form method="post" class="form-horizontal -koowa-form">
+        <!-- Content -->
+        <div class="k-content k-js-content">
 
-            <div class="koowa_container">
+            <!-- Toolbar -->
+            <ktml:toolbar type="actionbar">
 
-                <div class="koowa_grid__row">
-                    <?= import('com:nucleonplus.member.member.html', ['member' => $member]) ?>
-                </div>
+            <!-- Title when sidebar is invisible -->
+            <ktml:toolbar type="titlebar" title="Nucleon Plus" mobile>
+
+            <!-- Component wrapper -->
+            <div class="k-component-wrapper">
+
+                <form class="k-component k-js-component k-js-form-controller" method="post">
+
+                    <!-- Container -->
+                    <div class="k-container">
+                        <!-- Main information -->
+                        <div class="k-container__main">
+                            <?= import('com://site/nucleonplus.member.member.html', ['member' => $member]) ?>
+                        </div>
+                    </div>
+
+                </form>
 
             </div>
 
-        </form>
+        </div>
         
     </div>
 

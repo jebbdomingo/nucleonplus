@@ -44,14 +44,14 @@ class ComNucleonplusControllerPermissionOrder extends ComKoowaControllerPermissi
         $user    = $this->getObject('user');
         $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
 
-        if (in_array($account->status, array('new', 'pending', 'terminated')))
-        {
+        if (in_array($account->status, array('new', 'pending', 'terminated'))) {
             return false;
-        }
-        elseif (!$data->CONFIG_ONLINE_PURCHASE_ENABLED)
-        {
+        } elseif (!$data->CONFIG_ONLINE_PURCHASE_ENABLED) {
             return false;
+        } elseif (JFactory::getUser()->id || $this->getObject('user')->isAuthentic()) {
+            return true;
+        } else {
+            return parent::canAdd();
         }
-        else return parent::canAdd();
     }
 }
