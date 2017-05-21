@@ -162,6 +162,7 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
     {
         $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($userId)->fetch();
 
+        $account->user_name           = $this->name;
         $account->sponsor_id          = $this->sponsor_id;
         $account->PrintOnCheckName    = $this->PrintOnCheckName;
         $account->bank_name           = $this->bank_name;

@@ -28,6 +28,7 @@ CREATE TABLE `#__nucleonplus_accounts` (
   `account_number` varchar(50) DEFAULT NULL,
   `sponsor_id` varchar(50) DEFAULT NULL COMMENT 'Sponsor''s account_number',
   `user_id` int(11) NOT NULL,
+  `user_name` varchar(50) DEFAULT NULL COMMENT 'Name of the user from users table',
   `CustomerRef` int(11) NOT NULL COMMENT 'Customer reference in QBO',
   `PrintOnCheckName` varchar(100) NOT NULL,
   `note` varchar(255) NOT NULL,

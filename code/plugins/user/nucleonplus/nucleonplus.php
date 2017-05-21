@@ -135,8 +135,7 @@ class PlgUserNucleonplus extends JPlugin
                 if ($customer = $this->_syncAccount($user))
                 {
                     $account->CustomerRef = $customer->CustomerRef;
-                    // $account->activate();
-                    $account->status = 'active';
+                    $account->status      = 'active';
                     $account->save();
 
                     $this->sendSuccessActivationEmail($account->_name, $account->_email);
@@ -246,6 +245,7 @@ class PlgUserNucleonplus extends JPlugin
             'status'              => 'new',
             'id'                  => $user['id'],
             'user_id'             => $user['id'],
+            'user_name'           => $user['name'],
             'PrintOnCheckName'    => $user['name'],
             'sponsor_id'          => $session->get('sponsor_id'),
         ));
