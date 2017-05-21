@@ -14,7 +14,7 @@ class ComNucleonplusControllerToolbarCart extends ComKoowaControllerToolbarActio
     protected function _commandBack(KControllerToolbarCommand $command)
     {
         $command->label = 'Back';
-        $command->icon  = 'k-icon-action-undo k-icon--error';
+        $command->icon  = 'k-icon-action-undo';
         $command->href  = 'view=cart&layout=';
     }
 

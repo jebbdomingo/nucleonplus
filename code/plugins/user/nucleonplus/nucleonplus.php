@@ -121,8 +121,10 @@ class PlgUserNucleonplus extends JPlugin
         // Registration succeeded
         if ($isNew && $success && in_array(self::_USER_GROUP_REGISTERED_, $user['groups']))
         {
+            $session = $this->getObject('lib:user.session');
+
             // To indicate that this user is just recently activated. Used after login.
-            $this->getObject('user')->set('activated', true);
+            $session->set('activated', true);
 
             // Create corresponding Nucleon Plus Account upon user registration
             if ($account = $this->_createAccount($user))
@@ -155,12 +157,13 @@ class PlgUserNucleonplus extends JPlugin
      */
     public function onUserAfterLogin($options = array())
     {
+        $session = $this->getObject('lib:user.session');
         $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($options['user']->id)->fetch();
 
-        if ($this->getObject('user')->get('activated') && !$account->sponsor_id)
+        if ($session->get('activated') && !$account->sponsor_id)
         {
             // Reset 'activated' session handler
-            $this->getObject('user')->remove('activated');
+            $session->remove('activated');
 
             // Redirect to member form
             $app = JFactory::getApplication();
@@ -237,14 +240,17 @@ class PlgUserNucleonplus extends JPlugin
     protected function _createAccount($user)
     {
         // Create account
+        $session = $this->getObject('lib:user.session');
         $model   = $this->getObject('com://admin/nucleonplus.model.accounts');
         $account = $model->create(array(
             'status'              => 'new',
             'id'                  => $user['id'],
             'user_id'             => $user['id'],
             'PrintOnCheckName'    => $user['name'],
-            'sponsor_id'          => $this->getObject('user')->get('sponsor_id'),
+            'sponsor_id'          => $session->get('sponsor_id'),
         ));
+
+        $session->remove('sponsor_id');
         
         if ($account->save() === false)
         {

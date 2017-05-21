@@ -48,8 +48,10 @@ class PlgSystemNucleonplus extends JPlugin
         $input      = JFactory::getApplication()->input;
         $sponsor_id = $input->get('sponsor_id', null);
 
-        if ($sponsor_id) {
-            $this->getObject('user')->set('sponsor_id', $sponsor_id);
+        if ($sponsor_id)
+        {
+            $session = $this->getObject('lib:user.session');
+            $session->set('sponsor_id', $sponsor_id);
         }
     }
 

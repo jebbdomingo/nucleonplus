@@ -76,8 +76,15 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'reward'            => 'com://admin/nucleonplus.mlm.packagereward',
             'inventory_service' => 'com://admin/nucleonplus.accounting.service.inventory',
             'behaviors'         => array(
-                'onlinepayable',
                 'com://admin/nucleonplus.controller.behavior.cancellable',
+                'com://admin/dragonpay.controller.behavior.onlinepayable' => array(
+                    'actions' => array('after.add'),
+                    'columns' => array(
+                        'txnid'  => 'id',
+                        'amount' => 'total',
+                        'mode'   => 'payment_mode',
+                    )
+                ),
             ),
         ));
 

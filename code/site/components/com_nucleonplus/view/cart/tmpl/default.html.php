@@ -15,11 +15,6 @@ defined('KOOWA') or die; ?>
     'domain' => 'admin'
 )); ?>
 
-<?= helper('behavior.koowa'); ?>
-<?= helper('behavior.keepalive'); ?>
-<?= helper('behavior.validator'); ?>
-<?= helper('behavior.deletable'); ?>
-
 <? // Add template class to visually enclose the forms ?>
 <script>document.documentElement.className += " k-frontend-ui";</script>
 

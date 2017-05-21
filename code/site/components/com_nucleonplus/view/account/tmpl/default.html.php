@@ -45,22 +45,22 @@ defined('KOOWA') or die; ?>
 
                     <div class="k-well">
                         <p>Sponsor Link</p>
-                            <div class="k-form-group">
-                                <div class="k-input-group k-input-group--small k-input-group--public-url">
-                                    <label class="k-input-group__addon" for="public_url">URL</label>
-                                    <?
-                                    $p   = strpos(JURI::root(), '?') ? '&' : '?';
-                                    $url = JURI::root() . $p . "sponsor_id={$account->account_number}";
-                                    ?>
-                                    <input type="text" id="public_url" class="k-form-control" value="<?= $url ?>" />
-                                    <span class="k-input-group__button">
-                                        <button id="copy_url" type="button" class="k-button k-button--default k-button--clipboard" data-clipboard-target="#public_url" title="copied">
-                                            <span class="k-icon-documents" aria-hidden="true"></span>
-                                            <span class="k-visually-hidden">Copy</span>
-                                        </button>
-                                    </span>
-                                </div>
+                        <div class="k-form-group">
+                            <div class="k-input-group k-input-group--small k-input-group--public-url">
+                                <label class="k-input-group__addon" for="public_url">URL</label>
+                                <?
+                                $p   = strpos(JURI::root(), '?') ? '&' : '?';
+                                $url = JURI::root() . $p . "sponsor_id={$account->account_number}";
+                                ?>
+                                <input type="text" id="public_url" class="k-form-control" value="<?= $url ?>" />
+                                <span class="k-input-group__button">
+                                    <button id="copy_url" type="button" class="k-button k-button--default k-button--clipboard" data-clipboard-target="#public_url" title="copied">
+                                        <span class="k-icon-documents" aria-hidden="true"></span>
+                                        <span class="k-visually-hidden">Copy</span>
+                                    </button>
+                                </span>
                             </div>
+                        </div>
                     </div>
 
                     <fieldset class="k-form-block">
