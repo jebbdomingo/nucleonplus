@@ -104,6 +104,12 @@ class PlgSystemNucleonplus extends JPlugin
         $token   = JSession::getFormToken();
         $return  = urlencode(base64_encode($baseUrl));
 
+        if (in_array(6, $user->getGroups())) {
+            $dashboard_url = $baseUrl . 'index.php?option=com_adminplus&view=accounts';
+        } else {
+            $dashboard_url = $baseUrl . 'index.php?option=com_nucleonplus&view=account';
+        }
+
         $config = new KObjectConfigJson();
         $config->append(array(
             'options' => array(
@@ -111,7 +117,7 @@ class PlgSystemNucleonplus extends JPlugin
                 'isAuthentic' => $isAuthentic,
                 'url'         => array(
                     'homeUrl'      => JRoute::_($baseUrl),
-                    'dashboardUrl' => JRoute::_($baseUrl . 'index.php?option=com_nucleonplus&view=account'),
+                    'dashboardUrl' => JRoute::_($dashboard_url),
                     'loginUrl'     => JRoute::_('index.php?option=com_users&view=login'),
                     'logoutUrl'    => JRoute::_("index.php?option=com_users&task=user.logout&{$token}=1&return={$return}")
                 ),
