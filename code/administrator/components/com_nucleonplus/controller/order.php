@@ -420,10 +420,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             }
 
             // Calculate order totals based on order items
-            $order
-                ->calculate()
-                ->save()
-            ;
+            $order->calculate()->save();
 
             /**
              * @todo Move cart operation to com:cart behavior
@@ -580,10 +577,9 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
 
         // Try to activate reward
         $rewards = $order->getRewards();
-        foreach ($rewards as $reward)
-        {
+        
+        foreach ($rewards as $reward) {
             $this->getObject('com:nucleonplus.controller.reward')->id($reward->id)->activate();
-            $this->getResponse()->addMessage("Reward #{$reward->id} has been activated");
         }
     }
 }

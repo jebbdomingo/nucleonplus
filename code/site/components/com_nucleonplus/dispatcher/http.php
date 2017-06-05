@@ -24,7 +24,13 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         $view        = $this->getRequest()->query->view;
         $excemptions = array('product', 'products', 'dragonpay', 'dragonpaypo');
 
-        if ($view && (!in_array($view, $excemptions) && !$this->getUser()->isAuthentic()))
+        if (!in_array(2, $this->getUser()->getGroups()))
+        {
+            $message = 'Invalid access';
+            $context->response->setRedirect($context->request->getBaseUrl()->toString(), $message, KControllerResponse::FLASH_WARNING);
+            $context->response->send();
+        }
+        elseif ($view && (!in_array($view, $excemptions) && !$this->getUser()->isAuthentic()))
         {
             $message = 'Please login to access your account';
             $context->response->setRedirect($context->request->getBaseUrl()->toString(), $message, 'warning');

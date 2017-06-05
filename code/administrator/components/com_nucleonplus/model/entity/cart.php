@@ -20,12 +20,14 @@ class ComNucleonplusModelEntityCart extends ComCartModelEntityCart implements Co
 
         if (!$this->isNew() && $this->interface == self::INTERFACE_SITE)
         {
-            if (empty($this->address) || empty($this->city))
-            {
-                $this->setStatus(KDatabase::STATUS_FAILED);
-                $this->setStatusMessage('Shipping address is required');
-            }
-            else $result = parent::save();
+            // if (empty($this->address) || empty($this->city))
+            // {
+            //     $this->setStatus(KDatabase::STATUS_FAILED);
+            //     $this->setStatusMessage('Shipping address is required');
+            // }
+            // else $result = parent::save();
+            
+            $result = parent::save();
         }
         else $result = parent::save();
 

@@ -92,6 +92,7 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
         return $this->getObject('com://admin/nucleonplus.model.orderitems')->order_id($this->id)->fetch();
     }
 
+
     /**
      * Get the rewards details
      *
@@ -113,5 +114,15 @@ class ComNucleonplusModelEntityOrder extends KModelEntityRow
     public function getCouriers()
     {
         return json_decode($this->couriers);
+    }
+
+    /**
+     * Get customer
+     *
+     * @return array
+     */
+    public function getCustomer()
+    {
+        return $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($this->account_id)->fetch();
     }
 }
