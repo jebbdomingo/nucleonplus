@@ -17,8 +17,20 @@ class ComNucleonplusModelOrders extends KModelDatabase
         $this->getState()
             ->insert('account_id', 'int')
             ->insert('order_status', 'string')
+            ->insert('payment_method', 'string')
             ->insert('search', 'string')
         ;
+    }
+
+    protected function _initialize(KObjectConfig $config)
+    {
+        $config->append(array(
+            'behaviors' => array(
+                'searchable' => array('columns' => array('nucleonplus_order_id'))
+            )
+        ));
+
+        parent::_initialize($config);
     }
 
     protected function _buildQueryColumns(KDatabaseQueryInterface $query)
@@ -61,10 +73,13 @@ class ComNucleonplusModelOrders extends KModelDatabase
         if ($state->search)
         {
             $conditions = array(
-                '_account.account_number LIKE :keyword',
-                'u.name LIKE :keyword',
+                'tbl.nucleonplus_order_id LIKE :keyword'
             );
             $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
+        }
+
+        if ($state->payment_method) {
+            $query->where('tbl.payment_method IN :payment_method')->bind(['payment_method' => (array) $state->payment_method]);
         }
     }
 
