@@ -75,7 +75,13 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
                 'requireReset' => 1,
             ]);
 
-            $data = $member->toArray();
+            $data   = $member->toArray();
+            $params = JComponentHelper::getParams('com_users');
+
+            // Get the default new user group, Registered if not specified.
+            $system = $params->get('new_usertype', 2);
+            $data['groups'][] = $system;
+
             if(!$user->bind($data)) {
                 throw new Exception("Could not bind data. Error: " . $user->getError());
             }
@@ -84,7 +90,6 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
                 throw new Exception("Could not save user. Error: " . $user->getError());
             }
 
-            JUserHelper::addUserToGroup($user->id, self::_USER_GROUP_REGISTERED_);
             $this->id         = $user->id;
             $account          = $this->_createAccount($user->id);
             $this->account_id = $account->id;
@@ -182,14 +187,12 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
     }
 
     /**
-     * Get member account
-     *
-     * @param integer $user_id
+     * Get account
      *
      * @return KModelEntityInterface
      */
-    protected function _getAccount($user_id)
+    public function getAccount()
     {
-        return $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user_id)->fetch();
+        return $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($this->id)->fetch();
     }
 }

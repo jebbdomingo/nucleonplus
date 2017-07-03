@@ -126,21 +126,7 @@ class PlgUserNucleonplus extends JPlugin
             // To indicate that this user is just recently activated. Used after login.
             $session->set('activated', true);
 
-            // Create corresponding Nucleon Plus Account upon user registration
-            if ($account = $this->_createAccount($user))
-            {
-                // Push member to accounting service for later sync
-                $this->getObject('com://admin/nucleonplus.accounting.service.member')->pushMember($account);
-
-                if ($customer = $this->_syncAccount($user))
-                {
-                    $account->CustomerRef = $customer->CustomerRef;
-                    $account->status      = 'active';
-                    $account->save();
-
-                    $this->sendSuccessActivationEmail($account->_name, $account->_email);
-                }
-            }
+            $this->sendSuccessActivationEmail($user['name'], $user['email']);
         }
     }
 
@@ -197,35 +183,35 @@ class PlgUserNucleonplus extends JPlugin
         return true;
     }
 
-    /**
-     * Sync account to QBO
-     *
-     * @param array  $user
-     * @param string $action [optional]
-     *
-     * @throws Exception on error
-     *
-     * @return object Customer
-     */
-    protected function _syncAccount($user, $action = 'add')
-    {
-        $account  = $this->getObject('com://admin/nucleonplus.model.accounts')->id($user['id'])->fetch();
-        $customer = $this->getObject('com://admin/qbsync.model.customers')
-            ->account_id($user['id'])
-            ->action($action)
-            ->fetch()
-        ;
+    // /**
+    //  * Sync account to QBO
+    //  *
+    //  * @param array  $user
+    //  * @param string $action [optional]
+    //  *
+    //  * @throws Exception on error
+    //  *
+    //  * @return object Customer
+    //  */
+    // protected function _syncAccount($user, $action = 'add')
+    // {
+    //     $account  = $this->getObject('com://admin/nucleonplus.model.accounts')->id($user['id'])->fetch();
+    //     $customer = $this->getObject('com://admin/qbsync.model.customers')
+    //         ->account_id($user['id'])
+    //         ->action($action)
+    //         ->fetch()
+    //     ;
 
-        // Attempt to sync member as customer to QBO
-        if (false)//$customer->sync() === false)
-        {
-            $error = $customer->getStatusMessage();
-            throw new Exception($error ? $error : "Sync Error: Account #{$account->account_number}");
-            return false;
-        }
+    //     // Attempt to sync member as customer to QBO
+    //     if ($customer->sync() === false)
+    //     {
+    //         $error = $customer->getStatusMessage();
+    //         throw new Exception($error ? $error : "Sync Error: Account #{$account->account_number}");
+    //         return false;
+    //     }
 
-        return $customer;
-    }
+    //     return $customer;
+    // }
 
     /**
      * Create Nucleon Plus Account
