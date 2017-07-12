@@ -12,6 +12,9 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
 {
     const _USER_GROUP_REGISTERED_ = 2;
 
+    const STATUS_ACTIVE  = 'active';
+    const STATUS_DELETED = 'deleted';
+
     /**
      * @var ComNucleonplusAccountingServiceMemberInterface
      */
@@ -83,11 +86,11 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
             $data['groups'][] = $system;
 
             if(!$user->bind($data)) {
-                throw new Exception("Could not bind data. Error: " . $user->getError());
+                throw new KControllerExceptionActionFailed("Could not bind data. Error: " . $user->getError());
             }
 
             if (!$user->save()) {
-                throw new Exception("Could not save user. Error: " . $user->getError());
+                throw new KControllerExceptionActionFailed("Could not save user. Error: " . $user->getError());
             }
 
             $this->id         = $user->id;
@@ -96,17 +99,17 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
         }
         else
         {
-            $user = new JUser($member->id);
+            $user = JFactory::getUser($member->id);
 
             $member->remove('password');
             $data = $member->toArray();
 
             if(!$user->bind($data)) {
-                throw new Exception("Could not bind data. Error: " . $user->getError());
+                throw new KControllerExceptionActionFailed("Could not bind data. Error: " . $user->getError());
             }
 
             if (!$user->save(true)) {
-                throw new Exception("Could not save user. Error: " . $user->getError());
+                throw new KControllerExceptionActionFailed("Could not save user. Error: " . $user->getError());
             }
 
             $account          = $this->_updateAccount($user->id);
@@ -119,6 +122,29 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
         }
 
         return true;
+    }
+
+    /**
+     * Mark member as inactive
+     *
+     * @return boolean If successful return TRUE, otherwise FALSE
+     */
+    public function delete()
+    {
+        if ($this->_account_status != self::STATUS_DELETED)
+        {
+            $account = $this->getObject('com://site/adminplus.model.accounts')
+                ->user_id($this->id)
+                ->fetch()
+            ;
+
+            $account->status = self::STATUS_DELETED;
+            
+            $result = $account->save();
+        }
+        else $result = parent::delete();
+        
+        return $result;
     }
 
     /**

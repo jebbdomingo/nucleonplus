@@ -58,8 +58,14 @@ class ComNucleonplusModelAccounts extends KModelDatabase
 
         $state = $this->getState();
 
-        if (!is_null($state->status) && $state->status <> 'all') {
-            $query->where('tbl.status = :status')->bind(['status' => $state->status]);
+        // if (!is_null($state->status) && $state->status <> 'all') {
+        //     $query->where('tbl.status = :status')->bind(['status' => $state->status]);
+        // }
+
+        if (is_null($state->status)) {
+            $query->where('(tbl.status != :status)')->bind(array('status' => ComNucleonplusModelEntityAccount::STATUS_DELETED));
+        } else {
+            $query->where('(tbl.status IN :status)')->bind(array('status' => (array) $state->status));
         }
 
         if ($state->account_number) {
