@@ -109,50 +109,10 @@ class ComNucleonplusModelAccounts extends KModelDatabase
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_referralbonuses AS tbl')
             ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_referralbonus_id')
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
-            ->where('tbl.referral_type IN :referral_type')->bind(['referral_type' => ['dr','ir']])
+            ->where('tbl.account = :account')->bind(['account' => $state->account_number])
+            ->where('tbl.type IN :type')->bind(['type' => ['direct_referral','indirect_referral']])
             ->where('tbl.payout_id = :payout_id')->bind(['payout_id' => 0])
-            ->group('tbl.account_id')
-        ;
-
-        return $table->select($query);
-    }
-
-    /**
-     * Get total available product patronage per account
-     * i.e. pr
-     *
-     * @return KDatabaseRowsetDefault
-     */
-    public function getTotalAvailablePatronages()
-    {
-        $state = $this->getState();
-
-        $table = $this->getObject('com://admin/nucleonplus.database.table.patronagebonuses');
-        $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_patronagebonuses AS tbl')
-            ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_patronagebonus_id')
-            ->join(array('r' => 'nucleonplus_rewards'), 'tbl.reward_id_to = r.nucleonplus_reward_id')
-            ->where('r.customer_id = :account_id')->bind(['account_id' => $state->id])
-            ->where('r.status = :status')->bind(['status' => 'ready'])
-            ->where('r.payout_id = :payout_id')->bind(['payout_id' => 0])
-            ->group('r.customer_id')
-        ;
-
-        return $table->select($query);
-    }
-
-    public function getTotalAvailableDirectReferrals()
-    {
-        $state = $this->getState();
-
-        $table = $this->getObject('com://admin/nucleonplus.database.table.directreferrals');
-        $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_directreferrals AS tbl')
-            ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_directreferral_id')
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
-            ->where('tbl.payout_id = :payout_id')->bind(['payout_id' => 0])
-            ->group('tbl.account_id')
+            ->group('tbl.account')
         ;
 
         return $table->select($query);
@@ -162,13 +122,14 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     {
         $state = $this->getState();
 
-        $table = $this->getObject('com://admin/nucleonplus.database.table.rebates');
+        $table = $this->getObject('com://admin/nucleonplus.database.table.referralbonuses');
         $query = $this->getObject('database.query.select')
-            ->table('nucleonplus_rebates AS tbl')
-            ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_rebate_id')
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->id])
+            ->table('nucleonplus_referralbonuses AS tbl')
+            ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_referralbonus_id')
+            ->where('tbl.account = :account')->bind(['account' => $state->account_number])
+            ->where('tbl.type = :type')->bind(['type' => 'rebates'])
             ->where('tbl.payout_id = :payout_id')->bind(['payout_id' => 0])
-            ->group('tbl.account_id')
+            ->group('tbl.account')
         ;
 
         return $table->select($query);

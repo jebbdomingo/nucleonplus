@@ -14,13 +14,31 @@
  */
 class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucleonplusAccountingServiceTransferInterface
 {
+    /**
+     * Is queue
+     *
+     * @var boolean
+     */
+    protected $_queue = false;
+
+    /**
+     * Is disabled
+     *
+     * @var boolean
+     */
     protected $_disabled = false;
 
     /**
      *
      * @var ComKoowaControllerModel
      */
-    protected $_transfer_controller;
+    protected $_controller;
+
+    /**
+     *
+     * @var ComQbsyncServiceTransfer
+     */
+    protected $_service;
 
     /**
      * Constructor.
@@ -31,7 +49,8 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
     {
         parent::__construct($config);
 
-        $this->_transfer_controller = $this->getObject($config->transfer_controller);
+        $this->_controller = $this->getObject($config->transfer_controller);
+        $this->_service    = $this->getObject($config->transfer_service);
 
         // Accounts
         $this->_online_payments_account           = $config->online_payments_account;
@@ -64,6 +83,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         $data = $this->getObject('com:nucleonplus.accounting.service.data');
 
         $config->append(array(
+            'transfer_service'                  => 'com:qbsync.service.transfer',
             'transfer_controller'               => 'com:qbsync.controller.transfer',
             'online_payments_account'           => $data->ACCOUNT_ONLINE_PAYMENTS,
             'savings_account'                   => $data->ACCOUNT_BANK_REF,
@@ -403,22 +423,35 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      *
      * @throws Exception API error
      *
-     * @return KModelEntityInterface
+     * @return KModelEntityInterface|string
      */
     protected function _transfer($entity, $entityId, $fromAccount, $toAccount, $amount, $note = null)
     {
         if ($this->_disabled) {
             return false;
         }
-        
-        return $this->_transfer_controller->add(array(
-             'entity'         => $entity,
-             'entity_id'      => $entityId,
-             'FromAccountRef' => $fromAccount,
-             'ToAccountRef'   => $toAccount,
-             'Amount'         => $amount,
-             'TxnDate'        => date('Y-m-d'),
-             'PrivateNote'    => "{$entityId}_{$note}"
-        ));
+
+        if ($this->_queue)
+        {
+            return $this->_controller->add(array(
+                'entity'         => $entity,
+                'entity_id'      => $entityId,
+                'FromAccountRef' => $fromAccount,
+                'ToAccountRef'   => $toAccount,
+                'Amount'         => $amount,
+                'TxnDate'        => date('Y-m-d'),
+                'PrivateNote'    => "{$entityId}_{$note}"
+            ));
+        }
+        else
+        {
+            return $this->_service->create(array(
+                'FromAccountRef' => $fromAccount,
+                'ToAccountRef'   => $toAccount,
+                'Amount'         => $amount,
+                'TxnDate'        => date('Y-m-d'),
+                'PrivateNote'    => "{$entityId}_{$note}"
+            ));
+        }
     }
 }

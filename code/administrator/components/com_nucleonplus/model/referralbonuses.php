@@ -15,8 +15,8 @@ class ComNucleonplusModelReferralbonuses extends KModelDatabase
         parent::__construct($config);
 
         $this->getState()
-            ->insert('referral_type', 'string')
-            ->insert('account_id', 'int')
+            ->insert('type', 'string')
+            ->insert('account', 'int')
             ->insert('payout_id', 'int')
         ;
     }
@@ -38,12 +38,12 @@ class ComNucleonplusModelReferralbonuses extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->referral_type) {
-            $query->where('tbl.referral_type = :referral_type')->bind(['referral_type' => $state->referral_type]);
+        if ($state->type) {
+            $query->where('tbl.type = :type')->bind(['type' => $state->type]);
         }
 
-        if ($state->account_id) {
-            $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
+        if ($state->account) {
+            $query->where('tbl.account = :account')->bind(['account' => $state->account]);
         }
 
         if ($state->payout_id === 0 || $state->payout_id > 0) {
