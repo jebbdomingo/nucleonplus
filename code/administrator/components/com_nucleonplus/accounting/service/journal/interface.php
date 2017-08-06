@@ -17,29 +17,10 @@
 interface ComNucleonplusAccountingServiceJournalInterface
 {
     /**
-     * Record sale
-     *
-     * @param KModelEntityInterface $order
-     *
-     * @return mixed
-     */
-    public function recordSale(KModelEntityInterface $order);
-
-    /**
-     * Record patronage allocation
-     *
-     * @param KModelEntityInterface $slot
+     * @param integer $orderId
+     * @param decimal $amount
      *
      * @return mixed
      */
-    public function recordPatronageAllocation(KModelEntityInterface $slot);
-
-    /**
-     * Record referral bonus allocation
-     *
-     * @param KModelEntityInterface $order
-     *
-     * @return mixed
-     */
-    public function recordReferralBonusAllocation(KModelEntityInterface $reward);
+    public function allocateRebates($orderId, $amount);
 }
