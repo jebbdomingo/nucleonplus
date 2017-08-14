@@ -111,7 +111,6 @@ class ComNucleonplusModelAccounts extends KModelDatabase
             ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_reward_id')
             ->where('tbl.account = :account')->bind(['account' => $state->account_number])
             ->where('tbl.type IN :type')->bind(['type' => ['direct_referral','indirect_referral']])
-            ->where('tbl.payout_id = :payout_id')->bind(['payout_id' => 0])
             ->group('tbl.account')
         ;
 
@@ -128,7 +127,6 @@ class ComNucleonplusModelAccounts extends KModelDatabase
             ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_reward_id')
             ->where('tbl.account = :account')->bind(['account' => $state->account_number])
             ->where('tbl.type = :type')->bind(['type' => 'rebates'])
-            ->where('tbl.payout_id = :payout_id')->bind(['payout_id' => 0])
             ->group('tbl.account')
         ;
 

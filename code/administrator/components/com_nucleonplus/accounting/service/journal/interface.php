@@ -17,10 +17,38 @@
 interface ComNucleonplusAccountingServiceJournalInterface
 {
     /**
-     * @param integer $orderId
-     * @param decimal $amount
-     *
+     * Record rebates expense
+     * 
+     * @param  integer $orderId
+     * @param  decimal $amount
      * @return mixed
      */
-    public function allocateRebates($orderId, $amount);
+    public function recordRebatesExpense($orderId, $amount);
+
+    /**
+     * Record direct referral reward expense
+     * 
+     * @param  integer $orderId
+     * @param  decimal $amount
+     * @return mixed
+     */
+    public function recordDirectReferralExpense($orderId, $amount);
+
+    /**
+     * Record indirect referral reward expense
+     * 
+     * @param  integer $orderId
+     * @param  decimal $amount
+     * @return mixed
+     */
+    public function recordIndirectReferralExpense($orderId, $amount);
+
+    /**
+     * Reord charges expense
+     * 
+     * @param  integer $orderId
+     * @param  decimal $amount
+     * @return mixed
+     */
+    public function recordChargesExpense($orderId, $amount);
 }

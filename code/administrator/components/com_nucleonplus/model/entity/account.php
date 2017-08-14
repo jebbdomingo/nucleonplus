@@ -31,7 +31,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getDirectReferrals()
     {
-        return $this->getObject('com:nucleonplus.model.accounts')->sponsor_id($this->account_number)->fetch();
+        return $this->getObject('com://admin/nucleonplus.model.accounts')->sponsor_id($this->account_number)->fetch();
     }
 
     /**
@@ -59,7 +59,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getSponsor()
     {
-        return $this->getObject('com:nucleonplus.model.accounts')->account_number($this->sponsor_id)->fetch();
+        return $this->getObject('com://admin/nucleonplus.model.accounts')->account_number($this->sponsor_id)->fetch();
     }
 
     /**
@@ -72,7 +72,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
         // Only one account is allowed for each user
         if ($this->user_id && $this->isNew())
         {
-            $account = $this->getObject('com:nucleonplus.model.accounts')->user_id($this->user_id)->fetch();
+            $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($this->user_id)->fetch();
 
             // Check if an account if the same user id exists
             if ($account->id)

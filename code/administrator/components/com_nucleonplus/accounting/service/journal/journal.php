@@ -46,12 +46,11 @@ class ComNucleonplusAccountingServiceJournal extends KObject implements ComNucle
     /**
      * Record rebates allocation
      *
-     * @param mixed $entityId
-     * @param float $amount
-     *
+     * @param  mixed $entityId
+     * @param  float $amount
      * @return mixed
      */
-    public function allocateRebates($entityId, $amount)
+    public function recordRebatesExpense($entityId, $amount)
     {
         $data = $this->getObject('com:nucleonplus.accounting.service.data');
 
@@ -60,10 +59,79 @@ class ComNucleonplusAccountingServiceJournal extends KObject implements ComNucle
             'Date'              => date('Y-m-d'),
             'DebitDescription'  => 'Rebate allocation',
             'DebitAmount'       => $amount,
-            'DebitAccount'      => $data->ACCOUNT_BONUS_EXPENSE,
+            'DebitAccount'      => $data->ACCOUNT_REBATES_EXPENSE,
             'CreditDescription' => 'Rebate allocation',
             'CreditAmount'      => $amount,
             'CreditAccount'     => $data->ACCOUNT_REBATES_LIABILITY,
+        ));
+    }
+
+    /**
+     * Record direct referral allocation
+     *
+     * @param  mixed $entityId
+     * @param  float $amount
+     * @return mixed
+     */
+    public function recordDirectReferralExpense($entityId, $amount)
+    {
+        $data = $this->getObject('com:nucleonplus.accounting.service.data');
+
+        return $this->_service->create(array(
+            'DocNumber'         => $entityId,
+            'Date'              => date('Y-m-d'),
+            'DebitDescription'  => 'Direct referral bonus allocation',
+            'DebitAmount'       => $amount,
+            'DebitAccount'      => $data->ACCOUNT_DIRECT_REFERRAL_EXPENSE,
+            'CreditDescription' => 'Direct referral bonus allocation',
+            'CreditAmount'      => $amount,
+            'CreditAccount'     => $data->ACCOUNT_DIRECT_REFERRAL_LIABILITY,
+        ));
+    }
+
+    /**
+     * Record indirect referral allocation
+     *
+     * @param  mixed $entityId
+     * @param  float $amount
+     * @return mixed
+     */
+    public function recordIndirectReferralExpense($entityId, $amount)
+    {
+        $data = $this->getObject('com:nucleonplus.accounting.service.data');
+
+        return $this->_service->create(array(
+            'DocNumber'         => $entityId,
+            'Date'              => date('Y-m-d'),
+            'DebitDescription'  => 'Indirect referral bonus allocation',
+            'DebitAmount'       => $amount,
+            'DebitAccount'      => $data->ACCOUNT_INDIRECT_REFERRAL_EXPENSE,
+            'CreditDescription' => 'Indirect referral bonus allocation',
+            'CreditAmount'      => $amount,
+            'CreditAccount'     => $data->ACCOUNT_INDIRECT_REFERRAL_LIABILITY,
+        ));
+    }
+
+    /**
+     * Record charges allocation
+     *
+     * @param  mixed $entityId
+     * @param  float $amount
+     * @return mixed
+     */
+    public function recordChargesExpense($entityId, $amount)
+    {
+        $data = $this->getObject('com:nucleonplus.accounting.service.data');
+
+        return $this->_service->create(array(
+            'DocNumber'         => $entityId,
+            'Date'              => date('Y-m-d'),
+            'DebitDescription'  => 'Charges allocation',
+            'DebitAmount'       => $amount,
+            'DebitAccount'      => $data->ACCOUNT_CHARGES_EXPENSE,
+            'CreditDescription' => 'Charges allocation',
+            'CreditAmount'      => $amount,
+            'CreditAccount'     => $data->ACCOUNT_CHARGES_LIABILITY,
         ));
     }
 }

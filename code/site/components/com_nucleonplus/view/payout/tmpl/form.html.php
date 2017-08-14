@@ -37,26 +37,6 @@ defined('KOOWA') or die; ?>
 
                         <form method="post" class="form-horizontal -koowa-form" action="<?= route('option=com_nucleonplus&view=payout'); ?>">
 
-                            <? foreach ($rebates as $rebate): ?>
-                                <input type="hidden" name="rebates[]" value="<?= $rebate->id ?>" />
-                            <? endforeach ?>
-
-                            <? foreach ($direct_referrals as $directReferral): ?>
-                                <input type="hidden" name="direct_referrals[]" value="<?= $directReferral->id ?>" />
-                            <? endforeach ?>
-
-                            <? foreach ($dr_bonuses as $dr_bonus): ?>
-                                <input type="hidden" name="dr_bonuses[]" value="<?= $dr_bonus->id ?>" />
-                            <? endforeach ?>
-
-                            <? foreach ($ir_bonuses as $ir_bonus): ?>
-                                <input type="hidden" name="ir_bonuses[]" value="<?= $ir_bonus->id ?>" />
-                            <? endforeach ?>
-
-                            <? foreach ($patronages as $patronage): ?>
-                                <input type="hidden" name="patronages[]" value="<?= $patronage->id ?>" />
-                            <? endforeach ?>
-
                             <div class="row-fluid">
 
                                 <br />
@@ -76,16 +56,8 @@ defined('KOOWA') or die; ?>
                                                     <td><div class="text-right"><?= number_format($total_rebates, 2) ?></div></td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Direct referrals bonus</td>
-                                                    <td><div class="text-right"><?= number_format($total_direct_referrals, 2) ?></div></td>
-                                                </tr>
-                                                <tr>
                                                     <td>Unilevel bonus</td>
                                                     <td><div class="text-right"><?= number_format($total_referral_bonus, 2) ?></div></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Patronage bonus</td>
-                                                    <td><div class="text-right"><?= number_format($total_patronages, 2) ?></div></td>
                                                 </tr>
                                                 <tr class="info">
                                                     <td>&nbsp;</td>

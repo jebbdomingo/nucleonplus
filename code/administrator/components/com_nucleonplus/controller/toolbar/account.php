@@ -92,7 +92,7 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
         ));
 
         if (in_array($context->result->status, array('new', 'pending'))) {
-            $context->response->addMessage('This account is currently inactive', 'warning');
+            $context->response->addMessage('This account is currently inactive', KControllerResponse::FLASH_WARNING);
         }
     }
 

@@ -62,12 +62,12 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
         // Claim request notification
         if ($claimRequest->value == ComNucleonplusModelEntityConfig::CLAIM_REQUEST_DISABLED) {
-            $context->response->addMessage('Claim request is not available at the moment, please check the cut-off time for claim requests', 'warning');
+            $context->response->addMessage('Claim request is not available at the moment, please check the cut-off time for claim requests', KControllerResponse::FLASH_WARNING);
         }
 
         // Outstanding payout request notification
         if ($context->result->isNew() && $controller->hasOutstandingRequest()) {
-            $context->response->addMessage('You have outstanding payout request', 'warning');
+            $context->response->addMessage('You have outstanding payout request', KControllerResponse::FLASH_WARNING);
         }
 
         if ($context->result->isNew() && !$controller->checkMinimumAmount())
@@ -78,7 +78,7 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
             ;
             $amount  = number_format((float) $config->value, 2);
             $message = "Minimum amount for each payout request is &#8369;{$amount}";
-            $context->response->addMessage($message, 'warning');
+            $context->response->addMessage($message, KControllerResponse::FLASH_WARNING);
         }
 
         // Bank account details notification
@@ -86,7 +86,7 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
         {
             $url  = JRoute::_('index.php?option=com_nucleonplus&view=member&tmpl=koowa&layout=form', false);
             $link = '<a href="' . $url . '">here</a>';
-            $context->response->addMessage("Please complete your bank account details and mobile # in your profile. Click {$link} to update your profile.", 'warning');
+            $context->response->addMessage("Please complete your bank account details and mobile # in your profile. Click {$link} to update your profile.", KControllerResponse::FLASH_WARNING);
         }
     }
 }

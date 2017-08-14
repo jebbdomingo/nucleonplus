@@ -66,21 +66,18 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
 
     public function checkMinimumAmount()
     {
-        $user                = $this->getObject('user');
-        $model               = $this->getObject('com://admin/nucleonplus.model.accounts')->id($user->getId());
-        $minAmount           = $this->getObject('com:nucleonplus.model.configs')->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)->fetch();
-        $referralBonus       = $model->getTotalAvailableReferralBonus()->total;
-        $patronageBonus      = $model->getTotalAvailablePatronages()->total;
-        $directReferralBonus = $model->getTotalAvailableDirectReferrals()->total;
-        $rebates             = $model->getTotalAvailableRebates()->total;
-        $result              = false;
+        $user          = $this->getObject('user');
+        $model         = $this->getObject('com://admin/nucleonplus.model.accounts')->id($user->getId());
+        $minAmount     = $this->getObject('com:nucleonplus.model.configs')->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)->fetch();
 
-        $total = (
-            $referralBonus +
-            $patronageBonus +
-            $directReferralBonus +
-            $rebates
-        );
+        $account = $model->fetch();
+        $model->account_number($account->account_number);
+
+        $referralBonus = (float) $model->getTotalAvailableReferralBonus()->total;
+        $rebates       = (float) $model->getTotalAvailableRebates()->total;
+        $result        = false;
+
+        $total = ($referralBonus + $rebates);
 
         if ($total >= (float) $minAmount->value) {
             $result = true;
