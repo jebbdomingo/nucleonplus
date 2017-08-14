@@ -159,7 +159,6 @@ class ComNucleonplusModelEntityMember extends KModelEntityRow
         $model = $this->getObject('com://admin/nucleonplus.model.accounts');
 
         $account = $model->create(array(
-            'id'                  => $userId,
             'user_id'             => $userId,
             'sponsor_id'          => $this->sponsor_id,
             'PrintOnCheckName'    => $this->PrintOnCheckName,

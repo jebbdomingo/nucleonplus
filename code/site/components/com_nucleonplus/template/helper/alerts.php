@@ -11,62 +11,6 @@
 class ComNucleonplusTemplateHelperAlerts extends KTemplateHelperAbstract
 {
     /**
-     * Display payout note panel
-     *
-     * @param array $config
-     *
-     * @return string
-     */
-    public function payoutInfoPanel(array $config = array())
-    {
-        $config = new KObjectConfig($config);
-        $config->append(array(
-            'title' => 'Information',
-        ));
-
-        $url  = JRoute::_('index.php?option=com_nucleonplus&view=member&tmpl=koowa&layout=form', false);
-        $link = '<a href="' . $url . '">here</a>';
-
-        $message = '<p>Please note that it will take approximately two (2) banking days after payout request for the payment to reflect on your bank account, considering no error on bank information provided.</p>';
-        $message .= "<p>Click {$link} to update your bank details.</p>";
-
-        $template = '<div>';
-        $template .= '<div><strong>' . $config->title . '</strong></div>';
-        $template .= "<div>{$message}</div>";
-        $template .= '</div>';
-
-        return $template;
-    }
-
-    /**
-     * Display payout note panel
-     *
-     * @param array $config
-     *
-     * @return string
-     */
-    public function payoutWarningPanel(array $config = array())
-    {
-        $config = new KObjectConfig($config);
-        $config->append(array(
-            'title' => 'Warning',
-        ));
-
-        $message = '<p>';
-        $message .= '
-            Please be aware that a remittance charge of PHP 15.00 will be deducted from your total payout.
-        ';
-        $message .= '</p>';
-
-        $template = '<div class="panel panel-warning">';
-        $template .= '<div class="panel-heading"><strong>' . $config->title . '</strong></div>';
-        $template .= "<div class=\"panel-body\">{$message}</div>";
-        $template .= '</div>';
-
-        return $template;
-    }
-
-    /**
      * Display payment instruction panel
      *
      * @param array $config

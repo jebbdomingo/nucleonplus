@@ -41,26 +41,20 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
     public function getRequest()
     {
-        $request = parent::getRequest();
-        $query   = $request->query;
-        $user    = $this->getObject('user');
+        $request      = parent::getRequest();
+        $query        = $request->query;
+        $user_account = $this->getObject('com://admin/nucleonplus.useraccount');
 
         $query->tmpl = 'koowa';
 
-        $account = $this->getObject('com:nucleonplus.controller.account')
-            ->user_id($user->getId())
-            ->read();
+        // if ($query->view == 'account') {
+            $query->id = $user_account->getAccount()->id;
+        // }
 
-        if ($query->view == 'account')
-        {
-            $query->id = (int) $user->getId();
-        }
-        
-        $query->account_id     = (int) $user->getId();
-        $query->account_number = $account->account_number;
+        // $query->account_id = (int) $user_account->getUser()->getId();
         
         if ($query->view == 'member') {
-            $query->id = (int) $user->getId();
+            $query->id = (int) $user_account->getUser()->getId();
         }
 
         // Manage cart

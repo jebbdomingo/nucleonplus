@@ -15,7 +15,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
         parent::__construct($config);
 
         $this->getState()
-            ->insert('account_id', 'int')
+            ->insert('account_number', 'string')
             ->insert('status', 'string')
             ->insert('search', 'string')
             ->insert('created_on', 'string')
@@ -42,7 +42,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('_account' => 'nucleonplus_accounts'), 'tbl.account_id = _account.nucleonplus_account_id')
+            ->join(array('_account' => 'nucleonplus_accounts'), 'tbl.account_number = _account.account_number')
             ->join(array('_user' => 'users'), '_account.user_id = _user.id')
         ;
 
@@ -55,8 +55,8 @@ class ComNucleonplusModelPayouts extends KModelDatabase
 
         $state = $this->getState();
 
-        if ($state->account_id) {
-            $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
+        if ($state->account) {
+            $query->where('tbl.account_number = :account_number')->bind(['account_number' => $state->account_number]);
         }
 
         if ($state->status) {
@@ -129,7 +129,7 @@ class ComNucleonplusModelPayouts extends KModelDatabase
             ->table('nucleonplus_payouts AS tbl')
             ->columns('tbl.nucleonplus_payout_id, COUNT(tbl.nucleonplus_payout_id) AS count')
             ->where('tbl.status IN :status')->bind(['status' => $status])
-            ->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id])
+            ->where('tbl.account_number = :account_number')->bind(['account_number' => $state->account_number])
         ;
 
         $result = $table->select($query);

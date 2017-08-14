@@ -10,13 +10,6 @@
 
 class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarActionbar
 {
-    protected function _commandCancel(KControllerToolbarCommand $command)
-    {
-        $command->label = 'Back';
-        $command->icon  = 'icon-32-cancel';
-        $command->href  = 'view=account&tmpl=index';
-    }
-
     /**
      * Override parent _afterRead
      *
@@ -28,8 +21,7 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
         $translator = $this->getObject('translator');
         $name       = $translator->translate(strtolower($context->subject->getIdentifier()->name));
 
-
-        if($controller->getModel()->getState()->isUnique()) {
+        if ($controller->getModel()->getState()->isUnique()) {
             $title = $translator->translate('Edit {item_type}', array('item_type' => $name));
         } else {
             $title = $translator->translate('Submit New {item_type} Request', array('item_type' => ucfirst($name)));
@@ -50,7 +42,7 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
     {
         $this->afterRead($context);
 
-        $this->removeCommand('save');
+        $this->removeCommand('apply');
 
         $controller   = $this->getController();
         $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item('claim_request')->fetch();

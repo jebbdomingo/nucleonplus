@@ -10,94 +10,110 @@
 
 defined('KOOWA') or die; ?>
 
-<?= helper('behavior.koowa'); ?>
-<?= helper('bootstrap.load', array('javascript' => true)); ?>
-<?= helper('behavior.keepalive'); ?>
-<?= helper('behavior.validator'); ?>
+<?= helper('ui.load', array(
+    'domain' => 'admin'
+)); ?>
 
-<ktml:style src="media://koowa/com_koowa/css/site.css" />
-<ktml:style src="media://com_nucleonplus/css/bootstrap.css" />
+<? // Add template class to visually enclose the forms ?>
+<script>document.documentElement.className += " k-frontend-ui";</script>
 
-<? // Toolbar ?>
-<div class="koowa_toolbar">
-    <ktml:toolbar type="actionbar">
-</div>
+<!-- Wrapper -->
+<div class="k-wrapper k-js-wrapper">
 
-<? // Form ?>
-<div class="koowa_form">
+    <!-- Overview -->
+    <div class="k-content-wrapper">
+        
+        <!-- Sidebar -->
+        <?= import('com://site/nucleonplus.account.default_sidebar.html'); ?>
 
-    <div class="nucleonplus_form_layout">
+        <!-- Content -->
+        <div class="k-content k-js-content">
 
-        <form method="post" class="form-horizontal -koowa-form">
-            <div class="koowa_container">
+            <!-- Title when sidebar is invisible -->
+            <ktml:toolbar type="titlebar" title="Nucleon Plus" mobile>
 
-                <div class="koowa_grid__row">
+            <!-- Toolbar -->
+            <ktml:toolbar type="actionbar">
 
-                    <div class="koowa_grid__item two-thirds">
+            <div class="k-alert k-alert--info k-no-margin">
+                <span class="k-icon-info" aria-hidden="true"></span> <strong>Reminder</strong> Please note that it will take approximately two (2) banking days after payout request for the payment to reflect on your bank account considering no error on bank information provided.
+                Click <a href="<?= route('index.php?option=com_nucleonplus&view=member&tmpl=koowa&layout=form') ?>">here</a> to update your bank details.
+            </div>
 
-                        <form method="post" class="form-horizontal -koowa-form" action="<?= route('option=com_nucleonplus&view=payout'); ?>">
+            <!-- Component -->
+            <div class="k-component-wrapper">
 
-                            <div class="row-fluid">
+                <!-- Component -->
+                <form class="k-component k-js-component k-js-form-controller k-js-cart-form" name="k-js-cart-form" action="<?= route('option=com_nucleonplus&view=payout') ?>" method="post">
 
-                                <br />
+                    <input type="hidden" name="amount" value="<?= $total_bonus ?>">
 
-                                <div class="span12">
+                    <!-- Container -->
+                    <div class="k-container">
 
-                                    <fieldset>
-                                        <legend><?= translate('Bonus') ?></legend>
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <th>Compensation Plan</th>
-                                                <th><div class="text-right">Amount</div></th>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Rebates</td>
-                                                    <td><div class="text-right"><?= number_format($total_rebates, 2) ?></div></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Unilevel bonus</td>
-                                                    <td><div class="text-right"><?= number_format($total_referral_bonus, 2) ?></div></td>
-                                                </tr>
-                                                <tr class="info">
-                                                    <td>&nbsp;</td>
-                                                    <td><div class="text-right"><strong>&#8369;<?= number_format($total_bonus, 2) ?></strong></div></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </fieldset>
-
+                        <div class="k-card">
+                            <div class="k-card__body">
+                                <div class="k-card__header"><?= translate('Rewards') ?></div>
+                                <div class="k-card__section">
+                                    <div class="k-table-container">
+                                        <div class="k-table">
+                                            <table class="k-js-fixed-table-header k-js-responsive-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th><?= translate('Compensation Plan') ?></th>
+                                                        <th width="15%"><? translate('Amount') ?></th>
+                                                        <th width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="k-table-data--ellipsis">
+                                                            <?= translate('Rebates') ?>
+                                                        </td>
+                                                        <td class="k-table-data--nowrap"><?= number_format($total_rebates, 2) ?></td>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="k-table-data--ellipsis">
+                                                            <?= translate('Unilevel Bonus') ?>
+                                                        </td>
+                                                        <td class="k-table-data--nowrap"><?= number_format($total_referral_bonus, 2) ?></td>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <div class="span12">
-
-                                    <fieldset>
-
-                                        <legend><?= translate('Encashment Method') ?></legend>
-                                        <?= helper('listbox.payoutMethods') ?>
-
-                                    </fieldset>
-
+                                <div class="k-card__footer">
+                                    <label><?= translate('Total') ?>: &#8369;<?= number_format($total_bonus, 2) ?></label>
                                 </div>
-
-                                <br />
-
                             </div>
-                            
-                        </form>
+                        </div>
+
+                        <fieldset class="k-form-block">
+                            <div class="k-form-block__header"><?= translate('Options') ?></div>
+                            <div class="k-form-block__content">
+                                <div class="k-form-group">
+                                    <label for="recipient_name"><?= translate('Encashment Method') ?></label>
+                                    <?= helper('listbox.payoutMethods') ?>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="k-alert k-alert--warning">
+                            <span class="k-icon-warning" aria-hidden="true"></span> <strong>Charges</strong> Please be aware that a remittance charge of PHP 15.00 will be deducted from your total payout.
+                        </div>
+
+                        <br />
 
                     </div>
 
-                    <div class="koowa_grid__item one-third">
-                        <?= helper('alerts.payoutInfoPanel', array('title' => 'Reminder')) ?>
-                        <?= helper('alerts.payoutWarningPanel', array('title' => 'Charge(s)')) ?>
-                    </div>
-
-                </div>
+                </form>
 
             </div>
 
-        </form>
+        </div>
 
     </div>
 

@@ -43,7 +43,7 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
     {
         $user = $this->getObject('user');
 
-        return $this->getModel()->account_id($user->getId())->hasOutstandingRequest();
+        return $this->getModel()->account_number($user->getId())->hasOutstandingRequest();
     }
 
     public function checkBankDetails()

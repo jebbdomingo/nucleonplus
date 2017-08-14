@@ -31,7 +31,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getDirectReferrals()
     {
-        return $this->getObject('com://admin/nucleonplus.model.accounts')->sponsor_id($this->account_number)->fetch();
+        return $this->getObject('com://admin/nucleonplus.model.accounts')->sponsor_id($this->id)->fetch();
     }
 
     /**
@@ -59,7 +59,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getSponsor()
     {
-        return $this->getObject('com://admin/nucleonplus.model.accounts')->account_number($this->sponsor_id)->fetch();
+        return $this->getObject('com://admin/nucleonplus.model.accounts')->id($this->sponsor_id)->fetch();
     }
 
     /**
@@ -74,10 +74,10 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
         {
             $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($this->user_id)->fetch();
 
-            // Check if an account if the same user id exists
+            // Check if an account for that user id exists
             if ($account->id)
             {
-                $this->setStatusMessage($this->getObject('translator')->translate('An account already exist for this member'));
+                $this->setStatusMessage($this->getObject('translator')->translate('An account already exist for this user'));
                 $this->setStatus(KDatabase::STATUS_FAILED);
                 return false;
             }
@@ -94,7 +94,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     private function _generateAccountNumber()
     {
-        $this->account_number = date('ymd') . "-{$this->user_id}";
+        $this->id = date('ymd') . "-{$this->user_id}";
 
         return parent::save();
     }
