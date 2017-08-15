@@ -103,7 +103,7 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
                 if ($customer->sync() == false)
                 {
                     $error = $customer->getStatusMessage();
-                    throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Account #{$account->account_number}");
+                    throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Account #{$account->id}");
                 }
                 else
                 {
@@ -129,10 +129,10 @@ class ComNucleonplusControllerAccount extends ComKoowaControllerModel
                         $context->response->addMessage(JText::_('COM_NUCLEONPLUS_USERS_REGISTRATION_ACTIVATION_NOTIFY_SEND_MAIL_FAILED'), 'error');
                     }
 
-                    $context->response->addMessage("Account #{$account->account_number} has been activated");
+                    $context->response->addMessage("Account #{$account->id} has been activated");
                 }
             }
-            else $context->response->addMessage("Unable to activate Account #{$account->account_number}, only pending accounts can be activated", 'warning');
+            else $context->response->addMessage("Unable to activate Account #{$account->id}, only pending accounts can be activated", 'warning');
         }
 
         return $accounts;

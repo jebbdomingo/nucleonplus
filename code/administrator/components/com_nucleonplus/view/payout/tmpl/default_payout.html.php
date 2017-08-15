@@ -12,7 +12,7 @@
                 </tr>
                 <tr>
                     <td><label><strong><?= translate('Account Number'); ?></strong></label></td>
-                    <td><?= $payout->account_number ?></td>
+                    <td><?= $payout->account ?></td>
                 </tr>
                 <tr>
                     <td><label><strong><?= translate('Amount'); ?></strong></label></td>

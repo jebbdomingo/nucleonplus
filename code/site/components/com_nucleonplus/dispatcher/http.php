@@ -47,12 +47,12 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
         $query->tmpl = 'koowa';
 
-        // if ($query->view == 'account') {
+        if ($query->view == 'account') {
             $query->id = $user_account->getAccount()->id;
-        // }
+        }
 
-        // $query->account_id = (int) $user_account->getUser()->getId();
-        
+        $query->account = $user_account->getAccount()->id;
+
         if ($query->view == 'member') {
             $query->id = (int) $user_account->getUser()->getId();
         }

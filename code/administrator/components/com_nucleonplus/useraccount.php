@@ -36,7 +36,7 @@ class ComNucleonplusUseraccount extends KObject
         $account_model = $this->getObject('com://admin/nucleonplus.model.accounts');
 
         $account = $account_model->user_id($user->getId())->fetch();
-        $account_model->account_number($account->account_number);
+        $account_model->id($account->id);
 
         $this->_user          = $user;
         $this->_account_model = $account_model;

@@ -65,7 +65,7 @@ class ComNucleonplusAccountingServiceMember extends KObject implements ComNucleo
             'PrintOnCheckName' => $account->PrintOnCheckName ? $account->PrintOnCheckName : $account->_name,
             'CustomerRef'      => $account->CustomerRef,
             'account_id'       => $account->id,
-            'DisplayName'      => "{$account->_name} - {$account->account_number}", // Make display name unique
+            'DisplayName'      => "{$account->_name} - {$account->id}", // Make display name unique
             'PrimaryPhone'     => $account->phone,
             'Mobile'           => $account->mobile,
             'PrimaryEmailAddr' => $account->_email,

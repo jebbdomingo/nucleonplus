@@ -61,7 +61,7 @@ class ComNucleonplusControllerMember extends ComKoowaControllerModel
 
                 if (!empty($sponsorId))
                 {
-                    $account = $this->getObject('com://site/nucleonplus.model.accounts')->account_number($sponsorId)->fetch();
+                    $account = $this->getObject('com://site/nucleonplus.model.accounts')->id($sponsorId)->fetch();
 
                     if (count($account) == 0)
                     {

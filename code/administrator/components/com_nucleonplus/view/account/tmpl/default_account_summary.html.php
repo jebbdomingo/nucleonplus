@@ -8,7 +8,7 @@
             </tr>
             <tr>
                 <td><label><strong><?= translate('Account No.') ?></strong></label></td>
-                <td><?= $account->account_number ?></td>
+                <td><?= $account->id ?></td>
             </tr>
             <tr>
                 <td><label><strong><?= translate('Sponsor ID') ?></strong></label></td>

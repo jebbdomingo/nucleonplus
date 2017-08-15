@@ -32,7 +32,7 @@
         </td>
         <td>
             <a href="<?= route('view=account&id='.$payout->account_id); ?>">
-                <?= $payout->account_number ?>
+                <?= $payout->account ?>
             </a>
         </td>
         <td>

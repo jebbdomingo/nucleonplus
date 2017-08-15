@@ -55,7 +55,7 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'name', 'title' => 'Member')); ?>
                             </th>
                             <th>
-                                <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
+                                <?= helper('grid.sort', array('column' => 'account', 'title' => 'Account Number')); ?>
                             </th>
                             <th>
                                 <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>

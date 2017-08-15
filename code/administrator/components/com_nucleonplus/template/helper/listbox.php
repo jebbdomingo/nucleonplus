@@ -328,7 +328,7 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
         $config->append(array(
             'model'    => 'accounts',
             'value'    => 'id',
-            'label'    => 'account_number',
+            'label'    => 'id',
             'sort'     => 'id',
             'validate' => false
         ));

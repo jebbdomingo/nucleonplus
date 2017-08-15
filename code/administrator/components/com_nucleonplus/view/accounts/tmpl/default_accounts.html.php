@@ -40,7 +40,7 @@
         </td>
         <td >
             <a href="<?= route('view=account&id='.$account->id); ?>">
-                <?= $account->account_number ?>
+                <?= $account->id ?>
             </a>
         </td>
         <td><?= ($account->sponsor_id) ? $account->sponsor_id : '-' ?></td>

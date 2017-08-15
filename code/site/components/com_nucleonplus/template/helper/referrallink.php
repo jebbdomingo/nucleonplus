@@ -25,7 +25,7 @@ class ComNucleonplusTemplateHelperReferrallink extends ComKoowaTemplateHelperBeh
         ));
 
         $p   = strpos($config->url, '?') ? '&' : '?';
-        $url = $config->url . $p . "sponsor_id={$account->account_number}";
+        $url = $config->url . $p . "sponsor_id={$account->id}";
 
         $signature = md5(serialize(array($config->selector)));
         if (!isset(self::$_loaded[$signature])) {

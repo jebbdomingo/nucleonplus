@@ -42,7 +42,7 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
     {
         $this->afterRead($context);
 
-        $this->removeCommand('apply');
+        $this->removeCommand('save');
 
         $controller   = $this->getController();
         $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item('claim_request')->fetch();

@@ -41,15 +41,17 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
 
     public function hasOutstandingRequest()
     {
-        $user = $this->getObject('user');
+        $account = $this->getObject('com:nucleonplus.useraccount')
+            ->getAccount()
+            ->id;
 
-        return $this->getModel()->account_number($user->getId())->hasOutstandingRequest();
+        return $this->getModel()->account($account)->hasOutstandingRequest();
     }
 
     public function checkBankDetails()
     {
-        $user    = $this->getObject('user');
-        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $user_account    = $this->getObject('com:nucleonplus.useraccount');
+        $account = $user_account->getAccount();
 
         $bank       = trim($account->bank_name);
         $acctNumber = trim($account->bank_account_number);
@@ -66,12 +68,9 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
 
     public function checkMinimumAmount()
     {
-        $user          = $this->getObject('user');
-        $model         = $this->getObject('com://admin/nucleonplus.model.accounts')->id($user->getId());
-        $minAmount     = $this->getObject('com:nucleonplus.model.configs')->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)->fetch();
-
-        $account = $model->fetch();
-        $model->account_number($account->account_number);
+        $user_account = $this->getObject('com:nucleonplus.useraccount');
+        $model        = $user_account->getAccountModel();
+        $minAmount    = $this->getObject('com:nucleonplus.model.configs')->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)->fetch();
 
         $referralBonus = (float) $model->getTotalAvailableReferralBonus()->total;
         $rebates       = (float) $model->getTotalAvailableRebates()->total;

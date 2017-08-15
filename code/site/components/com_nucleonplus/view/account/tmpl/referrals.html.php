@@ -39,7 +39,7 @@ defined('KOOWA') or die; ?>
                     <p>It seems like you don't have any referrals yet.</p>
                     <?
                     $p   = strpos(JURI::root(), '?') ? '&' : '?';
-                    $url = JURI::root() . $p . "sponsor_id={$account->account_number}";
+                    $url = JURI::root() . $p . "sponsor_id={$account->id}";
                     ?>
                     <p><a href="#" class="k-button k-button--success k-button--large k-button--clipboard" data-clipboard-text="<?= $url ?>">Share Nucleon + Now!</a></p>
                 </div>
@@ -59,7 +59,7 @@ defined('KOOWA') or die; ?>
                                     <? foreach ($account->getDirectReferrals() as $referral): ?>
                                         <tr>
                                             <td><?= object('user.provider')->load($referral->user_id)->getName() ?></td>
-                                            <td><?= $referral->account_number ?></td>
+                                            <td><?= $referral->id ?></td>
                                         </tr>
                                     <? endforeach ?>
                                 </tbody>

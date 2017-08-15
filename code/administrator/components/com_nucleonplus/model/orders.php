@@ -39,8 +39,8 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         $query
             ->columns(array('_account_sponsor_id' => '_account.sponsor_id'))
-            ->columns(array('_account_number' => '_account.account_number'))
-            ->columns('_account.account_number')
+            ->columns(array('_account_number' => '_account.id'))
+            ->columns('_account.id')
             ->columns('_account.status')
             ->columns(array('_account_customer_ref' => '_account.CustomerRef'))
             ->columns('u.name')

@@ -10,7 +10,7 @@
                     <? foreach ($account->getDirectReferrals() as $referral): ?>
                         <tr>
                             <td><?= object('user.provider')->load($referral->user_id)->getName() ?></td>
-                            <td><?= $referral->account_number ?></td>
+                            <td><?= $referral->id ?></td>
                         </tr>
                     <? endforeach ?>
                 <? else: ?>

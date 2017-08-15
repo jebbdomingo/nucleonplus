@@ -15,7 +15,7 @@ class ComNucleonplusModelMembers extends KModelDatabase
         parent::_buildQueryColumns($query);
 
         $query
-            ->columns(array('_account_number'              => '_account.account_number'))
+            ->columns(array('_account_number'              => '_account.nucleonplus_account_id'))
             ->columns(array('_account_check_name'          => '_account.PrintOnCheckName'))
             ->columns(array('_account_customer_ref'        => '_account.CustomerRef'))
             ->columns(array('_account_status'              => '_account.status'))

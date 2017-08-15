@@ -50,7 +50,7 @@ defined('KOOWA') or die; ?>
                                 <label class="k-input-group__addon" for="public_url">URL</label>
                                 <?
                                 $p   = strpos(JURI::root(), '?') ? '&' : '?';
-                                $url = JURI::root() . $p . "sponsor_id={$account->account_number}";
+                                $url = JURI::root() . $p . "sponsor_id={$account->id}";
                                 ?>
                                 <input type="text" id="public_url" class="k-form-control" value="<?= $url ?>" />
                                 <span class="k-input-group__button">
@@ -79,7 +79,7 @@ defined('KOOWA') or die; ?>
                                             </tr>
                                             <tr>
                                                 <td>Account Number</td>
-                                                <td><?= $account->account_number ?></td>
+                                                <td><?= $account->id ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Sponsor ID</td>

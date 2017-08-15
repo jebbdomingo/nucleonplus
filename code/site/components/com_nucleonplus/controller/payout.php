@@ -183,13 +183,18 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         $query = $context->request->query;
         $data  = $context->request->data;
 
-        $data->account_number = $query->get('account_number', 'cmd');
-        $data->status         = 'pending';
+        $data->account = $query->get('account', 'cmd');
+        $data->status  = 'pending';
 
         $payout = parent::_actionAdd($context);
 
+        $identifier = $context->getSubject()->getIdentifier();
+        $url        = sprintf('index.php?option=com_%s&view=payouts', $identifier->package);
+
         $response = $context->getResponse();
         $response->addMessage("Your Payout Request amounting to &#8369; {$payout->amount} has been created successfully");
+
+        $response->setRedirect(JRoute::_($url, false));
 
         return $payout;
     }

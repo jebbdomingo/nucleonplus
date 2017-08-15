@@ -16,7 +16,6 @@ class ComNucleonplusModelAccounts extends KModelDatabase
 
         $this->getState()
             ->insert('status', 'string')
-            ->insert('account_number', 'string')
             ->insert('sponsor_id', 'string')
             ->insert('user_id', 'int')
         ;
@@ -26,7 +25,7 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('account_number', 'user_name'))
+                'searchable' => array('columns' => array('id', 'user_name'))
             )
         ));
 
@@ -68,10 +67,6 @@ class ComNucleonplusModelAccounts extends KModelDatabase
             $query->where('(tbl.status IN :status)')->bind(array('status' => (array) $state->status));
         }
 
-        if ($state->account_number) {
-            $query->where('tbl.account_number = :account_number')->bind(['account_number' => $state->account_number]);
-        }
-
         if ($state->sponsor_id) {
             $query->where('tbl.sponsor_id = :sponsor_id')->bind(['sponsor_id' => $state->sponsor_id]);
         }
@@ -109,7 +104,7 @@ class ComNucleonplusModelAccounts extends KModelDatabase
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_rewards AS tbl')
             ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_reward_id')
-            ->where('tbl.account = :account')->bind(['account' => $state->account_number])
+            ->where('tbl.account = :account')->bind(['account' => $state->id])
             ->where('tbl.type IN :type')->bind(['type' => ['direct_referral','indirect_referral']])
             ->group('tbl.account')
         ;
@@ -125,7 +120,7 @@ class ComNucleonplusModelAccounts extends KModelDatabase
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_rewards AS tbl')
             ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_reward_id')
-            ->where('tbl.account = :account')->bind(['account' => $state->account_number])
+            ->where('tbl.account = :account')->bind(['account' => $state->id])
             ->where('tbl.type = :type')->bind(['type' => 'rebates'])
             ->group('tbl.account')
         ;

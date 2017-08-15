@@ -49,7 +49,7 @@ defined('KOOWA') or die; ?>
                                 <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>
                             </th>
                             <th data-hide="phone,phablet">
-                                <?= helper('grid.sort', array('column' => 'account_number', 'title' => 'Account Number')); ?>
+                                <?= helper('grid.sort', array('column' => 'id', 'title' => 'Account Number')); ?>
                             </th>
                             <th data-hide="phone,phablet">
                                 Sponsor

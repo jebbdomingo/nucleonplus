@@ -55,7 +55,7 @@ defined('KOOWA') or die; ?>
                             <label><?= translate('Account No.'); ?></label>
                         </div>
                         <div class="controls">
-                            <?= $account->account_number ?>
+                            <?= $account->id ?>
                         </div>
                     </div>
 
