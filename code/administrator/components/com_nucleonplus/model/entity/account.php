@@ -160,4 +160,62 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
 
         $this->status = 'active';
     }
+
+    /**
+     * Get available direct referral bonus
+     *
+     * @return float
+     */
+    public function getAvailableDirectReferralBonus()
+    {
+        $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')
+            ->getDirectReferralBonus($this->id);
+
+        $payouts = $this->getObject('com://admin/nucleonplus.model.payouts')
+            ->getDirectReferralPayout($this->id);
+
+        return $rewards - $payouts;
+    }
+
+    /**
+     * Get available indirect referral bonus
+     *
+     * @return float
+     */
+    public function getAvailableIndirectReferralBonus()
+    {
+        $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')
+            ->getIndirectReferralBonus($this->id);
+
+        $payouts = $this->getObject('com://admin/nucleonplus.model.payouts')
+            ->getIndirectReferralPayout($this->id);
+
+        return $rewards - $payouts;
+    }
+
+    /**
+     * Get available rebates
+     *
+     * @return float
+     */
+    public function getAvailableRebates()
+    {
+        $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')
+            ->getRebates($this->id);
+
+        $payouts = $this->getObject('com://admin/nucleonplus.model.payouts')
+            ->getRebatesPayout($this->id);
+
+        return $rewards - $payouts;
+    }
+
+    /**
+     * Get total available rewards
+     *
+     * @return [type] [description]
+     */
+    public function getAvailableRewards()
+    {
+        return $this->getAvailableDirectReferralBonus() + $this->getAvailableIndirectReferralBonus() + $this->getAvailableRebates();
+    }
 }

@@ -68,17 +68,15 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
 
     public function checkMinimumAmount()
     {
+        $result       = false;
         $user_account = $this->getObject('com:nucleonplus.useraccount');
-        $model        = $user_account->getAccountModel();
-        $minAmount    = $this->getObject('com:nucleonplus.model.configs')->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)->fetch();
+        $account      = $user_account->getAccount();
+        $minAmount    = (float) $this->getObject('com:nucleonplus.model.configs')
+            ->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
+            ->fetch()
+            ->value;
 
-        $referralBonus = (float) $model->getTotalAvailableReferralBonus()->total;
-        $rebates       = (float) $model->getTotalAvailableRebates()->total;
-        $result        = false;
-
-        $total = ($referralBonus + $rebates);
-
-        if ($total >= (float) $minAmount->value) {
+        if ($account->getAvailableRewards() >= $minAmount) {
             $result = true;
         }
 

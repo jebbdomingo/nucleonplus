@@ -46,7 +46,9 @@ defined('KOOWA') or die; ?>
                 <!-- Component -->
                 <form class="k-component k-js-component k-js-form-controller k-js-cart-form" name="k-js-cart-form" action="<?= route('option=com_nucleonplus&view=payout') ?>" method="post">
 
-                    <input type="hidden" name="amount" value="<?= $total_bonus ?>">
+                    <input type="hidden" name="direct_referrals" value="<?= $direct_referrals ?>">
+                    <input type="hidden" name="indirect_referrals" value="<?= $indirect_referrals ?>">
+                    <input type="hidden" name="rebates" value="<?= $rebates ?>">
 
                     <!-- Container -->
                     <div class="k-container">
@@ -68,16 +70,23 @@ defined('KOOWA') or die; ?>
                                                 <tbody>
                                                     <tr>
                                                         <td class="k-table-data--ellipsis">
-                                                            <?= translate('Rebates') ?>
+                                                            <?= translate('Direct referrals') ?>
                                                         </td>
-                                                        <td class="k-table-data--nowrap"><?= number_format($total_rebates, 2) ?></td>
+                                                        <td class="k-table-data--nowrap"><?= number_format($direct_referrals, 2) ?></td>
                                                         <td>&nbsp;</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="k-table-data--ellipsis">
-                                                            <?= translate('Unilevel Bonus') ?>
+                                                            <?= translate('Inirect referrals') ?>
                                                         </td>
-                                                        <td class="k-table-data--nowrap"><?= number_format($total_referral_bonus, 2) ?></td>
+                                                        <td class="k-table-data--nowrap"><?= number_format($indirect_referrals, 2) ?></td>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="k-table-data--ellipsis">
+                                                            <?= translate('Rebates') ?>
+                                                        </td>
+                                                        <td class="k-table-data--nowrap"><?= number_format($rebates, 2) ?></td>
                                                         <td>&nbsp;</td>
                                                     </tr>
                                                 </tbody>
@@ -86,7 +95,7 @@ defined('KOOWA') or die; ?>
                                     </div>
                                 </div>
                                 <div class="k-card__footer">
-                                    <label><?= translate('Total') ?>: &#8369;<?= number_format($total_bonus, 2) ?></label>
+                                    <label><?= translate('Total') ?>: &#8369;<?= number_format($total, 2) ?></label>
                                 </div>
                             </div>
                         </div>

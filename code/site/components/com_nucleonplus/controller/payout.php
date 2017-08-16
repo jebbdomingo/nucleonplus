@@ -18,7 +18,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         parent::__construct($config);
 
         $this->addCommandCallback('before.add', '_checkClaim');
-        $this->addCommandCallback('before.add', '_validateData');
+        // $this->addCommandCallback('before.add', '_validateData');
     }
 
     /**
@@ -187,6 +187,30 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
         $data->status  = 'pending';
 
         $payout = parent::_actionAdd($context);
+
+        $item_data = array(
+            'payout_id' => $payout->id,
+            'amount'    => $data->direct_referrals,
+            'type'      => 'direct_referral',
+        );
+        $item = $this->getObject('com:nucleonplus.model.payout_item')->create($item_data);
+        $item->save();
+
+        $item_data = array(
+            'payout_id' => $payout->id,
+            'amount'    => $data->indirect_referrals,
+            'type'      => 'indirect_referral',
+        );
+        $item = $this->getObject('com:nucleonplus.model.payout_item')->create($item_data);
+        $item->save();
+
+        $item_data = array(
+            'payout_id' => $payout->id,
+            'amount'    => $data->rebates,
+            'type'      => 'rebates',
+        );
+        $item = $this->getObject('com:nucleonplus.model.payout_item')->create($item_data);
+        $item->save();
 
         $identifier = $context->getSubject()->getIdentifier();
         $url        = sprintf('index.php?option=com_%s&view=payouts', $identifier->package);

@@ -51,16 +51,20 @@ defined('KOOWA') or die; ?>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Rebates</td>
-                                    <td class="k-table-data--right"><?= number_format($total_rebates, 2) ?></td>
+                                    <td>Direct referral bonus</td>
+                                    <td class="k-table-data--right"><?= number_format($direct_referrals, 2) ?></td>
                                 </tr>
                                 <tr>
-                                    <td>Unilevel bonus</td>
-                                    <td class="k-table-data--right"><?= number_format($total_referral_bonus, 2) ?></td>
+                                    <td>Indirect referral bonus</td>
+                                    <td class="k-table-data--right"><?= number_format($indirect_referrals, 2) ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Rebates</td>
+                                    <td class="k-table-data--right"><?= number_format($rebates, 2) ?></td>
                                 </tr>
                                 <tr>
                                     <td><span class="k-table__item--state k-table__item--state-published">Total</span></td>
-                                    <td class="k-table-data--right"><span class="k-table__item--state k-table__item--state-published"><?= number_format($total_bonus, 2) ?></span></td>
+                                    <td class="k-table-data--right"><span class="k-table__item--state k-table__item--state-published"><?= number_format($total, 2) ?></span></td>
                                 </tr>
                             </tbody>
                         </table>

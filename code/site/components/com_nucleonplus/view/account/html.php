@@ -3,7 +3,7 @@
  * Nucleon Plus
  *
  * @package     Nucleon Plus
- * @copyright   Copyright (C) 2015 - 2020 Nucleon Plus Co. (http://www.nucleonplus.com)
+ * @copyright   Copyright (C) 2017 Nucleon Plus Co. (http://www.nucleonplus.com)
  * @license     GNU GPLv3 <http://www.gnu.org/licenses/gpl.html>
  * @link        https://github.com/jebbdomingo/nucleonplus for the canonical source repository
  */
@@ -13,15 +13,17 @@ class ComNucleonplusViewAccountHtml extends ComKoowaViewHtml
     {
         parent::_fetchData($context);
 
-        $model = $this->getModel();
+        $account = $context->data->account;
 
         // Rewards summary
-        $context->data->total_referral_bonus   = $model->getTotalAvailableReferralBonus()->total;
-        $context->data->total_rebates          = $model->getTotalAvailableRebates()->total;
+        $context->data->rebates            = $account->getAvailableRebates();
+        $context->data->direct_referrals   = $account->getAvailableDirectReferralBonus();
+        $context->data->indirect_referrals = $account->getAvailableIndirectReferralBonus();
 
-        $context->data->total_bonus = (
-            $context->data->total_referral_bonus +
-            $context->data->total_rebates
+        $context->data->total = (
+            $context->data->rebates +
+            $context->data->direct_referrals +
+            $context->data->indirect_referrals
         );
     }
 }

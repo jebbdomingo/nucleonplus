@@ -137,4 +137,79 @@ class ComNucleonplusModelPayouts extends KModelDatabase
 
         return ($count > 0) ? true : false;
     }
+
+    /**
+     * Get direct referral payout per account
+     *
+     * @param string $account User account number
+     * @return float
+     */
+    public function getDirectReferralPayout($account)
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('SUM(_items.amount) AS total, tbl.nucleonplus_payout_id')
+            ->join(array('_items' => 'nucleonplus_payout_items'), 'tbl.nucleonplus_payout_id = _items.payout_id')
+            ->where('_items.type IN :type')->bind(array('type' => array('direct_referral')))
+            ->where('tbl.account = :account')->bind(array('account' => $account))
+            ->group('tbl.account')
+        ;
+
+        $row = $table->select($query);
+
+        return (float) $row->total;
+    }
+
+    /**
+     * Get indirect referral payout per account
+     *
+     * @param string $account User account number
+     * @return float
+     */
+    public function getIndirectReferralPayout($account)
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('SUM(_items.amount) AS total, tbl.nucleonplus_payout_id')
+            ->join(array('_items' => 'nucleonplus_payout_items'), 'tbl.nucleonplus_payout_id = _items.payout_id')
+            ->where('_items.type IN :type')->bind(array('type' => array('indirect_referral')))
+            ->where('tbl.account = :account')->bind(array('account' => $account))
+            ->group('tbl.account')
+        ;
+
+        $row = $table->select($query);
+
+        return (float) $row->total;
+    }
+
+    /**
+     * Get rebates payout per account
+     *
+     * @param string $account User account number
+     * @return float
+     */
+    public function getRebatesPayout($account)
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('SUM(_items.amount) AS total, tbl.nucleonplus_payout_id')
+            ->join(array('_items' => 'nucleonplus_payout_items'), 'tbl.nucleonplus_payout_id = _items.payout_id')
+            ->where('_items.type IN :type')->bind(array('type' => array('rebates')))
+            ->where('tbl.account = :account')->bind(array('account' => $account))
+            ->group('tbl.account')
+        ;
+
+        $row = $table->select($query);
+
+        return (float) $row->total;
+    }
 }

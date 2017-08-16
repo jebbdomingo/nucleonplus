@@ -50,4 +50,76 @@ class ComNucleonplusModelRewards extends KModelDatabase
             $query->where('tbl.payout_id = :payout_id')->bind(['payout_id' => $state->payout_id]);
         }
     }
+
+    /**
+     * Get direct referral bonus per account
+     *
+     * @param string $account User account number
+     * @return float
+     */
+    public function getDirectReferralBonus($account)
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.rewards');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_rewards AS tbl')
+            ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_reward_id')
+            ->where('tbl.type IN :type')->bind(array('type' => array('direct_referral')))
+            ->where('tbl.account = :account')->bind(array('account' => $account))
+            ->group('tbl.account')
+        ;
+
+        $row = $table->select($query);
+
+        return (float) $row->total;
+    }
+
+    /**
+     * Get indirect referral bonus per account
+     *
+     * @param string $account User account number
+     * @return float
+     */
+    public function getIndirectReferralBonus($account)
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.rewards');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_rewards AS tbl')
+            ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_reward_id')
+            ->where('tbl.type IN :type')->bind(array('type' => array('indirect_referral')))
+            ->where('tbl.account = :account')->bind(array('account' => $account))
+            ->group('tbl.account')
+        ;
+
+        $row = $table->select($query);
+
+        return (float) $row->total;
+    }
+
+    /**
+     * Get rebates per account
+     *
+     * @param string $account User account number
+     * @return float
+     */
+    public function getRebates($account)
+    {
+        $state = $this->getState();
+
+        $table = $this->getObject('com://admin/nucleonplus.database.table.rewards');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_rewards AS tbl')
+            ->columns('SUM(tbl.points) AS total, tbl.nucleonplus_reward_id')
+            ->where('tbl.type IN :type')->bind(array('type' => array('rebates')))
+            ->where('tbl.account = :account')->bind(array('account' => $account))
+            ->group('tbl.account')
+        ;
+
+        $row = $table->select($query);
+
+        return (float) $row->total;
+    }
 }

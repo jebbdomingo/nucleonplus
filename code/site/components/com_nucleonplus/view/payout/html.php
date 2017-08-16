@@ -12,15 +12,17 @@ class ComNucleonplusViewPayoutHtml extends ComKoowaViewHtml
     protected function _fetchData(KViewContext $context)
     {
         $user_account  = $this->getObject('com:nucleonplus.useraccount');
-        $model = $user_account->getAccountModel();;
+        $account = $user_account->getAccount();
 
         // Rewards summary
-        $context->data->total_referral_bonus   = $model->getTotalAvailableReferralBonus()->total;
-        $context->data->total_rebates          = $model->getTotalAvailableRebates()->total;
+        $context->data->direct_referrals   = $account->getAvailableDirectReferralBonus();
+        $context->data->indirect_referrals = $account->getAvailableIndirectReferralBonus();
+        $context->data->rebates            = $account->getAvailableRebates();
 
-        $context->data->total_bonus = (
-            $context->data->total_referral_bonus +
-            $context->data->total_rebates
+        $context->data->total = (
+            $context->data->rebates +
+            $context->data->direct_referrals +
+            $context->data->indirect_referrals
         );
 
         parent::_fetchData($context);
