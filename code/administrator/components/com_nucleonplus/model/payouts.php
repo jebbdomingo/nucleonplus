@@ -146,14 +146,10 @@ class ComNucleonplusModelPayouts extends KModelDatabase
      */
     public function getDirectReferralPayout($account)
     {
-        $state = $this->getState();
-
         $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_payouts AS tbl')
-            ->columns('SUM(_items.amount) AS total, tbl.nucleonplus_payout_id')
-            ->join(array('_items' => 'nucleonplus_payout_items'), 'tbl.nucleonplus_payout_id = _items.payout_id')
-            ->where('_items.type IN :type')->bind(array('type' => array('direct_referral')))
+            ->columns('SUM(tbl.direct_referrals) AS total, tbl.nucleonplus_payout_id')
             ->where('tbl.account = :account')->bind(array('account' => $account))
             ->group('tbl.account')
         ;
@@ -171,14 +167,10 @@ class ComNucleonplusModelPayouts extends KModelDatabase
      */
     public function getIndirectReferralPayout($account)
     {
-        $state = $this->getState();
-
         $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_payouts AS tbl')
-            ->columns('SUM(_items.amount) AS total, tbl.nucleonplus_payout_id')
-            ->join(array('_items' => 'nucleonplus_payout_items'), 'tbl.nucleonplus_payout_id = _items.payout_id')
-            ->where('_items.type IN :type')->bind(array('type' => array('indirect_referral')))
+            ->columns('SUM(tbl.indirect_referrals) AS total, tbl.nucleonplus_payout_id')
             ->where('tbl.account = :account')->bind(array('account' => $account))
             ->group('tbl.account')
         ;
@@ -196,14 +188,10 @@ class ComNucleonplusModelPayouts extends KModelDatabase
      */
     public function getRebatesPayout($account)
     {
-        $state = $this->getState();
-
         $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
         $query = $this->getObject('database.query.select')
             ->table('nucleonplus_payouts AS tbl')
-            ->columns('SUM(_items.amount) AS total, tbl.nucleonplus_payout_id')
-            ->join(array('_items' => 'nucleonplus_payout_items'), 'tbl.nucleonplus_payout_id = _items.payout_id')
-            ->where('_items.type IN :type')->bind(array('type' => array('rebates')))
+            ->columns('SUM(tbl.rebates) AS total, tbl.nucleonplus_payout_id')
             ->where('tbl.account = :account')->bind(array('account' => $account))
             ->group('tbl.account')
         ;

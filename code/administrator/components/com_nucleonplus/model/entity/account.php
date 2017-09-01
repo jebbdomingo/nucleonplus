@@ -166,7 +166,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      *
      * @return float
      */
-    public function getAvailableDirectReferralBonus()
+    public function getDirectReferralBalance()
     {
         $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')
             ->getDirectReferralBonus($this->id);
@@ -182,7 +182,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      *
      * @return float
      */
-    public function getAvailableIndirectReferralBonus()
+    public function getIndirectReferralBalance()
     {
         $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')
             ->getIndirectReferralBonus($this->id);
@@ -198,7 +198,7 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      *
      * @return float
      */
-    public function getAvailableRebates()
+    public function getRebatesBalance()
     {
         $rewards = $this->getObject('com://admin/nucleonplus.model.rewards')
             ->getRebates($this->id);
@@ -216,6 +216,6 @@ class ComNucleonplusModelEntityAccount extends KModelEntityRow
      */
     public function getAvailableRewards()
     {
-        return $this->getAvailableDirectReferralBonus() + $this->getAvailableIndirectReferralBonus() + $this->getAvailableRebates();
+        return $this->getDirectReferralBalance() + $this->getIndirectReferralBalance() + $this->getRebatesBalance();
     }
 }

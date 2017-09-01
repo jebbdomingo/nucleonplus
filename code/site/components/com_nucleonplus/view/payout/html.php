@@ -15,9 +15,9 @@ class ComNucleonplusViewPayoutHtml extends ComKoowaViewHtml
         $account = $user_account->getAccount();
 
         // Rewards summary
-        $context->data->direct_referrals   = $account->getAvailableDirectReferralBonus();
-        $context->data->indirect_referrals = $account->getAvailableIndirectReferralBonus();
-        $context->data->rebates            = $account->getAvailableRebates();
+        $context->data->direct_referrals   = $account->getDirectReferralBalance();
+        $context->data->indirect_referrals = $account->getIndirectReferralBalance();
+        $context->data->rebates            = $account->getRebatesBalance();
 
         $context->data->total = (
             $context->data->rebates +

@@ -51,7 +51,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
     protected function _buildQueryJoins(KDatabaseQueryInterface $query)
     {
         $query
-            ->join(array('_account' => 'nucleonplus_accounts'), 'tbl.account_id = _account.nucleonplus_account_id')
+            ->join(array('_account' => 'nucleonplus_accounts'), 'tbl.account = _account.nucleonplus_account_id')
             ->join(array('u' => 'users'), '_account.user_id = u.id')
         ;
 
