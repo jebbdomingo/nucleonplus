@@ -25,7 +25,7 @@ class ComNucleonplusModelAccounts extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('id', 'user_name'))
+                'searchable' => array('columns' => array('nucleonplus_account_id', 'user_name'))
             )
         ));
 

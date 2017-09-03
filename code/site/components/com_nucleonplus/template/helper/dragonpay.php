@@ -103,7 +103,7 @@ class ComNucleonplusTemplateHelperDragonpay extends ComKoowaTemplateHelperListbo
     //         'amount'     => $config->amount
     //     ));
 
-    //     //var_dump($result->GetAvailableProcessorsResult->ProcessorInfo);die;
+    //     //var_dump($result->GetAvailableProcessorsResult->ProcessorInfo);
         
     //     foreach ($result->GetAvailableProcessorsResult->ProcessorInfo as $processor)
     //     {

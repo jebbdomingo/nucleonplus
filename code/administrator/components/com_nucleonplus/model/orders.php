@@ -15,7 +15,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
         parent::__construct($config);
 
         $this->getState()
-            ->insert('account_id', 'int')
+            ->insert('account_id', 'string')
             ->insert('order_status', 'string')
             ->insert('payment_method', 'string')
             ->insert('search', 'string')
@@ -26,7 +26,7 @@ class ComNucleonplusModelOrders extends KModelDatabase
     {
         $config->append(array(
             'behaviors' => array(
-                'searchable' => array('columns' => array('nucleonplus_order_id'))
+                'searchable' => array('columns' => array('nucleonplus_order_id', 'account'))
             )
         ));
 
@@ -39,8 +39,8 @@ class ComNucleonplusModelOrders extends KModelDatabase
 
         $query
             ->columns(array('_account_sponsor_id' => '_account.sponsor_id'))
-            ->columns(array('_account_number' => '_account.id'))
-            ->columns('_account.id')
+            ->columns(array('_account_number' => '_account.nucleonplus_account_id'))
+            ->columns('_account.nucleonplus_account_id')
             ->columns('_account.status')
             ->columns(array('_account_customer_ref' => '_account.CustomerRef'))
             ->columns('u.name')
@@ -65,19 +65,11 @@ class ComNucleonplusModelOrders extends KModelDatabase
         $state = $this->getState();
 
         if ($state->account_id) {
-            $query->where('tbl.account_id = :account_id')->bind(['account_id' => $state->account_id]);
+            $query->where('tbl.account = :account_id')->bind(['account_id' => $state->account_id]);
         }
 
         if ($state->order_status && $state->order_status <> 'all') {
             $query->where('tbl.order_status IN :order_status')->bind(['order_status' => (array) $state->order_status]);
-        }
-
-        if ($state->search)
-        {
-            $conditions = array(
-                'tbl.nucleonplus_order_id LIKE :keyword'
-            );
-            $query->where('(' . implode(' OR ', $conditions) . ')')->bind(['keyword' => "%{$state->search}%"]);
         }
 
         if ($state->payment_method) {
