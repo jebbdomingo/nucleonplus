@@ -19,7 +19,7 @@ class ComNucleonplusControllerPermissionOrder extends ComKoowaControllerPermissi
      */
     public function canConfirm()
     {
-        $data    = $this->getObject('com://admin/nucleonplus.accounting.service.data');
+        $data    = $this->getObject('com://site/rewardlabs.accounting.data');
 
         if ($this->getModel()->fetch()->created_by <> $this->getObject('user')->getId())
         {
@@ -40,9 +40,9 @@ class ComNucleonplusControllerPermissionOrder extends ComKoowaControllerPermissi
      */
     public function canAdd()
     {
-        $data    = $this->getObject('com://admin/nucleonplus.accounting.service.data');
+        $data    = $this->getObject('com://site/rewardlabs.accounting.data');
         $user    = $this->getObject('user');
-        $account = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $account = $this->getObject('com://site/nucleonplus.model.accounts')->id($user->getId())->fetch();
 
         if (in_array($account->status, array('new', 'pending', 'terminated'))) {
             return false;

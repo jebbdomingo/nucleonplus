@@ -43,4 +43,18 @@ class ComNucleonplusModelEntityPayout extends KModelEntityRow
     {
         return false;
     }
+
+    /**
+     * Get total payouts
+     *
+     * @return float
+     */
+    public function getPropertyAmount()
+    {
+        $direct_referrals   = (float) $this->direct_referrals;
+        $indirect_referrals = (float) $this->indirect_referrals;
+        $rebates            = (float) $this->rebates;
+
+        return $direct_referrals + $indirect_referrals + $rebates;
+    }
 }

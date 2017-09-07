@@ -13,7 +13,7 @@ class ComNucleonplusTemplateHelperReferrallink extends ComKoowaTemplateHelperBeh
     public function clipboard($config = array())
     {
         $user    = $this->getObject('user');
-        $account = $this->getObject('com://admin/nucleonplus.model.accounts')
+        $account = $this->getObject('com://site/rewardlabs.model.accounts')
             ->user_id($user->getId())
             ->fetch()
         ;

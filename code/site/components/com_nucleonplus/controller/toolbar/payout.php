@@ -45,7 +45,7 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
         $this->removeCommand('save');
 
         $controller   = $this->getController();
-        $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item('claim_request')->fetch();
+        $claimRequest = $this->getObject('com://site/rewardlabs.model.configs')->item('claim_request')->fetch();
         $allowed      = true;
 
         if (isset($context->result) && $context->result->isLockable() && $context->result->isLocked()) {
@@ -53,7 +53,7 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
         }
 
         // Claim request notification
-        if ($claimRequest->value == ComNucleonplusModelEntityConfig::CLAIM_REQUEST_DISABLED) {
+        if ($claimRequest->value == ComRewardlabsModelEntityConfig::CLAIM_REQUEST_DISABLED) {
             $context->response->addMessage('Claim request is not available at the moment, please check the cut-off time for claim requests', KControllerResponse::FLASH_WARNING);
         }
 
@@ -64,8 +64,8 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
 
         if ($context->result->isNew() && !$controller->checkMinimumAmount())
         {
-            $config = $this->getObject('com:nucleonplus.model.configs')
-                ->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
+            $config = $this->getObject('com://site/rewardlabs.model.configs')
+                ->item(ComRewardlabsModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
                 ->fetch()
             ;
             $amount  = number_format((float) $config->value, 2);

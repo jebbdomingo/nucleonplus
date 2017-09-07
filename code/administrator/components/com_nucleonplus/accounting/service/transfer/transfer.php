@@ -121,20 +121,20 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
         return $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
     }
 
-    /**
-     * @param integer $entityId
-     * @param decimal $amount
-     *
-     * @return KModelEntityInterface
-     */
-    public function allocateDeliveryExpense($entityId, $amount)
-    {
-        $sourceAccount = $this->_savings_account;
-        $targetAccount = $this->_delivery_expense_account;
-        $note          = 'Delivery Expense';
+    // /**
+    //  * @param integer $entityId
+    //  * @param decimal $amount
+    //  *
+    //  * @return KModelEntityInterface
+    //  */
+    // public function allocateDeliveryExpense($entityId, $amount)
+    // {
+    //     $sourceAccount = $this->_savings_account;
+    //     $targetAccount = $this->_delivery_expense_account;
+    //     $note          = 'Delivery Expense';
 
-        return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
-    }
+    //     return $this->_transfer('order', $entityId, $sourceAccount, $targetAccount, $amount, $note);
+    // }
 
     /**
      * @param integer $entityId
@@ -144,7 +144,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      */
     public function rebatesCheck($entityId, $amount)
     {
-        $sourceAccount = $this->_rebates_account;
+        $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_checking_account;
         $note          = 'Rebates Check';
 
@@ -166,57 +166,9 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      *
      * @return KModelEntityInterface
      */
-    public function directReferralBonusCheck($entityId, $amount)
-    {
-        $sourceAccount = $this->_dr_bonus_account;
-        $targetAccount = $this->_checking_account;
-        $note          = 'Direct Referral Bonus Check';
-
-        $transfer = $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
-
-        // Try to sync
-        if ($transfer->sync() == false)
-        {
-            $error = $transfer->getStatusMessage();
-            throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Transfer #{$transfer->id}");
-        }
-
-        return $transfer;
-    }
-
-    /**
-     * @param integer $entityId
-     * @param decimal $amount
-     *
-     * @return KModelEntityInterface
-     */
-    public function commissionCheck($entityId, $amount)
-    {
-        $sourceAccount = $this->_patronage_account;
-        $targetAccount = $this->_checking_account;
-        $note          = 'Patronage Bonus Check';
-
-        $transfer = $this->_transfer('payout', $entityId, $sourceAccount, $targetAccount, $amount, $note);
-        
-        // Try to sync
-        if ($transfer->sync() == false)
-        {
-            $error = $transfer->getStatusMessage();
-            throw new KControllerExceptionActionFailed($error ? $error : "Sync Error: Transfer #{$transfer->id}");
-        }
-
-        return $transfer;
-    }
-
-    /**
-     * @param integer $entityId
-     * @param decimal $amount
-     *
-     * @return KModelEntityInterface
-     */
     public function directReferralCheck($entityId, $amount)
     {
-        $sourceAccount = $this->_unilevel_dr_bonus_account;
+        $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_checking_account;
         $note          = 'Unilevel Direct Referral Check';
 
@@ -240,7 +192,7 @@ class ComNucleonplusAccountingServiceTransfer extends KObject implements ComNucl
      */
     public function indirectReferralCheck($entityId, $amount)
     {
-        $sourceAccount = $this->_unilevel_ir_bonus_account;
+        $sourceAccount = $this->_savings_account;
         $targetAccount = $this->_checking_account;
         $note          = 'Unilevel Indirect Referral Check';
 

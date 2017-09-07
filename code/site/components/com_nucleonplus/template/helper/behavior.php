@@ -257,7 +257,7 @@ class ComNucleonplusTemplateHelperBehavior extends ComKoowaTemplateHelperBehavio
 
         if (!isset(self::$_loaded[$signature])) {
             $html = "
-            <script src=\"media://com_nucleonplus/js/clipboard.min.js\"></script>
+            <script src=\"media://com_rewardlabs/js/clipboard.min.js\"></script>
             <script>
             kQuery(function($) {
                 var clipboard = new Clipboard('{$config->selector}');

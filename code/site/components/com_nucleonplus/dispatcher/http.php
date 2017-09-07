@@ -43,7 +43,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
     {
         $request      = parent::getRequest();
         $query        = $request->query;
-        $user_account = $this->getObject('com://admin/nucleonplus.useraccount');
+        $user_account = $this->getObject('com://site/nucleonplus.useraccount');
 
         $query->tmpl    = 'koowa';
         // $query->account = $user_account->getAccount()->id;
@@ -81,7 +81,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
     protected function _updatePayoutStatus($query)
     {
-        $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+        $config    = $this->getObject('com://site/rewardlabs.model.configs')->item('dragonpay')->fetch();
         $dragonpay = $config->getJsonValue();
         $result    = 'result=OK';
 
@@ -108,7 +108,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
     protected function _verifyOnlinePayment($data)
     {
-        $config    = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+        $config    = $this->getObject('com://site/rewardlabs.model.configs')->item('dragonpay')->fetch();
         $dragonpay = $config->getJsonValue();
         $result    = 'result=OK';
 
@@ -142,10 +142,10 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
 
     protected function _manageCart()
     {
-        $model = $this->getObject('com://admin/nucleonplus.model.carts');
+        $model = $this->getObject('com://site/rewardlabs.model.carts');
         $cart  = $model
             ->customer($this->getObject('user')->getId())
-            ->interface(ComNucleonplusModelEntityCart::INTERFACE_SITE)
+            ->interface(ComRewardlabsModelEntityCart::INTERFACE_SITE)
             ->fetch()
         ;
 
@@ -157,7 +157,7 @@ class ComNucleonplusDispatcherHttp extends ComKoowaDispatcherHttp
         {
             $cart = $model->create(array(
                 'customer'  => $this->getObject('user')->getId(),
-                'interface' => ComNucleonplusModelEntityCart::INTERFACE_SITE
+                'interface' => ComRewardlabsModelEntityCart::INTERFACE_SITE
             ));
             $cart->save();
 

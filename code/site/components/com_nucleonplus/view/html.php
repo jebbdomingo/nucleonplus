@@ -13,7 +13,7 @@ class ComNucleonplusViewHtml extends ComKoowaViewHtml
     protected function _fetchData(KViewContext $context)
     {
         $user = $this->getObject('user');
-        $data = $this->getObject('com://admin/nucleonplus.accounting.service.data');
+        $data = $this->getObject('com://site/rewardlabs.accounting.data');
 
         $context->data->onlinePurchaseEnabled = $data->CONFIG_ONLINE_PURCHASE_ENABLED;
         $context->data->isAuthenticated       = $user->isAuthentic();

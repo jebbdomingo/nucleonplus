@@ -53,7 +53,7 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
                 }
                 else
                 {
-                    $config = $this->getObject('com:nucleonplus.model.configs')
+                    $config = $this->getObject('com://site/rewardlabs.model.configs')
                         ->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
                         ->fetch()
                     ;

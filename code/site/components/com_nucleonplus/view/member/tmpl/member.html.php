@@ -61,7 +61,7 @@
         <label for="city"><?= translate('City') ?></label>
         <?= helper('listbox.cities', array(
             'name'     => 'city',
-            'selected' => $member->_account_city,
+            'selected' => $member->city_id,
         )) ?>
     </div>
     <div class="k-form-group">

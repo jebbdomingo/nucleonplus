@@ -19,10 +19,10 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
     public function canAdd()
     {
         $data         = $this->getContext()->request->data;
-        $claimRequest = $this->getObject('com:nucleonplus.model.configs')->item(ComNucleonplusModelEntityConfig::PAYOUT_CLAIM_REQUEST_NAME)->fetch();
+        $claimRequest = $this->getObject('com://site/rewardlabs.model.configs')->item(ComRewardlabsModelEntityConfig::PAYOUT_CLAIM_REQUEST_NAME)->fetch();
         $result       = false;
 
-        if ($claimRequest->value == ComNucleonplusModelEntityConfig::CLAIM_REQUEST_ENABLED)
+        if ($claimRequest->value == ComRewardlabsModelEntityConfig::CLAIM_REQUEST_ENABLED)
         {
             // Ensure member has no outstanding payout request
             if (!$this->hasOutstandingRequest())
@@ -69,10 +69,10 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
     public function checkMinimumAmount()
     {
         $result       = false;
-        $user_account = $this->getObject('com:nucleonplus.useraccount');
+        $user_account = $this->getObject('com://site/nucleonplus.useraccount');
         $account      = $user_account->getAccount();
-        $minAmount    = (float) $this->getObject('com:nucleonplus.model.configs')
-            ->item(ComNucleonplusModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
+        $minAmount    = (float) $this->getObject('com://site/rewardlabs.model.configs')
+            ->item(ComRewardlabsModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
             ->fetch()
             ->value;
 

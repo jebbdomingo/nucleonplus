@@ -101,7 +101,7 @@ class ComNucleonplusControllerToolbarOrder extends ComKoowaControllerToolbarActi
 
         if (is_null($context->result->id)) {
             $user    = $this->getObject('user');
-            $account = $this->getObject('com:nucleonplus.model.accounts')->user_id($user->getId())->fetch();
+            $account = $this->getObject('com://site/rewardlabs.model.accounts')->user_id($user->getId())->fetch();
 
             $this->addCommand('apply', array(
                 'allowed' => ($allowed && !in_array($account->status, array('new', 'pending', 'terminated'))),

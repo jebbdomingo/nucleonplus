@@ -200,4 +200,52 @@ class ComNucleonplusModelPayouts extends KModelDatabase
 
         return (float) $row->total;
     }
+
+    public function getRebates()
+    {
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('SUM(tbl.rebates) AS total, tbl.nucleonplus_payout_id')
+        ;
+
+        $this->_buildQueryWhere($query);
+        $this->_buildQueryGroup($query);
+
+        $row = $table->select($query);
+
+        return (float) $row->total;
+    }
+
+    public function getDirectReferrals()
+    {
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('SUM(tbl.direct_referrals) AS total, tbl.nucleonplus_payout_id')
+        ;
+
+        $this->_buildQueryWhere($query);
+        $this->_buildQueryGroup($query);
+
+        $row = $table->select($query);
+
+        return (float) $row->total;
+    }
+
+    public function getIndirectReferrals()
+    {
+        $table = $this->getObject('com://admin/nucleonplus.database.table.payouts');
+        $query = $this->getObject('database.query.select')
+            ->table('nucleonplus_payouts AS tbl')
+            ->columns('SUM(tbl.indirect_referrals) AS total, tbl.nucleonplus_payout_id')
+        ;
+
+        $this->_buildQueryWhere($query);
+        $this->_buildQueryGroup($query);
+
+        $row = $table->select($query);
+
+        return (float) $row->total;
+    }
 }

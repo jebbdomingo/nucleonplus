@@ -76,7 +76,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
             'reward'            => 'com://admin/nucleonplus.mlm.packagereward',
             'inventory_service' => 'com://admin/nucleonplus.accounting.service.inventory',
             'behaviors'         => array(
-                'com://admin/nucleonplus.controller.behavior.cancellable',
+                'com://admin/dragonpay.controller.behavior.cancellable',
                 'com://admin/dragonpay.controller.behavior.onlinepayable' => array(
                     'actions' => array('after.add'),
                     'columns' => array(
@@ -94,7 +94,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _validate(KControllerContextInterface $context)
     {
         $user       = $this->getObject('user');
-        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $account    = $this->getObject('com://site/rewardlabs.model.accounts')->id($user->getId())->fetch();
         $translator = $this->getObject('translator');
         $data       = $context->request->data;
         $cart       = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();
@@ -190,7 +190,7 @@ class ComNucleonplusControllerOrder extends ComKoowaControllerModel
     protected function _actionAdd(KControllerContextInterface $context)
     {
         $user       = $this->getObject('user');
-        $account    = $this->getObject('com:nucleonplus.model.accounts')->id($user->getId())->fetch();
+        $account    = $this->getObject('com://site/rewardlabs.model.accounts')->id($user->getId())->fetch();
         $translator = $this->getObject('translator');
         $data       = $context->request->data;
         $cart       = $this->getObject('com://admin/nucleonplus.model.carts')->id($data->cart_id)->fetch();

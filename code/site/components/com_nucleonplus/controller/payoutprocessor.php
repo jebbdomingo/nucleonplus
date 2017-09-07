@@ -33,7 +33,7 @@ class ComNucleonplusControllerPayoutprocessor extends ComKoowaControllerModel
         }
 
         // Validate digest from dragonpay
-        $config     = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+        $config     = $this->getObject('com://site/rewardlabs.model.configs')->item('dragonpay')->fetch();
         $dragonpay  = $config->getJsonValue();
         $parameters = array(
             'txnid'    => $data->txnid,

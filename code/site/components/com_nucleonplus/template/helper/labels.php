@@ -23,14 +23,14 @@ class ComNucleonplusTemplateHelperLabels extends KTemplateHelperAbstract
         $config
         ->append(array(
             'states'  => array(
-                ComNucleonplusModelEntityOrder::STATUS_PENDING    => array('label' => 'Pending',          'type' => 'default'),
-                ComNucleonplusModelEntityOrder::STATUS_PAYMENT    => array('label' => 'Awaiting Payment', 'type' => 'warning'),
-                ComNucleonplusModelEntityOrder::STATUS_VERIFIED   => array('label' => 'Verified',         'type' => 'success'),
-                ComNucleonplusModelEntityOrder::STATUS_PROCESSING => array('label' => 'Processing',       'type' => 'info'),
-                ComNucleonplusModelEntityOrder::STATUS_SHIPPED    => array('label' => 'Shipped',          'type' => 'primary'),
-                ComNucleonplusModelEntityOrder::STATUS_DELIVERED  => array('label' => 'Delivered',        'type' => 'success'),
-                ComNucleonplusModelEntityOrder::STATUS_COMPLETED  => array('label' => 'Completed',        'type' => 'success'),
-                ComNucleonplusModelEntityOrder::STATUS_CANCELLED  => array('label' => 'Cancelled',        'type' => 'default'),
+                ComRewardlabsModelEntityOrder::STATUS_PENDING    => array('label' => 'Pending',          'type' => 'default'),
+                ComRewardlabsModelEntityOrder::STATUS_PAYMENT    => array('label' => 'Awaiting Payment', 'type' => 'warning'),
+                ComRewardlabsModelEntityOrder::STATUS_VERIFIED   => array('label' => 'Verified',         'type' => 'success'),
+                ComRewardlabsModelEntityOrder::STATUS_PROCESSING => array('label' => 'Processing',       'type' => 'info'),
+                ComRewardlabsModelEntityOrder::STATUS_SHIPPED    => array('label' => 'Shipped',          'type' => 'primary'),
+                ComRewardlabsModelEntityOrder::STATUS_DELIVERED  => array('label' => 'Delivered',        'type' => 'success'),
+                ComRewardlabsModelEntityOrder::STATUS_COMPLETED  => array('label' => 'Completed',        'type' => 'success'),
+                ComRewardlabsModelEntityOrder::STATUS_CANCELLED  => array('label' => 'Cancelled',        'type' => 'default'),
             )
         ))
         ->append(array(

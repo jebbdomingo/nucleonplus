@@ -21,7 +21,7 @@ defined('KOOWA') or die; ?>
 <!-- Wrapper -->
 <div class="k-wrapper k-js-wrapper">
 
-    <? $account = object('com://admin/nucleonplus.model.accounts')->user_id(object('user')->id)->fetch(); ?>
+    <? $account = object('com://site/rewardlabs.model.accounts')->user_id(object('user')->id)->fetch(); ?>
     <? if (object('request')->getReferrer()->getQuery() === 'view=login' && !$account->sponsor_id): ?>
         <div class="k-alert k-alert--warning k-no-margin">
             <span class="k-icon-warning" aria-hidden="true"></span> Please enter your Sponsor's ID

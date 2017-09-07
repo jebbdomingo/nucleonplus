@@ -35,7 +35,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
             $translator = $this->getObject('translator');
             $data       = $context->request->data;
 
-            if (!in_array($data->payout_method, array(ComNucleonplusModelEntityPayout::PAYOUT_METHOD_PICKUP, ComNucleonplusModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER))) {
+            if (!in_array($data->payout_method, array(ComRewardlabsModelEntityPayout::PAYOUT_METHOD_PICKUP, ComRewardlabsModelEntityPayout::PAYOUT_METHOD_FUNDS_TRANSFER))) {
                 throw new Exception('Please choose how do you want to encash your commissions');
             }
         }
@@ -58,7 +58,7 @@ class ComNucleonplusControllerPayout extends ComKoowaControllerModel
     protected function _validateData(KControllerContextInterface $context)
     {
         $user    = $this->getObject('user');
-        $account = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
+        $account = $this->getObject('com://site/rewardlabs.model.accounts')->user_id($user->getId())->fetch();
         
         $rebateBonus     = 0;
         $unilevelDRBonus = 0;

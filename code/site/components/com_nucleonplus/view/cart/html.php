@@ -14,7 +14,7 @@ class ComNucleonplusViewCartHtml extends ComKoowaViewHtml
         parent::_fetchData($context);
 
         $user          = $this->getObject('user');
-        $account       = $this->getObject('com://admin/nucleonplus.model.accounts')->user_id($user->getId())->fetch();
+        $account       = $this->getObject('com://site/rewardlabs.model.accounts')->user_id($user->getId())->fetch();
         $cart          = $context->data->cart;
         $amount        = $cart->getAmount();
         $shippingCost  = $cart->getShippingFee();

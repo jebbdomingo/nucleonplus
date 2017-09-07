@@ -84,7 +84,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
             }
 
             // Validate digest from dragonpay
-            $config     = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+            $config     = $this->getObject('com://site/rewardlabs.model.configs')->item('dragonpay')->fetch();
             $dragonpay  = $config->getJsonValue();
             $parameters = array(
                 'txnid'    => $data->txnid,
@@ -112,7 +112,7 @@ class ComNucleonplusControllerDragonpay extends ComKoowaControllerModel
     {
         // Validate digest from dragonpay
         $data       = $context->request->data;
-        $config     = $this->getObject('com://admin/nucleonplus.model.configs')->item('dragonpay')->fetch();
+        $config     = $this->getObject('com://site/rewardlabs.model.configs')->item('dragonpay')->fetch();
         $dragonpay  = $config->getJsonValue();
         $parameters = array(
             'txnid'    => $data->txnid,
