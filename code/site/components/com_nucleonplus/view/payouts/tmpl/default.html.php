@@ -32,7 +32,7 @@ defined('KOOWA') or die; ?>
         <div class="k-content k-js-content">
 
             <!-- Title when sidebar is invisible -->
-            <ktml:toolbar type="titlebar" title="Nucleon Plus" mobile>
+            <ktml:toolbar type="titlebar" title="<?php echo ucfirst(JFactory::getApplication()->input->get('view')); ?>" mobile>
 
             <? if (count($payouts) === 0): ?>
                 <div class="k-empty-state">
@@ -47,16 +47,25 @@ defined('KOOWA') or die; ?>
             <? else: ?>
                 <!-- Component -->
                 <div class="k-component-wrapper">
+
                     <div class="k-table-container">
+
                         <div class="k-table">
-                            <table>
+
+                            <table class="k-js-responsive-table">
 					            <thead>
 					            	<tr>
 						                <th><?= helper('grid.sort', array('column' => 'id', 'title' => 'Payout #')); ?></th>
-						                <th>Status</th>
-						                <th>Encashment Method</th>
-						                <th>Date</th>
-						                <th><div class="text-right">Amount</div></th>
+						                <th>
+                                            <?= helper('grid.sort', array('column' => 'status', 'title' => 'Status')); ?>
+                                        </th>
+						                <th>
+                                            <?= helper('grid.sort', array('column' => 'payout_method', 'title' => 'Encashment method')); ?>
+                                        </th>
+                                        <th>
+                                            <?= helper('grid.sort', array('column' => 'created_on', 'title' => 'Date')); ?>
+                                        </th>
+						                <th>Amount</th>
 					                </tr>
 					            </thead>
 					            <tbody>
@@ -72,20 +81,23 @@ defined('KOOWA') or die; ?>
 				                        </tr>
 				                    <? endforeach ?>
 					            </tbody>
-					            <tfoot>
-					                <tr>
-					                    <td colspan="5">
-					                        <?= helper('paginator.pagination') ?>
-					                    </td>
-					                </tr>
-					            </tfoot>
 					        </table>
                         </div>
+
+                        <? if (count($payouts)): ?>
+                            <div class="k-table-pagination">
+                                <?= helper('paginator.pagination') ?>
+                            </div><!-- .k-table-pagination -->
+                        <? endif; ?>
+
                     </div>
+
                 </div>
+
             <? endif ?>
 
         </div>
 
     </div>
+
 </div>
