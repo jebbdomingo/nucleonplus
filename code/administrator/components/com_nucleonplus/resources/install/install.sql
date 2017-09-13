@@ -20,7 +20,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-CREATE TABLE `#__nucleonplus_cities` (
+CREATE TABLE IF NOT EXISTS `#__nucleonplus_cities` (
   `nucleonplus_city_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(300) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `province_id` int(11) unsigned NOT NULL,
@@ -1676,7 +1676,7 @@ UNLOCK TABLES;
 # Dump of table #__nucleonplus_provinces
 # ------------------------------------------------------------
 
-CREATE TABLE `#__nucleonplus_provinces` (
+CREATE TABLE IF NOT EXISTS `#__nucleonplus_provinces` (
   `nucleonplus_province_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(300) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`nucleonplus_province_id`)

@@ -15,43 +15,6 @@
             <fileset dir="tmp/administrator/components/com_nucleonplus/resources/install/" />
         </copy>
 
-        <!-- ckeditor begin >>> -->
-        <if>
-            <isset property="components.location" />
-            <then>
-                <echo message="Using local checkout of com_ckeditor" />
-                <copy todir="tmp/ckeditor_clone">
-                    <fileset dir="${components.location}" defaultexcludes="no" />
-                </copy>
-
-                <gitcheckout
-                        gitPath="git"
-                        repository="tmp/ckeditor_clone"
-                        branchname="${components.branch}" />
-            </then>
-            <else>
-                <echo message="Cloning com_ckeditor" />
-                <exec command="git clone --depth 1 --branch ${components.branch} https://github.com/joomlatools/joomlatools-framework-ckeditor.git ${project.basedir}/tmp/ckeditor_clone" />
-            </else>
-        </if>
-
-        <copy todir="tmp/extensions/ckeditor">
-            <fileset dir="tmp/ckeditor_clone" />
-        </copy>
-
-        <delete dir="tmp/ckeditor_clone" includeemptydirs="true" />
-        <!-- <<< ckeditor end -->
-
-        <!-- plugins >>> -->
-        <copy todir="tmp/extensions/plg_user_nucleonplus">
-            <fileset dir="tmp/plugins/user" />
-        </copy>
-        <copy todir="tmp/extensions/plg_system_nucleonplus">
-            <fileset dir="tmp/plugins/system" />
-        </copy>
-        <delete dir="tmp/plugins" includeemptydirs="true" />
-        <!-- <<< plugins -->
-
         <!-- take out source mapping from CSS files -->
         <reflexive>
             <fileset dir="tmp/media/com_nucleonplus/css">

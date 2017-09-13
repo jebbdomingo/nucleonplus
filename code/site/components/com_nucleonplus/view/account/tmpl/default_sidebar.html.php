@@ -9,11 +9,6 @@
                     Account
                 </a>
             </li>
-            <li class="<?= parameters()->view === 'cart' ? 'k-is-active' : null ?>">
-                <a href="<?= route('view=cart') ?>">
-                    Cart
-                </a>
-            </li>
         </ul>
     </div>
 
@@ -22,12 +17,6 @@
             <?= translate('Quick Navigation') ?>
         </div>
         <ul class="k-list">
-            <li class="<?= parameters()->view === 'products' ? 'k-is-active' : null ?>">
-                <a href="<?= route('view=products') ?>">
-                    <span class="k-icon-basket" aria-hidden="true"></span>
-                    Products
-                </a>
-            </li>
             <li class="<?= parameters()->layout === 'rewards' ? 'k-is-active' : null ?>">
                 <a href="<?= route('view=account&layout=rewards') ?>">
                     <span class="k-icon-star" aria-hidden="true"></span>
