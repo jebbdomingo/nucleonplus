@@ -27,7 +27,7 @@ class ComNucleonplusAccountingServiceData extends KObject
     {
         parent::__construct($config);
 
-        $env   = getenv('APP_ENV');
+        $env   = getenv('HTTP_APP_ENV');
         $model = $this->getObject('com://admin/nucleonplus.model.configs');
 
         switch ($env) {

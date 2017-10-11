@@ -47,7 +47,7 @@ class ComNucleonplusControllerPayoutprocessor extends ComKoowaControllerModel
 
         if ($data->digest !== $digest)
         {
-            if (getenv('APP_ENV') != 'production') {
+            if (getenv('HTTP_APP_ENV') != 'production') {
                 var_dump($digest);
             }
 
