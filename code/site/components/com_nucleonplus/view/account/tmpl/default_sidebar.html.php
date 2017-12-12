@@ -29,12 +29,6 @@
                     Referrals
                 </a>
             </li>
-            <li class="<?= parameters()->view === 'orders' ? 'k-is-active' : null ?>">
-                <a href="<?= route('view=orders') ?>">
-                    <span class="k-icon-box" aria-hidden="true"></span>
-                    Orders
-                </a>
-            </li>
             <li class="<?= parameters()->view === 'payouts' ? 'k-is-active' : null ?>">
                 <a href="<?= route('view=payouts') ?>">
                     <span class="k-icon-dollar" aria-hidden="true"></span>
