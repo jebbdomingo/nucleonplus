@@ -45,7 +45,7 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
             {
                 $controller = $this->getObject('com://site/nucleonplus.controller.payout');
 
-                if ($controller->checkMinimumAmount())
+                if ($controller->checkMinMaxAmount())
                 {
                     $this->addCommand('encash', [
                         'allowed' => $allowed,
