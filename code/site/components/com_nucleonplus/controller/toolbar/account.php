@@ -53,13 +53,18 @@ class ComNucleonplusControllerToolbarAccount extends ComKoowaControllerToolbarAc
                 }
                 else
                 {
+                    $config     = $this->getObject('com://site/rewardlabs.model.configs');
+                    $value      = $config->item(ComRewardlabsModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)->fetch()->value;
+                    $min_amount = number_format((float) $value, 2);
+                    $value      = $config->item(ComRewardlabsModelEntityConfig::PAYOUT_MAX_AMOUNT_NAME)->fetch()->value;
+                    $max_amount = number_format((float) $value, 2);
+
                     $config = $this->getObject('com://site/rewardlabs.model.configs')
                         ->item(ComRewardlabsModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
                         ->fetch()
                     ;
-                    $amount  = number_format((float) $config->value, 2);
                     
-                    $context->response->addMessage("Minimum amount for each payout request is &#8369;{$amount}", KControllerResponse::FLASH_WARNING);
+                    $context->response->addMessage("Minimum amount for each payout request is &#8369;{$min_amount} and maximum of &#8369;{$max_amount}", KControllerResponse::FLASH_WARNING);
                 }
             }
         }
