@@ -62,14 +62,13 @@ class ComNucleonplusControllerToolbarPayout extends ComKoowaControllerToolbarAct
             $context->response->addMessage('You have outstanding payout request', KControllerResponse::FLASH_WARNING);
         }
 
-        if ($context->result->isNew() && !$controller->checkMinimumAmount())
+        if ($context->result->isNew() && !$controller->checkMinMaxAmount())
         {
-            $config = $this->getObject('com://site/rewardlabs.model.configs')
-                ->item(ComRewardlabsModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
-                ->fetch()
-            ;
-            $amount  = number_format((float) $config->value, 2);
-            $message = "Minimum amount for each payout request is &#8369;{$amount}";
+            $config     = $this->getObject('com://site/rewardlabs.model.configs');
+            $min_amount = $config->item(ComRewardlabsModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)->fetch()->value;
+            $max_amount = $config->item(ComRewardlabsModelEntityConfig::PAYOUT_MAX_AMOUNT_NAME)->fetch()->value;
+
+            $message = "Valid amount for each payout request: Minimum of &#8369;{$min_amount} and maximum of &#8369; {$max_amount}";
             $context->response->addMessage($message, KControllerResponse::FLASH_WARNING);
         }
 

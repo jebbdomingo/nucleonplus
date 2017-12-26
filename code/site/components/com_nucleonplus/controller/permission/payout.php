@@ -31,7 +31,7 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
                 if ($this->checkBankDetails())
                 {
                     // Ensure minimum amount of payout
-                    $result = $this->checkMinimumAmount();
+                    $result = $this->checkMinMaxAmount();
                 }
             }
         }
@@ -66,17 +66,23 @@ class ComNucleonplusControllerPermissionPayout extends ComKoowaControllerPermiss
         return $result;
     }
 
-    public function checkMinimumAmount()
+    public function checkMinMaxAmount()
     {
         $result       = false;
         $user_account = $this->getObject('com://site/nucleonplus.useraccount');
         $account      = $user_account->getAccount();
+
         $minAmount    = (float) $this->getObject('com://site/rewardlabs.model.configs')
             ->item(ComRewardlabsModelEntityConfig::PAYOUT_MIN_AMOUNT_NAME)
             ->fetch()
             ->value;
 
-        if ($account->getAvailableRewards() >= $minAmount) {
+        $maxAmount    = (float) $this->getObject('com://site/rewardlabs.model.configs')
+            ->item(ComRewardlabsModelEntityConfig::PAYOUT_MAX_AMOUNT_NAME)
+            ->fetch()
+            ->value;
+
+        if ($account->getAvailableRewards() >= $minAmount && $account->getAvailableRewards() <= $maxAmount) {
             $result = true;
         }
 
