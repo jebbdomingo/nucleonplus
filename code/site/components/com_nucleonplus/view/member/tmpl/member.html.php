@@ -20,11 +20,15 @@
         <input class="k-form-control" type="text" id="PrintOnCheckName" name="PrintOnCheckName" value="<?= $member->_account_check_name ?>" />
     </div>
     <div class="k-form-group">
-        <label for="bank_name"><?= translate('Bank') ?></label>
+        <label for="bank_name"><?= translate('Bank/Payout channel') ?></label>
         <?= helper('listbox.banks', array(
             'name'     => 'bank_name',
             'selected' => $member->_account_bank_name,
         )) ?>
+    </div>
+    <div class="k-form-group">
+        <label for="bank_account_number"><?= translate('Account no/mobile no of payout channel') ?></label>
+        <input class="k-form-control" type="text" id="bank_account_number" name="bank_account_number" value="<?= $member->_account_bank_account_number ?>" />
     </div>
     <div class="k-form-group">
         <label for="bank_account_type"><?= translate('Account type') ?></label>
@@ -32,10 +36,6 @@
             'name'     => 'bank_account_type',
             'selected' => $member->_account_bank_account_type,
         )) ?>
-    </div>
-    <div class="k-form-group">
-        <label for="bank_account_number"><?= translate('Account number') ?></label>
-        <input class="k-form-control" type="text" id="bank_account_number" name="bank_account_number" value="<?= $member->_account_bank_account_number ?>" />
     </div>
     <div class="k-form-group">
         <label for="bank_account_name"><?= translate('Account name') ?></label>

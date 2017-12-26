@@ -563,7 +563,22 @@ class ComNucleonplusTemplateHelperListbox extends ComKoowaTemplateHelperListbox
     public function banks(array $config = array())
     {
         $options = array(
-            array('label' => 'BDO', 'value' => 'bdo')
+            array('label' => 'Asia United Bank CA/SA (limited)', 'value' => 'AUB'),
+            array('label' => 'Banco de Oro CA/SA', 'value' => 'BDO'),
+            array('label' => 'BPI CA/SA', 'value' => 'BPI'),
+            array('label' => 'Chinabank CA/SA', 'value' => 'CBC'),
+            array('label' => 'EastWest CA/SA', 'value' => 'EWB'),
+            array('label' => 'Landbank CA/SA', 'value' => 'LBP'),
+            array('label' => 'Metrobank CA/SA', 'value' => 'MBTC'),
+            array('label' => 'PNB individual CA/SA', 'value' => 'PNB'),
+            array('label' => 'RCBC CA/SA, RCBC Savings Bank CA/SA, RCBC MyWallet', 'value' => 'RCBC'),
+            array('label' => 'Security Bank CA/SA', 'value' => 'SBC'),
+            array('label' => 'Unionbank CA/SA, EON', 'value' => 'UBP'),
+            array('label' => 'UCPB CA/SA', 'value' => 'UCPB'),
+            array('label' => 'Cebuana Lhuillier Cash Pick-up', 'value' => 'CEBL'),
+            array('label' => 'PSBank CA/SA', 'value' => 'PSB'),
+            array('label' => 'Gcash', 'value' => 'GCSH'),
+            array('label' => 'Smart Money', 'value' => 'SMRT'),
         );
 
         // Override options
