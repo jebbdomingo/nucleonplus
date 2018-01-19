@@ -58,13 +58,6 @@
         <input class="k-form-control" type="text" id="street" name="street" value="<?= $member->_account_street ?>" />
     </div>
     <div class="k-form-group">
-        <label for="city"><?= translate('City') ?></label>
-        <?= helper('listbox.cities', array(
-            'name'     => 'city',
-            'selected' => $member->city_id,
-        )) ?>
-    </div>
-    <div class="k-form-group">
         <label for="postal_code"><?= translate('ZIP/Postal code') ?></label>
         <input class="k-form-control" type="text" id="postal_code" name="postal_code" value="<?= $member->_account_postal_code ?>" />
     </div>
